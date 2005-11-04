@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:11 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- DODS</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_35.html"><img alt="ERROR" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_33.html"><img alt="DDS" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>DODS</b></td></tr></table>
+<h3>DODS</h3>
+
+The DataDDS entity is returned as the payload of a message whose
+<tt>Content-Type</tt> header MUST be
+<tt>application/octet</tt>.<sup><a HREF="dap_49.html#footnote-6">6</a></sup> The
+body of the response contains both text which holds a DDS which
+describes the variables listed in the request and the values for those
+variables encoded using XDR<a HREF="dap_43.html#xdr">[8]</a>. The text DDS and the binary data
+are separated in the response entity by the literal <tt>Data:</tt>.
+<tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+DataDDS </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> DDS CR "Data:" CR &lt;Binary values&gt;
+</td></tr></table>
+
+</div>
+</tt>
+<p>Clients MAY supply a constraint expression (see Section&nbsp;<a HREF="dap_15.html">*</a>) with
+any <tt>DataDDS</tt> request. The DDS in the <tt>DataDDS</tt> response
+describes the variables returned. The order that the variables are listed in
+the DDS MUST match the order of the values in the binary section of the
+DataDDS response. If the response contains constructor types, then the
+variables are sent in the order they would be visited in a depth-first
+traversal of the accompanying DDS.
+<h4><A NAME="1">Encoding Values</a></h4>
+
+<p><em>[Describe different types of variables as three groups: scalar, vector
+  and aggregate]</em>
+<p>The DAP uses Sun Microsystems' XDR protocol&nbsp;<a HREF="dap_43.html#xdr">[8]</a> for the external
+representation of all of the base type variables. Table&nbsp;<a HREF="#2">*</a>
+shows the XDR types used to represent the various base type
+variables.
+<p><p><div align="center">The XDR data types used by the DAP as the external representations
+  of base-type variables</div>
+<A NAME="2">&nbsp;</A>
+<div align="center">
+<table><tr><td colspan="1" align="CENTER">
+ BASE TYPE </td><td colspan="1" align="CENTER"> XDR TYPE </td></tr>
+<tr><td colspan="1" align="LEFT">
+<tt>byte</tt> </td><td colspan="1" align="LEFT"> <tt>xdr byte</tt> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<tt>int16</tt> </td><td colspan="1" align="LEFT"> <tt>xdr short</tt> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<tt>uint16</tt> </td><td colspan="1" align="LEFT"> <tt>xdr unsigned short</tt> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<tt>int32</tt> </td><td colspan="1" align="LEFT"> <tt>xdr long</tt> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<tt>uint32</tt> </td><td colspan="1" align="LEFT"> <tt>xdr unsigned long</tt> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<tt>float32</tt> </td><td colspan="1" align="LEFT"> <tt>xdr float</tt> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<tt>float64</tt> </td><td colspan="1" align="LEFT"> <tt>xdr double</tt> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<tt>string</tt> </td><td colspan="1" align="LEFT"> <tt>xdr string</tt> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<tt>URL</tt> </td><td colspan="1" align="LEFT"> <tt>xdr string</tt> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+<p><p>In order to transmit constructor type variables, the DAP defines how the
+various base type variables, which comprise the constructor type variable,
+are transmitted. Any constructor type variable may be subject to a constraint
+expression which changes the amount of data transmitted for the variable (see
+Section&nbsp;<a HREF="dap_15.html">*</a>). For each of the six constructor types these
+definitions are:
+<dl><dt><b>Array</b><dd> An array id first sent by sending the number of elements in the
+  array twice.<sup><a HREF="dap_49.html#footnote-7">7</a></sup> The array lengths are 32-bit
+  integers encoded using <tt>xdr&#95;long</tt>.
+<p>  Following the length information, each array element is encoded in
+  succession. Arrays of bytes are handled differently than other arrays:
+<ol><li>An array of bytes: These are encoded as is and are padded to a
+  four-byte boundary. Thus an array of five bytes will be encoded as eight
+  bytes.
+<li>One dimensional arrays of all other types are encoded by encoding each
+  element of the array in the order they appear.
+<li>Multi0dimensional arrays are encoded by encoding the elements using
+  row-major ordering.
+</ol>
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+Array </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> length length values </td></tr>
+<tr><td colspan="1" align="LEFT">
+length </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> &lt;32-bit integer, signed, big endian&gt; </td></tr>
+<tr><td colspan="1" align="LEFT">
+values </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> bytes | other-values </td></tr>
+<tr><td colspan="1" align="LEFT">
+bytes </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> &lt;8-bit bytes padded to a four-byte boundary&gt; </td></tr>
+<tr><td colspan="1" align="LEFT">
+other-values </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> numeric-values | strings | aggregates </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<dt><b>List</b><dd> A list is sent as if it were an array. Even though the length of
+  a list is not declared, at the time the list's value(s) are to be sent, its
+  length must be known. Thus it is possible to think of a list as a vector of
+  values and hence use the same encoding for those values as would be used
+  for an equivalent array.
+<dt><b>Structure</b><dd> A structure is sent by encoding each field in the order
+  those fields are declared in the structure. For example, the structure:
+<p><pre class="it">
+Structure {
+    int32 x;
+    float64 y;
+} a;
+</pre>
+<p>Would be sent by encoding the int32 <tt>x</tt> and then the float64
+<tt>y</tt>. 
+<p>Nested structures are sent by encoding their `leaf nodes' as visited in a
+depth first traversal. For example:
+<p><pre class="it">
+Structure {
+    int32 x;
+    Structure {
+        String name;
+        Byte image[512][512];
+    } picture;
+    float64 y;
+} a;
+</pre>
+<p>Would be sent by encoding <tt>x</tt>, then <tt>name</tt>, <tt>image</tt> and
+  finally <tt>y</tt>.
+<dt><b>Sequence</b><dd> A Sequence is transmitted by encoding each instance as for a
+  structure and sending one after the other, in the order of their occurrence
+  in the data set. The entire sequence is sent, subject to the constraint
+  expression. In other words, if no constraint expression is supplied then
+  the entire sequence is sent. However, if a constraint expression is given
+  all the records in the sequence that satisfy the expression are
+  sent
+<p>  Because a sequence does <em>not</em> have a length count, each instance
+  is prefixed by a <tt>start of sequence</tt> marker. Also, to accommodate
+  nested sequences, then end of each sequence as a whole is marked by a
+  <tt>end of sequence</tt> marker.
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+sequence </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> instances end-of-seq </td></tr>
+<tr><td colspan="1" align="LEFT">
+instances </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> start-of-inst instance-values </td></tr>
+<tr><td colspan="1" align="LEFT">
+end-of-seq </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> &lt;byte value 0xA5&gt; </td></tr>
+<tr><td colspan="1" align="LEFT">
+start-of-inst </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> &lt;byte value 0x5A&gt; </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<dt><b>Grid</b><dd> A grid is encoded as if it is a Structure (one component
+  after the other, in the order of their declaration).
+</dl>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_35.html"><img alt="ERROR" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_33.html"><img alt="DDS" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>DODS</b></td></tr></table></body></html>

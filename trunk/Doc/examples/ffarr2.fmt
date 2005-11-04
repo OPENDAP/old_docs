@@ -1,0 +1,5 @@
+ASCII_input_data "one"
+data 1 6 ARRAY["y" 1 to 5 sb 1]["x" 1 to 6] OF float 1
+
+ASCII_output_data "two"
+data 1 4 ARRAY["x" 1 to 6 sb 2]["y" 1 to 5] OF float 1

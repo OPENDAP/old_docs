@@ -1,0 +1,322 @@
+\indexentry{typographic conventions}{vii}
+\indexentry{architecture}{3}
+\indexentry{client}{3}
+\indexentry{server}{3}
+\indexentry{distributed data}{5}
+\indexentry{remote data}{5}
+\indexentry{ftp}{5}
+\indexentry{constraint expression}{8}
+\indexentry{catalog service|emph}{11}
+\indexentry{URL}{16}
+\indexentry{Uniform Resource Locator|see{URL}}{16}
+\indexentry{Internet protocol}{16}
+\indexentry{protocol!Internet}{16}
+\indexentry{httpd}{16}
+\indexentry{host name}{16}
+\indexentry{Common Gateway Interface|see{CGI}}{16}
+\indexentry{CGI}{16}
+\indexentry{file name!part of URL}{16}
+\indexentry{URL!suffix}{17}
+\indexentry{security!server}{17}
+\indexentry{server!security}{17}
+\indexentry{password!in URL}{17}
+\indexentry{data security}{17}
+\indexentry{limiting access to data}{17}
+\indexentry{access control}{17}
+\indexentry{username!embedding in URL}{17}
+\indexentry{URL!embedding username in}{17}
+\indexentry{URL!password}{17}
+\indexentry{services}{18}
+\indexentry{data attribute service}{18}
+\indexentry{das@{\tt  .das}}{18}
+\indexentry{data descriptor service}{18}
+\indexentry{dds@{\tt  .dds}}{18}
+\indexentry{data service}{18}
+\indexentry{dods@{\tt  .dods}}{18}
+\indexentry{ASCII data service}{18}
+\indexentry{ascii@{\tt  .asc}}{18}
+\indexentry{WWW Interface\ service}{18}
+\indexentry{service!WWW Interface}{18}
+\indexentry{html@{\tt  .html}}{18}
+\indexentry{info service}{19}
+\indexentry{info@{\tt  .info}}{19}
+\indexentry{version service}{19}
+\indexentry{ver@{\tt  .ver}}{19}
+\indexentry{help service}{19}
+\indexentry{WWW Interface\ service}{19}
+\indexentry{service!WWW Interface}{19}
+\indexentry{html@{\tt  .html}}{19}
+\indexentry{troubleshooting}{22}
+\indexentry{client!troubleshooting}{22}
+\indexentry{Internet connection!required for OPeNDAP\xspace  }{22}
+\indexentry{PATH}{22}
+\indexentry{client!using}{22}
+\indexentry{required software}{22}
+\indexentry{necessary software}{22}
+\indexentry{software!required}{22}
+\indexentry{system configuration}{22}
+\indexentry{configuration!system}{22}
+\indexentry{Tcl}{22}
+\indexentry{Tk}{22}
+\indexentry{GUI manager}{22}
+\indexentry{gzip}{22}
+\indexentry{GNU}{22}
+\indexentry{environment variables}{22}
+\indexentry{environment variables!DODS\_ROOT}{23}
+\indexentry{variable!environment}{23}
+\indexentry{GUI manager|emph}{23}
+\indexentry{DODS\_GUI}{23}
+\indexentry{environment variables!DODS\_GUI}{23}
+\indexentry{DODS\_GUI\_INIT}{23}
+\indexentry{manager!GUI}{23}
+\indexentry{GUI manager!initialization}{23}
+\indexentry{initialization!GUI manager}{23}
+\indexentry{environment variables!DODS\_GUI\_INIT}{23}
+\indexentry{DODS\_USE\_GUI}{23}
+\indexentry{GUI manager!turning off}{23}
+\indexentry{environment variables!DODS\_USE\_GUI}{23}
+\indexentry{graphic user interface!error system}{23}
+\indexentry{error system}{23}
+\indexentry{message!error}{23}
+\indexentry{disk space!recovering}{23}
+\indexentry{temporary files}{23}
+\indexentry{files!temporary}{23}
+\indexentry{tmp@{\tt  /tmp}}{23}
+\indexentry{tmpnam@{\tt  tmpnam()}}{23}
+\indexentry{API}{25}
+\indexentry{Application Program Interface|see{API}}{25}
+\indexentry{OPeNDAP\xspace  client}{25}
+\indexentry{client!OPeNDAP\xspace  }{25}
+\indexentry{Uniform Resource Locator|see{URL}}{25}
+\indexentry{URL}{25}
+\indexentry{web browser}{25}
+\indexentry{Mosaic}{25}
+\indexentry{Netscape Navigator}{25}
+\indexentry{URL!instead of file name}{26}
+\indexentry{file name!use URL instead}{26}
+\indexentry{API!list of OPeNDAP\xspace  supported}{27}
+\indexentry{linking\nobreakspace  {}client programs with OPeNDAP\xspace  }{29}
+\indexentry{configuration!user programs(relinking)}{29}
+\indexentry{user programs!configuring}{29}
+\indexentry{DODS!configuring}{29}
+\indexentry{re-link|see{linking}}{29}
+\indexentry{converting to OPeNDAP\xspace  }{29}
+\indexentry{DODS!conversion}{29}
+\indexentry{libraries!necessary for OPeNDAP\xspace  }{29}
+\indexentry{World Wide Web!library}{29}
+\indexentry{expect!library}{29}
+\indexentry{Tcl!library}{29}
+\indexentry{stdc++}{29}
+\indexentry{libstdc++}{29}
+\indexentry{distribution directory|see{{\tt  DODS\_ROOT}}}{30}
+\indexentry{master directory|see{{\tt  DODS\_ROOT}}}{30}
+\indexentry{environment variable!DODS\_ROOT}{30}
+\indexentry{variable!environment}{30}
+\indexentry{linking!problems}{30}
+\indexentry{problems!linking}{30}
+\indexentry{troubleshooting!linking}{30}
+\indexentry{gcc}{30}
+\indexentry{size!of OPeNDAP\xspace  programs}{31}
+\indexentry{problems!size}{31}
+\indexentry{troubleshooting!size of executable}{31}
+\indexentry{API!data output functions}{31}
+\indexentry{data!output functions}{31}
+\indexentry{writing new programs}{32}
+\indexentry{new programs!writing}{32}
+\indexentry{DODS!writing new programs}{32}
+\indexentry{native API}{32}
+\indexentry{API!native}{32}
+\indexentry{protocol!data access}{32}
+\indexentry{Data Access Protocol}{32}
+\indexentry{constraint expression|emph}{34}
+\indexentry{constraint expression!syntax}{34}
+\indexentry{syntax!constraint expression}{34}
+\indexentry{projection|emph}{34}
+\indexentry{constraint expression!projection}{34}
+\indexentry{selection|emph}{34}
+\indexentry{constraint expression!selection}{34}
+\indexentry{projection}{34}
+\indexentry{constraint expression!examples}{36}
+\indexentry{Data Descriptor Structure!example}{36}
+\indexentry{example!DDS}{36}
+\indexentry{\&}{37}
+\indexentry{constraint expression!combining clauses}{37}
+\indexentry{constraint expression!boolean functions}{37}
+\indexentry{boolean functions}{37}
+\indexentry{OR}{37}
+\indexentry{selection!arrays}{37}
+\indexentry{constraint expression!arrays}{37}
+\indexentry{array!constraint expression}{37}
+\indexentry{array!selection}{37}
+\indexentry{stride|emph}{37}
+\indexentry{hyperslab|emph}{37}
+\indexentry{selection!hyperslab}{37}
+\indexentry{constraint expression!hyperslab}{37}
+\indexentry{selection!stride value}{37}
+\indexentry{constraint expression!stride value}{37}
+\indexentry{{\tt  *}}{38}
+\indexentry{.}{38}
+\indexentry{$[]$}{38}
+\indexentry{nth()}{39}
+\indexentry{member()}{39}
+\indexentry{functions}{39}
+\indexentry{constraint expressions!functions}{39}
+\indexentry{OPeNDAP\xspace  server!functions}{39}
+\indexentry{usage service}{39}
+\indexentry{OPeNDAP\xspace  server!usage}{39}
+\indexentry{function!usage}{39}
+\indexentry{constraint expression!function}{39}
+\indexentry{Service!Usage}{39}
+\indexentry{info service@{\tt  info} service}{39}
+\indexentry{OPeNDAP\xspace  server!{\tt  info}}{39}
+\indexentry{function!{\tt  info} service}{39}
+\indexentry{URL!in constraint expression}{39}
+\indexentry{constraint expression!URL}{39}
+\indexentry{dereference}{39}
+\indexentry{{\tt  *}}{39}
+\indexentry{regular expression}{41}
+\indexentry{matching character strings}{41}
+\indexentry{character strings!matching}{41}
+\indexentry{regex, see regular expression}{41}
+\indexentry{shark!sighting}{41}
+\indexentry{sighting!shark}{41}
+\indexentry{regular expression!syntax}{41}
+\indexentry{syntax!regular expression}{41}
+\indexentry{special character|see{regular expression}}{42}
+\indexentry{character!special|see{regular expression}}{42}
+\indexentry{Emacs}{42}
+\indexentry{optimization}{42}
+\indexentry{query optimization}{42}
+\indexentry{constraint expression!optimization}{42}
+\indexentry{search optimization}{42}
+\indexentry{data search!optimization}{42}
+\indexentry{lazy evaluation}{42}
+\indexentry{evaluation!lazy}{42}
+\indexentry{constraint expression!parse order}{42}
+\indexentry{parse order!constraint expression}{42}
+\indexentry{precedence}{42}
+\indexentry{URL!optimization}{43}
+\indexentry{translation!introduction}{44}
+\indexentry{data translation|see{translation}}{44}
+\indexentry{data format!incompatible}{44}
+\indexentry{format!data}{44}
+\indexentry{architecture!server}{48}
+\indexentry{server!architecture}{48}
+\indexentry{entry points|emph}{48}
+\indexentry{data dictionary!JGOFS}{49}
+\indexentry{JGOFS!data dictionary}{49}
+\indexentry{server!services}{49}
+\indexentry{OPeNDAP\xspace  services}{49}
+\indexentry{services!helper programs}{49}
+\indexentry{service}{49}
+\indexentry{server!installing}{53}
+\indexentry{installing!server}{53}
+\indexentry{server!configuration}{54}
+\indexentry{configuration!server}{54}
+\indexentry{server!configuration}{54}
+\indexentry{configuration!server}{54}
+\indexentry{installation!server}{54}
+\indexentry{documenting data}{54}
+\indexentry{data!documenting}{54}
+\indexentry{service!info}{54}
+\indexentry{info!service}{54}
+\indexentry{server!testing}{55}
+\indexentry{testing an OPeNDAP\xspace  server}{55}
+\indexentry{geturl}{55}
+\indexentry{WWW Interface}{56}
+\indexentry{GUI|see{graphic user interface}}{57}
+\indexentry{graphic user interface}{57}
+\indexentry{graphic user interface!architecture}{57}
+\indexentry{progress indicator}{57}
+\indexentry{GUI manager|emph}{57}
+\indexentry{manager!GUI}{57}
+\indexentry{Tcl!interpreter subprocess}{57}
+\indexentry{wish inter@{\tt  wish} interpreter subprocess}{57}
+\indexentry{graphic user interface!error system}{58}
+\indexentry{error system}{58}
+\indexentry{message!error}{58}
+\indexentry{data!model}{64}
+\indexentry{model!data}{64}
+\indexentry{data model|emph}{64}
+\indexentry{type constructors}{66}
+\indexentry{Dataset Descriptor Structure}{66}
+\indexentry{API}{66}
+\indexentry{Application Program Interface}{66}
+\indexentry{hyperslab|emph}{66}
+\indexentry{DAP|see{Data Access Protocol}}{69}
+\indexentry{Protocol!Data Access}{69}
+\indexentry{intermediate data representation}{69}
+\indexentry{data!intermediate representation}{69}
+\indexentry{transport|see{Data Access Protocol}}{69}
+\indexentry{Data Access Protocol}{69}
+\indexentry{ancillary data}{69}
+\indexentry{Data Description Structure|emph}{69}
+\indexentry{Data Attribute Structure|emph}{69}
+\indexentry{API}{69}
+\indexentry{transmission format}{70}
+\indexentry{constructor types}{71}
+\indexentry{data type!list}{72}
+\indexentry{List!data type}{72}
+\indexentry{list}{72}
+\indexentry{array}{72}
+\indexentry{data type!array}{72}
+\indexentry{array!data type}{72}
+\indexentry{hyperslab|emph}{72}
+\indexentry{array!hyperslab}{72}
+\indexentry{stride|emph}{72}
+\indexentry{array!stride}{72}
+\indexentry{dataset}{73}
+\indexentry{structure!data type}{73}
+\indexentry{data type!structure}{73}
+\indexentry{sequence!data type}{73}
+\indexentry{data type!sequence}{73}
+\indexentry{state|emph}{73}
+\indexentry{sequence!state}{73}
+\indexentry{Grid}{74}
+\indexentry{grid!data type}{74}
+\indexentry{data type!grid}{74}
+\indexentry{irregular data}{74}
+\indexentry{data!irregular spacing}{74}
+\indexentry{operators}{75}
+\indexentry{*}{75}
+\indexentry{external representation}{76}
+\indexentry{gzip}{78}
+\indexentry{compression!of data}{78}
+\indexentry{data!compression}{78}
+\indexentry{ancillary data|emph}{79}
+\indexentry{data!ancillary}{79}
+\indexentry{metadata|emph}{79}
+\indexentry{Dataset Description Structure|emph}{79}
+\indexentry{DDS|see{Dataset Descriptor Structure}}{79}
+\indexentry{data!descriptor}{79}
+\indexentry{Dataset}{79}
+\indexentry{ancillary data}{80}
+\indexentry{\#}{80}
+\indexentry{DDS!comments}{80}
+\indexentry{Dataset Attribute Structure|emph}{80}
+\indexentry{DAS}{80}
+\indexentry{ancillary data}{81}
+\indexentry{\#}{83}
+\indexentry{DAS!comments}{83}
+\indexentry{alias|emph}{84}
+\indexentry{attribute!alias}{84}
+\indexentry{global attribute|emph}{84}
+\indexentry{attribute!global}{84}
+\indexentry{ftp}{90}
+\indexentry{DODS\_ROOT}{91}
+\indexentry{initialization file}{93}
+\indexentry{client initialization}{93}
+\indexentry{client!initialization}{93}
+\indexentry{initialization!client}{93}
+\indexentry{dodsrc file@{\tt  .dodsrc} file}{93}
+\indexentry{startup file}{93}
+\indexentry{caching!client}{93}
+\indexentry{client!caching}{93}
+\indexentry{data requests!caching}{93}
+\indexentry{expiration date}{94}
+\indexentry{date!expiration}{94}
+\indexentry{proxy server}{94}
+\indexentry{server!proxy}{94}
+\indexentry{configuration!proxy server}{94}
+\indexentry{libstdc++}{99}
+\indexentry{stdc++}{99}

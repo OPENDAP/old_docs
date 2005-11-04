@@ -1,0 +1,48 @@
+$Id$
+
+About  UPDATING DATASETS:
+The MANIFEST, a list of datasets available through the browser, is 
+automatically re-generated each time you update the browser.  It is 
+a list of the files necessary for the browser to find and download
+datasets over the Web.
+
+The first entry on each line of the manifest is the name of the 
+'archive.m' file for that dataset  -- an archive.m file is simply a 
+Matlab script with some metadata about a particular dataset and some 
+information about how and where it is stored.
+
+For example, the archive.m file for the declouded Hatteras to Nova Scotia 
+1.1km resolution AVHRR dataset is called 'htn_decld.m'.  You will find 
+this script in the browser subdirectory DATASETS.
+
+When you push one of the 'update dataset' buttons, the browser downloads 
+a new MANIFEST file, and reads each line.  If the item read is the first 
+one on the line, the browser assumes it is an archive.m file, fetches it 
+across the Web, and attempts to parse it.
+
+The dataset ranges, what variables it contains, and the specific Matlab 
+function serves as an interface between DODS and the browser (called the 
+'getxxx' function) are all contained in the archive.m.
+
+Once the browser has successfully fetched and parsed the archive.m file 
+for that dataset, it looks at which getxxx function this dataset must have 
+to run.  This information is contained in the archive.m variable 
+'GetFunctionName'.  Some datasets share getxxx functions (for example, 
+many gridded datasets can use the same getxxx function); if the browser 
+does not have that particular getxxx function it fetches it.
+
+Next the browser goes on to look for other arguments on the same line of 
+the manifest.  These will be extra routines that are necessary for that 
+dataset to be used within the browser -- for example some special scripts 
+converting decimal time (e.g., 1997.6324) to year, month and day, and
+other things like that.
+
+The browser fetches each of these files in turn, if there are any.
+
+Dataset ranges (geographic, time and depth) the variables they contain, and 
+the name of the archive.m and getxxx function for each one are stored 
+INTERNALLY in the browser.  That is, it does not check the manifest each 
+time you start it up, nor does it check the ranges in the archive.m, EXCEPT 
+WHEN UPDATING.  "Update dataset list" is the ONLY way to force those ranges 
+to change.  The "ALL" option is the only way to update the ranges of datasets
+already in your browser's list.

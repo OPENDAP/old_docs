@@ -1,0 +1,108 @@
+% $Id$
+%
+% $Log: aisbreakout.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+(Session leader: James Gallagher, notes by: John Chamberlain.
+Participants included: James Gallagher, John Chamberlain, John Caron,
+Tom Sgouros, Jon Callahan, Nathan Potter, Ted Habermann, Peter
+Cornillon, guy from North Carolina, Paul Hemenway.)
+
+Here are the minutes of the Breakout session:
+
+Caron: described NCML implementation, noting in particular that it was
+entirely in Java and that sub-setting was not supported yet.
+
+Gallagher: AIS implementation currently entirely in C++ in the DAP core
+
+Caron: NCML and AIS are functionally the same so we should consider
+taking the best ideas from both designs and come up with a common
+framework; he expressed admiration for the databse / pattern matching
+capability of the AIS
+
+Sgouros: suggest feature of an audit trail; this would allow the user
+to be able to determine which attributes were added and would allow
+the user to know what the original attributes were; would go a long
+way to allaying the anticipated resistance by some critics to allow
+metadata to be redefined.
+
+Callahan: think the AIS should support attributes of convention and
+version (such as COARDS) so that user does not have to scan the
+structure to know if it is COARDS-compliant; also, the AIS should have
+good documentation with extensive examples so that users are not
+defining metadata in a vacuum.
+
+Gallagher: the plan is provide validators
+
+Potter: must be able to support not just one convention attribute but a
+list of supported conventions; am totally against the use of DTDs
+[general agreement that DTDs are bad]
+
+Gallagher: the validators might only validate specific things like
+conventions and would not be done by DTD but by a user proactively
+running an external program that would do the validation; in addition to
+convention validators we could also have application validators such a
+program to verify that a ddx was Matlab-compliant for example.
+
+Ted:  My concern is that we integrate existing metadata repositories
+such as GCMD (DIF), FGOC, DC.
+
+Callahan: DIFs are search metadata, not data metadata. We can build in a
+reference to existing ontologies.
+
+Gallagher: My general plan is to implement outside ontologies by having
+them go through a gateway which would convert them to a DDX-compatible
+format which would then allow them to be integrated like any other AIS
+information.
+
+Ted: What about field-by-field queries where you specify a single
+location by ...
+
+Chamberlain:  xpath for example
+
+Ted: Right, basically showing the location of a single field in the
+ontology.
+
+Gallagher: AIS isn't meant to be a query and response system. Basically
+you have to merge an entire set of semantic information. You can't just
+query one item.
+
+Caron: [seconds Gallagher] The conversion/gateway mechanism makes sense
+for external ontologies.
+
+Callahan: Can NCML add additional complex structures [as opposed to
+simple string attributes]?
+
+Gallagher: AIS can support any metadata that can be expressed in DAP
+form. For example, to include a GIF you could store it as a short array
+(of bytes) or you could store a file path to the GIF as a string. You
+can store complex structures in DAP Structures just like any other data.
+
+Caron: One desired capability for the NCML/THREDDS is to allow a file to
+be uploaded onto a receptive server; this could be done for AIS also to
+allow users to store their metadata for use by others.
+
+Gallagher: That is an important feature. We are also looking at
+peer-to-peer mechanisms for sharing metadata files.
+
+Chamberlain: The name "Ancillary Information Service" may be too vague.
+What is the consensus on possible other names with more specific
+meaning, for example using words "semantic", "definitional", "ontology"
+etc? [general consensus is that more specific words receive political
+backlash and the existing name is OK with everybody]
+
+Caron/Cornillon:  discussion of C++/Java issue; conclusions were that it
+is OK to have some redundancy such as dual solutions in C++ and Java and
+that it would be difficult to use Java across the board.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

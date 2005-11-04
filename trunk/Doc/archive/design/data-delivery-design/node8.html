@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Building the DAS and DDS filter programs</TITLE>
+<META NAME="description" CONTENT="Building the DAS and DDS filter programs">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="next" HREF="node9.html">
+<LINK REL="previous" HREF="node7.html">
+<LINK REL="up" HREF="node7.html">
+<LINK REL="next" HREF="node9.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html210"
+  HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html206"
+  HREF="node7.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html200"
+  HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html208"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html211"
+  HREF="node9.html">Building the Data Read</A>
+<B> Up:</B> <A NAME="tex2html207"
+  HREF="node7.html">Construction of the Data</A>
+<B> Previous:</B> <A NAME="tex2html201"
+  HREF="node7.html">Construction of the Data</A>
+ &nbsp; <B>  <A NAME="tex2html209"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00032100000000000000">
+Building the DAS and DDS filter programs</A>
+</H3>
+
+<P>
+The three programs which comprise a DODS data server can be spearated into
+two groups, one which provides access to `metadata' and one which reads
+data variables from the data set. The DAS and DDS are used by the DAP to
+transfer information about the data set to the client. As described in
+``<A NAME="tex2html45"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-arch/data-delivery-arch.html">DODS--Data Delivery Architecture</A>'', the client must decode these structures and use some of the
+information in orchestrating variable reads. While the DAS and DDS contain
+information that is semantically distinct, the process of building these two
+structures is almost identical.
+
+<P>
+Figure&nbsp;<A HREF="#fig:server-das"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> shows a structure chart for the modules that
+build the DAS<A NAME="tex2html43"
+  HREF="footnode.html#foot512"><SUP>7</SUP></A>. In order to build the DAS object, the DAS program must
+parse the parameters passed to the CGI. Once the parameters have been parsed,
+the program must build a DAS object. The construction of the DAS object can
+be simplified by using the DODS <A NAME="tex2html46"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html">Client and Server Toolkit</A> software. This software handles
+the reading data set attribute information stored in the ancillary files (see
+the DAP section on ancillary data) and integrating it with information that
+is already part of the DAS object. The toolkit also contains
+contains software which builds an ASCII text representation of the DAS for
+transmission to the client.
+
+<P>
+In order to completely build the DAS it is, in general, necessary to read the
+data set using whatever mechanism is natural for those operations. In many
+cases, data sets which are part of DODS will be accessible using an
+established API. Thus, part of the DAS data server program must use the data
+set's API to read information about the variable's attributes (as defined by
+the <A NAME="tex2html47"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A>) and record them in the DAS object. The <A NAME="tex2html48"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html">client and server toolkit</A> software contains
+DAS object member functions which simplify this task somewhat, but people who
+intend to build the DAS program must learn both what type of information is
+stored in the DAS object as well as how to read that information using the
+data set's API.
+
+<P>
+The construction of the DDS is essentially similar to that of the DAS. The
+real difference between these two programs is in the content of the object
+which they build and send to the client. Thus, the only functional difference
+is in the specific API function calls used to build the object.
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:server-das"></A><A NAME="515"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+Structure Chart for the Data set Attribute Structure Server Program.</CAPTION>
+<TR><TD><IMG
+ WIDTH="119" HEIGHT="14" BORDER="0"
+ SRC="img5.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=server-das.ps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html210"
+  HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html206"
+  HREF="node7.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html200"
+  HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html208"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html211"
+  HREF="node9.html">Building the Data Read</A>
+<B> Up:</B> <A NAME="tex2html207"
+  HREF="node7.html">Construction of the Data</A>
+<B> Previous:</B> <A NAME="tex2html201"
+  HREF="node7.html">Construction of the Data</A>
+ &nbsp; <B>  <A NAME="tex2html209"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

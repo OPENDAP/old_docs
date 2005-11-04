@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Reading the Values of Variables from a Data Set</TITLE>
+<META NAME="description" CONTENT="Reading the Values of Variables from a Data Set">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="next" HREF="node18.html">
+<LINK REL="previous" HREF="node16.html">
+<LINK REL="up" HREF="node14.html">
+<LINK REL="next" HREF="node18.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html324"
+  HREF="node18.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html320"
+  HREF="node14.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html314"
+  HREF="node16.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html322"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html325"
+  HREF="node18.html">Functions that Write to</A>
+<B> Up:</B> <A NAME="tex2html321"
+  HREF="node14.html">Client Library Functions</A>
+<B> Previous:</B> <A NAME="tex2html315"
+  HREF="node16.html">Getting Information about Variables</A>
+ &nbsp; <B>  <A NAME="tex2html323"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00041300000000000000">
+Reading the Values of Variables from a Data Set</A>
+</H3>
+
+<P>
+Reading variables from a data set is the last type of API function which
+requires serious attention. In order to accomplish this task, the API
+functions which read data must be identified and modified to use data
+gathered in the objects which are part of the DDS object. However, before any
+of the variable-type objects in the DDS can contain any information a request
+to read one or more variables must be issued to the remote data server.
+
+<P>
+In order to read the contents of a variable from the data set into the
+appropriate object within the DDS, the API read function(s) must be rewritten
+so that any information needed to build the correct URL is retrieved from the
+DDS. Once the URL has been built it is used to access a MIME document which
+contains, in binary form, the data in the variable. This information is then
+added to the correct object in the DDS. The read function then reads this
+information and returns it to the calling program.
+
+<P>
+All binary (i.e., variable value) information transferred by DODS is
+transfered as multipart <A NAME="tex2html66"
+  HREF="http://www.cis.ohio-state.edu/htbin/rfc/rfc1590.html">Multipurpose Internet Mail Extensions</A> documents. These documents contain a text
+description of the data type and the binary representation of the variable's
+value (the later is encoded using Sun's External Data Representation (XDR)
+standard). Once the binary data is received by the client library, it is
+transformed, using functions from the XDR library, from XDR's canonical
+network representation to the local machine's representation. This binary
+information is then stored in the object with the DDS. Thus, while binary
+information is transferred from server to client using XDR, the binary
+information stored in the DDS is in the client CPU's representation.
+
+<P>
+The DODS <A NAME="tex2html67"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html">client and server toolkit</A> provide <FONT SIZE="-1">C</FONT><FONT SIZE="-1">++</FONT> software which can be used to simplify
+reading variables and decoding the XDR-encoded binary data. However, each
+client library must provide code which extends the client and server tool kit
+class library to handle any special formatting/typecasting requirements of a
+particular API.
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:client-read"></A><A NAME="569"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+Structure Chart for the Data Read Functions in a DODS Client Library</CAPTION>
+<TR><TD><IMG
+ WIDTH="169" HEIGHT="14" BORDER="0"
+ SRC="img10.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=client-read.ps,width=6in}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html324"
+  HREF="node18.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html320"
+  HREF="node14.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html314"
+  HREF="node16.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html322"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html325"
+  HREF="node18.html">Functions that Write to</A>
+<B> Up:</B> <A NAME="tex2html321"
+  HREF="node14.html">Client Library Functions</A>
+<B> Previous:</B> <A NAME="tex2html315"
+  HREF="node16.html">Getting Information about Variables</A>
+ &nbsp; <B>  <A NAME="tex2html323"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

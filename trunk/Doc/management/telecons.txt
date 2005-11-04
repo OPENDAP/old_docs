@@ -1,0 +1,17 @@
+	
+	$Id$
+
+To set up a telecon, call AT&T at 800.232.1234 and tell them the time and
+number of people.
+
+For the developer's telelcon:
+
+Deirdre Byrne: Office: 207.581.4324, Home: 207.525.4491 please call both
+James Gallagher: Office/Home: 541.752.7499
+Lynn Halpern: Office: 301.441.4269, Home(?): 301.698.4161
+Dan Holloway: Office: 401.874.6831
+Reza Nekovei: Office/Home: 512.808.9866
+Tom Sgourous: Office: 401.874.6677, Desk: 401.874.6677
+Kwoklin Lee: Office: ?
+Richard Chinman: Office: 303.497.8696
+Ethan Davis: Office: 303.497.8155

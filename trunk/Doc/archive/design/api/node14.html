@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Data Access Protocol Entry Points</TITLE>
+<META NAME="description" CONTENT="Data Access Protocol Entry Points">
+<META NAME="keywords" CONTENT="api">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="api.css">
+
+<LINK REL="previous" HREF="node13.html">
+<LINK REL="up" HREF="node5.html">
+<LINK REL="next" HREF="node15.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html244"
+  HREF="node15.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html240"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html236"
+  HREF="node13.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html242"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html245"
+  HREF="node15.html">Conclusion</A>
+<B> Up:</B> <A NAME="tex2html241"
+  HREF="node5.html">Design</A>
+<B> Previous:</B> <A NAME="tex2html237"
+  HREF="node13.html">Dataset Attribute Structure</A>
+ &nbsp; <B>  <A NAME="tex2html243"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00056000000000000000"></A>
+<A NAME="entry"></A>
+<BR>
+Data Access Protocol Entry Points
+</H2>
+
+<P>
+The DAP is a stateless protocol. Each of the DAP's entry points (i.e., the
+messages a data server will respond to) does a single isolated job and they
+can be issued in any order (although in many applications it will not make
+sense to get the values for a variable before finding out the name of the
+variable ...). The stateless nature of the DAP fits well within the
+context of the data delivery system described in <A NAME="tex2html32"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-arch/data-delivery-arch.html">DODS--Data Delivery Architecture</A>.  In that paper a
+client-server architecture for remote access is described which relies on the
+HTTPD/CGI mechanism to build a data server. One implementation of that
+architecture is described in <A NAME="tex2html33"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-design/data-delivery-design.html">DODS--Data Delivery Design</A> uses three CGI modules, one of each of the
+three DAP entry points.
+
+<P>
+In this paper we talk about messages to the data server as if it is a
+stateful server like <TT>ftpd</TT>. However, that is merely a convient way to
+phrase the discussion of the DAP--in fact the data server is a stateless
+machine accessed by getting the value of a URL. 
+
+<P>
+Each DODS data server must respond to three URLs; one for each of the objects
+(DAS, DDS and variable) which the server returns. These URLs are formed by
+appending a suffix to the base URL which references the data set. In
+addition, individual variables may be accessed using the constraint
+expression mechanism described here. The paper <A NAME="tex2html34"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/urls/urls.html">DODS--Uniform Resource Locator</A> conatins more
+information on this scheme.
+
+<P>
+Two messages are provided to access the data set descriptor structure (DDS)
+and the data set attribute structure (DAS). The response to these messages
+is text formated using the respective grammars in
+Tables&nbsp;<A HREF="node13.html#tab:DAS"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>&nbsp;and&nbsp;<A HREF="node12.html#tab:DDS"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>. This text can then be parsed by the
+caller to determine the structure of the data set, types and sizes of each of
+its components and their attributes. These structures are derived both from
+information contained in the data set and for ancillary information supplied
+by the data set maintainers in separate text files (in the <A NAME="tex2html35"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-design/data-delivery-design.html">data delivery design</A> the origin
+of these structures is described in detail). They provide information that is
+often referred to as `metadata' and may be cached by the client system.
+Future accesses to the same data set can then skip the retrieval of these
+structures.
+
+<P>
+All variables are read from a data set individually using a single `read'
+message. The message must include the name of the variable to read, and
+optionally, may include an expression that describes the range of values
+desired. No other information need be sent to the server. In response to this
+message the value(s) of the variable(s) is/are then sent back to the client.
+Base type variables return only a single value when accessed, but other types
+may return more values. For example, a <TT>structure</TT> with three <TT>int32</TT>
+and two <TT>float64</TT> members will return five values (unless an expression
+constrains the access).
+
+<P>
+One important capability of the DODS API, which it inherits from JGOFS, is
+the ability to set constraints on variables (JGOFS calls this `using
+selection and projection' operators).  Constraints are used to control the
+values and/or members of constructor types that are returned when a variable
+is accessed. For some data sets and some variables, constraints make little
+or no difference in how the variables are accessed.  However, for certain
+types of data, constraining access can vastly reduce the amount of data the
+application needs to process and, in DODS case, transmit over the network.
+
+<P>
+<A NAME="api:constraints"></A>Constraint expressions provide more flexibility in the way data is accessed.
+In a data set with many interrelated variables, or with very large variables,
+these expressions are a way for the user program to move some of the complex
+logic needed to search data, in order to find those data with some desired
+set of properties, away from the user program and into the data supply
+system.  Different types of constraint expressions make sense for different
+types of data. The grammar for constraint expressions is given in
+Table&nbsp;<A HREF="#api:tab:expr"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>.  In the table <EM>Operator</EM> is one of the
+variable-class dependent operators listed in Table&nbsp;<A HREF="node10.html#api:tab:class-ops"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>,
+<TT>!</TT> is boolean <EM>not</EM> and <TT>&amp;</TT> is boolean <EM>and</EM>.
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER">
+
+<A NAME="api:tab:expr"></A>
+<DIV ALIGN="CENTER">
+<A NAME="813"></A>
+<TABLE CELLPADDING=3 BORDER="1">
+<CAPTION><STRONG>Table:</STRONG>
+Constraint Expression Syntax</CAPTION>
+<TR><TD ALIGN="LEFT"><EM>expression</EM></TD>
+<TD ALIGN="LEFT"><EM>projection</EM> <EM>selection </EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><EM>projection</EM></TD>
+<TD ALIGN="LEFT"><EM>variable</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><EM>variable</EM> <TT>,</TT> <EM>projection</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><IMG
+ WIDTH="103" HEIGHT="12" ALIGN="BOTTOM" BORDER="0"
+ SRC="img10.png"
+ ALT="$\delta$"></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><EM>selection</EM></TD>
+<TD ALIGN="LEFT"><EM>variable</EM> <EM>operator</EM> <EM>value</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><EM>variable</EM> <EM>operator</EM> <EM>variable</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><IMG
+ WIDTH="103" HEIGHT="12" ALIGN="BOTTOM" BORDER="0"
+ SRC="img10.png"
+ ALT="$\delta$"></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><EM>compound-sel</EM></TD>
+<TD ALIGN="LEFT"><EM>selction</EM> <EM>boolean-op</EM> <EM>compound-sel</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><TT>!</TT> <EM>selection</EM> <EM>compound-sel</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><EM>selection</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><EM>boolean-op</EM></TD>
+<TD ALIGN="LEFT"><TT>&amp;</TT></TD>
+</TR>
+</TABLE>
+</DIV>
+</DIV>
+<BR>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html244"
+  HREF="node15.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html240"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html236"
+  HREF="node13.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html242"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html245"
+  HREF="node15.html">Conclusion</A>
+<B> Up:</B> <A NAME="tex2html241"
+  HREF="node5.html">Design</A>
+<B> Previous:</B> <A NAME="tex2html237"
+  HREF="node13.html">Dataset Attribute Structure</A>
+ &nbsp; <B>  <A NAME="tex2html243"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

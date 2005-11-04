@@ -1,0 +1,78 @@
+
+	$Id$
+
+Objective: Remove dependence on GNU libg++
+
+How: 1) Move libg++ code currently used into the core itself
+     2) Switch from the GNU to the ANSI library.
+
+I. Moving GNU libg++ code into the DODS core software
+
+Created a directory, GNU, to hold the .h and .cc files.
+Modified the Makefile to use them.
+Replaced some uses of libg++ with stdc++ (min/max).
+Added librx to packages and -lrx to LIBS in the Makefile
+
+Still to do: Modify all Makefile.in
+	     Test with all servers
+
+II. Switch from the GNU to the ANSI libraries
+
+Things that need to be fixed:
+
+    1) Variables that are String must be string.
+    2) String operators must be redone.
+    3) String.XPlex objects must become vector<string> objects. 
+       a) Replace declarations
+       b) "	  Ops
+       c) "	  Pixs with forward iterators
+
+DAP headers that include String:
+
+    AttrTable.h:132:#include <String.h>
+    BaseType.h:262:#include <String.h>
+    Connect.h:204:#include <String.h>
+    DDS.h:153:#include <String.h>
+    DODSFilter.h:28:#include <String.h>
+    DataDDS.h:36:#include <String.h>
+    Gui.h:57:#include <String.h>
+    Str.h:159:#include <String.h>
+    Url.h:115:#include <String.h>
+    expr.h:52:#include <String.h>
+
+DAP C++ source files that include String:
+
+    DAS.cc:128:#include <String.h>
+    DODSFilter.cc:38:#include <String.h>
+    DataDDS.cc:39:#include <String.h>
+    Gui.cc:86:#include <String.h>
+    String.cc:25:#include <String.h>
+    TestStr.cc:81:#include <String.h>
+    TestUrl.cc:74:#include <String.h>
+    cgi_util.cc:161:#include <String.h>
+    das-test.cc:98:#include <String.h>
+    escaping.cc:69:#include <String.h>
+    expr-test.cc:103:#include <String.h>
+    geturl.cc:137:#include <String.h>
+    usage.cc:50:#include <String.h>
+    util.cc:255:#include <String.h>
+
+Other classes that will need to be replaced:
+
+    SLList
+    DLList
+    Map
+    Vec
+    Stack	
+
+Strategy: Replace String.XPlex first. Then look at SLList, DLList. Once that
+is done evaluate switching the Map, Vec and Stack classes and the String
+class.
+
+Replacing Pix with STL iterators or int indeces: Pix is used 252 times in the
+core and 257 times in the components.
+
+[dcz:/usr/local/DODS/src/dap] ls -l AttrTable.o 
+-rw-rw-r--   1 jimg     staff     105508 Jul 14 17:28 AttrTable.o
+
+

@@ -1,0 +1,122 @@
+Since the minutes of the breakout session are somewhat confused, here
+is a distillation of what we perceive to have been the main thrusts of
+discussion. 
+
+\begin{itemize}
+\item The specification documents should contain detailed information about the
+  interactions that take place within the protocol, as well as the
+  cirrent details about the data model.  State diagrams would be
+  useful to document how requests are processed and responses are generated.
+  For example, when a request is received, at what point(s) can an error
+  object be returned in place of the requested object?
+
+\item Error delivery must be guaranteed. The biggest problem is that errors
+  discovered while sending data are impossible to deliver using the current
+  protocol. It may be that the organization of the data response document
+  needs to be changed so that reliable error delivery is achieved.
+
+\item To complete the separation of the DAP from transport protocols, we must
+  specify the `headers' now used by requests and responses and make those
+  part of the DAP, in some way. One way to do this is to define all requests
+  and responses in XML and include tags for the information now contained in
+  the headers. This would also serve as the basis for a lower level of
+  abstraction where both requests and responses could be more completely
+  defined, with an emphasis on making the request definition(s) on a par
+  with the definitions of the responses.
+
+\item All requests and responses in the DAP should be made using XML. The older
+  interface, which uses HTTP GET in most implementations, can be supported
+  without much effort as a special case of the more general XML forms.
+
+\item Document each `service' separately and make www.opendap.org the official
+  site/registry for these services and their documentation. Background:
+  The current suite of planned documentation for version 4 contains two
+  volumes: one for the data model, constraints and objects and one for the
+  services. These volumes correspond roughly to the transport-independent and
+  -dependent parts of the DAP. Really, the first document \emph{is} the DAP while
+  the second is other stuff that's used by various implementations to make
+  things like a web server that happens to be a DAP server, too, work the way
+  people expect them to work.
+
+\item Modify the DAP to better support server-side analysis. A client should be
+  able to specify a sequence of processing steps, and this seems to be the
+  place to add support for server-side analysis. A client should also be able
+  to make requests for several data sets served by a single server.
+  Furthermore, server directives should also be possible (such as `compress
+  the response', etc.). If a request is sent to a server using XML, then
+  these things should be easy to implement. It should also be easy to
+  transform a request made in the current syntax (URL/HTTP-GET) into this new
+  scheme.
+
+\item Things we should express in XML (this is effectively a list of things that
+  should be in the DAP and not a service): 
+
+  \begin{itemize}
+  \item Dataset structure, 
+  \item Dataset attribute, 
+  \item Data values (although this need not be the primary way to get
+    values), 
+  \item Sub-setting constraints, 
+  \item Service identifiers, 
+  \item Errors, 
+  \item Service requests, 
+  \item Behavioral directives, 
+  \item Post-processing directives, 
+  \item Deltas (e.g.  AIS).
+  \end{itemize}
+  
+  Another way of thinking of this is to say that we should be able to
+  request: names of datasets, variable names for a given dataset, data for
+  variables and a server manifest. The lists are slightly different, but the
+  basic concepts are the same. The differences also illustrate the degree of
+  latitude present in developing a design. [The second list is from a
+  conversation with Joe W after the breakout. jhrg]
+
+\item Consider adding ragged arrays. Intention: Support Sequence-like variables
+  which cannot be constrained. This would provide a way for a client to know
+  that it cannot select using certain variables. This is an issue with some
+  relational databases of profile data. [From a conversation with Joe W after
+  the breakout. jhrg]
+
+\item Add a Permission Object to the set of XML things that a server can
+  manipulate. This would be used in conjunction with server-wide
+  authentication (which could be implemented using some third-party solution)
+  and could be used to limit access to specific resources within a server.
+  [From a conversation with Joe W after the breakout. jhrg]
+
+
+\item Other comments about the DAP:
+
+  \begin{itemize}
+  \item Eliminate the client-side validation of XML documents in the current Java
+    prototype.
+  \item Remove the * operator for URLs
+  \item Add access by record number for Sequences
+  \item Add selection by value for arrays
+  \item Add grid selection using map vectors [This might be hard if the maps are
+    added using the AIS. This is one instance of a general problem when
+    variables are added to a relational data type. It might be better to
+    build a front-end library that can perform these operations at the
+    client. jhrg]
+  \item Add some way to get data without having to get the global attributes for
+    the dataset (as is the case with the prototype code developed in
+    Java).
+  \item Use/include a checksum for the XML documents.
+  \end{itemize}
+\end{itemize}
+                                
+% $Id$
+%
+% $Log: dapspecconclusion.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

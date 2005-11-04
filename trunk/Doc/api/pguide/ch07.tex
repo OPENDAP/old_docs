@@ -1,0 +1,59 @@
+% Chapter 6 of the DODS Programmer's Guide
+%  A Server functional specification
+%
+% $Id$
+%
+% $Log: ch07.tex,v $
+% Revision 1.2  2000/10/04 15:00:23  tom
+% changed \figureplace definition, cleaning up...
+%
+% Revision 1.1  2000/03/21 22:04:33  tom
+% added server spec appendixes, fixed xref tags
+%
+%
+
+\chapter{Overview of the DODS Client}
+\label{pguide,client-arch}
+
+A DODS client is any web client that makes a service request to a DODS
+server.  Since several of the DODS services return ASCII and HTML
+data, any web browser, such as Netscape Navigator can be considered a
+DODS client, so long as it is in the process of making a suitable
+request to a DODS server.  The clients of interest in this appendix,
+however, are clients that use the DODS DAP (Data Access Protocol)
+library to make their requests for data.
+
+Of these clients, there are two varieties: clients that have been
+written expressly for DODS, and clients that existed in some form
+already, and that have been adapted to use with a DODS client
+library.  
+
+\figureplace[The Original Program]{The Original Program, untouched by
+  DODS.  The application's code accesses data by calls to the netCDF
+  library functions, linked with the program.  Data access is direct,
+  with the application program accessing local disk files to read
+  data.\htmlonly{\html{hr}}}{htb}{fig,orig-client}
+  {orig-client.ps}{orig-client.gif}{}
+
+\figureplace[The Modified Program]{The Modified Program, using the
+  DODS netCDF client library.  The application's code now accesses
+  data by calls to the DODS netCDF library functions.  These are
+  written to be functionally identical to the original netCDF
+  functions, but instead of using a local disk to retrieve data, this
+  library invokes functions from the DODS DAP library, which makes
+  HTTP GET requests to a DODS server.  The client code is unchanged.
+  \htmlonly{\html{hr}}}{htb}{fig,client-arch2}
+  {client-arch2.ps}{client-arch2.gif}{}
+
+\figureplace[Another Way]{Another Way.  An application program can
+  also call the DODS DAP directly, eliminating the need for a client
+  library.  When starting from scratch, this is probably easiest,
+  unless you are an old hand at one of the supported data access APIs.
+  \htmlonly{\html{hr}}}{htb}{fig,client-arch1}
+  {client-arch1.ps}{client-arch1.gif}{}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

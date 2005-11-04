@@ -1,0 +1,74 @@
+Report on the 12th Meeting of the CEOS/WGD/CS
+
+
+   Of interest to DODS;
+
+   International Directory Network (IDN) Activity
+	The IDN is in essence several replicated copies of the NASA Master
+Directory (aka GCMD) that are currently implemented in Japan, Italy, Canada
+and the US.
+
+    Lola Olson is the new manager of the Earth Science component of the MD.
+She gave a presentation which focused on 3 main issues:
+      1/ The need to populate the IDN.
+      2/ The need to revisit the IDN structure and implementation.
+      3/ Skinny DIFs.  Defining a required minimum set of information which
+         must be in a DIF.
+    
+    Privately Lola expressed to me that she felt that there are a significant
+    number of problems with the MD.  She intends to address these problems
+    including making the directory truly distributed, streamlining the DIF
+    generation process, possibly doing away with the current commercial DBMS
+    used by the MD and redesigning the user interface.  However, she needs to
+    move carefully on these issues.  While the IDN is not technically very
+    significant, it is politically significant in terms of international
+    coordination of data management activities.  Therefore it is prudent for
+    her not to spook the various parties involved with the IDN with NASA's
+    intention to unilaterally change the MD and thus the IDN.  To this end
+    Lola has requested that CEOS member nation should consider participating
+    on the MD advisory panel.
+
+    Lola is interested in working closely with the DODS project.  She would
+    like our input on changes to the structure and content of the DIF and to
+    the implementation of a distributed directory.  My sense is that she
+    would like to leverage changing the MD via our proposed work with the MD
+    as a directory server.
+
+
+EOSDIS V1 
+
+     Mark Elkington gave a presentation on the new conceptual model for the
+     EOSDIS v1 that Hughes will be building.  It is a data access system
+     which shares in common with DODS many of the same system components and
+     approaches.  In terms of development his team is really at the same
+     point as us working on the system design and trying to determine what
+     are the data models that need to be incorporated.  He will be sending to
+     me a complete set of the overheads that he has used in his
+     presentations to NASA management and advisory panels (the presentation
+     in Ottawa subsetted from these).  From what I saw at the CEOS meeting I
+     think we might be able to use some of his schematics to help us think
+     through some of the details of different components of the DODS system.
+     
+
+     He is very keen to learn more details of what we are doing and to
+     coordinate parts of his development effort with us.  Hughes would
+     benefit from our taking the lead in the prototyping of a distributed data
+     access system in 2 ways;  1/ They could learn from our mistakes (if we
+     make any!) 2/  They could point to the DODS system as a prototyping
+     effort outside of EOSDIS which is developing the type of system that
+     they want to build. (Interesting!!??).  Mark mentioned that it would be
+     feasible for Hughes to build some of the components for a DODS system if
+     they were also applicable to the EOSDIS system.  
+
+     Jim Gallagher would like to push for a March meeting with Hughes rather
+     than an April meeting.  He feels that in terms of his development
+     timetable the earlier date would allow us to get input to our design at
+     a point where it could be taken advantage of.  I originally suggested
+     the April time because Peter and I would be down in DC at that time for
+     CI.  Glenn let me know what you think and I will try to work it out with
+     Mark.  I would like to propose a teleconference with Mark and his people
+     and all of us for some time next week at which we could discuss when we
+     would get together and talk about how we might see cooperating in
+     general.
+
+George

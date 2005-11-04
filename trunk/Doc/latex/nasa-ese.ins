@@ -1,0 +1,69 @@
+%% $Id$
+%%
+%% $Log: nasa-ese.ins,v $
+%% Revision 1.1  2004/06/04 00:51:22  tomfool
+%% added
+%%
+%% Revision 1.2  2002/03/11 14:51:44  tom
+%% forgot to add CVS ID
+%%
+
+%% --------------- start of docstrip commands ------------------
+%%
+\def\batchfile{nasa-ese.ins}
+\input docstrip.tex
+\keepsilent
+\preamble
+
+Use the nasa-ese style for miscellaneous text that might turn into 
+something larger.
+
+\endpreamble
+
+\generateFile{nasa-ese.cls}{n}{%
+  \from{nasa-ese.dtx}{cls}}
+\generateFile{nasa-ese.hlx}{n}{%
+  \from{nasa-ese.dtx}{hlx}}
+\generateFile{nasa-ese.ist}{n}{%
+  \from{nasa-ese.dtx}{ist}}
+\usepreamble\empty
+\usepostamble\empty
+\generateFile{nasa-ese.css}{n}{%
+  \from{nasa-ese.dtx}{css}}
+\generateFile{ese-sample.tex}{n}{%
+  \from{nasa-ese.dtx}{example}}
+
+\ifToplevel{
+\Msg{***********************************************************}
+\Msg{* To finish the installation you have to move the following}
+\Msg{* files into a directory searched by TeX (or reset the }
+\Msg{* variable to point here):}
+\Msg{*}
+\Msg{* \space\space nasa-ese.cls}
+\Msg{*}
+\Msg{* And then move the following files into a directory} 
+\Msg{* searched by Hyperlatex:}
+\Msg{*}
+\Msg{* \space\space nasa-ese.hlx}
+\Msg{*}
+\Msg{* Edit out comments, then move the following file to }
+\Msg{*  a CSS serve location:} 
+\Msg{*}
+\Msg{* \space\space nasa-ese.css}
+\Msg{*}
+\Msg{* You can test the package by running LaTeX and hyperlatex}
+\Msg{*  on the following file:} 
+\Msg{*}
+\Msg{* \space\space ese-sample.tex}
+\Msg{*}
+\Msg{* To produce the documentation run the file `nasa-ese.dtx' }
+\Msg{* through LaTeX.}
+\Msg{*}
+\Msg{***********************************************************}
+}
+
+\endinput
+
+
+
+

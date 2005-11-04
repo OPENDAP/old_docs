@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- XML file produced from file: using-cvs.tex
+     using Hyperlatex v 2.6 (c) Otfried Cheong
+     on Emacs 21.3.1, Wed Jun 23 13:54:10 2004 -->
+<head>
+<title>Using CVS -- 6 Useful commands</title>
+
+<style type="text/css">
+.maketitle { align : center }
+div.abstract { margin-left: 20%; margin-right: 10%; }
+h3.abstract  { align : center }
+div.verse, div.quote, div.quotation {
+  margin-left : 10%; 
+  margin-right : 10%;
+}
+</style>
+
+<link rel=stylesheet
+        href="http://unidata.ucar.edu/packages/dods/css/dods-paper.css" type="text/css">
+</head>
+<body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="cvs_7.html"><img border="0" alt="A ChangeLog" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="cvs.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="cvs_5.html"><img border="0" alt="5 Merging" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>6 Useful commands</b></td></tr></table>
+<h1>6 Useful commands</h1>
+
+<h2><a name="id1">6.1 Shell macros</a></h2>
+<p>Here are some (Bourne) shell aliases I find useful:
+<dl><dt><b><CODE class="literal">cvss</CODE></b><dd> Show the status of any file that is not up to date in CVS.
+This is useful when you want to know which files have been changed.
+<p><pre class="it">
+alias cvss='cvs status 2&gt;&amp;1 | grep "'"^File\|Examining"'" | grep -v Up-to-date'
+</pre>
+<dt><b><CODE class="literal">cvsl</CODE></b><dd> This does the same thing as cvss, but for the current
+directory only.
+<p><pre class="it">
+alias cvsl='cvs status -l 2&gt;&amp;1 | grep "'"^File\|Examining"'" | grep -v Up-to-date'
+</pre>
+<dt><b><CODE class="literal">cvsu</CODE></b><dd> Show which files in the CWD are not in CVS. This is useful
+when you're adding files and you want to make sure that something has not
+been left out.
+<p><pre class="it">
+alias cvsu='cvs status -l 2&gt;&amp;1 | grep Unknown'
+</pre>
+<dt><b><CODE class="literal">cvsm</CODE></b><dd> Get the filename only of every file in the CWD that's
+changed since the last check in. You can use this with an editor to great
+advantage. For example:
+<p><pre class="it">
+     emacs `cvsm` 
+</pre>
+<p>Opens all the changed files. You can then use Emacs' CVS tools to look at the
+diffs, etc.
+<p><pre class="it">
+alias cvsm='cvsl | cut -f 2 -d " "'
+</pre>
+<dt><b><CODE class="literal">cvsc</CODE></b><dd> Which files in the CWD had conflicts on during the last
+merge operation? Note that this macro is also set up for use with an editor.
+<p><pre class="it">
+alias cvsc='cvsl | grep conflicts | cut -f 2 -d " "'
+</pre>
+</dl>
+
+<h2><a name="id2">6.2 CVS logs</a></h2>
+<p>Looking at logs (the stuff you write into <CODE class="literal">cvs commit</CODE>):
+<p><pre class="it">
+cvs log -N -l -d "&gt;1999-05-19" | more
+</pre>
+<p>Lists all the logs changed on or after 5/19/1999 (use <i>&lt;</i> for only after).
+The <CODE class="literal">-l</CODE> option suppresses recursive behavior and <CODE class="literal">-N</CODE> suppresses
+listing the symbolic tag names (which can be a long list for each file). When
+you're making a source release this can be an easy way to update the
+<CODE class="literal">ChangeLog</CODE> file.
+
+<h2><a name="id3">6.3 Adding files to a module</a></h2>
+<p>Adding files:
+<p><pre class="it">
+cvs add &lt;file&gt;|&lt;pattern&gt;
+</pre>
+<p>Adds the file or files. You must run <CODE class="literal">cvs commit</CODE> to actually add them to
+the repository.
+<p>Binary file:
+<p><pre class="it">
+cvs add -kb &lt;file&gt;|&lt;pattern&gt;
+</pre>
+<p>The <CODE class="literal">-kb</CODE> flag suppresses keyword expansion; in case binary files (data
+files, GIF images, ...) contain a sequence of bytes that just happens to be
+<CODE class="literal">&#36;Id&#36;</CODE> or any of the other keywords recognized by CVS, using the
+<CODE class="literal">-kb</CODE> flag will keep those bytes from being changed! If you already added
+a binary file you can use the <CODE class="literal">cvs admin</CODE> command to turn of keyword
+expansion:
+<p><pre class="it">
+cvs admin -kb &lt;file&gt;|&lt;pattern&gt;
+</pre>
+
+<h2><a name="id4">6.4 Checking out code</a></h2>
+<p>Checking out everything before a certain date:
+<p><pre class="it">
+cvs checkout -D 1999-03-25 DODS/src/nc-dods
+</pre>
+<p>checks out all the sources in <CODE class="literal">DODS/src/nc-dods</CODE> as they were <em>on or
+before</em> 25 March 1999.
+<p>Checking out tagged sources. See the CVS manual or info pages about tags. I
+use tags for <em>all</em> the releases, so you need to look at this:
+<p><pre class="it">
+cvs checkout -r release-2-10 DODS/src/nc-dods
+</pre>
+<p>checks out all the sources tagged <CODE class="literal">release-2-10</CODE>. Note that CVS does not
+allow dots (.) in tag names. Also note that if the tag is a branch point you
+now have a branch of the source tree to work in. Changes you make will be
+checked in on the branch, not the trunk (that's good). To move the changes
+over to the trunk see Section&nbsp;<a href="cvs_5.html">5</a>.
+<p>The checkout command does a complete checkout of a module or part of a
+module. If you want new sources inside an existing project tree, use
+<CODE class="literal">update</CODE>. If the file or directory does not exist, use <CODE class="literal">update -d</CODE>.
+In fact, it is best to use <CODE class="literal">update -d</CODE> always unless you <em>know</em> that
+no new files or directories have been added.<sup><a href="cvs_8.html#id4">4</a></sup> Here's examples of the two above operations using update instead
+of checkout:
+<p><pre class="it">
+cvs update -d -D 1999-03-25 nc-dods
+
+cvs update -d -r release-2-10 nc-dods
+</pre>
+<p>From within <CODE class="literal">DODS/src/</CODE> will get the <CODE class="literal">nc-dods</CODE> sources from on or
+before 25 march 1999 or tagged <CODE class="literal">release-2-10</CODE>. The difference is that
+these commands are run from within an existing tree; the checkout is run
+above the tree.
+
+<h2><a name="id5">6.5 Using the status command</a></h2>
+<p>Looking at information about the revisions of a source file:
+<p><pre class="it">
+cvs status -v ChangeLog
+</pre>
+<p>Here's the output for that file:
+<p><pre class="it">
+[dcz:/usr/local/ferret-DODS/src/nc-dods-2.19.2] cvs status -v ChangeLog
+===================================================================
+File: ChangeLog         Status: Up-to-date
+
+   Working revision:    1.3.4.2 Wed Apr 14 03:33:45 1999
+   Repository revision: 1.3.4.2 /usr/local/cvs-repository/DODS/src/nc-dods/ChangeLog,v
+   Sticky Tag:          ferret (branch: 1.3.4)
+   Sticky Date:         (none)
+   Sticky Options:      (none)
+
+   Existing Tags:
+	ferret                          (branch: 1.3.4)
+	release-2-18                    (branch: 1.3.2)
+	no-gnu                          (branch: 1.2.4)
+	release-2-17                    (branch: 1.2.2)
+</pre>
+<p>You can see that there are four tagged revisions (the tags are ferret,
+<CODE class="literal">release-2-18</CODE>, <CODE class="literal">no-gnu</CODE> and <CODE class="literal">release-2-17</CODE>). The <CODE class="literal">Sticky
+Tag</CODE> indicates that I'm using the revision tagged <CODE class="literal">ferret</CODE>. Note that it
+is a tag on a branch and that I've made some changes. Here's the status of
+the same file in the development directory (i.e., on the trunk):
+<p><pre class="it">
+[dcz:/usr/local/DODS/src/nc-dods] cvs status -v ChangeLog
+===================================================================
+File: ChangeLog         Status: Up-to-date
+
+   Working revision:    1.3     Thu Jan 21 22:56:55 1999
+   Repository revision: 1.3     /usr/local/cvs-repository/DODS/src/nc-dods/ChangeLog,v
+   Sticky Tag:          (none)
+   Sticky Date:         (none)
+   Sticky Options:      (none)
+
+   Existing Tags:
+	ferret                          (branch: 1.3.4)
+	release-2-18                    (branch: 1.3.2)
+	no-gnu                          (branch: 1.2.4)
+	release-2-17                    (branch: 1.2.2)
+</pre>
+<p>Note that the same tags are listed but that the Stick Tag is none and the
+revision number of the working file is 1.3, not 1.3.4.2 as in the previous
+example.
+<p>Aside: Don't confuse CVS' revision numbers with our version numbers.
+
+<hr /><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, 
+  2004/06/23, Revision: 1.8</address><br />
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="cvs_7.html"><img border="0" alt="A ChangeLog" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="cvs.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="cvs_5.html"><img border="0" alt="5 Merging" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>6 Useful commands</b></td></tr></table></body></html>

@@ -1,0 +1,418 @@
+% Chapter to the DODS Programmer's Guide
+%
+% $Id$
+%
+% $Log: ch03.tex,v $
+% Revision 1.4  1999/07/22 18:54:56  tom
+% fixed errors
+%
+% Revision 1.3  1999/02/04 17:46:05  tom
+% Modified for dods-book.cls and Hyperlatex
+%
+% Revision 1.2  1998/12/07 15:51:33  tom
+% updated for DODSv2.19
+%
+% Revision 1.1  1998/03/13 20:50:02  tom
+% created API manual from James's Toolkit document
+%
+%
+
+\chapter{Using the DODS Library Classes}
+\label{tk,subclassing}
+
+In order to be used by real client-libraries and data servers, many of
+the classes in the DODS toolkit must be subclassed. For example, the
+Type Hierarchy classes, which represent the data types in the DODS
+data model, are all abstract classes. In order to use them in a
+program they must be subclassed. The \class{Connect} class also must
+be subclassed if it to hold additional information about the
+connection. 
+
+\section{Sub-classing the Type Hierarchy}
+
+\indc{DODS types!using}\indc{sub-classing!type classes}
+In order to link a program with the DODS Toolkit library, the DAP's
+abstract classes must be subclassed and those subclasses must ensure
+that all of the member functions of those classes have valid
+definitions. This is necessary because of \Cpp's rules governing
+abstract classes. The next three sections cover sub-classing the
+simple, vector and compound classes, respectively. In addition, a
+sample set of classes (called the \lit{Test} classes because they are
+used by the DAP tests) is included with the DAP distribution. You can
+read the source code for those classes to find out how they were
+created.
+
+Each of the sub-classed types must supply:
+
+\begin{itemize}
+\item A constructor that takes a \class{String} argument and returns
+  an object with that name.
+
+\item A virtual destructor.
+
+\indc{ptr\_duplicate}\indc{copy function}
+\item A copy function called \lit{ptr\_duplicate}.
+  
+\indc{read function}
+\item The \lit{read} function, to read data from a disk and load it
+  into the type class object.
+
+\end{itemize}
+
+The \lit{ptr\_duplicate} member function returns a pointer to a new
+instance of the type of object from which it was invoked. This member
+function exists so that objects that are referenced through pointers
+to \class{BaseType} can correctly copy themselves. (If you were to use
+the operator \lit{new} to copy an object referenced through
+\class{BaseType}, you would get a \class{BaseType}, not a new instance
+of the type of the referenced object.) Note that \lit{ptr\_duplicate}
+is a virtual function so an object which is a descendent of
+\class{BaseType} will get the most specific definition of that
+function.
+
+The \lit{read} function is much more complicated to write than
+\lit{ptr\_duplicate}, and the difficulty varies depending on the data
+type to be read. However, this function is only used on the server
+side of the system and not by the client.  That is, it can be
+implemented with a null function body if all you are building is a
+client library. The \lit{read} function takes two arguments, the
+dataset name, and an error flag.  It must read from that dataset the
+values specified by the current constraint expression. The error flag
+is passed by reference so that read can set its value and callers can
+test it.  The class \class{BaseType} contains a number of member
+functions to facilitate writing a read function.  The return value of
+\lit{read} is TRUE is there is more data to be read (by additional
+calls to \lit{read}) or FALSE otherwise.
+
+\subsection{Sub-classing the Simple Types}
+
+\indc{sub-classing!simple types}\indc{simple types!sub-classing}
+Creating a \lit{read} function for the simple type classes is a fairly
+straightforward operation.  Simply read the function using the data
+access API's standard protocol, and use the type class's \lit{val2buf}
+function to load the data into the type object.
+
+The following function is taken from the DODS implementation of the
+\netcdf\ data access library.  (See the file
+\lit{src/nc-dods/NCByte.cc}.)
+\indc{sub-classing!example}
+
+\begin{vcode}{ins}
+NCByte::read(const String &dataset, int &error) 
+{
+   int varid;                  /* variable Id */
+   nc_type datatype;           /* variable data type */
+   long cor[MAX_NC_DIMS];      /* corner coordinates */
+   int num_dim;                /* number of dim. in variable */
+   long nels = -1;             /* number of elements in buffer */
+   int id;
+
+   if (read_p()) // already done
+     return true;
+
+   int ncid = lncopen(dataset, NC_NOWRITE); /* netCDF id */
+
+   if (ncid == -1) { 
+     cerr << "ncopen failed on " << dataset<< endl;
+     return false;
+   }
+ 
+   varid = lncvarid( ncid, name());
+   (void)lncvarinq( ncid, varid, (char *)0, &datatype, 
+                    &num_dim, (int *)0, (int *)0);
+
+   if(nels == -1){  
+     for (id = 0; id < num_dim; id++) 
+       cor[id] = 0;
+   }
+
+   if (datatype == NC_BYTE){
+     dods_byte Dbyte;
+
+     (void) lncvarget1 (ncid, varid, cor, &Dbyte);
+     set_read_p(true);
+          
+     val2buf( &Dbyte );
+
+     (void) lncclose(ncid);  
+     return true;
+   }
+   return false;
+}
+\end{vcode}
+
+The following points are worth consideration about the above example.
+
+\begin{description}
+\item[line 10] Check to see if this variable has already been read.
+\item[line 13] The \lit{lncopen()} function call is simply the
+  \lit{ncopen()} function from the \netcdf\ library. Also, the
+  \lit{lncvarid} function is renamed \lit{ncvarid} and so on.  The
+  names have been changed to avoid link-time problems.  (Remember that
+  the whole point of this exercise is to create a new \lit{ncopen()}
+  function and its friends.
+\item[line 33] This sets the flag tested with the \lit{read\_p}
+  function.
+\item[line 35] This command transfers values from the dataset's
+  variable to the DODS instance.  This is the point where the read
+  actually happens.
+\end{description}
+
+Note the use of \lit{dods\_byte} in the code example.  The DODS
+configuration process creates definitions for the simple data types
+like this one. They are stored in \lit{config\_dap.h}.
+
+The \lit{read} member function is used by the constraint expression
+evaluator to extract data from a dataset during evaluation of the
+constraint expression.  This is particularly important to remember
+because the \lit{read} member function for a simple data type will be
+called when reading an aggregate type such as \class{Structure}.
+
+\subsection{Sub-classing the Vector Types}
+
+\indc{sub-classing!vector types}\indc{vector types!sub-classing}
+The vector data types require the same abstract member functions be
+defined as the simple types. The definition for \lit{ptr\_duplicate}
+is also the same for vector as for simple types.  However, the
+\lit{read} member function for the vector types (classes \class{Array}
+and \class{List}) is more complicated than for the simple types
+because vectors of values are represented in two ways in DODS,
+depending on the type of variable in the vector. Arrays are stored as
+C would store them for the simple types such as \class{Byte},
+\class{Int32} and \class{Float64}.  However, compound types are stored
+as arrays of the DODS \Cpp\ objects (with the exception of arrays
+themselves, but more on that later).
+
+When reading an array of Byte values, the \lit{val2buf} member function
+should be passed a pointer to values stored in a contiguous piece of
+memory. For example, when \lit{read} is called to read a variable
+\lit{byte-array}, it must determine how much memory to allocate to
+hold that much information, use \lit{new} to allocate an adequate
+amount of memory, use the dataset's API calls to read
+\lit{byte-array} into the newly allocated memory and then pass that
+memory to \lit{val2buf}. This same procedure can be followed for all
+the simple types.
+\indc{val2buf}
+
+However, when reading an array of \class{Structure}, for example, the
+values must be stored in the DODS \class{Array} object one at a time
+using the \class{Array} member function \lit{set\_vec}. An
+\class{Array} object containing a 3x4 array of \class{Structure}
+objects will actually point to 12 different instances of that class.
+An \class{Array} object containing \class{Byte} objects contains
+only one instance of the \class{Byte} class, as a template for the
+array elements.
+
+Arrays in DODS are unlike arrays in C in that an array object may have
+more than one dimension. In terms of the way a value is stored,
+however, an Array is a single dimensional object. When an Array is
+declared as having two or more dimensions, those are mapped onto a
+single vector. To access the element $A_ij$ of array \emph{A}, you
+must know the size of the first dimension, \emph{I}, and use the
+expression $i * I + j$ to compute the offset into the vector.
+
+Since the class \class{List} is a single dimension array without
+\emph{declared} size (the size of each value of the List object is
+stored in the object) the rules for \class{Array}'s read member
+function apply.
+
+\subsection{Sub-classing the Compound Types}
+
+\indc{sub-classing!compound types}\indc{compound types!sub-classing}
+The \lit{read} member function of the compound data types simply
+iterates over the contained variables calling their \lit{read} member
+functions. In the future, this definition will move into the supplied
+classes (That is, \lit{read} will no longer be a abstract member
+function for the compound types.).
+
+The two constructor types \class{Sequence} and \class{Function} are
+different from all the other types in the DAP in that they have
+\emph{state}. That is, the value of a sequence depends on how many
+values have been read previously.  This is very different from an
+array where the $i^{th}$ element has the same value regardless of what
+has happened before. When you write implementations for \lit{read} in
+the \class{Sequence} and \class{Function} classes, you must be sure to
+write those member functions so that they can be called repeatedly and
+that each call to read returns the next value of the corresponding
+data Sequence or Function.
+
+This is true because the constraint expression evaluator must be able to
+apply certain constraints to values of individual sequence elements and is
+actually implemented in the DDS class by first calling the read member
+function, evaluating the constraint expression based on the values and, if
+they constraint expression is satisfied, calling the serialize member
+function.  See the member function \lit{DDS::send} (See
+section~\ref{tk,ce-evaluation} for more information on evaluation of
+constraint expressions).
+
+If, for some reason, it is not possible to write \lit{read} so that it
+gets called once for each sequence value\footnote{A single entry in a
+  sequence, modelled as a row in a relational table, is sometimes
+  called an instance of the sequence.  This is useful terminology, but
+  is occasionally confusing when we are also talking about instances
+  of objects.}, then you must re-implement \lit{DDS::send} so that its
+functions are performed. For example, you could implement
+\lit{Sequence::read} so that the entire sequence is read in and
+overload \lit{Sequence::serialize} and \lit{Sequence::deserialize} so
+that the next set of values are sent/received. You would then build a
+send that called the \lit{Sequence::read} member function once and
+extracted each successive value, evaluated the constraint expression
+using on that value and used the result of that evaluation to
+determine whether to send the value or not.
+
+\section{Sub-classing the \class{Connect} Class}
+\label{tk,subclass-netio}
+
+\indc{sub-classing!Connect}\indc{Connect class!sub-classing}
+The DODS API defines a connection-less protocol in which a server
+keeps no information for a client in between data requests.  This is
+in contrast to most data access APIs, which maintain state information
+about the files or datasets that a user program currently has open. To
+simulate an API's connection, the client library for that API must
+create a \emph{virtual connection} using information about the data
+set it has read from the server.  That is, the client library must
+maintain the \emph{illusion} of a connection (state) for each open
+data object (typically a file) even though no such connection actually
+exists.
+
+DODS provides the \class{Connect} class to make this a simple process.
+This class contains a variety of information about a dataset and its
+location on the internet, including the dataset's URL.  Most of
+the information necessary to fake a connection is contained here.
+
+Data access APIs differ widely however, and it is usually necessary to
+add some information to the \class{Connect} class to make a workable
+virtual connection. This information can be stored in the subclassed
+\class{Connect}.  The API's ``open'' call must be completely recoded
+so that the \class{DAS} and \class{DDS} objects, as well as any other
+information, are requested from the dataset server and stored locally
+in whatever form is most convenient.
+
+\indc{Connect class!sub-classing!example}
+\Figureref{fig,NCConnect} shows the sub-class of \class{Connect} used
+to store information extracted from the DAS and DDS objects (for the
+\netcdf\ library), and used
+to simulate the storage of information in the original
+API.\footnote{The \netcdf\ client library has been rewritten a couple
+  of times since these examples were taken from it.  Most of the
+  changes involve additional functionality not necessary for the
+  illustrations here.  We have also removed some error-checking to
+  make the intention clearer.  Therefore the actual code in the
+  \netcdf software may not match these examples. However, these
+  examples will work.}
+
+\begin{figure}
+\begin{vcode}{cb}
+class NCConnect: public Connect {
+private:
+    int _ncid;        
+    int _nvars;       
+    int _ndims;       
+    String _dim_name[MAX_NC_DIMS];
+    int _dim_size[MAX_NC_DIMS];
+    int _das_loc[MAX_NC_VARS];
+    void init_list(int i);
+    void parse_array_dims();
+    void parse_grid_dims();
+
+public:
+    NCConnect(const String &name, const int mode);
+    ~NCConnect();
+
+    int &ncid();
+    int ndims();
+    int nvars();
+    int dim_size(const int dimid);
+    const String &dim_name(const int dimid);
+    int das_loc(const int varid);
+    void parse_das_loc();
+    void parse_dims();
+};
+\end{vcode}
+\caption{The subclass of Connect used with the NetCDF client library.}
+\label{fig,NCConnect}
+\end{figure}
+
+The private data added to the \class{Connect} object with this class
+is as follows:
+
+\begin{description}
+
+\item[\lit{\_ncid}]  This is only used for access to local files.  It
+  is the \netcdf file descriptor, or file ID.
+
+\item[\lit{\_nvars}] The number of variables in data file.
+
+\item[\lit{\_ndims}] The number of dimensions found.  Note that not
+  all the variables in a \netcdf file have the same number or set of
+  dimensions. This number is the list of all the different ones.
+
+\item[\lit{\_dim\_name[MAX\_NC\_DIMS]}] The names of the dimensions
+  found in the data file.
+
+\item[\lit{\_dim\_size[MAX\_NC\_DIMS]}] An array containing the size
+  of each dimension found.
+
+\item[\lit{\_das\_loc[MAX\_NC\_VARS]}] An index into a table of
+  attributes. 
+
+\end{description}
+
+This additional data allows the client library to emulate most of the
+\netcdf\ query functions properly and \emph{locally}.
+
+Now look at the recoded open call of the \netcdf library in
+\figureref{fig,open}. The new function has exactly the same type as
+the original implementation; it takes the same number and type of
+arguments and returns the same type. The first operation performed by
+the new open call is to create a \class{Connect} object (actually an
+\class{NCConnect} object) using the arguments passed to the open call.
+
+\indc{open!using Connect class}
+After the open call creates the new \class{NCConnect} object, it makes
+sure that the user is not trying to open the remote dataset for
+writing and, if they are not, reads the \class{DAS} and \class{DDS}
+from the dataset. Once read, the \class{DAS} and \class{DDS} objects
+are parsed using \class{NCConnect}'s member functions
+\lit{parse\_das\_loc} and \lit{parse\_dims}. These two member
+functions, along with the additional state variables in
+\class{NCConnect}, effectively create the virtual connection.
+Subsequent calls to the client library for information about the
+variables (e.g., their size, names, etc.) will be answered using
+information stored in the symbol table in the \class{NCConnect}
+object.
+
+\begin{figure}[htb]
+\begin{vcode}{cb}
+int
+ncopen(const char *path, int cmode)
+{
+    int id;
+    NCConnect *c = new NCConnect(path);
+
+    if(cmode != NC_NOWRITE) {    
+        delete c;  
+        return(-1);
+    }
+
+    c->request_das();
+    c->request_dds();
+
+    c->parse_das_loc();
+    c->parse_dims();
+
+    return(conns.add_connect(c)) ;
+}
+\end{vcode}
+\caption{The recoded open call of NetCDF.}
+\label{fig,open}
+\end{figure}
+
+The code above checks to see whether the user is trying to open a
+connection for writing.  Since DODS is a read-only protocol, this
+attempt must fail.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../pguide.tex"
+%%% End: 

@@ -1,0 +1,47 @@
+
+	$Id$
+
+PREFACE
+
+This is a general guide to installing DODS data servers. Some servers
+may have specific requirements beyond these.  Look for an
+INSTALL-<server> document in this directory or in the source code
+directory if you down-loaded the source code.
+
+This is just a quick guide to installation.  The real source of
+information about installing DODS servers is the official DODS server
+installation manual.  This is available at the DODS web site:
+
+             http://unidata.ucar.edu/packages/dods.
+
+ABOUT WWW SERVERS
+
+Note: We have tested DODS servers with the NCSA and Apache http daemons
+(httpd). Other servers will work as along as they support CGI 1.1 standard.
+However, the installation instructions will be slightly different. Don't let
+this dissuade you installing DODS servers with another httpd - the process is
+very simple.
+
+If you do not have a World Wide Web server running on the machine you want to
+use as your data server machine, you can get NCSA's daemon from
+http://hoohoo.ncsa.uiuc.edu/. The Apache daemon can be found at
+http://www.apache.org/.
+
+QUICK INSTRUCTIONS FOR SETTING UP A DATA SERVER
+
+Unpack the distribution.  Don't forget to pick up the "server tools"
+tar file as well as the specific server you plan to install.  The
+tools are a bunch of files used by all the DODS servers, and are
+essential to all of them.
+
+Copy the programs in the DODS/etc directory into one of your WWW
+server's CGI directories.  Put your data within the server's document
+root or link it itno that directory tree somehow.  If you do this,
+make sure your server is enabled to follow symbolic links.
+(This is FollowSymLinks for Apache users.)
+
+Use one of the DODS client programs to test your installation.
+
+Consult the server installation guide with any questions that may come
+up about configuring caching, compression, access control to your
+data, or any troubleshooting necessary.

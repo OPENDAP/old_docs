@@ -1,0 +1,229 @@
+\begin{theindex}
+{\Huge\bfseries\sffamily\hskip-2pt A}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item array
+    \subitem irregular, \see{Grid}{3}
+    \subitem map vector, 3
+    \subitem sampling, 5, 10
+    \subitem stride, 10
+    \subitem subscripts, 5, 10
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt C}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item calendar
+    \subitem Julian, 4
+  \item Climate Modeling
+    \subitem NOAA, 1
+  \item COARDS, 3
+  \item constraint expression, \emph{4}
+    \subitem building aids, 8, 10
+    \subitem projection clause, 8
+    \subitem query form, 8, 10
+    \subitem selection clause, 7
+  \item CTD data, 7
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt D}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item DAS, 3
+  \item data
+    \subitem accessed by URL, 1
+    \subitem hydrographic, 7
+    \subitem metadata mixed in, 7
+    \subitem peeking at, 5
+    \subitem relational table, 7
+    \subitem station, 7
+    \subitem time series, 7
+  \item data access API
+    \subitem JGOFS, 18
+    \subitem netCDF, 18
+  \item Data Access Form, 8
+    \subitem file server, 15
+    \subitem Sequence Data, 10
+    \subitem using to find data, 14
+  \item Data Attribute Structure, \emph{3}
+  \item dataset
+    \subitem list, DODS, 13
+    \subitem of datasets, 15
+    \subitem shape, 2
+  \item Dataset Descriptor Structure, \emph{2}
+  \item DDS, 2
+  \item DODS
+    \subitem libraries, 17
+    \subitem linking to your software, 17
+    \subitem toolkit, 18
+    \subitem URL, 1
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt E}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item EPIC, 3
+  \item expression
+    \subitem constraint, \see{constraint expression}{4}
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt F}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Ferret, 17
+  \item FGDC, 3
+  \item file server, 15
+  \item form
+    \subitem query, 8, 10, 15
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt G}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item GCMD, 13
+  \item geturl
+    \subitem DODS utility web client, 17
+  \item Global Change Master Directory, 13
+  \item GrADS, 17
+  \item Grid, \emph{3}
+    \subitem sampling, 5, 10
+    \subitem stride, 10
+    \subitem subscripts, 5, 10
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt H}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item HDF-EOS, 3
+  \item help service, 4
+  \item html interface, 8
+    \subitem finding more data, 14
+    \subitem Sequence data, 10
+  \item hydrographic data, 7
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt I}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item IDL
+    \subitem loaddods client, 17
+  \item ifh, 8, 14
+  \item info service, \emph{4}
+  \item Internet Explorer, 17
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt J}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item JGOFS
+    \subitem data access API, 18
+  \item Julian calendar, 4
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt L}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item libraries
+    \subitem DODS, 17
+  \item linking
+    \subitem DODS to your programs, 17
+  \item list
+    \subitem DODS datasets, 13
+  \item Lists, \emph{3}
+  \item loaddods
+    \subitem Matlab or IDL client, 17
+  \item lynx
+    \subitem web browser, 17
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt M}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item map vectors, \emph{3}
+  \item Matlab
+    \subitem GUI DODS browser, 17
+    \subitem loaddods client, 17
+  \item metadata, \emph{3}
+    \subitem among the data, 7
+  \item minimum server configuration, 11
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt N}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item NASA
+    \subitem Global Change Master Directory, 13
+  \item netCDF
+    \subitem data access API, 18
+  \item Netscape, 17
+  \item NOAA
+    \subitem Climate Modeling, 1
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt P}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item peeking at data, 5
+  \item profile
+    \subitem temperature, 7
+  \item projection clause, \emph{8}
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt Q}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item query form, 8
+    \subitem file server, 15
+    \subitem Sequence data, 10
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt R}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item RDBMS, 7
+  \item relational data table, 6
+  \item Reynolds, 1
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt S}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item sampling
+    \subitem array, 5, 10
+    \subitem file server, 15
+    \subitem Grid, 5, 10
+  \item scale_factor, 6
+  \item selection clause, \emph{7}
+  \item Sequence, \emph{6}
+    \subitem file server, 15
+  \item server
+    \subitem file, 15
+    \subitem minimum configuration, 11
+  \item service
+    \subitem help, 4
+    \subitem info, 4
+  \item shape of dataset, 2
+  \item station data, 7
+  \item stride, 10
+  \item Structures, \emph{3}
+  \item subscripts, 5
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt T}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item temperature profile, 6
+  \item time series data, 7
+  \item toolkit
+    \subitem DODS, 18
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt U}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item units
+    \subitem scaling, 6
+  \item URL
+    \subitem catalogued at GCMD, 13
+    \subitem data accessed by, 1
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt V}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item vade mecum, \emph{10}
+  \item vector
+    \subitem map, 3
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt W}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item web interface, 8
+    \subitem file server, 15
+    \subitem finding more data, 14
+    \subitem Sequence data, 10
+  \item wget
+    \subitem web client, 17
+
+\end{theindex}

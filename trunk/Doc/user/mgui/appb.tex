@@ -1,0 +1,326 @@
+% Appendix to the Matlab GUI User Guide
+%
+% $Id$
+%
+% $Log: appb.tex,v $
+% Revision 1.5  1999/05/27 15:58:39  tom
+% expunged remaining references to "dods.gso.uri.edu"
+%
+% Revision 1.4  1999/05/25 20:47:46  tom
+% modifications for DODS release 3.0
+%
+% Revision 1.3  1999/01/20 15:18:38  tom
+% updated, and changed for dods-book.cls and hyperlatex
+%
+% Revision 1.2  1998/12/07 15:41:15  tom
+% updated for DODS v2.19 and GUIv0.7
+%
+% Revision 1.1  1998/02/12 18:10:41  tom
+% added to CVS archive
+%
+%
+
+\chapter{Troubleshooting}
+\label{gui,trouble}
+
+%\renewcommand{\paragraph}{\@startsection{paragraph}{4}{0cm}%
+%                                    {1.25cm}%
+%                                    {-1cm}%
+%                                    {\normalfont\normalsize\bfseries}}
+
+
+If you have a problem using the \GUI, check this list
+to see if there is a solution to your problem here. If not, send a
+message describing the problem to \DODSsupport . If you
+can, please include a copy of the any error messages printed by the
+software along with information so that we can repeat the problem. The
+latter helps immeasurably.
+
+An updated version of this list is provided with the DODS source code,
+in \DODSroot\lit{/src/matlab-GUI/README}.
+
+\section{\GUI\ problems}
+
+\problem The \pdmenu{Variables} or \pdmenu{Datasets} menus are not
+persistent; they disappear as soon as I ask for them.
+
+\fix The windows have probably not disappeared. They have been covered
+up by the browser window. While not a useful feature, this is
+apparently a result of some interaction between Matlab and the window
+manager software you use that we are unable to address. Just move the
+browser window aside, and you will see the missing menus.
+
+\problem  I select a dataset, and then a variable, and then my dataset
+gets unselected.
+
+\fix  The \GUI\ is set up so that a user can select a variable of
+interest first, or a dataset of interest.  A byproduct of that
+convenience is that the behavior of the \pdmenu{Variables} and
+\pdmenu{Datasets} menus is somewhat confusing.  When you select a
+dataset, all the variables not in that dataset are deleted from the
+\pdmenu{Variables} menu.  Then, when you select a variable, all the
+datasets that contain that variable are displayed in the
+\pdmenu{Datasets} menu.  Sometimes this may require you to select the
+dataset again.  If your selected dataset gets ``un-selected'' it does
+not contain the variable of interest, or is not valid in the time and
+geographic ranges you've picked.
+
+\problem  I can't select vector data, such as vector winds.
+
+\fix  The \GUI\ presents vector winds by individual component.  This
+means that you must select \lit{U\_Wind} and \lit{V\_Wind}.
+
+
+if a vector is stored at the server as X and Y components,
+it may appear in the \GUI\ in a different manner than a dataset stored
+as speed and direction pairs.
+
+\problem  The colors I see in this browser window are wierd, and they
+change terribly when I move my mouse around.
+
+\fix What you are seeing is a collision between Matlab and some other
+program hogging space on the X terminal color table. Netscape
+Navigator is often the culprit. Matlab uses a polite color allocation
+scheme that doesn't mess up other applications, but the downside of
+this is that its graphics can look pretty awful when another
+application isn't as ``polite.'' The solution is to exit Matlab, close
+the other application, and start up Matlab again.
+
+A more permanent solution is to ask your system manager to increase
+the color depth of your X display.  A color depth (the number of bits
+per pixel) of 16 is usually sufficient to prevent this problem from
+occurring. 
+
+\problem The browser complains about about not finding `loaddods'.
+
+\fix Make sure that the directory containing the \lit{loaddods}
+program is on your \lit{\$MATLABPATH} See \sectionref{install,install}. 
+Also, note that this program actually consists of two files:
+\lit{loaddods.m} and \lit{loaddods.mex***}. (The \lit{***} indicates an
+architecture-dependent extension to the name of a Matlab MEX-file. For
+example, on a DEC Alpha, this file is called
+\lit{loaddods.mexaxp}). \emph{Both} of these files must be present for
+the browser to function.
+
+If this does not resolve the problem, please contact \xlink{DODS user
+  support: {\small \DODSsupport}}{mailto:\DODSsupport}.  There may be
+a problem with the distributed binary.
+
+\problem The browser complains that is cannot find
+\lit{writeval} or \lit{geturl}.
+
+\fix Make sure that your \lit{\$PATH} environment variable
+points towards the correct directory (and for Bourne Shell users, that
+it is exported). See \sectionref{install,install}.
+
+\problem The dataset I want to use has disappeared from
+the dataset list.
+
+\fix This probably means you have selected a time, depth or 
+geographic range that does not overlap with the defined boundaries of
+the dataset you want to use. (See \pagexref{gui,ref,Datasets}) To
+be sure you are not eliminating datasets you might like to see, push
+the \but{Clear Selections} button at the bottom of the browse window.
+Now select the desired dataset, and the depth and geographic ranges
+will be set to those of the dataset.  Zoom in on the time axis to
+select an appropriate time period within the dataset range, or click
+\but{View Text} and type in an appropriate time range (use decimal
+years).
+
+To view the ranges for a variety of datasets,
+simply click \but{Reset List} at the bottom of the dataset menu.  Each
+dataset may then be selected in turn, and the ranges for that set will
+appear on the browse window.  Once you have found a dataset you would
+actually like to use, click on the \but{Clear Selections} button (to clear
+selected ranges) and then re-select the desired dataset.  Your depth
+and geographic selection ranges will automatically be set to those of
+the dataset.  Zoom in on the time axis to select an appropriate time
+period within the dataset range, or click \but{View Text} and type in an
+appropriate time range (use decimal years).
+
+If you still can't make your dataset appear, try clicking the
+\but{Update Dataset List} button in the \pdmenu{Options} menu, and
+issuing whatever command will update the dataset having the
+problem. 
+
+\problem  I've selected a dataset.  I click on \but{Get
+Data} or \but{Get Details} and nothing happens.
+
+\fix  Look for messages in the main workspace.  Most
+likely, one or more of your selection ranges is not set, or possibly
+they are all set but are not within the valid ranges for that dataset.
+In the former case, the browser will send a message prompting you to
+set all the ranges.  In the latter case, it will send a message that
+the dataset is out of range, and the dataset selection will be
+removed. 
+
+For very large datasets, it is possible to select so much data that
+the server cannot process it all before the request times out. If you
+suspect that your request is for a colossal amount of data, set a
+smaller time or space range and try again. This is a limitation of the
+\lit{httpd} servers installed at a particular location, and is not
+under the control of the DODS group.
+
+\problem  I've selected a dataset.    I click on \but{Get
+Data} or \but{Get Details} and something happens, but it's an error
+like this:
+
+\begin{vcode}{ib}
+??? Undefined function or variable lon.
+
+Error in ==> /usr/users/tomfool/matlab/DATASETS/getrectangular.m
+On line 494  ==>          TempLongitude = eval(LongitudeName);
+...
+\end{vcode}
+
+\fix  This is a bug that causes the \GUI\ to fail gracelessly when it 
+encounters a network error such as the server being down, or a
+timeout. A way to confirm that the network is the problem is to type 
+
+\begin{vcode}{ib}
+>> loaddods{http://whatever.edu/cgi/nph-nc/...}
+\end{vcode}
+
+at the Matlab prompt, substituting a valid URL.  You can also cut
+the URL you used and paste it into the URL window of a standard web
+browser like Netscape Navigator. Append ``.dds'' to the URL, and
+submit it:
+
+\begin{vcode}{ib}
+http://saci.gso.uri.edu/cgi-bin/nph-nc/weekly.nc.dds
+\end{vcode}
+
+If the network is working, you will receive a terse description of the
+dataset in the browser window. If it's not working, you will get an
+error. 
+
+The fix is just to wait until the error is repaired, or the server
+goes back on line.
+
+\problem Plotting the dataset results in a box with some 
+vertical lines running up through the middle of the range box.
+
+\fix  For a full-global dataset, this is because the 
+dataset range given in the 
+metadata is less than the full 360 degrees.  For example, a range of
+[0.5 359.5].  When this is displayed in longitude coordinates of [-180
+180], vertical lines at -0.5 and 0.5 will result---the browser has no
+way to determine if this gap is `real' (a gap in the dataset $>$ dx), or
+just a side effect of wraparound.  Data providers should list
+truly global datasets as having a 360 degree longitude range, and 
+write the supplementary software to handle such requests.
+
+\problem{I can't find the data threshold menu.}
+
+\fix{Try making the browser window larger.  If the window is too
+  small, the threshold menu window (which is not a true window)
+  sometimes gets cut off.\indc{threshold window!missing}}
+
+\section{Matlab problems}
+
+The following problems are due to known Matlab bugs as of \today .
+
+\subsection{Bugs in Matlab Version 4}
+
+\problem An error when starting the browser that looks like this:
+
+\begin{vcode}{ib}
+???          OKCallback
+             |
+ Undefined function or improper matrix reference.
+\end{vcode}
+
+\fix It appears some distributions of \mfour\ do not 
+contain the script \lit{inputdlg.m}.  You are missing that function.
+We have included it in this distribution, as \lit{inputdlg.tpl}
+(renamed to avoid conflict with systems that \emph{do} have the
+script).  Simply copy the provided script to the correct name (\lit{mv
+inputdlg.tpl inputdlg.m}). You can leave it right in the browser directory. 
+Once the file is in place, quit Matlab, and start again.
+
+\problem Zooming in on a displayed image causes it to disappear.
+
+\fix This is a fundamental bug in the \lit{image} command 
+of \mfour.  The Mathworks has no plans to patch it now that \mfive\ has
+been released.  The only fixes are: 
+
+\begin{enumerate}
+
+\item 
+Plot each dataset separately in its own window, and then set \lit{zoom
+on} in these windows.  In this case, you may encounter the following
+instability in \mfour:
+
+\begin{vcode}{ib}
+Image color indexing error in InterpolateImageWarped
+Image color indexing error in InterpolateImageWarped
+Image color indexing error in InterpolateImageWarped
+Image color indexing error in InterpolateImageWarped
+\end{vcode}
+
+repeatedly scrolling up the screen.  Hit Control-C to stop this.
+
+\item
+You can use the \lit{pcolor} command instead of \lit{image}. 
+
+\item
+Upgrade to \mfive.
+\end{enumerate}
+
+\subsection{Bugs in Matlab Version 5}
+
+\problem Repeated ``error'' messages of the nature:
+
+\begin{vcode}{ib}
+  Warning: Future versions will return empty 
+       for empty == scalar comparisons
+  In dispmenu.m at line 23
+  In dispmenu.m at line 458
+  In browse.m at line 997
+  In browse.m at line 975
+\end{vcode}
+
+or
+
+\begin{vcode}{ib}
+  Warning: One or more output arguments not assigned 
+       during call to 'browse'.
+\end{vcode}
+
+\fix There are no real problems here. The MathWorks made several
+changes in suggested Matlab syntax and use between versions 4 and
+5. The \GUI\ runs in both versions, so occasionally Matlab version 5
+helpfully finds future potential fault with a valid version 4
+expression.  If you find the messages less than enlightening, you
+could type \lit{warning off} at the Matlab prompt.
+
+\problem The slider bar on the dataset and variables menus
+(only visible when there are more than 20 items on the list)
+``jumps,'' not scrolling the list smoothly.
+
+\fix This is a bug in the Unix/Linux release of \mfive.
+The MathWorks has promised a patch.  Contact
+\lit{tech-support@mathworks.com} or (508) 653-1415 to find out if the 
+patch is available yet.
+
+\problem Zooming in causes vertical lines (for example, 
+the vertical parts of dataset range boxes or the selection range
+boxes) to disappear.
+
+\fix  This is a bug in the Linux release of \mfive.  
+The Mathworks has been notified.  Contact
+\lit{tech-support@mathworks.com} or (508) 653-1415 to find 
+out if a patch is available yet.
+
+\problem Zooming in on an image causes the image pixels 
+to be located in the wrong place or to appear larger than actual
+(bleeding effect).
+
+\fix This is an unavoidable side-effect of the \lit{image}
+command. Use \lit{pcolor} instead.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

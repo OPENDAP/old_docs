@@ -1,0 +1,186 @@
+
+Participants included: James Gallagher, John Chamberlain, Joe
+Wielgosz, Jose Garcia, Tom Sgouros, and Nathan Potter
+
+[Note from James Gallagher: The breakout session was lead by myself
+and notes were taken by Tom Sgouros.  Afterward, some of the points
+raised during the session were clarified or further embellished and I
+have noted the additional information. I did not attribute items to
+individuals because it is too easy to leave people out.  Many people
+have contributed to the DAP's new design.]
+
+The emerging 4.0 specification, which uses XML to represent DAP objects,
+spans several documents and adds some new data types, was well received.
+
+Here is a rough accounting of the session minutes.  Where an
+attribution is not made, several people made the same point.
+
+Jose: The specification contains most of the data model issues.  But
+the specification needs to be more than a data model.  It needs
+detailed description of the interaction between clients and servers.
+It may also need description of the headers and othere details at that
+low level.  State diagrams, indicating how a client or server changes
+from one state to another would be helpful.  Also, in the current
+specification, client requests are not well-defined.  
+
+A discussion was had about promoting the Version to XML object.
+Agreement was reached that it wasn't a bad idea, and should be done.
+
+The suggestion was made to promote client requests to an XML document,
+too.  In HTTP-speak, POST becomes the default, but the HTTP services
+specification defines a way to translate the POST into a GET URL.
+
+Joe suggests describing the services each in their own document.  And
+suggests that opendap.org is the repository for the .info service, the
+.html service, the .grads service
+
+Glee was expressed about making the HTML service with a XML DDX.
+
+A comment was made and seconded that teh DDX is often too big, like
+when you want details about three variables, and you get much much
+more, like global attributes and so on.  Perhaps this is a down side
+to combining the information in the (former) DAS and DDS into the
+DDX. 
+
+Jose: if you have a protocol that includes post-processing
+capabilities, as well as behavioural changes, that would be powerful.
+The idea is to have the client make requests from the server that have
+some detailed processing steps.  These would be made with some kind of
+server directives.
+
+A discussion ensued about stateless vs. stateful protocols.  Jose says
+he has a way to make stateful requests in a stateless protocol, but he
+left it as an exercise for the reader.
+
+Server-side analysis is something that Joe (and Benno) want.  This
+could fit in with the directives.
+
+James: in a sense we do have directives already: deflate, data type
+limitation requests, etc.  But perhaps it could become a more general
+mechanism. 
+
+Joe presented the following list, with the intention that one
+should be able to express all of the following things in XML:
+
+\begin{itemize}
+\item dataset structure
+\item dataset attributes
+\item data values
+\item subsetting constraints
+\item service identifiers (.grads, .ascii, .html)  (messages from
+  server to client)
+\item errors
+\item service requests (messages from client to server)
+\item behavioral directives a/k/a connection state
+\item post-processing directives (e.g. averages)
+\item deltas (e.g. AIS)  see XSLT.
+\end{itemize}
+
+Joe also suggested a central registry for controlling the names of
+functions (services), at opendap.org.  This would also create an
+informal discovery mechanism for those services.
+
+Jose: Extensions to the server are good.  We also need a good
+definition of the state a client can drive the server to.  State
+diagrams again.  Matching diagrams for server and client so you can
+see what state each one is in at a given time.
+
+The suggestions was made that the delivery of opendap error objects
+must not fail. 
+
+John: suggests a checksum for XML documents.
+
+Joe: Another point.  In the CE syntax, there's a dereferencing
+operator.  No one uses it, it's hard to implement.  So kill it.  This
+met assent all around, and was immediately put on the ``to-do'' list.
+
+Jose: Need extensible services, that can be plugged in.
+
+The issue of swath data types was raised.  We are quite clear that
+there is a shortcoming here, but no one was familiar enough with the
+problem to suggest a useful solution.  Jose suggests \ac{STL} as a way
+to define templates for defining data types.
+
+James adds the following from notes taken during a related
+conversation with Joe Wielgosz on 4/3/03:
+
+Do everything in XML; requests as well as responses.
+
+Allow requests to multiple datasets (echoes comments made by Jose) in the XML
+request document. [This could be \emph{the} inteface for requests supported DAP.
+We would build (and specify) other interfaces like SOAP and the current
+URL-based interface. Those interfaces would be translated into the protocol
+as needed.)
+
+Different things that can be requested:
+
+\begin{itemize}
+\item Names of the datasets (can be used to generate a THREDDS
+  catalog) [How does this overlap with THREDDS' automatic generation
+  tool?] 
+
+\item Variable names for a given dataset
+
+\item Metadata for a dataset/variables
+
+\item Data for variables (possibly from a different dataset)
+
+\item Server manifest (server, protocol version, and the names of services, both
+  dependent and independent of the transport protocol)
+
+\end{itemize}
+
+The following should be added to the constraint expression syntax:
+
+\begin{itemize}
+\item $[\ ]$ for sequences
+\item selection for arrays (and grids)
+\item grid selection using map vectors
+\end{itemize}
+
+\paragraph{Add a ragged array datatype}  This datatype would not support selection by
+value. It would provide a way for clients to understand that certain
+parts of in situ datasets cannot be part of a selection expression
+(typically because to do so is too inefficient).
+
+Design binary objects to support Error reporting. We should enable a chunked
+transfer native to the DAP for these objects. Let the server decide on the
+chunk size.
+
+Authentication: Add a third type of object used for permissions. This would
+be controlled by some outside authentication subsystem (SSL, whatever the
+Grid settles on...) and would describe what a given user is allowed to do.
+
+
+From a 4/4/03 email from Jose:
+
+We spoke of the DAP having two main components, the data model and an
+application protocol. We talked about how the application protocol in
+the form of URL containing a constraint \emph{for} the data model have been
+used in ways that are beyond the original idea mostly to support server
+side functions, etc.
+
+I tried to highlight the importance of a new DAP application protocol
+(please notice the data model does not get affected) in order to be able
+to grow opendap servers. From there we moved into state
+vs. stateless.
+
+% $Id$
+%
+% $Log: dapspecbreakout.tex,v $
+% Revision 1.3  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.2  2003/04/29 14:50:23  tom
+% fixed for LaTeX and hylerlatex
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: plain-tex
+%%% TeX-master: t
+%%% TeX-master: t
+%%% End: 

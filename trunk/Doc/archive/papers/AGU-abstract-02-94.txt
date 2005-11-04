@@ -1,0 +1,87 @@
+$TITLE$
+The Client-Server Based Distributed Oceanographic Data System:#
+Report on the System Design
+
+[*James Gallagher*] (Graduate School of Oceanography, University of Rhode
+Island, Narragansett, RI 02882-1197; ph. 401 792-6939; fax 401 792-6728;
+Internet: jimg@dcz.gso.uri.edu); George Milkowski (Graduate School of
+Oceanography, University of Rhode Island, Narragansett, RI 02882-1197;
+ph. 401 792-6939; fax 401 792-6728; Internet: george@zeno.gso.uri.edu; Omnet:
+G.MILKOWSKI); Peter Cornillon (Graduate School of Oceanography, University of
+Rhode Island, Narragansett, RI 02882-1197; ph. 401 792-6283; fax 401
+792-6728; Internet: pete@petes.gso.uri.edu)
+
+Direct access to oceanographic research data is the main thrust of the
+Distributed Oceanographic Data System (DODS). While systems exist that
+provide location information about data in archives, few systems provide
+direct access to the actual data. While CD-ROM distributed data provides
+direct access, its production requires too much overhead for our ideal view
+of the DODS. We envision a system which will provide access to the most
+current version of a scientists data while at the same time requiring little
+or no additional effort beyond storing the data on a computer. Paramount to
+the success of the DODS is the participation of active research
+oceanographers. To develop the requirements for the DODS we held a workshop,
+sponsored by The Oceanography Society with additional funding support from
+NASA and NOAA, where oceanographers, system developers and data center
+managers contributed. The emphasis was on the oceanographer's research needs.
+
+The basis of the projected DODS' design is the well known client-server
+paradigm. DODS servers are located at each machine that has on-line data
+which is made accessible to the system. The servers perform two basic
+functions: data location and data access. While at the time of this writing
+the design has not yet been finalized, we hope to integrate the data location
+capabilities with existing network system such as the World Wide Web (WWW)
+and/or the Wide Area Information Server (WAIS) system. In contrast to many
+system, we do not envision data moved from the researcher's computer to a
+central archive when it is added to the system. While the DODS will support
+access to data held at a central archive, the DODS provides access to data
+still held by the researchers who originated the data set. Users on any
+connected computer use client software to search or access data on one or
+more of these servers.
+
+The DODS will provide access to data in a self describing form. Data may
+either be stored in the DODS self describing format, one of a set of other
+self describing formats or may be stored in the scientists own `native'
+format. In the later case, server-side translators will transform, on the
+fly, the native format data into a self describing data stream when it is
+accessed by a client. The self-describing nature of the data stream accessed
+by DODS clients provides a uniform level of documentation about those data
+streams. In addition, the DODS servers support optional features which
+simplify providing extra information about individual data sets. Because
+these features are optional, data providers do not need to follow a long and
+cumbersome documentation procedure to make data available to the community at
+large. However, any additional documentation they do choose to provide can be
+accommodated by the system, thus increasing the value of the data.
+
+
+$INFO$
+
+1.  1994 Ocean Sciences Meeting
+
+2.  000133197
+
+3.  (a) James Gallagher
+        Graduate School of Oceanography
+	University of Rhode Island
+	Narragansett, RI 02882-1197
+    (b) 401 792-6939
+    (c) 401 792-6728
+
+4.  OT
+
+5.  (a) OT02 Data and Information System for Oceanography
+    (b) 6339 System Design
+	6620 Science Policy
+	6344 System operation and management
+
+6.  N/A
+
+7.  None
+
+8.  Charge $50 to VISA card 4784 8000 0100 2804 exp 03/95
+
+9.  C
+
+10. None
+
+11. No

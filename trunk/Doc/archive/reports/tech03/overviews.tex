@@ -1,0 +1,62 @@
+
+\subsubsection{Peter Cornillon: The \ac{PI} Overview}
+
+Peter Cornillon, the project \ac{PI}, gave an overview of the project,
+including the current status, and a background overview for the
+newcomers to the meeting.
+
+\subsubsection{Steve Hankin:  Role of \ac{OPeNDAP} in \ac{IOOS}}
+
+Steve Hankin, \ac{DMAC}, \ac{PI}, gave an overview of the needs of the
+\ac{IOOS}, and the roll \ac{OPeNDAP} already plays in the plans for
+\ac{IOOS}.  In particular, \ac{OPeNDAP} is the ``operational
+component'' for moving gridded data within the system, and is a
+``pilot component'' for in-situ data within the system.  The challenge
+will be to bring all the varied components together to make the
+\ac{DMAC} work to provide the infrastructure necessary to move data in
+a smooth and timely fashion, to achieve the goals of IOOS.
+
+Specific to the topics of this conference, IOOS needs to
+be able to serve large quantities of in-situ data, which will
+require aggregation of large collections, and the development of
+efficient ways of accessing the varied formats for storing in-situ
+data.  IOOS also needs a comprehensive semantic ocean data model
+which will take advantage of the OPeNDAP discipline-neutral and
+general design, but will need controlled vocabularies to insure
+machine-to-machine interoperability.  Implementation will require
+a powerful \ac{AIS} capability on top of the \ac{OPeNDAP} \ac{DAP} 
+transport mechanism.
+
+\subsubsection{Peter Fox:  The Use of \ac{OPeNDAP} in the \ac{ESG} Project}
+
+Peter Fox presented an overview of the use of \ac{OPeNDAP} in the
+\ac{ESG} project to make available very large distributed climate
+datasets.  He reviewed the areas of development and the overall design
+architecture, including the institutions responsible for each part.
+Then he compared the older http-cgi based design with the new
+\ac{OPeNDAP} design, which will be protocol-independent, allowing for
+implementations on multiple network transfer protocols.
+
+Peter also reviewed \ac{ESG} services, and ended with some graphic
+examples of user interfaces.  The \ac{ESG} use of the \ac{DAP}
+requires capabilities that are distinct from the original
+implementation of the \ac{DAP} in C++ using HTTP.  Therefore, to make
+\ac{ESG} use of the \ac{DAP} compatible with other implementations,
+the new \ac{DAP} Specification must be completed so that future
+implementations can conform to the new Specification.
+
+% $Id$
+%
+% $Log: overviews.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:43  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

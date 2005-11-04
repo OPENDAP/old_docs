@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:12 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- INFO</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_40.html"><img alt="Help" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_38.html"><img alt="HTML" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>INFO</b></td></tr></table>
+<h3>INFO</h3>
+
+<em>[Add text ...]</em>
+<p>The <tt>info</tt> response MUST present the user with an HTML document
+that contains the information in the DDS and DAS. This intent is to
+present this information in a way that can be rendered by a WWW
+browser. Structural information about the dataset SHOULD be preserved so that
+users can build URLs by hand.
+<p>The <tt>info</tt> response MAY also return other information. If server
+installers and/or dataset maintainers add HTML which describes the
+dataset or the server, this information MUST be merged into the HTML
+document returned in response to the <tt>info</tt> request.
+<p>The purpose of the <tt>info</tt> response is to supply information about the
+dataset in a form that is easy for people to read. It should be structured so
+that after only a little experience people can easily assess a dataset using
+the document. In addition, the <tt>info</tt> response may be used in creating
+various user interfaces which access data using DAP servers.
+<p>The usage server should provide:
+<ol><li>The hierarchical relation of container variables.
+<li>Each variable's datatype.
+<li>Each variable's attributes.
+<li>Any global attributes that the dataset contains.
+<li>Extra information supplied by the dataset creator/maintainer.
+</ol>
+<p>Mechanism:
+<ol><li>Access to the HTML version of the usage information will be via a URL
+  with the suffix <tt>.info</tt>.
+<li>Dataset creators/maintainers will be able to supply a set
+  of pseudo-HTML documents that will be concatenated with the information
+  derived from the DAS and DDS objects. 
+<p><pre class="i">
+Here in a vcode temporarily...
+Per-dataset HTML*:
+
+
+    &lt;h3&gt;
+    About the Fleet Numerical Ocean Winds dataset
+    &lt;/h3&gt;
+
+    The FNOC dataset is used as a sample dataset for testing of DODS. It is a
+    `real' scientific dataset, but I really don't understand what it means.
+
+    &lt;p&gt;
+
+NB: This file must be in the same directory as the dataset. Note that the
+same &lt;basename&gt;&lt;digits&gt;.html scheme used for the override file is used
+here.
+
+Per-server HTML*:
+
+    &lt;h3&gt;
+    Server Functions:
+    &lt;/h3&gt;
+    &lt;dl&gt;
+    &lt;dt&gt;geolocate(variable, lat1, lat2, lon1, lon2)
+    &lt;dd&gt;Returns the elements of &lt;em&gt;variable&lt;/em&gt; that fall within the box
+    created by &lt;em&gt;lat1&lt;/em&gt;, &lt;em&gt;lon1&lt;/em&gt; and &lt;em&gt;lat2&lt;/em&gt;, &lt;em&gt;lon2&lt;/em&gt;.
+
+    &lt;p&gt;
+
+    &lt;dt&gt;time(variable, start\_time, stop\_time)
+    &lt;dd&gt;Returns the elements of &lt;em&gt;variable&lt;/em&gt; that fall within the time
+    interval &lt;em&gt;start\_time&lt;/em&gt; and &lt;em&gt;stop\_time&lt;/em&gt;.
+    &lt;/dl&gt;
+
+    &lt;p&gt;
+
+NB: This file must reside with the server. For the netcdf server (which is
+made up of nph-nc, nc\_das, nc\_dds adn nc\_dods) this file is called nc.html).
+</pre>
+<li>There will be an override mode where only the user supplied HTML is
+  returned. Thus if the automatically generated part of the server fails for
+  a particular dataset the creator/maintainer can work around that problem.
+<p>  If an override file is present, the <tt>info</tt> response MUST return that
+  file INSTEAD of the automatically generated HTML document. The
+  contents of the override file MUST be well formed HTML.
+<p>  An override file is a file who's extension is <tt>.ovr</tt> and who's
+  basename<sup><a HREF="dap_49.html#footnote-9">9</a></sup> matches that of the dataset of which the
+  <tt>info</tt> request was made. This requirement is amended in one way; if
+  a dataset's basename ends in a number, an override document need not
+  include that number in its basename. In this case, the override document
+  SHALL be applicable to all of the datasets which have a common basename not
+  including the number if and only if an override file with a name which
+  matches exactly is not present.
+<p>  Some example dataset names and override files:
+  <ul><li>[temp.ovr] Matches: temp.dat.
+    <li>[fnoc.ovr] Matches: fnoc1.nc, fnoc2.nc, ..., fnoc10.nc. It does
+      not match fnocx.nc.
+    <li>[fnoc1.ovr] Matches: fnoc1.nc and fnoc10.nc but not fnoc2.nc. But
+      if a fnoc10.ovr file is present that must take precedent.
+  </ul>
+</ol>
+<p><em>[Insert information from usage-server.txt]</em>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_40.html"><img alt="Help" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_38.html"><img alt="HTML" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>INFO</b></td></tr></table></body></html>

@@ -1,0 +1,165 @@
+% This is the FreeForm ND User Guide
+% 
+% $Log: ff.tex,v $
+% Revision 1.2  2004/04/21 19:48:18  jimg
+% Removed some of the latex commands since they duplicae things in
+% boiler/dods-def.tex.
+%
+% Revision 1.1  2000/11/28 21:43:41  tom
+% moved the freeform books to the DODS-doc/server/freeform directory
+%
+% Revision 1.3  1999/08/30 20:24:28  tom
+% use rcsInfo in version number
+%
+% Revision 1.2  1999/08/30 15:50:08  tom
+% added parallel book for DODS Freeform server.  See ff/README for details.
+%
+% Revision 1.1  1999/03/22 21:26:21  tom
+% converted original book source to LaTeX, put into CVS
+%
+%
+%\tracingmacros=1
+\documentclass{dods-book}
+\usepackage{longtable}
+
+\rcsInfo $Id$
+
+\newcommand{\DOCversion}{Version \rcsInfoRevision}
+%\newcommand{\ffnd}{FreeForm ND}
+%\newcommand{\ffs}{DODS FreeForm ND Server}
+\newcommand{\FFND}{FreeForm ND Data Access System}
+
+
+\include{../../boiler/layout}
+\include{../../boiler/dods-def}
+
+\htmldirectory{ff-html}
+\htmlname{ff}
+\htmltitle{FreeForm ND Data Access System}
+\htmladdress{Tom Sgouros, \today}
+\newcommand{\DODSPrevUrl}{\DODSuserUrl}
+\newcommand{\DODSNextUrl}{\DODSapiUrl}
+\newcommand{\DODSPrev}{\DODSuser}
+\newcommand{\DODSNext}{\DODSapi}
+
+\figpath{ff/figs}
+
+\makeindex
+
+\begin{document}
+%------------------------------------front matter
+\title{\FFND\ User's Guide\\A Flexible System of Format Descriptions 
+for Data Access\\\DOCversion}  
+\author{NGDC, URI}
+\pagenumbering{roman} 
+\maketitle
+
+\W\pslink{ftp://ftp.unidata.ucar.edu/pub/dods/ps-docs/ff.ps.gz}
+
+\W\include{ff/preface}
+
+\subsubsection{THANKS}
+
+To the developers of FreeForm and FreeForm ND: Tom Carey, S.D Davis,
+Liping Di, Rich Fozzard, Kevin Frender, Ted Habermann, Mark A.
+Ohrenshall, John Rex, Mark Van Gorp, and others. Special thanks to
+Mark A. Ohrenshall for his meticulous documentation of the design and
+development of FreeForm ND and for writing this document.
+
+This document has been updated to include information on FreeFrom ND,
+by Emma Gibson and Tom Sgouros.
+
+\subsubsection{TRADEMARKS}
+
+All brand and product names are trademarks of their respective
+companies. Mention of a commercial company or product does not imply
+endorsement. Using information from this publication concerning
+proprietary products for publicity or advertising purposes is not
+authorized.
+
+\T\include{ff/preface}
+
+\tableofcontents
+%\listoffigures
+\listoftables
+
+\clearemptydoublepage
+%------------------------------------book body
+
+\pagenumbering{arabic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 1 is an introduction to the whole thing.
+\include{ff/intro}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 2 is for a quick start
+\include{ff/quick}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 3 is about format descriptions for tabular data.
+\include{ff/tblfmt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 8 explains how to convert different header formats.
+\include{ff/hdrfmts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 4 is about format descriptions for array data.
+\include{ff/arrayfmt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 5 is a collection of ff conventions: filenames search paths,
+% etc.
+\include{ff/convs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 6 explains some format conversion tools
+\include{ff/fmtconv}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 7 explains how to convert variable in your dataset.
+\include{ff/convvars}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 9 explains how to use the checkvar program
+\include{ff/datachk}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 10 shows an illustrative example program using ffnd.
+\include{ff/ffapps}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter A describes some HDF utilities
+\include{ff/hdfutils}
+
+%------------------------------------back matter
+%\part{Appendices}
+\appendix
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendix describes the details of the variable name conversion
+% mechanism.
+\include{ff/varnames}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendix describes the query language.
+\include{ff/query}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendix lists error codes.
+\include{ff/errors}
+
+
+\printindex
+
+\end{document}
+
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

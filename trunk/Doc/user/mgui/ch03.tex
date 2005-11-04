@@ -1,0 +1,1074 @@
+% Chapter to the Matlab GUI User Guide
+%
+% $Id$
+%
+%
+
+\chapter{Adding Your Own Datasets to the \GUI}
+\label{gui,adding}
+
+
+There are a few reasons you may need to add a dataset to the \GUI.  
+
+\begin{itemize}
+\item You may be interested in an \opendap data source that hasn't
+  been put into the \GUI\ already, 
+\item You may want to add to or modify some of the metadata supplied
+  for one of the \GUI\ datasets, or
+\item You may have some of your own data you want to make available
+  via \opendap.
+\end{itemize}
+
+
+It is possible to add datasets to the ones that come with the \GUI,
+and to edit or add to the metadata for the datasets that do come with
+it.  This will require some minor programming in Matlab, but much of
+the time it's fairly simple.
+
+The \GUI\ is designed for the retrieval and display of data served by
+an \opendap server. This means that in order for the \GUI\ to read
+your data, there must be an \opendap server, on a machine connected to
+yours \subj{Start with getting your data served by an OPeNDAP
+  server.}  somehow, with access to that data.  The machine serving
+the data could be connected to yours on a local network or by the
+internet, or it could even be on your own computer.  Either way, the
+data must come from an \opendap server.
+
+Making your data available by an \opendap server is a fairly
+straightforward affair for datasets stored in one of the several
+supported formats.  The server itself is a typical web server
+(\lit{httpd}), adapted with a set of \opendap CGI programs. To set up a
+server for your data, please refer to \OPDuser .  You can find it and
+all the other \opendap documentation at \OPDhome.
+
+Once a \opendap server is set up to serve your data, the dataset may be
+added to the \GUI\ by providing the following pieces of information.
+Many datasets can use minimally modified versions of one or more of
+these pieces from existing datasets. Each of these are detailed in the
+sections that follow.
+
+
+
+\begin{itemize}
+  
+\item An ``archive'' M-file, to describe the data in the dataset.
+
+\item A \class{Get} function that accepts a data range and retrieves
+  data from the remote dataset. This is also called the \lit{getxxx}
+  function. Most often it's possible to use (or adapt) one of the
+  existing \lit{getxxx} functions.
+
+\end{itemize}
+
+
+\section{The Archive File}
+\label{gui,adding,archive.m}
+
+The archive M-file is a Matlab program that sets a number of
+variables describing various aspects of some dataset. In order for the
+browser to display the geographic and temporal bounds of a dataset,
+they must be specified in this file.
+
+Many archive M-files exist in the DATASETS directory. If your dataset
+resembles (in data structure) one of the datasets already in the \GUI\ 
+dataset collection, it may be \subj{The archive M-file describes a
+  dataset to the GUI.}  simplest to copy the corresponding archive
+M-file and modify it (and its corresponding \lit{getxxx} function) to
+suit the new dataset. For example, the Reynolds Weekly Sea Surface
+Temperature data are stored in a single file, containing a global
+one-degree grid of temperature for each week covered. If your data are
+stored as a similar grid, it will likely be easier to copy the
+Reynolds M-files and adapt them than to write new ones from scratch.
+
+\subsection{An example}
+
+The following archive M-file describes the Levitus ocean atlas
+dataset.  (You can find it in the DATASETS directory, called
+\lit{woa94mon.m}.)  Many of the M-files follow the same basic
+structure.  Most of the variables set here are necessary for
+the operation of the browser. A few of them, however, are set only for
+the convenience of the \lit{getxxx} function (called \lit{getrectg}
+here). If you have to write a new \lit{getxxx} function, you may not
+need them.
+
+\begin{vcode}{xib}
+%  World Ocean Atlas Monthly Climatology
+
+% FUNCTIONS -- REQUIRED
+GetFunctionName = 'getrectg';
+
+% VARIABLES -- OPTIONAL
+Server = ['http://ferret.wrc.noaa.gov/cgi-bin/nph-nc',...
+   '/data/Ocean_atlas_monthly.nc'];
+axes_order = [4 3 2 1];
+% force time axis to correct day [Y M D H M S]
+Time_Offset = [0 0 -1 0 0 0];
+
+% VARIABLES -- REQUIRED
+LonRange = [20.000 380.000];
+LatRange = [-90.000 90.000];
+TimeRange = [1800 str2num(datestr(date,10))];
+DepthRange = [0.0 1000.0];
+DepthUnits = 'Meters';
+Resolution = 111.0;
+
+DataName = 'Water Column - World Ocean Atlas 1994 Monthly - PMEL';
+SelectableVariables = str2mat('Sea_Temp', 'Salinity');
+DodsName = str2mat('TEMP','SALT');
+
+Acknowledge = sprintf('%s\n%s\n%s\n%s\n%s', ...
+Comments1 = sprintf('%s\n', ...
+\end{vcode}
+
+The following variables are for use by the browser.
+
+\begin{description}
+\item[\lit{GetFunctionName}] This is the name of the \lit{getxxx}
+  function that will return both the catalog information as well as
+  the actual data.  See \sectionref{gui,adding,get}.  The
+  \lit{getrectg} function is a common one used to return gridded
+  multi-dimensional data.  The \lit{getxxx} function must be available
+  in your \lit{MATLABPATH}.
+  
+\item[\lit{LonRange}, \lit{LatRange}, \lit{TimeRange},
+  \lit{DepthRange}] These four two-element vectors describe the
+  spatial bounds of the dataset's data. This dataset is stored on a
+  grid; the first elements of these range vectors indicate the
+  positions of the first row (column) in the dataset. The latitude and
+  longitude are given in decimal degrees.  Times are given in decimal
+  years. In the example here, the data is a climatology, an average
+  over many years This means that the entire time range isn't
+  particularly meaningful (which is why it's set to the maximum),
+  though being able to select by time is important, so you can select
+  the appropriate month.
+
+\item[\lit{DepthUnits}] This is a character string naming the units in
+  which the data stores depth information.  The \GUI\ has no knowledge
+  of units, so it's really just an axis label.
+  
+\item[\lit{Resolution}] This is a value, in kilometers, of the
+  distance between adjacent horizontal values in the grid.  The \GUI\ 
+  is only set up for grids with the same resolution in the X and Y
+  dimensions.  For georeferenced grids, the resolution refers to the
+  distance between adjacent X values at the equator.
+  
+\item[\lit{DataName}] This is the name of the dataset, to be used in
+  the bookmark list. 
+  
+\item[\lit{DataRange}] An array of data pairs, giving an upper and
+  lower bound to the data.  The entries in the array correspond to the
+  entries in the \lit{DataNull} array.  This matrix is used by the
+  browser plot functions to create a consistent color scale for the
+  imaging of multiple returning data slices within one dataset.  It is
+  \emph{only} used for \lit{image} and \lit{pcolor} plots.  An entry
+  of \lit{[NaN NaN]} indicates the total range of that variable is
+  not known and the browser should scale each image using the local
+  minimum and maximum.  The temptation to write in non-NaN scale
+  entries for longitude should be avoided, since the browser
+  converts longitude to match the current window view upon return.
+  Not required.
+
+\item[\lit{Comments}] A detailed description of the dataset.  To avoid
+  Matlab limitations on the length of a command, data descriptions may
+  be broken up into several input lines, which are then concatenated:
+
+\begin{vcode}{xib}
+Comments1 = sprintf('%s\n', ...
+    '        Levitus (1982) Climatological Atlas of the World Ocean', ...
+    '    ', ...
+    'Annual climatologies of salinity and temperature on 1x1 degree ');
+
+Comments2 = sprintf('%s\n', ...
+    '    ', ...
+    'Levitus, S., Climatological Atlas of the World, NOAA/ERL GFDL', ...
+    'Professional Paper 13,  Princeton, N.J.,  (NTIS PB83-184093),', ...
+    '1982.');
+Comments3 = sprintf('%s\n', ...
+    '    Time_Period_of_Content = ', ...
+    '         Beginning_Date:1935 ', ...
+    '         Ending_Date:1978 ');
+
+Comments = [Comments1 Comments2 Comments3];
+    
+\end{vcode}
+
+
+\item[\lit{Acknowledge}] A text string indicating how uses of this
+  data should acknowledge its originator.
+
+\item[\lit{Data\_Use\_Policy}] A text string indicating what
+  limitations are set on the use of this data.
+
+\end{description}
+
+\subsection{Getrectg function variables}
+
+A few variables aren't used by the \GUI, but are used by
+\lit{getrectg}, the \lit{getxxx} function used here.  They are
+documented here because the \lit{getrectg} function is flexible enough
+to be used for many different gridded datasets.  See
+section~\ref{gui,adding,get} for more information about the
+\lit{getxxx} API.
+
+\begin{description}
+  
+\item[\lit{Server}] The server from which the data in question will
+  come.
+  
+\item[\lit{axes\_order}] The dataset may store its variables in a
+  different order than the \GUI\ expects them.  You can use this
+  vector to rearrange the variables before \lit{getrectg} returns
+  them.
+    
+\item[\lit{Time\_Offset}] Data providers often disagree whether a time
+  value marks the beginning of the interval, or the middle, and
+  whether the first unit is number one or number zero.  You can use
+  this six-element vector to provide a constant with which to adjust
+  the time values from the dataset.  The elements are adjustments to
+  the year, month, day, hour, minute, and second, in that order.  For
+  example, the offset vector in the example instructs \lit{getrectg}
+  to subtract one day from the day values in the dataset before
+  returning them to the \GUI.
+
+\item[\lit{LongitudeName}, \lit{LatitudeName}, \lit{TimeName},
+    \lit{DepthName}] These identify the names of the spatial
+  quantities as used in the dataset.  Data requests to the \opendap server
+  will be made with these names.  The variables may contain empty
+  strings if no meaningful information is returned by the server about
+  any of these variables.
+  
+\item[\lit{SelectableVariables}] The names of the variables in the
+  dataset. These are the names that will be used in displaying the
+  data to a user.  Wherever possible, you should use a name that is
+  already in use in the browser.  For example, `Salinity' is already
+  in use.  If you are adding a dataset containing salinity
+  measurements, don't call it `Salt', unless there is some reason you
+  don't want to see your dataset in a list of datasets containing
+  salinity measurements.
+  
+\item[\lit{DodsName}] This is the name of the selectable variable as
+  used by the dataset server.  Data requests to the dataset server
+  will be made using these names.  For example, though the \opendap
+  standard is to use `Salinity' (see above), the dataset server itself
+  uses `SALT', and requests to that server must be made with that
+  name.  Each entry on this list must exactly correspond to an entry
+  on the \lit{SelectableVariables} list.
+  
+\item[\lit{DataNull}] This is a vector of null values, indicating
+  the ``no data'' value for each of the spatial variables (in order:
+  Time, Longitude, Latitude, and Depth), and each of the selectable
+  variables (in the same order as the \lit{SelectableVariables} list.
+  As data from the remote dataset is interned into Matlab, any values
+  matching the appropriate element of this array will be changed into
+  the Matlab NaN (``not a number'') value.
+  
+\item[\lit{DataScale}] A 2-column array, to be used in a linear
+  conversion from the data as it is received from the remote dataset.
+  The first column is the intercept and the second the slope.  The
+  rows the array correspond to the entries in the \lit{DataNull}
+  array.  Entries of \lit{[NaN NaN]} or \lit{[0 1]} do no scaling.
+  Within the \GUI\ an effort is made to present the data to the user
+  in SI units.  For example, density would be presented in $kg/m^3$.
+  Not required.
+  
+  \note{While technically not required, \lit{DataScale} and
+    \lit{DataNull} are in practice almost essential for the return of
+    intelligible results to the user.  In addition, for datasets that
+    use extreme values as a bad or missing data flag, (e.g., -9e42) ,
+    no meaningful plotting will be able to be done within the browser
+    unless \lit{DataNull} is declared.}
+
+\end{description}
+  
+  
+
+\subsection{Another example}
+
+In the Levitus Ocean Atlas example above, the time axis is faked using
+the start time, the stop time and the interval.  Some datasets consist
+of many similar files, corresponding to different times.  These
+datasets can benefit from using a catalog server to indicate the time
+at which data was measured.
+
+A catalog server is an \opendap server, serving a file that associates
+time data or other data values with \opendap data URLs.  (See the
+\OPDinstall for more information about setting up servers.)
+
+For example, the ASCII reply (see \OPDuser) of the catalog server
+corresponding to the Total Ozone Mapping Spectrometer (TOMS) project
+looks like this:
+
+\begin{vcode}{ib}
+TOMS.type, TOMS.year, TOMS.month, TOMS.day, TOMS.DODS_URL
+"ep", 2000, 1, 1, "http://daac.gsfc.nasa.gov/..."
+"ep", 2000, 1, 2, "http://daac.gsfc.nasa.gov/..."
+"ep", 2000, 1, 3, "http://daac.gsfc.nasa.gov/..."
+"ep", 2000, 1, 4, "http://daac.gsfc.nasa.gov/..."
+\end{vcode}
+
+The \GUI\ (the \lit{getrectg} function, actually) contains a provision
+for accessing this kind of catalog, but nominating a function to deal
+with this data.
+
+The archive M-file for the TOMS project looks like this:
+
+
+\begin{vcode}{xib}
+%      Total Ozone Mapping Spectrometer Daily Dataset
+
+% FUNCTIONS -- REQUIRED
+GetFunctionName = 'getrectg';
+
+% FUNCTIONS -- OPTIONAL
+Cat_m_File = 'ffcsquery';
+CatalogServer = [ 'http://daac.gsfc.nasa.gov/daac-bin/nph-ff/DODS/catalog/', ...
+                'toms-cat.dat'];
+
+% VARIABLES -- REQUIRED
+LonRange = [-180 180];
+LatRange = [90 -90];
+TimeRange = [1978.83287671233,2000.5];
+DepthRange = [0 0];
+DepthUnits = '';
+Resolution = 138.75;
+
+DataName = 'TOMS Global Level 3 Daily Gridded - GSFC';
+LongitudeName = 'LONGITUDE';
+LatitudeName = 'LATITUDE';
+TimeName = '';
+DepthName = '';
+SelectableVariables = str2mat('Total_Ozone','Reflectivity');
+DodsName = str2mat('TOTAL_OZONE','REFLECTIVITY');
+
+DataNull = [nan nan nan nan 0 999];
+
+Data_Use_Policy = '';
+
+Acknowledge = '';
+
+Comments1 = sprintf('%s\n', ...
+\end{vcode}
+
+The \lit{ffcsquery} function is packaged with the \GUI\ and is called
+by \lit{getrectg}, using the \lit{CatalogServer} identified.  To adapt
+this, you could create a catalog server, and use \lit{ffcsquery}, or
+it might be simpler to write a catalog function (\lit{Cat_m_File})
+that cheats and has the URLs and time values encoded within.
+
+\section{The ``Get'' Function}
+\label{gui,adding,get}
+
+The \lit{getxxx} function, another Matlab program, serves as the connection
+between the \opendap browser and individual datasets, hiding their
+idiosyncracies and providing a uniform interface between the browser
+and the data. Some get functions may serve for more than one dataset,
+such as \lit{getrectg.m}, a function that works for a number of
+gridded datasets.  The \lit{getxxx} function can be named anything, but
+\subj{The browser uses the getxxx function both to get data, and
+  information about data.}  convention dictates that the name be of
+the form \lit{get}\var{xxx}\lit{.m}, where \var{xxx} is some sequence
+of characters that indicates the dataset (or class of datasets) for
+which the \lit{getxxx} function is used.  Note that several \lit{getxxx}
+functions are provided with the \GUI ; be careful to avoid those
+names.
+
+A \lit{getxxx} function has 3 modes of operation (or 3 subroutines).
+Each mode receives the same input arguments, although for some
+arguments and some datasets, not all the incoming information will be
+used.  The modes differ in their action, \emph{and in the data they
+  return to the calling function}.  The input arguments to the
+\lit{getxxx} function are as follows:
+
+\proto{\lit{function [arg1,...] = }\lit{get}\var{xxx}
+  \hbox{\lit{(}\var{mode},} \hbox{\var{ranges},} \hbox{\var{dataset},}
+  \hbox{\var{vars},} \hbox{\var{stride},} \hbox{\var{num\_urls},}
+  \hbox{\var{georange},} \hbox{\var{variables},} \hbox{\var{archive},}
+  \hbox{\var{whichurl},}
+  \hbox{\var{url\_info}\lit{)}}}
+
+
+\begin{description}
+  
+\item[\var{mode}] A string argument which may be \lit{cat} (short for
+  `catalog'), \lit{datasize}, or \lit{get}. The return values of this
+  function differ depending on the \var{mode} argument.  They are
+  outlined in the following sections.
+  
+\item[\var{ranges}] A 4x2 matrix containing the current user-selected
+  longitude, latitude, depth and time ranges. The first column is the
+  minimum and the second the maximum.
+  
+\item[\var{dataset}] An index number into an ordered list of datasets
+  contained within the browser.  You can use this to check whether the
+  dataset is the same one as was specified in the previous request.
+
+\item[\var{vars}] A vector of indexes into an ordered list of
+  user-selectable variables contained within the browser.  You can use
+  this to check whether the request has changed since the last request
+  made, but use the variable list for the names of the requested
+  variables. 
+  
+\item[\var{stride}] A user-selected subsampling interval for gridded
+  datasets.  A stride value of two requests every other data value,
+  three gets you every third, and so on.
+
+\item[\var{num\_urls}] The number of URLs in a data request.
+  
+\item[\var{georange}] A two-element vector indicating the geographic
+  orientation and ranges of the browser display --- typically this
+  will be \lit{[-180 180]} or \lit{[0 360]} but can be set to other
+  values.
+  
+\item[\var{variablelist}] A character array of the variable names
+  selected by the user.
+  
+\item[\var{archive}] The name of the \var{archive}\lit{.m} file for
+the selected dataset.
+
+\item[\var{whichurl}] -- For a ``catalog'' mode request, this is a
+  structure containing information about the data to be found at the
+  URL.  For a ``get'' mode request, this is an index into a list of
+  URLs that comprise a data request.  The list will have been returned
+  by a \lit{cat} mode request to the \lit{getxxx} function.
+
+\end{description}
+
+In some modes, a particular input argument will not contain valid
+information.  For example, the input number of URLs is not valid for a
+catalog request, since part of the function of the catalog mode is
+to determine the number of URLs needed to satisfy a request.  However,
+all arguments are passed in each time for the sake of consistency.
+
+\subsection{\lit{getxxx} Function Modes}
+
+The \lit{getxxx} function operates in three different modes.  One mode
+returns URLs corresponding to a dataset, another returns estimates of
+the request size, and the third actually retrieves data.  The
+following sections describe the three modes.
+
+\subsubsection{Catalog mode}
+
+In \new{catalog mode} (or \lit{cat} mode) the browser is requesting
+information about location in time and space of the indicated dataset.
+\subj{Catalog mode is for determining the location of a dataset in
+  space and time.}
+The function takes the location of an indicated geo-spatial region
+(using the \var{ranges} matrix), and returns a list of the points
+where the queried dataset contains data.
+
+The return arguments from such a request are:
+
+\proto{\lit{[} {\var{x}}, \var{y}, \var{z}, \var{t}, \var{n},
+  \var{URL} \lit{] = getxxx( ... )}}
+
+\begin{description}
+  
+\item[\var{x, y, z, t}] Are one-dimensional vectors containing the
+  locations and times corresponding to individually addressable URLs
+  available to the browser user.  (Latitude and longitude in decimal
+  degrees, depth in meters from the surface, time in decimal years.)
+  These vectors will be used to plot tick marks on the browser
+  display, and the user will be able to select one or more of these
+  tick marks to get data.  All of the arguments must be returned,
+  although those that are not appropriate for a given dataset may be
+  returned empty.
+  
+  For example, a dataset containing buoy data might return a series of
+  $(x,y)$ pairs, a vector of depths indicating instrument depths, and
+  an empty time vector.  The browser will display the buoy locations,
+  and the depth levels, allowing the user to select specific buoys or
+  specific depths.  A dataset containing satellite images taken daily
+  might return only a time vector, indicating the times of each image.
+
+\item[\var{n}] is the total number of URLs identified by the catalog
+  function.  The browser will call the \lit{getxxx} function (in
+  \lit{get} mode) this many times to retrieve all the data referenced
+  in the \lit{cat} mode request.
+  
+\item[\var{URL}] A URL directed at the dataset, or at a catalog
+  server, if one was used to make the \lit{cat} mode request.  This is
+  displayed in case you would like to make this request (or a related
+  one) independent of the \GUI , say with \lit{loaddods}.
+\end{description}
+
+Sometimes the only way to provide the data requested in a catalog
+request is to contact the dataset's \opendap server for data, or contact a
+catalog server for information about the dataset (see
+\sectionref{gui,adding,tools}).  For some datasets, such as monthly
+climatologies, an internet request does not need to be made to satisfy
+the request --- instead a Matlab function can be written which
+examines the user-selected time and geographic ranges and determines
+how many of the climatologies fall within these ranges.  For other
+kinds of datasets, such as satellite datasets stored along a
+groundtrack, which repeat in a predictable but irregular pattern in
+time and space, reference satellite groundtrack locations and data
+densities can be stored in a local \lit{.mat} file. 
+
+During a catalog request, the \var{dataset}, \var{vars} and
+\var{ranges} values should be stored internally (i.e., in a global
+variable).  This is so that for future \lit{get} and \lit{datasize}
+mode requests, the \lit{getxxx} function will be able to determine
+whether or not the existing catalog is up-to-date.  If a \lit{get} or
+\lit{datasize} request is made where the data parameters have
+changed from the last catalog request, the \lit{getxxx} function should
+make a new catalog request internally, before satisfying the new
+request. 
+
+The \lit{getxxx} function should also internally store
+an ordered list of URLs based on this catalog request, or enough
+information to recreate those URLs when requested by the browser.
+
+
+\subsubsection{Datasize Mode}
+
+The function of the \new{datasize mode} is to provide the browser with
+an estimate of the size of a formulated data request as it will appear
+in the Matlab workspace (as a double-precision float).  When a data
+\subj{The browser uses datasize mode to estimate the size of a
+  data request.}  request is issued, the browser checks to see if the
+estimated datasize is below a threshold level (a level which defaults
+to 1Mb but can be set by the user).  If above that level, the browser
+requires the user to affirm the data transfer.  This is to prevent
+users from unintenionally requesting very large data transfers. (See
+\sectionref{gui,mref,Preferences}.)
+
+The previous values (from the most recent catalog request) of the
+\var{dataset}, \var{variable} and \var{ranges} variables should first
+be compared with the new values, to see if the catalog request is
+current.  If any of these values has changed, the \lit{getxxx} function
+should first call itself in \lit{cat} mode to get the number of data
+points or URLs or whatever the pertinent operative may be that causes
+the size of a data request to change.
+
+The return arguments from a \lit{datasize} request are:
+
+\proto{\lit{[} {\var{datasize}}, \var{num\_urls} \lit{] = getxxx [ ... ]}}
+
+\begin{description}
+  
+\item[\var{datasize}] The approximate size (in megabytes) of the data
+  that will be returned by the specified data request.
+\item[\var{num\_urls}] The number of URLs in the request.  (This is in
+  case a new catalog request was required during the \lit{datasize}
+  request.  If no new catalog request was required, the input
+  \var{num\_urls} argument can simply be returned.)
+\end{description}
+
+
+\subsubsection{Get Mode}
+
+The \lit{get} mode request (also ``data request'') queries the remote
+dataset for data.  The browser makes a \lit{datasize} request before
+\subj{And the get mode is for getting data.}  each data request,
+and a \lit{cat} request before each \lit{datasize} request.  This
+series is to be repeated if the user changes any of the search
+parameters, like the geographic ranges or times.
+
+The data request therefore need only operate on the ordered list of
+URLs generated by the most recent \lit{cat} request --- the browser
+simply increments the \var{url\_index\_number} from one to the total
+number of URLs and waits for each result.  However because the input
+information from the browser (such as the text list of selected
+variables) is passed in each time, the \lit{getxxx} function does not
+actually have to construct a URL until this point\footnote{This is a
+time-saver.  It is not necessary to construct URLs that won't be
+used.}.
+
+Sometimes it is appropriate to return a count of one URL to the
+browser while actually using more than one, internally.  This can
+occur when, for example, the user requests all data from longitudes
+40W to 40E from a gridded dataset with global coverage but the grids
+are stored with a split at 20E (that is, the longitude in the dataset
+ranges from 20E to 380E).  The \lit{getxxx} function in this case must
+either transfer the whole dataset, then subset and reformat it, or
+dereference two URLs, one from 40W to 20E and one from 20E to 40E, and
+combine the result.  In other words, the number of derefernced URLs
+returned by the \lit{getxxx} function should match what the browser
+expects based on the result of the catalog mode request.\footnote{If,
+on the other hand, the catalog function returned a count of two URLs
+for this particular request, those URLs should be dereferenced and the
+results returned to the browser separately.}
+
+The data should be scaled according to the \var{DataScale} information
+in the \var{archive}\lit{.m} file before being returned. 
+
+\smallbreak
+
+The return arguments from the \lit{get} mode are as follows:
+
+\nopagebreak
+
+\proto{\lit{[} \var{data}, \var{sizes}, \var{names}, \var{index},
+    \var{URL} \lit{] = getxxx[ ... ]}}
+
+\begin{description}
+  
+\item[\var{data}] is a $M\times1$ vector of data, where $M$ is the
+  total number of data measurements returned.  That is, all the data
+  are reshaped to a single column, with their original sizes recorded
+  in the 'sizes' argument.
+  
+\item[\var{sizes}] is an $N\times2$ array of array dimensions,
+  indicating the sizes of the returned arrays.  This requirement must
+  be met: \lit{sum(sizes(:,1).*sizes(:,2)) = M}.
+  
+\item[\var{names}] is a list of character strings with the same number
+  of rows as \var{sizes} --- each variable as it is unpacked will be
+  given the corresponding name.  The current convention is to rename
+  returning variables with the common names used in the browser.  If
+  `Longitude' and `Latitude' (exactly so) are not present, the browser
+  will not allow plotting on the browse window.  Some of the
+  \lit{getxxx} functions now written wll create longitude and latitude
+  vectors for gridded datasets using the information in the archive
+  M-files.  This is an occasionally useful tactic for troublesome
+  datasets. 
+  
+  \note{For the benefit of \mfour\ users, variable names should be no
+    longer than 19 characters.}
+
+\item[\var{index}] The index number is the
+index into this list:
+
+\begin{example}
+Time
+Longitude
+Latitude
+Depth
+SelectableVariables[1]
+.
+.
+.
+SelectableVariables[\var{n}]
+\end{example}
+
+  The browser uses this index into the \lit{DataRange} array in the
+  \var{archive}\lit{.m} file for mapping multiple images within the
+  same dataset to a unified color scale, and into the \lit{DataScale}
+  array for scaling the returned data.
+
+\item[\var{URL}] This variable should contain the URL dereferenced to
+  retrieve the data provided as a result of the \lit{get} request.
+
+  This variable is to be a single string --- if several
+  URLs have actually been dereferenced to satisfy what the browser has
+  treated as a single URL, they should all be included, concatenated
+  end-to-end, each separated by a space, i.e.:
+
+\end{description}
+                
+  If \var{TimeName} in the \var{archive}\lit{.m} file is empty because
+  the server doesn't actually return a time, you can insert a time
+  made up from the catalog request.  However this is not required;
+  every \lit{getxxx} function should be able to handle empty variables
+  correctly.
+
+  If any of the variable names resulting from dereferencing a URL is
+  longer than 19 characters, the data contained in that variable must
+  be requested separately for Matlab 4 users and the result mapped to
+  the first 19 characters of that variable.  That is, you must first
+  do:
+
+\begin{vcode}{ib}
+loaddods(URL)
+\end{vcode}
+%\noindent
+
+then
+
+\begin{vcode}{ib}
+[longname(1:19)] = loaddods(URL);
+\end{vcode}
+
+This is a workaround for a bug concerning long variable names interned
+into Matlab v4.
+
+\subsection{\lit{getxxx} Function Tools}
+\label{gui,adding,tools}
+
+\opendap provides several tools with which to construct your \lit{getxxx}
+function.  The tools fall into two broad classes: 
+
+\begin{itemize}
+\item \lit{loaddods}, the function used to dereference an \opendap URL, and
+
+\item a set of Matlab utility functions, useful for the sorts of
+operations likely to be needed by a \lit{getxxx} function.
+
+\end{itemize}
+
+\subsubsection{The \lit{loaddods} Function}
+
+The loaddods\footnote{loaddods is a Matlab MEX-file, and appears in
+your directories as \lit{loaddods.mex}\var{xxx}, where \var{xxx} is a
+suffix defined by Matlab for a particular machine architecture.  For
+example, \lit{loaddods.mexglx} would be for a GNU/Linux machine.  There is
+also a \lit{loaddods.m} function, which contains a help message for
+\lit{loaddods}.} function is the \opendap client for the Matlab browser.
+\subj{loaddods is at the heart of every getxxx function.}
+The function accepts a URL from the user, sends it out over the
+internet, and creates Matlab scalars, vectors, and matrices to hold
+the data that is returned from that request.  The \lit{loaddods.m}
+help file contains several examples of its use. (Type \kbd{help loaddods}
+at the Matlab command prompt.)
+
+The function is called like this:
+
+\proto{\lit{function \var{values} = loaddods([\var{switches},]
+\var{URL} [per-url switches] [, \var{URL} [per-url switches]])} }
+
+\begin{description}
+
+\item[\var{switches}]  These options are all off by default except for
+\lit{-v} which is on by default. 
+
+
+\begin{description}
+
+\item[\lit{-v}:] Verbose output. (This option is on by default; use
+  \lit{+v} to disable it).
+
+\item[\lit{-g}:] Use the Tcl/Tk progress and error reporting GUI.
+  (This displays a bar graph showing transmission activity, and is not
+  to be confused with the \GUI .  See \OPDuser\ for more information
+  about this feature.). 
+
+\item[\lit{-k}:] This switch causes \lit{loaddods} to concatenate two
+  or more variables with same name.  When reading from multi-file
+  datasets, use this option to concatenate the values read from
+  several accesses into a single Matlab variable. This is intended for
+  \lit{getxxx} functions which build up lists of URLs and pass them to
+  \lit{loaddods} for evaluation. 
+
+  You \emph{must} supply the URLs whose variables are to be
+  concatenated in a single invocation of \lit{loaddods}. The \lit{-k}
+  switch will not work across two or more calls to loaddods. That is,
+
+\begin{vcode}{ib}
+loaddods('-k', '<URL1> <URL2') 
+\end{vcode}
+
+will work, while calling \lit{loaddods} twice with \lit{-k} (once for
+URL1 and once for URL2) won't work. 
+
+\item[\lit{-n}:] This command switch causes Matlab variable names to
+  be built using the complete name of the variable, including all the
+  constructor types which contain it. Without \lit{-n}, variables are
+  named using the name of the leaf variable.  This means, for example,
+  that two separate \class{Structures} who each happen to have a
+  member with the same name will create a name conflict.
+
+\item[\lit{-s}:] Return a vector of variable names along with the
+  variables themselves.  The \lit{-s} option can only be used when
+  assigning the values accessed by \lit{loaddods} to a vector. If
+  \lit{-s} is used in this situation, then the first variable in the
+  vector will be set to a vector of strings which name the successive
+  variables.
+
+\item[\lit{-V}:] Print version information for loaddods and any
+  programs it uses. 
+
+\item[\lit{-t[abclmpstu]}:] Enable HTTP tracing (only for the hardcore...).
+
+\item[\lit{-F}:] Force all string variables to be translated to float.
+  The \lit{-F} option is needed when reading from datasets that return
+  as string values that should be interned as numbers.
+
+  \note[CAUTION]{This is a change from previous versions of
+    \lit{loaddods} and introduces potential incompatibilities with
+    version 1.5 and prior. In other words you'll need to change your
+    software if it used version 1.5 or earlier.}
+
+\item[\lit{-p}:] Recognize the DDMMSS strings and convert them (takes
+  precedence over \lit{-F}).
+  
+\item[\lit{-A}:] The \lit{-A} option provides a way to access the DAS
+  object of a dataset.  Given with a URL, \lit{-A} will cause all
+  attributes to be interned in the Matlab workspace. Given with
+  \lit{-c} only the contents of named attribute
+  \emph{container}\footnote{Note the distinction between attributes
+    and attribute containers.  A variable called ``v'' in some dataset
+    will correspond to an attribute container called ``v'' in the
+    dataset's DAS.  That container may contain attributes such as
+    ``precision'' or ``scale\_factor'' or ``units.''} in a dataset
+  will be interned. The latter is much safer since many DAS objects
+  contain long names and names that repeat in several containers.
+  Choosing an attribute container known to have `Matlab safe'
+  identifiers is a good idea. (See \OPDuser\ for more information
+  about the DAS structure, and attributes in general.)  Note that the
+  attributes are interned into the Matlab workspace under their own
+  names, not the name of the container\footnote{This is due to the
+    variable name length limitations of Matlab.}.
+
+  \note{While DAS objects are separate from the DDS (data) objects in
+    \opendap, once loaddods reads the information from the writeval client
+    program they are treated no differently than data objects. Each
+    attribute container is interned as if it was a Structure variable
+    in the \linebreak DDS object. }
+
+\end{description}
+
+\item[\var{per-url switches}]  These options are all off by default.
+
+\begin{description}
+
+\item[\lit{-r \var{var}:\var{new name}}.:] Rename a variable. 
+  The \lit{-r} option provides a way to rename variables so that
+  variables read will not overwrite ones already present in a Matlab
+  session.
+
+\item[\lit{-c \var{expr}}:] Supply a constraint without using the
+  \lit{?} notation. 
+
+\end{description}
+
+
+\item[\var{URL}] The \lit{loaddods} function should be called with a
+  \opendap URL which references data, in which case the command will
+  access the dataset and create Matlab data structures to hold those
+  data.  If the \var{URL} argument is a \lit{*} or \lit{?},
+  \lit{loaddods} will cause Netscape to start up and open the default
+  \opendap URL-builder.  If the \lit{*} or \lit{?} is followed by a URL,
+  then that URL will be used instead of the URL builder. Finally, when
+  called without an argument, the command will wait for a URL to be
+  passed to it by Netscape or another program\footnote{See the \opendap
+    \lit{urlqueue} program for information about this feature.}.
+
+\end{description}
+
+\subsubsection{loaddap}
+
+\indc{loaddap}\indc{structure!preserving}\indc{data structure!preserving}
+The \lit{loaddods} function is at the core of the \GUI.  However, for
+backwards compatibility, it was originally written not to take
+advantage of the advanced data structures now available in Matlab.
+The \lit{loaddap} function is a newer version, that makes use of
+Matlab data structures in an attempt to preserve the structure of
+datasets. 
+
+For example, if the target dataset contains three arrays in a
+structure, the \lit{loaddods} function will bring them in as three
+arrays.  The \lit{loaddap} function will import the data as three
+arrays in a structure, corresponding to the original arrangement.
+
+The use of \lit{loaddap} is identical in all other respects to
+\lit{loaddods}.
+
+If you find that the \GUI\ is more work than is necessary for your
+application, and you use the command-line client, you might consider
+using \lit{loaddap}.
+
+
+\subsubsection{Utility Functions}
+
+Several functions used in the \GUI\ are general enough to be of use to
+people who have to write new \lit{getxxx} functions\footnote{The \GUI\ 
+  is divided into two directories: the main directory, typically
+  called something like \lit{ml-toolbox}, and the \lit{DATASETS}
+  subdirectory contained in it.  Roughly speaking, the operational
+  division between these two directories is between the generally
+  useful functions and dataset-specific functions.  If a function
+  written for a specific dataset appears to be useful for other
+  datasets, it will be ``elevated'' to the main directory.}.  This
+section contains a short list of some of the functions likely to be
+useful.  The list is not complete, since the whole collection is
+\subj{These functions have been useful in writing the getxxx
+  functions provided with the GUI.  They may be useful to you, too.}
+fairly fluid, as new datasets are constantly being added to the
+archive.  We encourage function writers to browse the \GUI\ 
+directories before starting in on what may seem like a common problem.
+
+Many of the utility functions are listed below.  Use the Matlab
+\lit{help} command for details of their invocation.
+
+\begin{description}
+    
+\item[\lit{day2year}] Converts an integer day into a decimal year.
+
+\item[\lit{dods\_dbk}] Removes trailing blanks from a string, and
+  translates http escape sequences (e.g. \lit{\%20}) into underscores,
+  so that \lit{Surface\%20Temperature} gets translated into
+  \lit{Surface\_Temperature}.
+  
+\item[\lit{dods\_ddt}] (``de-dot'') Removes the parent structure name
+  from compound names. For example, \lit{Cast.Temperature} is changed
+  to \lit{Temperature}.  Actually, it removes all of a string up to
+  and including the right-most period.
+
+\item[\lit{findnew}] This function returns the position of
+  non-duplicate data in a vector.  It is useful for pruning duplicate
+  information from a string or vector.
+
+\item[\lit{isleap}] Accepts an integer year AD, and returns 1 if it is
+  a leap year according to Pope Gregory's newfangled calendar.
+
+\item[\lit{mminmax}] Finds the minimum and maximum of a vector or a
+  matrix, and returns them in a two-element vector.  The function is
+  robust with respect to NaN.
+  
+\item[\lit{strntok}] Given a string and a token separator, quickly
+  extracts tokens from short input strings.
+
+\item[\lit{year2day}] Converts a decimal year into an integer day.
+  (Note that \lit{1985.0} will return day 0.  To convert to the more
+  common calendrical representation, where days are numbered from one,
+  you must add one to the returned day integer.)
+
+\end{description}
+
+
+\section{Adding a New Dataset}
+\label{gui,adding,manifest.lcl}
+
+\indc{updating!local dataset list}\indc{dataset list!updating local}
+\indc{local dataset list!updating}
+Here's an example of how to add a gridded dataset to the \GUI.
+
+We start with just a URL:
+
+\begin{vcode}{xib}
+http://ferret.pmel.noaa.gov/cgi-bin/dods/nph-dods/data/
+  PMEL/large_trenberth_moncl.nc';
+\end{vcode}
+
+We will do this iteratively, improving our archive M-file as we go.
+For the first step, we'll use the following.  (We've shortened the URL
+here for formatting reasons.  Use the whole URL shown above.)
+
+\begin{vcode}{sib}
+GetFunctionName = 'getrectg';
+Server = 'http://ferret.pmel.noaa.gov/...
+          
+LonRange = [-180 180];
+LatRange = [-90 90];
+TimeRange = [1800.0 2000.0];
+DepthRange = [0.0 0.0];
+Resolution = NaN;
+DataName = 'Trenberth Wind Stress - PMEL';
+
+SelectableVariables = str2mat('Wind Stress U', 'Wind Stress V');
+\end{vcode}
+
+It's missing the DodsName variable, but we can find that information
+using \lit{loaddods}.  At the Matlab command line, type:
+
+\begin{vcode}{sib}
+DAS =loaddods('-A','http://ferret.pmel.noaa.gov/... ')
+\end{vcode}
+
+You can look at the DAS variable now, and you'll see a \lit{TAUX} and
+a \lit{TAUY}, so those must be the names for the stresses.
+
+So we'll add the following to the bottom of our tentative archive
+M-file:
+
+\begin{vcode}{sib}
+DodsName = str2mat('TAUX', 'TAUY');
+\end{vcode}
+
+Now open the bookmarks editor (control-B is a shortcut), select a wind
+dataset and copy and paste it to get a copy.  Open the properties
+editor for the new entry, and erase the name and archive.  Pick a new
+color, too.  Click \but{Apply} to make the changes in the bookmarks,
+and \but{Reload} to force the old archive files to be cleared, and to
+be reread, along with this new archive.  The dataset name should be
+filled in automatically with the information from the new (but still
+tentative) archive M-file.
+
+Now click \but{OK} to dismiss the properties dialog.  Once back in the
+bookmark editor window, Save (and apply to the GUI) and Close.
+
+Once back in the browser window, select the new dataset.  Select the
+entire time range and click \but{Get Details}.  You can examine the
+URLlist returned, and you'll see that the URL returned has only twelve
+data points in the time dimension.  This would imply that this is a
+climatology, containing monthly averages.
+
+\begin{vcode}{sib}
+http://ferret.pmel.noaa.gov/...?TAUX[0:1:11][0:1:72][0:1:143]...
+\end{vcode}
+
+We still don't know the resolution or actual geographic extent,
+but we can correct the original guess for TimeRange.  Substitute the
+following line for the original time range guess: 
+
+\begin{vcode}{ib}
+TimeRange = [1800 str2num(datestr(date,10))];
+\end{vcode}
+
+To update the bookmarks, you can press Ctrl-B to bring up the
+bookmarks editor, select the new dataset, Ctrl-I to get the properties
+editor, Press \but{Reload/Clear}, then \but{OK} to dismiss this
+window, Ctrl-S to save the bookmarks and apply them to the GUI again.
+
+Now select June 1947 and Wind Stress U and V and click \but{Get
+  Details}.  You will probbaly need to identify the axes again because
+reloading the archive clears the cached metadata.  Check the URL
+again, and you'll see the time slice which is selected in the
+URL:
+
+\begin{vcode}{sib}
+http://ferret.pmel.noaa.gov/...?TAUX[5:1:5][0:1:72][0:1:143]...
+\end{vcode}
+
+Month 5 (starting at zero) is June, so the time axis is set
+correctly.  Had it not been, we could use the \lit{Time-Offset}
+feature of \lit{getrectg} to correct it.
+
+Now we can click \but{Get Data}.  Go with the default plot option, and
+you'll see that the extent of the dataset is indeed global.
+
+To figure out the resolution, type this at the Matlab command prompt:
+
+\begin{vcode}{ib}
+>> diff(R1_Latitude)
+\end{vcode}
+
+This gives a value of 2.5 (so does the same test with Longitude), so
+we'll replace the Resolution line in the archive file with this one
+(111 km is the distance of one degree of longitude at the equator):
+
+\begin{vcode}{ib}
+Resolution = 2.5*111; 
+\end{vcode}
+
+To reload the new file, hit Ctrl-B to get the bookmarks editor, Ctrl-I
+get the properties, 'Reload/Clear' one more time, dismiss the
+properties, Ctrl-S, save and close.
+Select the new dataset, reselect 
+June 1947, and this time, a Resolution of 555.0 km.  Click
+\but{Get Data}, re-identify the axes one last time when prompted,
+and change the quiver plot color to 'r' (red).  Select ``overplot'' to
+plot on top of the previous ploy, and you'll see that the scaling is
+now different.  But you also see that you have every other data point
+and they are also clearly one per 5 degrees, so the addition has been
+a success.
+
+% $Log: ch03.tex,v $
+% Revision 1.7  2004/12/09 15:00:45  tomfool
+% touch-up
+%
+% Revision 1.6  2004/12/09 03:04:14  tomfool
+% updated for GUI 6
+%
+% Revision 1.5  2002/02/10 02:59:47  tom
+% updated for GUI version 5 and dods-book2 templates
+%
+% Revision 1.4  1999/05/25 20:47:46  tom
+% modifications for DODS release 3.0
+%
+% Revision 1.3  1999/01/20 15:18:39  tom
+% updated, and changed for dods-book.cls and hyperlatex
+%
+% Revision 1.2  1998/12/07 15:41:15  tom
+% updated for DODS v2.19 and GUIv0.7
+%
+% Revision 1.1  1998/02/12 18:10:41  tom
+% added to CVS archive
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
+
+
+

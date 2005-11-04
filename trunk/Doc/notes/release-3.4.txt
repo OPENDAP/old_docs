@@ -1,0 +1,486 @@
+$Id$
+
+
+Release 3.4.4: bug fixes and one addition.
+
+	- An opendap-config script was added to provide developers with 
+	information about an OPeNDAP installation. The opendap-script can be 
+	used with the "--cc" option to get the C compiler, with the "-cxx"
+	option to get the C++ compiler, with the "--cflags" option to get
+	the pre-processor and compiler flags, with the "--libs" option to
+	get library information for linking with the libdap++ library, with
+	the "--libs-nc" option to get library information for linking with
+	the libnc-dods library, or with the "--prefix" option to get the
+	OPeNDAP installations prefix directory. Also, multiple options can
+	be used at once. Thus allowing a sample program to be compiled and
+	linked to the libdap++ library with this command
+	"`opendap-config --cxx --cflags --libs` -o sample sample.c".
+
+	- We now include curl-7.12.0 in src/packages/libcurl. This is an update
+	from 7.11.1 and fixes a bug in digest authentication.
+
+	bug 710: Proxy authentication was not supported correctly. This has
+	been fixed; include the authentication information in the hostname
+	given using the PROXY_SERVER option in the dodsrc file. An example3
+	PROXY_SERVER setting for an HTTP proxy on 'localhost' using port 8080
+	is:
+		PROXY_SERVER=http,user:password@localhost:8080
+
+	Note that the proxy server must be configured to allow access from
+	'localhost.' 
+
+	- In the course of fixing bug 710, the PROXY_FOR option was disabled.
+          The implementation of this option was flawed; let me know if it's
+          needed. 
+
+	bug 716: The Fortran interface of the netCDF CL was reportedly
+	missing functions: I could not repeat this bug.
+
+	bug 713: The 'varm' interface of netCDF 3.x has been fixed. This
+	problem showed only with a 'translated' data source; in some cases
+	the original data source description was used in place of the
+	translated description.
+
+	bug 714: MODIS files' attribute access with the netCDF CL has been
+	fixed. The problem was that MODIS files us unsigned types for some
+	attributes and this was not correctly supported.
+
+	bug 736: In some cases, if the HTTP client-side cache could not open
+	a file, it would crash. Fixed. (It was trying to close a null FILE
+	pointer...)
+
+Release 3.4.3 contains bug fixes only.
+
+        - This release fixed a problem in SignalHandler and RCReader. Both of
+        these class had code that re-initialized a pthread_once_t mutex in
+        their delete_instance() method. This was used by some unit tests to
+        make a delete instances of these two singleton classes. The problem
+        is that while this runs (sort of, we had some reports of
+        crash-on-exit behavior) on Linux, it fails outright on Solaris. As
+        Rob M points out, it's a non-standard use of pthreads. I removed the
+        re-init and changed the unit tests.
+
+        - Updated code for maintaining DDS structure of data in the interned
+        matlab variables. When the code was merged from version 3.3 to 3.4
+        the bulk of these changes did not get merged correctly. The affected
+        files include process_values.c, MLVar.s,.h, extend.c,.h,
+        ClientSequence.cc, ClientStructure.cc, ClientArray.cc. Renamed
+        loaddods to loaddap, and writeval to writedap to delineate the
+        non-structured version from the structured version.
+
+Release 3.4.2 contains bug fixes only.
+
+These bugs from the database were fixed:
+
+	696: Infinite loop in the HDF4 server (w/character variables). NB:
+	This bug was actually a problem in libdap++.
+	698: libdap++ now returns better error messages when the httpd
+	reports an error.
+	692: The info response now works.
+	695: The client-side cache is more robust. It does not leave cruft
+	around when a user interrupts a program.
+	691: Error responses were not parsed/processed correctly when
+	received by clients in some circumstances. Now they are.
+
+Other fixes (in libdap++):
+	- The DBG() macros now include namespace std declarations.
+	- Used valgrind to isolate some memory leaks; others remain and this
+	  will be an on-going process.
+	- Made sure all calls to delete also set the pointer to null; this
+	  fixes some dual-delete bugs.
+	- Some of the doxygen comments have been improved.
+	- Fixed places were the switch from strstream to stringstream was
+	  botched. 
+
+	  (in nc-dods):
+	- I added a declaration of nc_delete as extern "C". This
+	  was in response to a bug report on dods@unidata.ucar.edu.
+
+	  (in several places):
+        - Added GCC-3.3 Support for AlphaEV56 platform.
+
+All of the serves and clients have had their version numbers bumped up
+*except* the ncview client. However, for the hdf, jg and mat servers the
+source code is unchanged. Similarly, the server's HTML form interface source
+is unchanged. If you're building from source, there's no need to get the new
+tar files. If you're using pre-built binaries, you'll need new ones since
+the executables are statically linked to libdap++ and a number of bugs were
+fixed in the library.
+
+OPeNDAP/DODS C++ 3.4
+
+Here is what's new in the OPeNDAP/DODS C++ core version 3.4:
+
+Code changes
+   1.  Using libcurl instead of libwww.
+   2.  URL dereferencing done with curl instead of Perl.
+   3.  C++ DAP is now thread-safe.
+   4.  New interface for DAS and DDS classes.
+   5.  Core compiles with gcc 3.2.1, Visual C++ 6.0 and gcc 2.95.
+   6.  Bug fixes
+   6a. Server and client code can once again deal with
+       compressed responses.
+   6b. Rolled new netCDF fix into nc-dods. This fixes an issue
+       with performance seen with data on NFS mounted disks.
+   6c. Fixed some cacheing bugs.
+   6d. Added the methods Float32::value() and Float64::value().
+   6e. Change aclocal.m4 to detect multiple version of matlab or idl lib due to 
+       different architecture.
+   6f. Added some missing nc FORTRAN wrappers.
+
+
+Client usage changes
+   7.  Passwords can be included in URLs.
+   8.  Digest authentication is now supported.
+   8a. Client-side caching is off by default, but old .dodsrc files may have
+       it _on_ by default.
+
+Server usage changes
+   9.  dods.rc
+   10. A smart time-out capability has been added to the servers.
+   11. statistics
+
+New software
+   12. OPeNDAP AIS prototype is available
+   13. netCDF client and server upgraded
+   14. DODSter module added to access the MODster system.
+
+Server usage notes
+   15. Compression and caching decompressed files.
+   16. Register your data set(s).
+   17. Prettifying the DODS Directory response.
+
+Known problems:
+   18. The JGOFS server requires a patch to build on the Dec Alpha using
+       gcc/++ 3.3.
+   19. The DODSter feature does not work with with Apache 2.x web server. See
+       Item 14.
+
+CODE CHANGES
+
+ 1. The DODS core now links to libcurl instead of libwww for WWW
+    functions.  The libcurl library is smaller than libwww, is being
+    actively developed, and is MT-safe.
+
+ 2. The server dispatch scripts no longer use the Perl HTTP, MIME and
+    LWP classes.  Instead, URL dereferencing is done with curl, a
+    freestanding binary that is part of the libcurl build.
+
+ 3. The core software is now multi-thread safe. 
+
+ 4. The interface to several important classes has been augmented.
+    The DAS and DDS classes have a new set of interfaces so that STL
+    iterators can be used to manipulate their contents.  The Old Pix
+    interfaces are still present, although uses of Pix that rely on
+    those objects being void pointers may fail in certain
+    circumstances.
+
+    To write out the names of all the variables in a DDS, you would use 
+    Pix code like this:
+
+       for (Pix p = dds.first_var(); p; dds.next_var(p)) {
+           cout << dds.var(p)->name() << endl;
+       }
+
+    Using the STL for the same purpose, you would do this:
+
+       for (DDS::Vars_iter i = dds.begin_var(); 1 != dds.end_var(); ++i) {
+           cout << (*i)->name() << endl;
+       }
+
+    There have also been some additions to the DAS, DDS and AttrTable
+    that make it easier for non-C++ programs to traverse those
+    containers.
+
+    For example, in the DDS class, we have the new method:
+
+       Vars_iter get_vars_iter(int i);
+
+    In AttrTable we have:
+
+       Attr_iter get_attr_iter(int i);
+
+    Both of these make it possible to access members of the DDS and
+    DAS containers from C code using a simple integer index. This is
+    important because C programs cannot create the fancy STL iterator
+    objects.  (They can fake a Pix pointer, but this leads to problems
+    and should not be done.)
+
+ 5. The C++ DAP now builds with gcc 3.2.1, in addition to gcc 2.95 and
+    Visual C++ 6.0.  These are the compiler versions that have been
+    tested.  Other versions may also work.  Other compilers may also
+    work as long as they support the STL (Standard Template Library).
+
+ 6. Server bug fixes have included fixes to Sequence constraint
+    behavior, the Grid constraint expression function, and memory
+    leaks.
+
+    The grid() server-side function is now part of all servers.
+    Suppose you have a Grid variable SST that looks like:
+
+       Grid {
+         Array:
+           Byte SST[lat=1024][lon=1024];
+         Maps:
+           Float64 lat[1024];
+	   Float64 lon[1024];
+       } SST;
+
+    You can use the following constraints:
+
+       ?grid(SST,"lat>10.0","lat<20.0")
+
+    Returns the part where "lat" is between 10.0 and 20.0.  All the
+    "lon" values are returned.
+
+       ?grid(SST,"10.0<lat<20.0")
+
+    This does the same thing, with a simpler syntax.
+ 
+       ?grid(SST,"10.0<lat<20.0","-80.0<lon<-30.0")
+
+    This returns the part of the Grid falling in the specified
+    latitude/longitude box.
+
+    The grid() function operates under the following restrictions: The
+    map vectors must be monotonic for the selected Grid.  The quoted
+    expressions must contain only the names of map vectors of the
+    Grid, constants and relational operators.
+
+    The function does not take into account the special
+    characteristics of latitude and longitude. If map vectors wrap in
+    an odd way, the behavior of grid() may not be what you expect. 
+
+    Note: This is not a geoselection function.  Map vectors may be
+      composed of any of the simple DAP types.  (Like strings, for
+      example.) 
+
+6a. Server and client code can once again deal with compressed
+    responses. The libcurl library did not initially handle compressed
+    responses. After some OPeNDAP contributed enhancements were added
+    to libcurl it now supports compressed responses. 
+
+6b. Rolled a new netCDF fix into the nc-dods code. This fixes an issue
+    with performance seen when reading data on NFS mounted disks. The
+    fix involved removing unneeded nc_sync() calls.
+
+6c. Fixed cacheing bugs involving inability to create a .dods_cache
+    directory in a writable directory and not using DODS_CONF
+    settings.
+
+CLIENT USAGE CHANGES
+
+ 7. The DODS core now supports the (nonstandard) password-in-URL
+    syntax.  If you are accessing a password-protected data set, you
+    can include your user name and password directly in the URL like
+    so: 
+
+      http://user:password@dods.org/cgi-bin/nph-nc/data.nc
+
+    Including a password in the URL allows the user to avoid the extra
+    overhead of the authentication dialog box that was the only option
+    in earlier releases.
+
+ 8. Digest authentication is now supported.
+
+ 8a. In older (3.3) versions, caching was on by default. This sometimes leads
+    to unexpected behavior, so the default has been changed to off. If you
+    want to change this, set the value of USE_CACHE to 1 in your .dodsrc
+    file. However, please note that if you already have a ~/.dodsrc file
+    (e.g., from an older version of DODS/OPeNDAP) then caching may be on.
+    Also note that a bug in 3.4RC3 and previous _ignored_ the value of
+    USE_CACHE. This bug has been fixed in 3.4RC4
+
+SERVER USAGE CHANGES
+
+ 9. The name of the server configuration file has been changed from
+    dods.ini to dods.rc. The dods.rc server config file is a real
+    server config file; i.e., there's no longer any need to edit the
+    Perl scripts. 
+
+10. A smart time-out capability has been added to the servers. It is
+    configurable using the dods.rc file (the default is to never
+    time out). This addresses a bug where a server fails to exit when
+    a client has been killed.
+
+11. A new feature of the servers allows the DODS project to gather
+    access statistics from sites who choose to allow it.  During the
+    installation process (via the installServer script), the server
+    administrator is asked for permission to gather this data.  If
+    permission is granted, the server will return DODS access data (no
+    other data is provided) to queries that emanate from one of the
+    official DODS web sites.  The statistics feature refers only to
+    DODS server accesses, not to any accesses of other web content.
+
+    Note: The DODS project understands that allowing access to the
+      DODS/DAP server's usage information might not be acceptable to
+      some server administrators. However, allowing us access to the
+      server's usage information will help us direct future software
+      development efforts. If you choose to enable this feature, only
+      the local host and official DODS/OPeNDAP machines will be able
+      to gain access to the statistical information.
+
+    The file $DODS_ROOT/etc/INSTALL-servers contains more information
+    about what data is gathered and how to configure or disable this
+    feature.
+
+
+NEW SOFTWARE
+
+12. A very early prototype of the Ancillary Information Service (AIS) is
+    available. This version is for concept testing, and is likely to contain
+    bugs and need substantial improvement. However, the DODS project also
+    needs people to contribute feedback to its development, so it is being
+    made available for that purpose. Contact the project if you're interested
+    in testing this software.
+
+
+13. The DODS-enabled netCDF client library and servers have been
+    upgraded to be compatible with netCDF 3.5. The netCDF client
+    library now use a DODS error object to send the netCDF 3.5 system
+    error codes to the client. The client library reports errors
+    received from the servers in addition to DODS internal and local
+    error codes. Also invalid_error messages due to handling error
+    exception are fixed.
+
+14. DODSter capabilities have been added to the server software.
+    DODSter is an experimental system created in a partnership with
+    the Earth System Science Workbench that provides a way for DODS
+    servers to use the MODSter system to access MODIS data. With
+    DODSter you can use a DODS server to fetch a URL from MODSter.
+
+    NOTE: There's a known problem with DODSter and the Apache 2.x web
+    servers. Until we fix this problem, it will only work on the older 1.x
+    servers. The problem is that Apache breaks our simple URL enveloping
+    scheme. This will be fixed in an upcoming release of the DODS/OPeNDAP
+    server software.
+
+    For more information, see: http://essw.bren.ucsb.edu/modster/ or
+    contact jgallagher@gso.uri.edu.
+
+    To access MODIS data from MODSter using a DODS/OPeNDAP server, pass the
+    server a MODSter URL enveloped in a DODS URL. It sounds complicated, but
+    it's really pretty simple. 
+
+    Here's a short review of the structure of a DODS/OPeNDAP URL. A regular
+    DODS/OPeNDAP URL looks something like: 
+
+        http://<machine>/dods-3.4/nph-dods/data/myfile.hdf.<object>
+
+    where <object> may be one of das, dds, dods, asc, html. Each of these
+    suffixes are used to request different types of responses from the base
+    URL. For example, is <object> is 'dods' you'll get back the data held in
+    the file myfile.hdf.
+
+    Some important notes: 1) All of this is explained in much greater detail in
+    the User's Guide. 2) Most DODS/OPeNDAP clients take care of appending the
+    <object> suffix for you. 3) When clients use the 'dods' suffix to get
+    data they almost *always* include a constraint expression to limit the
+    data returned in some way.
+
+    To pass the MODSter URL to the DODS/OPeNDAP server, replace
+    'data/myfile.hdf' with the MODSter URL. Here's an example:
+
+        http://<machine>/dods-3.4/nph-dods/http://essw.bren.ucsb.edu/products/MODISproducts/MODIS/MOD021KM/2001/120/MOD021KM.A2001121.0445.002.2001122090510.hdf.dds
+
+    It's long, but it's not that bad once you break it down:
+
+        http://<machine>/dods-3.4/nph-dods/ ==> DODS/OPeNDAP server
+        http://essw.bren.ucsb.edu/products/MODISproducts/MODIS/MOD021KM/2001/120/MOD021KM.A2001121.0445.002.2001122090510.hdf ==> MODSter URL
+	.dds  ==> <object> suffix for the DAP DDS object.
+
+    IMPORTANT 
+
+    For a DODS/OPeNDAP server to support DODSter/MODSter the
+    server's cache must be large enough to hold at least one of the files
+    served by MODSter. Generally this files are large and the default
+    DODS/OPeNDAP server cache size of 50M is just not big enough. 
+
+    How it works: DODSter looks at the 'enveloped' MODSter URL and checks its
+    local cache to see if a copy of the file is there. If so, it uses that
+    copy. If not it fetches and caches that file from MODSter. Once the file
+    is in the DODS/OPeNDAP server's local cache, it can be served just like
+    any other local file. This explains why the first access to a new file
+    can take a considerable amount of time while subsequent access happen
+    very quickly.
+
+USAGE NOTES
+
+15. When the OPeNDAP software is used to serve compressed files
+    (e.g. files compressed using gzip), the files are decompressed and
+    stored in a cache directory; data served are read from those
+    cached files. The location of the cache directory is /usr/tmp by
+    default. The limit on the size of the cache is 50 MB by default.
+    Both these values can be changed by editing the values of the
+    variables "cache_dir" and "cache_size" in the dods.rc
+    configuration file. If you're serving large files, or are
+    experiencing a large volume of traffic, you should increase the
+    cache size.
+
+    The decompression software uses the gzip program to do its work.
+    If your computer does not have gzip in its /bin directory you'll
+    need to edit the DODS_Cache.pm so that the correct version of gzip
+    is used. Look in that file for '/bin/gzip' and replace that text
+    with the correct pathname. To figure out where gzip is on your
+    computer, type 'which gzip' at the command prompt.
+
+      if ((! -e $cache_entity) && (-e $pathname)) { 
+	my $uncomp = "/bin/gzip -c -d " . $pathname . " |";
+	...
+
+
+16. You can register your data set(s) with the us using our web
+    page.  Find the registration page at:
+
+      http://www.unidata.ucar.edu/packages/dods/home/data/addtolist.html
+
+    Our list of available datasets can be found at the 
+
+      Datasets:NVODS DODS Datasets 
+
+    menu item on our home page: http://www.unidata.ucar.edu/packages/dods.
+  
+    You can also register your dataset with the Global Change Master
+    Directory (http://gcmd.gsfc.nasa.gov/).  They maintain a list of 
+    registered DODS data sets.
+  
+    The GCMD has a special portal dedicated to datasets accessible
+    using DODS/OPeNDAP servers at:
+
+      http://gcmd.gsfc.nasa.gov/Data/portals/dods/.
+  
+
+17. A tip from Joe McLean about customizing the DODS Directory
+    response:
+  
+    After messing around with Apache for a few hours, I have found
+    some configuration directives that may be of use in beautifying
+    the appearance of a DODS directory on your user's Browser.
+  
+    example: http://ferret.pmel.noaa.gov/cgi-bin/nph-dods/data/PMEL/
+  
+    In your Apache httpd.conf file add the following:
+  
+    <Directory /path-to-dods(without cgi-bin or nph-dods)/data>
+        Options +Indexes +FollowSymLinks
+        IndexOptions FancyIndexing
+        IndexOptions +FoldersFirst +NameWidth=* +IgnoreCase
+        IndexOptions +SuppressDescription
+        DefaultIcon /path-to-icons/dods.gif
+        IndexOptions +IconHeight=20 +IconWidth=20
+    </Directory>
+  
+    I copied the DODS logo from upper left hand corner of
+    http://www.unidata.ucar.edu/packages/dods/home/getStarted/
+    called it dods.gif and stuck it in my apache icons directory
+    (in httpd.conf grep for Icon - something should show you the path)
+  
+    Information for Apache
+      IndexOptions: http://httpd.apache.org/docs/mod/mod_autoindex.html#indexoptions
+      Options: http://httpd.apache.org/docs/mod/core.html#options
+      DefaultIcon: http://httpd.apache.org/docs/mod/mod_autoindex.html#defaulticon
+
+18. The JGOFS server requires a patch to build on the Dec Alpha using
+    gcc/++ 3.3. See the jg-dods/INSTALL file for the work-around for this
+    problem. 
+

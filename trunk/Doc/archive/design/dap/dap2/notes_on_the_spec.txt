@@ -1,0 +1,9 @@
+Comments/Feedback from GMU (Liping Di, Donna Deng):
+
+XDR encoding rules should be spelled out. In particular, describe how scalars
+are sent, how arrays of bytes are sent and how arrays of types like int16 are
+sent (it's fairly confusing). Just saying "like XDR" is not complete enough.
+
+We must define the HTTP 1.1/1.0 rules. Which version is required? It may be
+that the ODC confuses things because it does not support chunking.
+

@@ -1,0 +1,123 @@
+\documentclass[12pt,titlepage]{dods-paper}
+\usepackage{rotating}
+\usepackage{acronym}
+
+\bibliographystyle{agsm}
+
+\htmldirectory{report-html}
+\htmlname{report}
+\htmltitle{OPeNDAP Technical Conference}
+\htmladdress{Tom Sgouros, \today}
+
+\newcommand{\Cpp}{{\rm {\small C}\raise.5ex\hbox{\footnotesize ++}}}
+%\newcommand{\thirdparty}{$3^{rd}$--party}
+%\newcommand{\thirdparty}{third--party}
+%\newcommand{\thirdpartysite}{\thirdparty\ metadata site}
+%\newcommand{\gdaac}{Goddard DAAC}
+%\newcommand{\semanticuse}{{\it semantic use metadata}}
+%\newcommand{\semanticsearch}{{\it semantic search metadata}}
+%\newcommand{\Semanticuse}{{\it Semantic use metadata}}
+%\newcommand{\Semanticsearch}{{\it Semantic search metadata}}
+
+\title{Open Source Project for a\\Network Data Access Protocol}
+\subtitle{Technical Working Conference 2003\\Boulder, Colorado
+\\19-21 March 2003}
+\author{Paul Hemenway, Peter Cornillon, and Tom Sgouros}
+\date{7 May 2003}
+
+\begin{document}
+\maketitle
+
+\pagenumbering{roman}
+
+\section*{Executive Summary}
+
+% \vskip 6in
+% \begin{center}
+% {\Large Executive Summary}
+% \end{center}
+   \input{summaries/executivesummary}
+
+\newpage
+\tableofcontents
+\newpage
+
+\pagenumbering{arabic}
+\section{Introduction}
+   \input{introduction}
+\section{Goal}
+   \input{goal}
+\section{Topics}
+   \input{topics}
+\section{System-wide Overviews}
+   \subsection{The Overview Presentations}
+      \input{overviews}
+   \subsection{The Overview Conclusions}
+      \input{overviewconclusions}
+\section{The New \acs{DAP} Specification}
+   \subsection{The \ac{DAP} Spec Presentations}
+       \input{dap}
+   \subsection{The \ac{DAP} Spec Breakout}
+       \input{summaries/dapspecbreakout}
+   \subsection{The \ac{DAP} Spec Conclusions}
+       \input{summaries/dapspecconclusion}
+\section{The \acs{AIS}}
+   \subsection{The \ac{AIS} Presentations}
+      \input{ais}
+   \subsection{The \ac{AIS} Breakout}
+      \input{summaries/aisbreakout}
+   \subsection{The \ac{AIS} Conclusions}
+      \input{summaries/aisconclusions.tex}
+\section{The Treatment of In-situ Data}
+   \subsection{The In-situ Presentations}
+      \input{insitu}
+   \subsection{The In-situ Breakout}
+      \input{summaries/insitubreakout}
+   \subsection{The In-situ Conclusions}
+      \input{summaries/insituconclusion}
+\section{Data Discovery and Inventory Methods, Tools, and Issues}
+   \subsection{The Discovery and Inventory Presentations}
+      \input{discovery}
+   \subsection{The Discovery and Inventory Breakout Summary}
+      \input{summaries/discoverysummary}
+   \subsection{The Discovery and Inventory Conclusions}
+      \input{summaries/discoveryconclusion}
+\section{Connecting \acs{SIS} to \acs{GIS}}
+   \subsection{The \ac{GIS} Presentations}
+      \input{gis}
+   \subsection{The \ac{GIS} Breakout Summary}
+      \input{summaries/gisbreakout}
+   \subsection{The \ac{GIS} Conclusions}
+      \input{summaries/gisconclusion}
+\section{Experiences with serving and accessing \acs{OPeNDAP} Data}
+   \subsection{The Serving and Accessing Presentations}
+       \input{servingandaccessing}
+   \subsection{The Serving and Accessing Conclusions}
+       \input{summaries/servingandaccessingconclusion}
+\section{Meeting Summary and Conclusions}
+    \input{meetingsummary}
+\section{Participants}
+     \input{participants}
+\section{Acknowledgements}
+     \input{acknowledgements}
+\input{acrolist}
+
+\end{document}
+
+
+% $Id$
+%
+% $Log: report.tex,v $
+% Revision 1.4  2003/05/09 20:59:09  paul
+% Address James's comments: consistently consistently; SOAP word changes.
+%
+% Revision 1.3  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.2  2003/04/29 14:50:23  tom
+% fixed for LaTeX and hylerlatex
+%
+% Revision 1.1  2003/04/29 14:09:43  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%

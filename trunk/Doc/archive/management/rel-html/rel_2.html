@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- XML file produced from file: release-process.tex
+     using Hyperlatex v 2.6 (c) Otfried Cheong
+     on Emacs 21.3.1, Tue Jun 22 17:33:19 2004 -->
+<head>
+<title>OPeNDAP Software Release Process -- 2 Release Checklists</title>
+
+<style type="text/css">
+.maketitle { align : center }
+div.abstract { margin-left: 20%; margin-right: 10%; }
+h3.abstract  { align : center }
+div.verse, div.quote, div.quotation {
+  margin-left : 10%; 
+  margin-right : 10%;
+}
+</style>
+
+<link rel=stylesheet
+        href="http://unidata.ucar.edu/packages/dods/css/dods-paper.css" type="text/css">
+</head>
+<body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="rel_3.html"><img border="0" alt="3 CVS Checklists" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="rel.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="rel_1.html"><img border="0" alt="1 Introduction" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>2 Release Checklists</b></td></tr></table>
+<h1>2 Release Checklists</h1>
+<p>This section contains some checklists that we have developed over time to
+help make the process of releasing software more predictable. Collecting these
+lists in one place should help co&ouml;rdinate our group and also make it easier
+to fix broken parts of, or add missing parts to, the process. 
+<p>All the OPeNDAP software is held in one CVS module. Even so, each discrete
+piece of software (a server, the library of common code, <i>et c.</i> is in
+its own directory. Each source directory has its own version number. With the
+exception of the server dispatch software (which is in <tt>DODS/etc</tt>) all
+of the software is held in directories under <tt>DODS/src</tt> and each of
+those directories contains a separate deliverable.
+<p>In practice, we release the OPeNDAP software mostly <i>en masse</i>. However,
+if a fix for a particular component really needs to be released quickly, we
+can increment just that component's version number and release it alone. That
+is, suppose the current release is version 2.1 and we add an important fix to
+<tt>asciival</tt> which is at version 2.1.6. We can bump the version number of
+<tt>asciival</tt> to 2.1.7 and put that in the 2.1 release. We don't need to
+release all the other components.
+<p>When we decide to there are enough new features and/or fixes for a new
+release, the version number of the release as a whole is increased.
+Appendix&nbsp;<a href="rel_4.html">4</a> has information on version numbering.
+
+<h2><a name="id1">2.1 Making a new release</a></h2>
+<p>Making a new software release can be roughly divided into two parts. In the
+first part we start making Release Candidates (essentially beta releases). As
+problems are found in these, we fix those problems and produce a successive
+candidate. This iterative process continues until the current Release
+Candidate has no major problems and can be made a formal release.
+<p>Here are the steps used to iterate over making release candidates toward
+making a formal release:
+<ol><li>Create a release branch in CVS
+<li>Start documentation efforts:
+  <ol><li>Gather information needed for documentation (web pages,
+    README/INSTALL docs, and formal manuals):
+    <ul><li>the new features and major bug fixes (this information
+      should be part of the ChangeLog files).
+    <li>the system requirements.
+    <li>compatibility with previous versions.
+    <li>the list of the systems on which the code has
+      been built (include compiler version information).
+    </ul>
+    This list will be the rough draft of the release notes.
+  <li>Create web pages for this release.
+  <li>Create release notes.  (Take the list made above, and check it
+    into the documentation DODS CVS tree at DODS-doc/notes.)  The
+    release notes will eventually consist of a list of the important
+    changes, followed by a list of explanations for each change.
+    Here's an example from release 3.4:
+    <pre class="ix">
+      Code changes
+      1.  Using libcurl instead of libwww.
+      2.  URL dereferencing done with curl instead of Perl.
+      ...
+
+      CODE CHANGES
+      1. The DODS core now links to libcurl instead of libwww for WWW
+      functions.  The libcurl library is smaller than libwww, is being
+      actively developed, and is MT-safe.
+
+      2. The server dispatch scripts no longer use the Perl HTTP, MIME and
+      LWP classes.  Instead, URL dereferencing is done with curl, a
+      freestanding binary that is part of the libcurl build.
+      ...
+    </pre>
+  <li>Start the process of adding that information to the Guides.
+  </ol>
+  It's important to get started on these tasks early because they are
+  complicated and, unlike a build or a test suite, there's no automated way to
+  determine when they are `ready.'
+<li>Iterate through the Release Candidates until no major bugs remain. See
+  Section&nbsp;<a href="#id2">2.1.1</a> for the steps involved in making individual
+  release candidates.
+<li>Evaluate the software (See Section&nbsp;<a href="#id3">2.1.2</a>) to determine if
+  there are issues with the source not yet addressed by the process of
+  release candidate preparation.
+<li>Mark the branch as a formal release
+  (e.g., <tt>cvs tag release-3-4-3FCS</tt>). NB: I prefer to do this
+  <em>after</em> making the source files. If you use this ordering of
+  the steps and find a problem, make sure to re-tag the branch (see
+  <tt>cvs tag -h</tt> for information about moving (or forcing) a tag.
+<li>Make source and binary distribution files. See Section&nbsp;<a href="#id4">2.1.3</a>
+<li>Place source and binary on <tt>ftp</tt> site
+<li>Update web pages for formal release
+</ol>
+
+<h3><a name="id2">2.1.1 Making release candidates</a></h3>
+
+<ol><li>Prepare the code to be a Release Candidate (see
+  Section&nbsp;<a href="rel_3.html#id1">3.1</a>). 
+<li>Run nightly builds until the tests are clean.
+<li>Update all <tt>version.h</tt> files.
+<li>Tag CVS branch as a release candidate (e.g., <tt>cvs tag
+  release-3-4RC1</tt>).
+<li>Make source tar files (see Section&nbsp;<a href="#id4">2.1.3</a>)
+<li>Put source distribution files on the <tt>ftp</tt> site
+<li>Check that web site is up-to-date (i.e., so that people can get the
+  release candidate).
+<li>Announce release candidate source code.
+<li>Tag and merge the branch (see Section&nbsp;<a href="rel_3.html#id2">3.2</a>).
+<li><blockquote><i>Optional</i></blockquote> Make binary builds; release.
+<li>If there are major bugs, fix them and redo this list.
+<li>If there are no major bugs, we are done making release candidates
+</ol>
+<p>Note that the Release Candidate process concerns the source code and binary
+builds only. Once we've decided to make a formal release, There are other
+things that must be done <em>before</em> it is ready to become a formal
+release. See Section&nbsp;<a href="#id3">2.1.2</a> for details on the steps
+required before a formal release can be made.
+
+<h3><a name="id3">2.1.2 Before making a formal release</a></h3>
+
+<p>Think about each of the following questions before moving on from release
+candidates to a formal release:
+<ul><li>Do we have binaries for all the platforms we support?
+<li>Double check information needed for documentation:
+  <ul><li>new features and major bug fixes.
+  <li>system requirements.
+  <li>compatibility with previous versions.
+  <li>the list of the systems on which the code has been built.
+  </ul>
+<li>Is the documentation sufficient? Check README and INSTALL files in the
+  <tt>src</tt>, <tt>etc</tt> and <tt>docs</tt> directories and the NEWS file
+  in the top-level directory. The text documentation files in <tt>docs</tt>
+  are used when making binary distributions, the ones in the <tt>src</tt>
+  directories are included with the source distributions and the ones in
+  <tt>etc</tt> are included in both.
+<li>Do the formal manuals need to be updated? If so, this process should be
+  started (however, in general the release should not wait on the manuals).
+<li>Is the web-site current?
+<li>Can we all answer questions about the installation and use of the
+  software? Do we all understand the software's limitations?
+</ul>
+
+<h3><a name="id4">2.1.3 Making source and binary distribution files for a formal release</a></h3>
+
+<ol><li>Check out a clean copy of the release branch using CVS's
+  <tt>export</tt> command (e.g., <tt>cvs export -r release-3-4RC3 -d
+    DODS-3.4 DODS</tt>).
+<li>Remove any source/directories that we don't intend to include in this
+  release. Since the trunk often contains more software than we are actually
+  releasing, this is an important step. 
+<li>Verify that this software builds: <tt>./configure</tt>,
+  <tt>make World</tt>, <tt>make tar</tt><br />NB: It's often a good idea to see
+  the build as it happens and to get a log. To do that, use <tt>tee</tt> as
+  in: <tt>make World 2&gt;&#38;1 | tee World.log</tt>. If you're using <tt>csh</tt>
+  change <tt>2&gt;&#38;1 |</tt> to <tt>|&#38;</tt>.
+  <ul><li>Build binaries and run tests.
+  <li>Build binary distribution files (<tt>make binary-tar</tt>)
+  <li>Remove the binaries: <tt>make distclean</tt>
+  <li>Add the version numbers to the directory names: <tt>make
+    update-version</tt>
+  <li>Make the source code tar files: <tt>make source-tar</tt> (at the
+    top-level) or <tt>make tar</tt> in a <tt>DODS/src/<em>component</em></tt>
+    directory.
+  <li>Test both the source and binary distributions!
+    <ol><li>Expand all the binary distribution files to make sure they
+      hold software that works.
+    <li>Expand the source distribution files and verify they build.
+    </ol>
+  </ul>
+</ol>
+<hr /><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, 
+  2004/01/09, Revision: 1.18</address><br />
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="rel_3.html"><img border="0" alt="3 CVS Checklists" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="rel.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="rel_1.html"><img border="0" alt="1 Introduction" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>2 Release Checklists</b></td></tr></table></body></html>

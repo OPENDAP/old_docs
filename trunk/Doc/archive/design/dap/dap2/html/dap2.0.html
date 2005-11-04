@@ -1,0 +1,2702 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- XML file produced from file: dap_2_data_model.tex
+     using Hyperlatex v 2.6 (c) Otfried Cheong
+     on Emacs 21.3.1, Tue Sep 14 09:47:46 2004 -->
+<head>
+<title>The Data Access Protocol --- DAP 2.0</title>
+
+<style type="text/css">
+* {
+        font-family: "Times New Roman", Times, serif;
+        font-size: 12pt;
+        font-weight: normal;
+        font-style: normal;
+}
+
+.rfc-title {
+        font-weight: bold;
+        padding-bottom: 6pt;
+        text-align: center;
+}
+
+.rfc-caption {
+        font-weight: bold;
+        text-align: center;
+}
+
+ol.li {
+        font-weight: bold;
+        list-style-position: inside;
+        list-style-type: decimal;
+}
+ul {
+        font-weight: bold;
+        list-style: none;
+        margin-left: 1em;
+        padding-left: 2em;
+        text-indent: -2em;
+}
+a {
+        font-weight: bold;
+}
+b {
+        font-weight: bold;
+}
+h1 {
+        font-weight: bold;
+}
+h2 {
+        font-weight: bold;
+}
+h3 {
+        font-weight: bold;
+}
+h4 {
+        font-weight: bold;
+}
+pre {
+        font-family: "Courier", lucida sans, typewriter, fixed;
+        margin-left: 15%;
+}
+code {
+        font-family: "Courier", lucida sans, typewriter, fixed;
+}
+P.note {
+        margin-left:9%;
+        text-indent:-3%
+}
+em {
+         font-style: italic;
+}
+</style>
+
+
+</head>
+<body>
+
+
+
+    <h1 align="center">The Data Access Protocol -- DAP 2.0</h1>
+    
+    <h2 align="center">James Gallagher, Nathan Potter, Tom Sgouros, Steve Hankin, Glenn
+  Flierl</h2>
+    <h2 align="center"><font size="-1">2004/09/14<br />Revision: 1.24</font></h2>
+  
+<h1><a name="id1">1 Status of this Memo</a></h1>
+This is a description of a Proposed ESE Community StandardDistribution of this Proposed ESE Community Standard is
+  unlimited.
+<h1><a name="id2">2 Change Explanation</a></h1>
+None
+<h1><a name="id3">3 Copyright</a></h1>
+Copyright &#169;&#32;NASA, 2004.  All Rights Reserved.
+  
+<h1><a name="id4">4 Abstract</a></h1>
+This document defines the OPeNDAP Data Access Protocol (DAP), a
+data transmission protocol designed specifically for science data.
+The protocol relies on the widely used and stable HTTP and MIME standards, and
+provides data types to accommodate gridded data, relational data, and time
+series, as well as allowing users to define their own data types.
+<h1><a name="id5">5 Change Explanation</a></h1>
+004.0.03, 13 Sept. 2004, Editorial changes\\
+004.0.02, 6 Aug. 2004, Editorial changes\\
+004.0.01, 28 June 2004, Added Authors section
+<h1><a name="id6">6 Author Address</a></h1>
+000
+<h1><a name="id7">7 Contents</a></h1>
+<ul>
+<li><a href="#id1">1 Status of this Memo</a>
+<li><a href="#id2">2 Change Explanation</a>
+<li><a href="#id3">3 Copyright</a>
+<li><a href="#id4">4 Abstract</a>
+<li><a href="#id5">5 Change Explanation</a>
+<li><a href="#id6">6 Author Address</a>
+<li><a href="#id7">7 Contents</a>
+<li><a href="#id8">8 Introduction</a>
+<ul>
+<li><a href="#id9">8.1 Motivation for Proposing Standardization</a>
+<li><a href="#id10">8.2 Requirements</a>
+</ul>
+<li><a href="#id11">9 Overall Operation</a>
+<ul>
+<li><a href="#id13">9.1 Data Representation</a>
+</ul>
+<li><a href="#id14">10 Characterization of a Data Source</a>
+<ul>
+<li><a href="#id15">10.1 Variables</a>
+<li><a href="#id16">10.2 Atomic variables</a>
+<ul>
+<li><a href="#id17">10.2.1 Integer types</a>
+<li><a href="#id19">10.2.2 Floating point types</a>
+<li><a href="#id21">10.2.3 String types</a>
+<li><a href="#id23">10.2.4 A note regarding implementation of the atomic types</a>
+</ul>
+<li><a href="#id24">10.3 Constructor variables</a>
+<ul>
+<li><a href="#id25">10.3.1 <em>Array</em> </a>
+<li><a href="#id26">10.3.2 <em>Structure</em> </a>
+<li><a href="#id27">10.3.3 <em>Grid</em> </a>
+<li><a href="#id28">10.3.4 <em>Sequence</em> </a>
+</ul>
+<li><a href="#id29">10.4 Attributes</a>
+<li><a href="#id30">10.5 Attribute Structures</a>
+<li><a href="#id31">10.6 Attribute organization</a>
+</ul>
+<li><a href="#id32">11 Constraint Expressions</a>
+<ul>
+<li><a href="#id33">11.1 Limiting data by type and by value</a>
+<ul>
+<li><a href="#id34">11.1.1 Projections</a>
+<li><a href="#id35">11.1.2 Selections</a>
+<li><a href="#id37">11.1.3 Server Functions</a>
+</ul>
+<li><a href="#id38">11.2 Data Type Transformation Through Constraints</a>
+</ul>
+<li><a href="#id39">12 Names</a>
+<ul>
+<li><a href="#id40">12.1 Escaping characters in names</a>
+<li><a href="#id41">12.2 Constructor variable names</a>
+<li><a href="#id42">12.3 Fully Qualified Names</a>
+<ul>
+<li><a href="#id43">12.3.1 Variable Names</a>
+<li><a href="#id44">12.3.2 Attribute Names</a>
+</ul>
+</ul>
+<li><a href="#id45">13 Requests</a>
+<ul>
+<li><a href="#id46">13.1 URL Syntax</a>
+<ul>
+<li><a href="#id47">13.1.1 Constraint expressions</a>
+</ul>
+<li><a href="#id52">13.2 Request Headers</a>
+<ul>
+<li><a href="#id53">13.2.1 Accept-Encoding</a>
+<li><a href="#id54">13.2.2 Host</a>
+<li><a href="#id55">13.2.3 User-Agent</a>
+</ul>
+</ul>
+<li><a href="#id56">14 Responses</a>
+<ul>
+<li><a href="#id57">14.1 Response Headers</a>
+<ul>
+<li><a href="#id58">14.1.1 Content-Description</a>
+<li><a href="#id59">14.1.2 Content-Encoding</a>
+<li><a href="#id60">14.1.3 Content-Type</a>
+<li><a href="#id61">14.1.4 Date</a>
+<li><a href="#id62">14.1.5 Server</a>
+<li><a href="#id63">14.1.6 WWW-Authentication</a>
+<li><a href="#id64">14.1.7 XDODS-Server</a>
+</ul>
+<li><a href="#id65">14.2 Response Bodies</a>
+<ul>
+<li><a href="#id66">14.2.1 DAS</a>
+<li><a href="#id70">14.2.2 DDS</a>
+<li><a href="#id77">14.2.3 DataDDS</a>
+<li><a href="#id78">14.2.4 Error</a>
+<li><a href="#id79">14.2.5 Version</a>
+<li><a href="#id80">14.2.6 Help</a>
+</ul>
+<li><a href="#id81">14.3 Encoding Values</a>
+<ul>
+<li><a href="#id82">14.3.1 Atomic types</a>
+<li><a href="#id84">14.3.2 Constructor types</a>
+</ul>
+</ul>
+<li><a href="#id89">15 Examples</a>
+<ul>
+<li><a href="#id90">15.1 Simple request</a>
+<li><a href="#id91">15.2 <em>Grid</em> </a>
+<li><a href="#id92">15.3 <em>Sequence</em> </a>
+</ul>
+<li><a href="#id93">References</a>
+<li><a href="#id116">Authors</a>
+<li><a href="#app:grammar">16 Notational Conventions and Generic Grammar</a>
+<ul>
+<li><a href="#id118">16.1 Augmented BNF</a>
+<li><a href="#id119">16.2 Basic Rules</a>
+</ul>
+<li><a href="#id120">17 Acronyms and Abbreviations</a>
+<li><a href="#id121">18 Errata</a>
+<ul>
+<li><a href="#id122">Footnotes</a>
+</ul>
+</ul>
+
+
+<h1><a name="id8">8 Introduction</a></h1>
+<p>This specification defines the protocol referred to as the Data Access
+Protocol, version 2.0 ("DAP/2.0"). In this document `DAP' refers to DAP/2.0
+unless otherwise noted.
+<p>The Data Access Protocol (DAP) is a protocol for access to data organized as name-datatype-value
+tuples. It is particularly suited to accesses by a client computer to data
+stored on remote (server) computers which are networked to the client
+computer. The protocol has been used by the Distributed Oceanographic Data System since
+1995<a href="#gallagher:dods">[16]</a> and subsequently by many other projects and groups.
+<p>While the name-datatype-value model is a nearly universal <em>conceptual</em>
+organization of data, the actual organization of data takes nearly as many
+forms as there are individual collections because there are many different
+file formats, APIs and file/directory organizations used to house data. The
+DAP was designed to hide the implementation of different collections of data
+behind a simple language-like interface based on the name-datatype-value
+conceptual model.
+
+<h2><a name="id9">8.1 Motivation for Proposing Standardization</a></h2>
+<p>The DAP and its associated software components (data servers and client
+libraries) form the foundation of the National Virtual Ocean Data System
+(NVODS). NVODS was developed as a system that facilitates access to
+oceanographic data and data products via the Internet, freeing clients
+(users) from considerations of: where the data are stored; the format or data
+management structure under which they are stored; and (to a significant
+degree) the size of the database. NVODS (formerly known as the 'Virtual Ocean
+Data Hub' - VODHub ) was created under a 1999 Broad Agency Announcement
+(BAA) issued by the National Ocean Partnership Program. The concept of the
+VODHub is to be "a key element of the full community-based 'system' to
+broaden and improve access to ocean data..." The resulting NVODS is also
+planned for use in the Integrated Ocean Observing System.
+<p>Although the DAP was originally developed by and for the oceanographic
+community it has been adopted by a number of meteorological and climate
+groups as well and today is extensively used in all three communities -
+climate, oceanography and meteorology. SEEDS standardization of the DAP will
+help to accelerate its adoption within these three communities, both through
+an increase in developers writing to the specification and through an
+increase in those providing their data via the protocol. This will be of
+direct benefit to each of the communities individually, and more importantly
+it will provide the data interoperability required by researchers interested
+in interdisciplinary problems.
+<p>It is important to stress the discipline neutrality of the DAP and the
+relationship between this and adoption of the DAP in disciplines other than
+the Earth sciences. First, because the DAP is agnostic as relates to
+discipline, it can be used across the very broad range of data types
+encountered in oceanography - biological, chemical, physical and geological.
+Oceanography may well be unique in this regard, at least within the
+sub-disciplines of Earth Science. But of particular interest here, is that
+there is nothing that constrains the use of the DAP to the Earth sciences.
+For example, groups in the solar physics community have adopted the DAP for
+their use and proposals are under consideration in other areas of space
+physics. By standardizing the DAP for the Earth sciences we hope that this
+will provide an impetus for other disciplines to adopt it as well.
+
+<h2><a name="id10">8.2 Requirements</a></h2>
+<p>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY" and "OPTIONAL" in this
+document are to be interpreted as described in RFC 2119&nbsp;<a href="#rfc2119">[4]</a>.
+
+<h1><a name="id11">9 Overall Operation</a></h1>
+
+<p>The DAP is a stateless protocol that governs clients making requests from
+servers, and servers issuing responses to those requests. This section
+provides an overview of the requests and responses (<i>i.e.</i> the messages)
+which DAP-compliant software MUST support. These messages are used to
+request information about a server and data made accessible by that server,
+as well as requesting data values themselves.
+<p>The DAP 2.0 uses HyperText Transfer Protocol (HTTP) as a transport protocol.
+<p>The table below provides a description of the DAP messages. The precise
+details of the requests and responses are described in
+Section&nbsp;<a href="#id45">13</a> and Section&nbsp;<a href="#id56">14</a>. A server MUST be
+able to provide the responses outlined in
+<a href="#id12">Figure 1</a>. A 
+server MAY support additional request-response pairs.
+
+  <div align="center"><p>
+<p class="rfc-caption">Figure 1: DAP Requests and Responses</p>
+    <a name="id12">&nbsp;</A>
+    <table border="1"><tbody><tr><td colspan="1" align="LEFT">
+
+      <B>Request</B> </td><td colspan="1" align="LEFT"> <B>Response</B> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<p>      DDS </td><td colspan="1" align="LEFT"> DDS or Error </td></tr>
+<tr><td colspan="1" align="LEFT">
+<p>      DAS </td><td colspan="1" align="LEFT"> DAS or Error </td></tr>
+<tr><td colspan="1" align="LEFT">
+<p>      DataDDS </td><td colspan="1" align="LEFT"> DataDDS or Error </td></tr>
+<tr><td colspan="1" align="LEFT">
+<p>      Server version </td><td colspan="1" align="LEFT"> Version information as text </td></tr>
+<tr><td colspan="1" align="LEFT">
+<p>      Help </td><td colspan="1" align="LEFT"> Help text describing all request-response pairs </td></tr>
+<tr><td colspan="1" align="LEFT">
+    </td></tr></tbody></table>
+
+  </p></div>
+The DAP uses three responses to represent a
+data source. Two of these responses, the Dataset Descriptor Structure (DDS) and
+Dataset Attribute Structure (DAS), characterize the variables, their datatypes, names and
+atributes. The third response, the Data Dataset Descriptor Structure (DataDDS), holds
+data values along with name and datatype information.
+<p>The DAP returns error information using an Error response. If a request
+for any of the three basic responses cannot be returned, an Error response is
+returned in its place.
+<p>The three responses (DAS, DDS
+and DataDDS) are complete in and of themselves so that, for example, the
+data response can be used by a client without ever requesting either of the
+two other responses. In many cases, client programs will request the
+DAS and DDS before requesting the DataDDS, but there is no
+requirement they do so and no server SHALL require that behavior on the part of
+clients. 
+<p>  <p class="note"><b>NOTE: </b>The first implementation of the DAP was written in C++and the three basic responses correspond with objects in that
+  implementation. For this reason these responses are referred to as
+  `objects' in some of the DAP documentation. In some cases it is
+  easier to think of these responses as objects and, in those cases, we will
+  use that term in this paper, too. See&nbsp;Section&nbsp;<a href="#id56">14</a> for a
+  discussion of the object/response duality.</p>
+<p>Operationally, a DAP client sends a request to a server using HTTP. The
+request consists of a HTTP GET request method, a Uniform Resource Identifier (URI)&nbsp;<a href="#rfc2396">[3]</a>
+that encodes information specific to the DAP (see
+&nbsp;Section&nbsp;<a href="#id46">13.1</a>) and an HTTP protocol version number
+followed by a MIME-like message containing various headers that further
+describe the request. In practice, DAP clients typically use a third-party
+library implementation of HTTP/1.1 so the GET request, URI and
+HTTP version information are hidden from the client; it sees only the
+DAP Uniform Resource Locator (URL) and some of the request headers. The DAP server responds with
+a status line that includes the HTTP protocol version and an error or
+success code, followed by a MIME-like message containing information about
+the response and the response itself. The DAP response is the payload of the
+MIME-like HTTP response.
+<p>In addition to these data objects, a DAP server MAY provide additional
+"services" which clients may find useful. For example, many
+DAP-compliant servers provide an HTML-formatted representations of
+a data source's structure and a way to get data represented in CSV-style ASCII
+tables. These additional services are not described in this document, but are
+instead to be described in ESE Technical Notes.
+
+<h2><a name="id13">9.1 Data Representation</a></h2>
+<p>Data can be an elusive concept.  Data may exist in some storage format
+on some disk somewhere, on paper somewhere else, in active memory on
+some server, or transmitted along some wire between two computers.
+All these can still represent the same data.  That is, there is an
+important distinction to be made between the data and its
+representation.  The data consist of numbers: abstract entities that
+usually represent measurements of something, somewhere.  Data also
+consist of the relationships between those numbers, as when one number
+defines a time at which some quantity was measured.  
+<p>The abstract, platonic existence of data is in contrast to its
+concrete representation, which is how we manipulate and store it.
+Data can be stored as BCD numbers in a file on a disk, or as
+twos-complement integers in the memory of some computer, or as numbers
+printed on a page.  It can be stored in netCDF, HDF, JGOFS, OpenGIS,
+and any number of other digital storage formats.
+<p>The DAP specifies a particular representation of data, to be used in
+transmitting that data from one computer to another. This representation of
+some data is sometimes referred to as the <em>persistent
+representation</em><sup><a href="#id123">1</a></sup> of
+that data, to distinguish it from the representations used in some computer's
+memory. The DAP standard outlined in this document has nothing at all to say
+about how data is stored or represented on either the sending or the
+receiving computer. The DAP transmission format is completely independent of
+these details.
+
+<h1><a name="id14">10 Characterization of a Data Source</a></h1>
+<p>The DAP characterizes a data source as a collection of variables. Each
+variable consists of a name, a type, a value, and a collection of
+<em>Attributes</em>. <em>Attributes</em>, in turn, are themselves composed of a name, a type,
+and a value (Section&nbsp;<a href="#id29">10.4</a>). The distinction between
+information in a variable and in an <em>Attribute</em> is somewhat arbitrary.
+However, the intention is that <em>Attributes</em> hold information that aids in the
+interpretation of data held in a variable.<sup><a href="#id124">2</a></sup> Variables, on the other hand, hold the
+primary content of a data source.
+
+<h2><a name="id15">10.1 Variables</a></h2>
+
+<p>Each variable in a data source MUST have a name, a type and one or more
+values. Using just this information and armed with an understanding of the
+definition of the DAP data types, a program can read any or all of the
+information from a data source. The names and types of a data source's
+variables constitute its <em>syntactic metadata</em> <a href="#cornillon03">[14]</a>.
+<p>Each variable MAY have one or more <em>Attributes</em> associated with it.  For
+information about <em>Attributes</em>, see Section&nbsp;<a href="#id29">10.4</a>.
+<p>The DAP variables come in several different types. There are several
+<em>atomic</em> types, the basic indivisible types representing integers,
+floating point numbers and the like, and four <em>constructor</em> types (also
+called <em>container</em> types)  which are flexible collections of
+other variables.  Constructor types may contain both atomic variable
+types as well as other constructor types.
+<p>There is an important distinction to be made here: variables exist in files
+on a server's disks in some format, or in a client's active memory in
+possibly another format. The DAP does not have anything to say about these
+formats. The DAP defines, for each data type described in this document, a
+persistent representation, which is the information actually
+communicated between a DAP servers and DAP clients. The persistent
+representation consists of two parts: the declaration of the type and the
+encoding of its value(s). For a description of the persistent representation
+see Section&nbsp;<a href="#id56">14</a>.
+<p>The next two sections describe the abstractions that constitute the variable
+type menagerie: the range of values and the kind of data each type can
+represent.
+
+<h2><a name="id16">10.2 Atomic variables</a></h2>
+
+<p>As their name suggests, <em>atomic</em> data types are indivisible. There are no
+constraint expression operators that can be used to request part of an instance of one of these
+types (Section&nbsp;<a href="#id32">11</a>). Atomic variables are used to store integers,
+real numbers, strings and URLs. There are three families of atomic types,
+with each family containing one or more variation:
+<ul><li>Integer
+<li>Floating-point types
+<li>String types
+</ul>
+
+<h3><a name="id17">10.2.1 Integer types</a></h3>
+
+<p>The integer types are summarized in <a href="#id18">Figure 2</a>. Each of the types
+is loosely based on the corresponding data type in ANSI C <a href="#ansi:c">[11]</a>.
+However, the DAP, unlike ANSI C, does specify the bit-size of each of the
+integer types. This is done so that when values are transfered between
+machines they will be held in the same type of variable, at least within the
+limits of the software that implements the DAP.
+<p><p><p class="rfc-caption">Figure 2: The DAP Integer Data types.</p>
+<a name="id18">&nbsp;</A>
+<div align="center"><p>
+<table border="1"><tbody><tr><td colspan="1" align="LEFT">
+
+<B>name</B> </td><td colspan="1" align="LEFT"> <B>description</B> </td><td colspan="1" align="LEFT"> <B>range</B> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<em>Byte</em> </td><td colspan="1" align="LEFT"> 8-bit unsigned char </td><td colspan="1" align="LEFT"> 0 to <i>2<sup>8</sup>-1</i> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<em>Int16</em> </td><td colspan="1" align="LEFT"> 16-bit signed short integer </td><td colspan="1" align="LEFT"> -<i>2<sup>15</sup></i> to <i>2<sup>15</sup>-1</i> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<em>Uint16</em> </td><td colspan="1" align="LEFT"> 16-bit unsigned short integer </td><td colspan="1" align="LEFT"> 0 to <i>2<sup>16</sup>-1</i> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<em>Int32</em> </td><td colspan="1" align="LEFT"> 32-bit signed integer </td><td colspan="1" align="LEFT"> -<i>2<sup>31</sup></i> to <i>2<sup>31</sup>-1</i> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<em>Uint32</em> </td><td colspan="1" align="LEFT"> 32-bit unsigned integer </td><td colspan="1" align="LEFT"> 0 to <i>2<sup>32</sup>-1</i> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></tbody></table>
+ 
+</p></div>
+
+<h3><a name="id19">10.2.2 Floating point types</a></h3>
+
+<p>The floating point data types are summarized in <a href="#id20">Figure 3</a>.
+The two floating point data types use IEEE 754 <a href="#IEEE:754">[10]</a> to
+represent values.  The two types correspond to ANSI C's
+<tt>float</tt> and <tt>double</tt> data types.
+<p><p><p class="rfc-caption">Figure 3: The DAP Floating Point Data types.</p>
+<a name="id20">&nbsp;</A>
+<div align="center"><p>
+<table border="1"><tbody><tr><td colspan="1" align="LEFT">
+
+<B>name</B> </td><td colspan="1" align="LEFT"> <B>description</B> </td><td colspan="1" align="LEFT"> <B>range</B> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<em>Float32</em> </td><td colspan="1" align="LEFT"> IEEE 32-bit floating point <a href="#IEEE:754">[10]</a>
+     </td><td colspan="1" align="LEFT"> <i>+/-1.175494351 *10<sup>-38</sup></i>  to 
+       <i>+/-3.402823466 *10<sup>38</sup></i> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<em>Float64</em> </td><td colspan="1" align="LEFT"> IEEE 64-bit floating point 
+     </td><td colspan="1" align="LEFT"> <i>+/-2.2250738585072014 *10<sup>-308</sup></i> to 
+       <i>+/-1.7976931348623157 *10<sup>308</sup></i> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></tbody></table>
+ 
+</p></div>
+
+<h3><a name="id21">10.2.3 String types</a></h3>
+
+<p>The two string data types are summarized in <a href="#id22">Figure 4</a>.
+The first is a simple string type corresponding to the ANSI C notion of
+a string: a series of US-ASCII characters each represented in a single byte.
+<em>String</em>-type values are limited to 32767 bytes.
+<p>The DAP also provides a <em>URL</em> data type which is the same as <em>String</em> except
+that it MUST be limited to standard (7-bit) US-ASCII characters, due to the
+limitations of the syntax of Internet URLs<a href="#rfc2396">[3]</a>, and has the
+specific meaning of a pointer to some WWW resource.
+<p>In DAP applications <em>URL</em> is usually used to refer to another data source, in
+a manner reminiscent of a pointer.
+<p><em>Strings</em> are individually sized.  This means that in constructor data
+types containing multiple instances of some <em>String</em>, such as <em>Sequences</em> and <em>Arrays</em>, successive instances of that <em>String</em> MAY be of different
+sizes.
+<p>See Section&nbsp;<a href="#id82">14.3.1</a> for other details of the persistent
+representation of <em>Strings</em>.
+<p><p><p class="rfc-caption">Figure 4: The DAP <em>String</em> data types.</p>
+<a name="id22">&nbsp;</A>
+<div align="center"><p>
+<table border="1"><tbody><tr><td colspan="1" align="LEFT">
+
+<B>name</B> </td><td colspan="1" align="LEFT"> <B>description</B> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<em>String</em> </td><td colspan="1" align="LEFT"> a series of US-ASCII characters. </td></tr>
+<tr><td colspan="1" align="LEFT">
+<em>URL</em> </td><td colspan="1" align="LEFT"> a series of US-ASCII characters with the restrictions specified in
+IETF&nbsp;RFC&nbsp;2396&nbsp;<a href="#rfc2396">[3]</a> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></tbody></table>
+ 
+</p></div>
+
+<h3><a name="id23">10.2.4 A note regarding implementation of the atomic types</a></h3>
+<p>When implementing the DAP, it is important to match information in a data
+source or read from a DAP response to the <i>local</i> data type which best
+fits those data. In some cases an exact match may not be possible. For
+example Java lacks unsigned integer types<a href="#Arnold:Java">[13]</a>. Implementations
+faced with such limitations MUST ensure that clients will be able to retrieve
+the full range of values from the data source. As a practical consideration,
+this may be implemented by hiding the variable in question or returning an
+error.
+<p>If a variable is automatically hidden (<i>i.e.</i> the server analyzes the data
+source and determines that a particular variable cannot be represented
+correctly and automatically removes it from those variables made accessible
+using the DAP) this MUST be noted by adding a global <em>Attribute</em> to the data
+source indicating this has taken place. The note MUST include the name of the
+variable(s) and the reason(s) for their exclusion. If a variable is removed
+by a human, this <em>Attribute</em> is OPTIONAL.
+
+<h2><a name="id24">10.3 Constructor variables</a></h2>
+
+<p>The <em>constructor</em> types are assembled from collections of other
+variables. A constructor type MAY contain both atomic and constructor types.
+In principle, there are no restrictions on the number of levels or types of
+nesting of the constructor tyes. However, the <em>Grid</em> type imposes some limits
+on the types it may contain (Section&nbsp;<a href="#id27">10.3.3</a>).
+<p>There are four constructor data types:
+<ul><li><em>Array</em> <li><em>Structure</em> <li><em>Grid</em> <li><em>Sequence</em> </ul>
+
+<h3><a name="id25">10.3.1 <em>Array</em> </a></h3>
+
+<p>An <em>Array</em> is a one-dimensional indexed data structure similar to that defined
+by ANSI C. An <em>Array</em>'s member variable MAY be of any DAP data type.
+<em>Array</em> indexes MUST start at zero.
+<p>Multidimensional <em>Arrays</em> are defined as <em>Arrays</em> of <em>Arrays</em>. Multi-dimensional
+<em>Arrays</em> MUST be stored in <em>row-major</em> order (as is the case with ANSI
+C). The size of each <em>Array</em>'s dimensions MUST be given. The total number of
+elements in an <em>Array</em> MUST NOT exceed <i>2<sup>31</sup>-1</i> (2147483647). There is no
+prescribed limit on the number of dimensions an <em>Array</em> may have except that
+the foregoing limit on the total number of elements MUST NOT be exceeded.
+<p>Each dimension of an <em>Array</em> MAY also be named.
+<p>The number of elements in an <em>Array</em> is fixed as that given by the size(s) of
+its dimension(s).
+<p>If you need a data structure which has varying row lengths or an
+indeterminate number of rows, consider a <em>Sequence</em> of <em>Sequences</em> or a
+<em>Sequence</em> of <em>Arrays</em>. A <em>Sequence</em> of <em>Sequences</em> can represent data
+with varying row lengths, and while a <em>Sequence</em> of <em>Arrays</em> MUST have
+<em>Arrays</em> of the same length in each instance of the <em>Sequence</em>, the
+total length of the <em>Sequence</em> is indeterminate.  See
+Section&nbsp;<a href="#id28">10.3.4</a>. 
+
+<h3><a name="id26">10.3.2 <em>Structure</em> </a></h3>
+
+<p>A <em>Structure</em> groups variables so that the collection can be manipulated
+as a single item. The <em>Structure</em>'s member variables MAY be of any type,
+including other constructor types. The order of items in the <em>Structure</em> is
+significant only in relation to the persistent representation of that
+<em>Structure</em>.
+<p>There is a special case of the <em>Structure</em> data type, called <em>Dataset</em>. This is
+the container that encompasses all the variables provided in some data
+source.
+
+<h3><a name="id27">10.3.3 <em>Grid</em> </a></h3>
+
+<p>A <em>Grid</em> is a special case of a <em>Structure</em>, used to supply information to aid
+in the interpretation of <em>Arrays</em>. A <em>Grid</em> sets up an association between a
+target <em>Array</em> and a collection of map vectors.
+<p>A <em>Grid</em> is an association of an <i>N</i> dimensional <em>Array</em> with <i>N</i> vectors
+(<em>map vectors</em>), each of which MUST have the same number of elements and
+the same name as the
+corresponding dimension of the <em>Array</em>. Each vector is used to map indexes of
+one of the <em>Array</em>'s dimensions to a set of values which are normally
+non-integer (<i>e.g.</i> floating point values).
+<p>Schematically, a two-dimensional <em>Grid</em> is the following:
+<blockquote><i>
+  <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+  </td><td colspan="1" align="LEFT"> 
+      <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+        x<sub>1</sub>&nbsp;&nbsp;  </td><td colspan="1" align="CENTER"> x<sub>2</sub>&nbsp;&nbsp;    </td><td colspan="1" align="CENTER"> x<sub>3</sub>&nbsp;&nbsp;    </td><td colspan="1" align="CENTER"> ...</td><td colspan="1" align="CENTER"> x<sub>m</sub>&nbsp;&nbsp;     </td></tr>
+<tr><td colspan="1" align="CENTER">
+</td></tr></tbody></table>
+  </td></tr>
+<tr><td colspan="1" align="CENTER">
+ 
+      <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+        y<sub>1</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+y<sub>2</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+y<sub>3</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+.</td></tr>
+<tr><td colspan="1" align="CENTER">
+y<sub>n</sub>
+      </td></tr></tbody></table>
+  </td><td colspan="1" align="LEFT"> 
+      <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+        z<sub>1 1</sub> </td><td colspan="1" align="CENTER"> z<sub>2 1</sub> </td><td colspan="1" align="CENTER"> z<sub>3 1</sub> </td><td colspan="1" align="CENTER"> ...</td><td colspan="1" align="CENTER"> z<sub>m 1</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+z<sub>1 2</sub> </td><td colspan="1" align="CENTER"> z<sub>2 2</sub> </td><td colspan="1" align="CENTER"> z<sub>3 2</sub> </td><td colspan="1" align="CENTER"> ...</td><td colspan="1" align="CENTER"> z<sub>m 2</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+z<sub>1 3</sub> </td><td colspan="1" align="CENTER"> z<sub>2 3</sub> </td><td colspan="1" align="CENTER"> z<sub>3 3</sub> </td><td colspan="1" align="CENTER"> ...</td><td colspan="1" align="CENTER"> z<sub>m 3</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+.</td><td colspan="1" align="CENTER"> .</td><td colspan="1" align="CENTER"> .</td><td colspan="1" align="CENTER"> </td><td colspan="1" align="CENTER"> .</td></tr>
+<tr><td colspan="1" align="CENTER">
+z<sub>1 n</sub> </td><td colspan="1" align="CENTER"> z<sub>2 n</sub> </td><td colspan="1" align="CENTER"> z<sub>3 n</sub> </td><td colspan="1" align="CENTER"> ...</td><td colspan="1" align="CENTER"> z<sub>m n</sub> 
+      </td></tr></tbody></table>
+ 
+  </td></tr></tbody></table>
+
+</i></blockquote>
+<p>Each column of the <i>z</i> <em>Array</em> corresponds to an entry in the <i>x</i> map vector,
+and each row of <i>z</i> corresponds to some <i>y</i> value. So, for example, the data
+value at <i>z<sub>42,33</sub></i> corresponds to the values <i>x<sub>42</sub></i> and <i>y<sub>33</sub></i>.
+<p>For example, a geo-referenced <em>Grid</em> might have map vectors that
+represent the longitude and latitude of each row, so that if you know
+that the twelfth value of the longitude array is -54, you know that
+all the values in the twelfth column correspond to longitude 54
+degrees west.
+<p><p>The maps MUST be vectors of atomic types.<sup><a href="#id125">3</a></sup>
+
+<h3><a name="id28">10.3.4 <em>Sequence</em> </a></h3>
+
+<p>A <em>Sequence</em> can best be described as an ordered collection of zero or more
+<em>Structures</em>. Each instance in the series consists of the same set of
+variables, but contains different values.
+<p>The semantics of the <em>Sequence</em> data type are very close to those of a table
+in a relational database. You can think of the instances in a <em>Sequence</em> as
+rows in a traditional relational table. OPeNDAP servers that serve data from
+a DBMS like Oracle or mySQL use <em>Sequences</em> to reflect the structure of their
+data.
+<p>A <em>Sequence</em> <i>S</i> can be represented as:
+<blockquote><i>
+  <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+    s<sub>1 1</sub> </td><td colspan="1" align="CENTER"> s<sub>2 1</sub> </td><td colspan="1" align="CENTER"> ...</td><td colspan="1" align="CENTER"> s<sub>n 1</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+s<sub>1 2</sub> </td><td colspan="1" align="CENTER"> s<sub>2 2</sub> </td><td colspan="1" align="CENTER"> ...</td><td colspan="1" align="CENTER"> s<sub>n 2</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+.</td><td colspan="1" align="CENTER"> .</td><td colspan="1" align="CENTER">         </td><td colspan="1" align="CENTER"> .</td></tr>
+<tr><td colspan="1" align="CENTER">
+s<sub>1 i</sub> </td><td colspan="1" align="CENTER"> s<sub>2 i</sub> </td><td colspan="1" align="CENTER"> ...</td><td colspan="1" align="CENTER"> s<sub>n i</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+.</td><td colspan="1" align="CENTER"> .</td><td colspan="1" align="CENTER"> .</td><td colspan="1" align="CENTER"> .</td></tr></tbody></table>
+
+</i></blockquote>
+<p>Where each <i>s<sub>1</sub>...s<sub>n</sub></i> entry represents a set of DAP variables,
+and the collection of such entries constitutes the <em>Sequence</em>.  Every
+entry of <em>Sequence</em> <i>S</i> MUST have the same number, order, and type of
+variables.  If <i>s<sub>2 1</sub></i> is a <em>Float64</em>, then all the <i>s<sub>2 i</sub></i> will
+also be <em>Float64</em> variables.  Similarly, in a <em>Sequence</em> which contains 
+an <em>Array</em> or <em>Structure</em>, each instance of the <em>Array</em> or <em>Structure</em> MUST be
+the same size.  However, a <em>Sequence</em> MAY contain a <em>Sequence</em> and each
+instance of the interior <em>Sequence</em> MAY have a different number of
+entries.  
+<p>Unlike an <em>Array</em>, a <em>Sequence</em> has no explicit size.
+<p>Though the semantics of <em>Sequences</em> places limitations on the kinds of
+requests a client may make of a server, once the <em>Sequence</em> has been
+retrieved, a client program may reference it in any way desired. The DAP defines the persistent representation of data types, and the interaction
+between client and server (which includes what kinds of requests can be made
+for what kind of variables), but the DAP does not specify the internal
+implementation of the data types for any client or server.
+
+<h2><a name="id29">10.4 Attributes</a></h2>
+
+<p><em>Attributes</em> are used to associate semantic metadata with the variables in a
+data source. Attributes are similar to variables in their range of types and
+values, except that both are somewhat limited when compared to those for
+variables. Attributes are encoded using the DAS response, and the
+relationship of that to the DDS response places some extra restrictions on
+attributes (See Section&nbsp;<a href="#id66">14.2.1</a>).
+<p>Each variable in a data source MAY have <em>Attributes</em> associated with it
+(called <em>variable attributes</em>) and the entire <em>Dataset</em> (see
+Section&nbsp;<a href="#id26">10.3.2</a>) MAY itself have <em>Attributes</em>, called
+<em>global <em>Attributes</em></em>.
+<p>While the DAP does not require any particular <em>Attributes</em>, some may be
+required by various <em>metadata conventions</em>. The <em>semantic metadata</em>
+for a data source comprises the <em>Attributes</em> associated with that data source
+and its variables <a href="#cornillon03">[14]</a>.  Thus, <em>Attributes</em> provide a
+mechanism by which semantic 
+metadata may be represented without prescribing that a data source use a
+particular semantic metadata convention or standard.
+<p>The data model for <em>Attributes</em> is somewhat simpler than that for variables.
+An <em>Attribute</em>'s type MUST either be a <em>Structure</em> or one of the
+atomic types listed below. If the type of the <em>Attribute</em> is one of the
+atomic types, the value MAY be either scalar or one-dimensional
+<em>Array</em>.  <em>Attributes</em> MAY NOT be multi-dimensional arrays.
+<p>If an attribute in a particular data source (<i>e.g.</i> an HDF5 file) is a
+multi-dimension <em>Array</em>, it is suggested that the <em>Attribute</em> be promoted to a
+variable and that a new <em>Attribute</em> be created for that variable which
+describes the promotion. This fits the paradigm of remote access better since
+the multi-dimensional array information would then be accessed with a
+constraint expression. Since constraint expressions can only be applied to
+variables, it makes sense to promote such data to a variable.
+<p>An <em>Attribute</em>'s value MAY be any of the following atomic types:
+<ul><li><CODE class="literal">Byte</CODE>
+<li><CODE class="literal">Int16</CODE>
+<li><CODE class="literal">UInt16</CODE>
+<li><CODE class="literal">Int32</CODE>
+<li><CODE class="literal">UInt32</CODE>
+<li><CODE class="literal">Float32</CODE>
+<li><CODE class="literal">Float64</CODE>
+<li><CODE class="literal">String</CODE>
+<li><CODE class="literal">URL</CODE>
+</ul>
+<p>The range of values for atomic type <em>Attributes</em> is the same as for the atomic
+variable types. See&nbsp;Section&nbsp;<a href="#id66">14.2.1</a> for information on the persistent
+representation of atomic-type <em>Attributes</em>.
+
+<h2><a name="id30">10.5 Attribute Structures</a></h2>
+
+<p>An <em>Attribute</em> structure is a container which MAY be empty or which MAY
+contain atomic type <em>Attributes</em> and/or <em>Attribute</em> structures.
+Semantically, an <em>Attribute</em> structure is equivalent to the <em>Structure</em> variable type; it provides a way to form logical groupings and hierarchies of
+<em>Attributes</em>. An <em>Attribute</em> structure MAY NOT directly contain values, only
+other <em>Attributes</em> and <em>Attribute</em> <em>Structures</em>.
+
+<h2><a name="id31">10.6 Attribute organization</a></h2>
+
+<p>Each variable MUST have an associated <em>Attribute Structure</em> and the
+hierarchy formed by these containers MUST mirror the hierarchy of variables
+in the data source. There is no requirement that a <em>Dataset</em> have an
+<em>Attribute</em> <em>Structure</em> if it has no global <em>Attributes</em>. This is one way in
+which the <em>Dataset</em>, which is similar to <em>Structure</em>-type variable, is treated
+specially. All other <em>Structure</em> variables are REQUIRED to have an associated
+<em>Attribute</em> <em>Structure</em> (as are ALL variables) but the <em>Dataset</em> has no such
+requirement.
+
+<h1><a name="id32">11 Constraint Expressions</a></h1>
+
+<p>A <em>constraint expression</em> provides a way for DAP client programs to request certain
+variables, or parts of certain variables, from a data source. Many data
+sources are large and many variables from those sources are also large. Often
+clients are interested in only a small number of values from the entire data
+source. Constraint expressions provide a way for clients to tell a server
+which variables, and in many cases, which parts of those variables, they
+would like.
+<p>This section presents the subsampling abilities that MUST be provided by a
+DAP server. It does so without binding these capabilities to any particular
+syntax; see Section&nbsp;<a href="#id47">13.1.1</a> for the representation of a constraint expression. Some
+implementations MAY choose to implement additional syntaxes but MUST
+implement the syntax described there.
+<p>Note that an empty constraint expression implies that the entire data source is to be accessed.
+
+<h2><a name="id33">11.1 Limiting data by type and by value</a></h2>
+
+<p>A constraint expression provides two different methods to access the information held by a data
+source. The constraint expression can be used to limit data using the names and/or shapes of
+variables or by scanning variables and returning only those values that
+satisfy certain relational expressions. The former are referred to as
+<em>projections</em> while the latter are called <em>selections</em>.
+<p>A constraint expression MAY combine both projection and selection constraints. For example, a
+projection might specify that temperatures held in a <em>Sequence</em> are to be
+returned, and a selection would specify that only <em>Sequence</em> entries with
+dates later than 1999 are to be examined. The result returned from a request
+like this would be a <em>Sequence</em> of temperature measurements taken after 1999.
+<p>Section&nbsp;<a href="#id34">11.1.1</a> describes the projection operations which any
+DAP implementation MUST support and, likewise,
+Section&nbsp;<a href="#id35">11.1.2</a> describes the required selection operations.
+<p>To provide implementors with a means to extend the constraint expression mechanism, it is
+possible to add functions to a server and to call those as part of the constraint expression.
+Functions are described in Section&nbsp;<a href="#id37">11.1.3</a>.
+
+<h3><a name="id34">11.1.1 Projections</a></h3>
+
+<p>The <em>projection clause</em> of a constraint expression provides a way to choose parts of a data
+set based on the shape of the <em>Dataset</em> and the variables that it contains.
+There are two types of projection operations. First, it is possible to choose
+individual fields of the constructor data types. This is called <em>field
+projection</em> and applies to the <em>Structure</em>, <em>Grid</em> and <em>Sequence</em> data types in
+the following ways:
+<dl><dt><b><em>Structure</em></b><dd> A field projection which chooses one or more fields from
+  a <em>Structure</em> variable causes a DAP server to return only those named
+  fields from the <em>Structure</em>. Note that the <em>Dataset</em> itself is similar to a
+  <em>Structure</em>. It differs in that it MAY have an attribute container (while
+  all other variables MUST) and it MUST NOT be included in forming fully
+  qualified names (See&nbsp;Section&nbsp;<a href="#id39">12</a>).
+  <dt><b><em>Grid</em></b><dd> A field projection which chooses one or more fields from
+  a <em>Grid</em> variable causes a DAP server to return only those named
+  fields from the <em>Grid</em>. It is likely that the variable returned will no
+  longer meet the criteria for a correctly formed <em>Grid</em> data type, so the
+  variable may be returned as a <em>Structure</em> instead (see 
+  Section&nbsp;<a href="#id38">11.2</a>).
+  <dt><b><em>Sequence</em></b><dd>  A field projection which chooses one or more fields from
+  a <em>Sequence</em> variable causes a DAP server to return only those named
+  fields from the <em>Sequence</em>. For the <em>Sequence</em> type, this means returning the
+  <i>N</i> instances but limiting the fields those given in the field
+  projection. For example, suppose the <em>Sequence</em> <i>S</i> has <i>P</i> fields:
+ <blockquote><i>
+ <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+   s<sub>1 1</sub> </td><td colspan="1" align="CENTER"> s<sub>2 1</sub> </td><td colspan="1" align="CENTER"> ...</td><td colspan="1" align="CENTER"> s<sub>P 1</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+s<sub>1 2</sub> </td><td colspan="1" align="CENTER"> s<sub>2 2</sub> </td><td colspan="1" align="CENTER"> ...</td><td colspan="1" align="CENTER"> s<sub>P 2</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+.</td><td colspan="1" align="CENTER"> .</td><td colspan="1" align="CENTER"> </td><td colspan="1" align="CENTER"> .</td></tr>
+<tr><td colspan="1" align="CENTER">
+s<sub>1 N</sub> </td><td colspan="1" align="CENTER"> s<sub>2 N</sub> </td><td colspan="1" align="CENTER"> ...</td><td colspan="1" align="CENTER"> s<sub>P N</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+</td></tr></tbody></table>
+
+ </i></blockquote> 
+<p>If a field projection is used to choose only the second field, the result of
+accessing <i>S</i> would be:
+ <blockquote><i>
+ <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+   s<sub>2 1</sub></td></tr>
+<tr><td colspan="1" align="CENTER">
+s<sub>2 2</sub></td></tr>
+<tr><td colspan="1" align="CENTER">
+.</td></tr>
+<tr><td colspan="1" align="CENTER">
+s<sub>2 N</sub></td></tr>
+<tr><td colspan="1" align="CENTER">
+</td></tr></tbody></table>
+
+ </i></blockquote>
+</dl>
+<p>When a projection in a constraint expression contains the name of a constructor-type variable,
+the response MUST include all of the members of that variable. If a
+projection includes the name of a variable that is not fully qualified
+(See&nbsp;Section&nbsp;<a href="#id39">12</a>) the response SHOULD include that variable as if
+the fully qualified name was given. This provides a shorthand notation for
+members of a constructor. Suppose there is a <em>Structure</em> names <CODE class="literal">foo</CODE> with
+a member named <CODE class="literal">bar</CODE>. Including <CODE class="literal">bar</CODE> in a constraint expression would cause the
+<CODE class="literal">foo.bar</CODE> to be included in the response. If a name appears in more than
+one place in a <em>Dataset</em> (for example, suppose a <em>Grid</em> is named <CODE class="literal">SST</CODE> and
+has a member <em>Array</em> also named <CODE class="literal">SST</CODE>) the constraint expression evaluator MUST treat the
+name as fully qualified and include either the matching variable in th
+response or return an Error response if no variable matches.
+<p>When using a field projection, it is possible to request all of the members
+of a constructor-type variable by using just the name of the constructor.
+<p>The second type of projection is a <em>hyperslab</em>. A hyperslab is used to
+limit returned data to those elements that fall within a range of index
+values, and MAY also specify that the range be subsampled using a
+<em>stride</em>. By including a hyperslab projection for one or more dimensions
+of a variable it is implied that any unnamed dimensions are to be returned in
+their entirety.<sup><a href="#id126">4</a></sup> A hyperslab is applied to the <em>Array</em>,
+<em>Grid</em> and <em>Sequence</em> types in the following way:
+<dl><dt><b><em>Array</em></b><dd> <em>Array</em> dimensions are numbered <i>0, ..., N-1</i> for an <em>Array</em> of rank <i>N</i>. Within each dimension of size <i>M</i>, elements are numbered <i>0,
+  ..., M-1</i>. A hyperslab projection for dimension <i>n, 0  &lt;= n &lt; N</i> MUST
+  include the starting index <i>i<sub>n<sub>s</sub></sub></i> and ending index <i>i<sub>n<sub>e</sub></sub></i> such
+  that <i>i<sub>n<sub>s</sub></sub>  &lt;= i<sub>n<sub>e</sub></sub> forall &#123; 0  &lt;= i<sub>n</sub> &lt; M &#125;</i>. If a stride
+  is included in the hyperslab and is greater than <i>i<sub>n<sub>e</sub></sub> - i<sub>n<sub>s</sub></sub></i>
+  then the hyperslab is equivalent to one where <i>i<sub>n<sub>s</sub></sub> = i<sub>n<sub>e</sub></sub></i> and
+  the original value of <i>i<sub>n<sub>e</sub></sub></i> is discarded.
+<dt><b><em>Grid</em></b><dd> <em>Grid</em> dimensions are numbered as are <em>Array</em> dimensions; <em>Grid</em> dimensions MAY have hyperslab projections applied to them in a manner
+  similar to <em>Arrays</em> except that a hyperslab applied to a <em>Grid</em> is
+  applied to not only the target array, but also all the corresponding map
+  arrays. For example, given the <em>Grid</em>:
+<blockquote><i>
+  target = 
+   
+    <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+      1 </td><td colspan="1" align="CENTER"> 2 </td><td colspan="1" align="CENTER"> 3 </td><td colspan="1" align="CENTER"> 4 </td></tr>
+<tr><td colspan="1" align="CENTER">
+5 </td><td colspan="1" align="CENTER"> 6 </td><td colspan="1" align="CENTER"> 7 </td><td colspan="1" align="CENTER"> 8 </td></tr>
+<tr><td colspan="1" align="CENTER">
+9 </td><td colspan="1" align="CENTER"> 10 </td><td colspan="1" align="CENTER"> 11 </td><td colspan="1" align="CENTER"> 12 </td></tr>
+<tr><td colspan="1" align="CENTER">
+13 </td><td colspan="1" align="CENTER"> 14 </td><td colspan="1" align="CENTER"> 15 </td><td colspan="1" align="CENTER"> 16
+    </td></tr></tbody></table>
+ ,
+   map<sub>1</sub> = 
+   
+    <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+      -53 </td><td colspan="1" align="CENTER"> -52 </td><td colspan="1" align="CENTER"> -51 </td><td colspan="1" align="CENTER"> -50
+    </td></tr></tbody></table>
+ ,
+   map<sub>2</sub> = 
+   
+    <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+      26 </td></tr>
+<tr><td colspan="1" align="CENTER">
+25 </td></tr>
+<tr><td colspan="1" align="CENTER">
+24 </td></tr>
+<tr><td colspan="1" align="CENTER">
+23 
+    </td></tr></tbody></table>
+ 
+</i></blockquote>
+A hyperslab projection which chose row indexes 1 and 2 and column indexes 1
+and 2 would cause a server to return:
+<blockquote><i>
+  target = 
+   
+    <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+      6 </td><td colspan="1" align="CENTER"> 7</td></tr>
+<tr><td colspan="1" align="CENTER">
+10 </td><td colspan="1" align="CENTER"> 11
+    </td></tr></tbody></table>
+ ,
+   map<sub>1</sub> = 
+   
+    <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+      -52 </td><td colspan="1" align="CENTER"> -51
+    </td></tr></tbody></table>
+ ,
+   map<sub>2</sub> = 
+   
+    <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+      25 </td></tr>
+<tr><td colspan="1" align="CENTER">
+24
+    </td></tr></tbody></table>
+ 
+</i></blockquote>
+for the <em>Grid</em>.
+<p>Note that a field and hyperslab projection can be combined for a <em>Grid</em> to
+choose only part of one of the fields, say just part of the the target
+<em>Array</em>. In this case, the hyperslab applied to one field of the <em>Grid</em> is
+equivalent to a hyperslab applied to an <em>Array</em>. Effectively, the field
+projection yields an <em>Array</em> and the hyperslab is then applied to that <em>Array</em>.
+<dt><b><em>Sequence</em></b><dd> A hyperslab can be applied to a <em>Sequence</em>. A <em>Sequence</em> with
+  <i>M</i> instances can have a hyperslab projection applied to it as if it is an
+  <em>Array</em> of rank 1. Since the <em>Sequence</em> type does not contain an explicit
+  dimension size, the size <i>M</i> is not known until the entire <em>Sequence</em> is
+  accessed.<sup><a href="#id127">5</a></sup> A hyperslab projection can be used to ask for the first <i>m</i>
+  elements, the next <i>m</i> elements, etc., which may be very useful for clients
+  which need to know the sizes of varaibles before accessing them. A hyperslab
+  projection for a <em>Sequence</em> <i>(i<sub>s</sub>, i<sub>e</sub>)</i> will return <i>m</i> instances of
+  the <em>Sequence</em> such that <i>m = |&#95;i<sub>e</sub>, M-1 &#95;|- i<sub>s</sub></i> depending
+  on whether <i>i<sub>e</sub></i> is an index greater than the number of instances in the
+  <em>Sequence</em>. <em>Sequence</em> instances are indexed starting with zero.
+</dl>
+<p>It is possible to ask for values from several variables in a single constraint expression by
+including several projections in the constraint expression. Also note that an empty constraint expression, by
+convention, projects all of every variable in a data source.
+
+<h3><a name="id35">11.1.2 Selections</a></h3>
+
+<p>A <em>selection</em> provides a way to limit data accessed based on the value(s)
+of those data. In many ways selections are similar to WHERE claues in
+SQL<a href="#date:DBMS">[15]</a>. A selection is composed of one or more relational
+sub-expressions. Each sub-expression MUST be bound to a variable listed in a
+projection clause. When several sub-expressions constitute a selection, the
+boolean value of the selection is the logical <CODE class="literal">AND</CODE> of each of the
+boolean values of each sub-expression. Note that there is no way to perform a
+logical <CODE class="literal">OR</CODE> operation on the sub-expressions but there is a way, within
+a sub-expression, to test several values and return <CODE class="literal">true</CODE> if any satisfy
+the releation.
+<p>Each of the relational sub-expressions (<i>i.e.</i> relations) is composed of
+two operands and a relational operator. Each operand MUST be an atomic data
+type; it MAY be a fully qualified name from the data source or a constant. In some cases
+there are further limitations on the allowed types based on the relational
+operator. <a href="#id36">Figure 5</a> lists the operators,
+their meaning and 
+the data types on which they may be applied.
+
+  <div align="center"><p>
+<p class="rfc-caption">Figure 5: DAP Selection Relational Operators</p>
+    <a name="id36">&nbsp;</A>
+<table border="1"><tbody><tr><td colspan="1" align="CENTER">
+ 
+      <B>Operator</B> </td><td colspan="1" align="LEFT"> <B>Meaning</B> </td><td colspan="1" align="LEFT"> <B>Types</B> </td></tr>
+<tr><td colspan="1" align="CENTER">
+<p>      <code>&lt;</code> </td><td colspan="1" align="LEFT"> Less than 
+      </td><td colspan="1" align="LEFT"> Byte, Int16, Int32, UInt16, UInt32, Float32, Float64 </td></tr>
+<tr><td colspan="1" align="CENTER">
+<p>      <code>&lt;=</code> </td><td colspan="1" align="LEFT"> Less than or equal to 
+      </td><td colspan="1" align="LEFT"> Byte, Int16, Int32, UInt16, UInt32, Float32, Float64 </td></tr>
+<tr><td colspan="1" align="CENTER">
+<p>      <code>&gt;</code> </td><td colspan="1" align="LEFT"> Greater than 
+      </td><td colspan="1" align="LEFT"> Byte, Int16, Int32, UInt16, UInt32, Float32, Float64 </td></tr>
+<tr><td colspan="1" align="CENTER">
+<p>      <code>&gt;=</code> </td><td colspan="1" align="LEFT"> Greater than or equal to 
+      </td><td colspan="1" align="LEFT"> Byte, Int16, Int32, UInt16, UInt32, Float32, Float64 </td></tr>
+<tr><td colspan="1" align="CENTER">
+<p>      <code>=</code> </td><td colspan="1" align="LEFT"> Equal 
+      </td><td colspan="1" align="LEFT"> Byte, Int16, Int32, UInt16, UInt32, Float32, Float64 </td></tr>
+<tr><td colspan="1" align="CENTER">
+<p>      <code>!=</code> </td><td colspan="1" align="LEFT"> Not equal 
+      </td><td colspan="1" align="LEFT"> Byte, Int16, Int32, UInt16, UInt32, Float32, Float64, String, Url 
+      </td></tr>
+<tr><td colspan="1" align="CENTER">
+<p>      <code>=~</code> 
+      </td><td colspan="1" align="LEFT"> Regular expression match </td><td colspan="1" align="LEFT"> String, Url </td></tr>
+<tr><td colspan="1" align="CENTER">
+    </td></tr></tbody></table>
+
+  </p></div>
+Operands in a constraint expression selection MAY be either variables in the data source or
+constants. When constants are used in a selection sub-expression they MAY be
+either single or multi-valued. If a constant 
+operand has more than one value, each value is used in succession when
+evaluating the relation. For example, suppose there is a relation: 
+<p><pre class="it">
+site = {"Diamond_St", "Blacktail_Loop"}
+</pre>
+<p>Then that relation is true for any instance where <CODE class="literal">site</CODE> is either
+<CODE class="literal">Diamond&#95;St</CODE> OR <CODE class="literal">Blacktail&#95;Loop</CODE>.
+<p>When a variable appears in a selection sub-expression it MUST be single
+valued. 
+<p>Selections MAY ONLY be applied to the <em>Sequence</em> data type in the following way:
+<dl><dt><b><em>Sequence</em></b><dd> Logically, the relations in a selection bound to a
+    <em>Sequence</em> are evaluated once for every instance (<i>i.e.</i> row) of the
+    <em>Sequence</em>; the result of applying the selection to the <em>Sequence</em> is a
+    <em>Sequence</em> where all of the instances satisfy all of the relations.
+<p>    A <em>Sequence</em> <i>S</i> with three fields and four instances such as:
+    <blockquote><i>
+      <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+        index </td><td colspan="1" align="CENTER"> temperature </td><td colspan="1" align="CENTER"> site </td></tr>
+<tr><td colspan="1" align="CENTER">
+10 </td><td colspan="1" align="CENTER"> 17.2 </td><td colspan="1" align="CENTER"> Diamond&#95;St </td></tr>
+<tr><td colspan="1" align="CENTER">
+11 </td><td colspan="1" align="CENTER"> 15.1 </td><td colspan="1" align="CENTER"> Blacktail&#95;Loop </td></tr>
+<tr><td colspan="1" align="CENTER">
+12 </td><td colspan="1" align="CENTER"> 15.3 </td><td colspan="1" align="CENTER"> Platinum&#95;St </td></tr>
+<tr><td colspan="1" align="CENTER">
+13 </td><td colspan="1" align="CENTER"> 15.1 </td><td colspan="1" align="CENTER"> Kodiak&#95;Trail </td></tr>
+<tr><td colspan="1" align="CENTER">
+</td></tr></tbody></table>
+
+    </i></blockquote>
+    A selection such as <code>index&gt;=</code> 11 would choose the last three instances:
+    <blockquote><i>
+      <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+        index </td><td colspan="1" align="CENTER"> temperature </td><td colspan="1" align="CENTER"> site </td></tr>
+<tr><td colspan="1" align="CENTER">
+11 </td><td colspan="1" align="CENTER"> 15.1 </td><td colspan="1" align="CENTER"> Blacktail&#95;Loop </td></tr>
+<tr><td colspan="1" align="CENTER">
+12 </td><td colspan="1" align="CENTER"> 15.3 </td><td colspan="1" align="CENTER"> Platinum&#95;St </td></tr>
+<tr><td colspan="1" align="CENTER">
+13 </td><td colspan="1" align="CENTER"> 15.1 </td><td colspan="1" align="CENTER"> Kodiak&#95;Trail </td></tr>
+<tr><td colspan="1" align="CENTER">
+</td></tr></tbody></table>
+
+    </i></blockquote>
+    The selection <code>site=~ ".*_St"</code> would choose two instances:
+    <blockquote><i>
+      <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+        index </td><td colspan="1" align="CENTER"> temperature </td><td colspan="1" align="CENTER"> site </td></tr>
+<tr><td colspan="1" align="CENTER">
+10 </td><td colspan="1" align="CENTER"> 17.2 </td><td colspan="1" align="CENTER"> Diamond&#95;St </td></tr>
+<tr><td colspan="1" align="CENTER">
+12 </td><td colspan="1" align="CENTER"> 15.3 </td><td colspan="1" align="CENTER"> Platinum&#95;St </td></tr>
+<tr><td colspan="1" align="CENTER">
+</td></tr></tbody></table>
+
+    </i></blockquote>
+    And a selection with the two sub-expressions <code>index&lt;=</code>11, 
+    site<code>=~".*_St"</code> would return only one instance:
+    <blockquote><i>
+      <table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+        index </td><td colspan="1" align="CENTER"> temperature </td><td colspan="1" align="CENTER"> site </td></tr>
+<tr><td colspan="1" align="CENTER">
+10 </td><td colspan="1" align="CENTER"> 17.2 </td><td colspan="1" align="CENTER"> Diamond&#95;St </td></tr>
+<tr><td colspan="1" align="CENTER">
+</td></tr></tbody></table>
+
+    </i></blockquote>
+</dl>
+
+<h3><a name="id37">11.1.3 Server Functions</a></h3>
+
+<p>A constraint expression MAY also use functions executed by the server. These can appear in a
+selection or in a projection, although there are restrictions about the data
+types functions can return. 
+<p>A function which appears in the projection clause MAY return any of the DAP data types. In this case the return value of the function is treated as if it
+is a variable present in the top level of the <em>Dataset</em> (see
+Section&nbsp;<a href="#id26">10.3.2</a>). 
+<p>A function which appears in the selection clause MAY return any atomic type
+if it is used in one of the relational sub-expressions. If a function in the
+selection clause is used as the entire sub-expression, it MUST return an
+integer value. If that value is zero, the function will evaluate as boolean
+false, otherwise it will evaluate as boolen true.
+<p>When functions encounter an error, a DAP server MUST signal that condition
+by returning an error response. A server MAY NOT return a partial response;
+any error encountered while evaluating the constraint expression MUST result in a response that
+contains an unambiguous error message.
+
+<h2><a name="id38">11.2 Data Type Transformation Through Constraints</a></h2>
+
+<p>When a constraint expression has a projection clause that identifies a piece
+of a constructor variable, such as one field of a <em>Structure</em> or just the
+array part of a <em>Grid</em>, the <em>lexical scoping</em> of the variable is not
+abandoned. This is important for avoiding name collisions. For example, if a
+single item is requestd from a <em>Structure</em>, the response MUST contain a
+<em>Structure</em> with only that item.
+<p>Here is the behavior for each data type:
+<dl><dt><b><em>Array</em></b><dd> An <em>Array</em> MUST be returned as an <em>Array</em> of the same rank as
+  the source <em>Array</em> (same number of dimensions). A hyperslab request
+  that effectively eliminates a 
+  dimension by reducing its size to <i>1</i> does <em>not</em> reduce the rank of
+  the returned <em>Array</em>. For example, suppose a 10 by 10 element <em>Array</em> was
+  subsampled to a 1 by 2 <em>Array</em>. The returned variable would still be
+  described as a two dimensional <em>Array</em>.
+<dt><b><em>Structure</em></b><dd> A <em>Structure</em> MUST be returned as a <em>Structure</em>. If the
+  projection clause of a constraint expression selects only one member of the <em>Structure</em>, then
+  a one-member <em>Structure</em> MUST be returned. If more than one member of the
+  <em>Structure</em> are named in the projection clause, they MUST be returned in the
+  same <em>Structure</em>.
+<dt><b><em>Grid</em></b><dd> A <em>Grid</em> modified with a hyperslab operator MUST return another
+  <em>Grid</em>, following the same rules as an <em>Array</em>. But if the projection clause
+  specifies the elements of the <em>Grid</em> independently of one another--the
+  target array, or one of the maps--then a <em>Structure</em> is returned containing
+  only the specified variables. A two-dimensional <em>Grid</em> named <CODE class="literal">Cloud</CODE>
+  will return a <em>Grid</em> in response to a request like this:
+  <CODE class="literal">Cloud[1:10][20:30]</CODE>. But a request for the target array
+  alone--<CODE class="literal">Cloud.Cloud[1:10][20:30]</CODE>-- returns a <em>Structure</em> called
+  <CODE class="literal">Cloud</CODE> containing an <em>Array</em> called <CODE class="literal">Cloud</CODE>. In this example, the
+  map arrays are not returned.
+<dt><b><em>Sequence</em></b><dd> A <em>Sequence</em> MUST be returned as a <em>Sequence</em>, even
+  if a selection clause selects only a single entry or no entry at
+  all.  If a projection clause identifies more than one member of the
+  <em>Sequence</em>, they MUST be returned in the same <em>Sequence</em>.
+</dl>
+
+<h1><a name="id39">12 Names</a></h1>
+
+<p>This section describes the persistent representation of names.
+<p>A DAP variable's name MUST contain ONLY US-ASCII characters with the
+following additional limitation: The characters MUST be either upper or lower
+case letters, numbers or from the set <code> _ ! ~ * ' - " </code>. Any other
+characters MUST be escaped.
+
+<h2><a name="id40">12.1 Escaping characters in names</a></h2>
+<p>To escape a character in a name, the character is replaced by the sequence
+<code>%&lt;Character Code&gt;</code> where <em>Character Code</em> is the two
+hex digit code corresponding to the US-ASCII character. Note that the
+characters <code>(</code> and <code>)</code> (left and right parenthesis) must be escaped
+because those are used in the constraint expression syntax and not escaping them makes it
+impossible to parse certain constraint expressions. Similarly, the <code>.</code> (period) character
+must be escaped when it appears as part of the name of a variable because it
+is used as the separator between names in a fully qualified name. Thus, not escaping the
+period would make it impossible to parse certain constraint expressions.
+
+<h2><a name="id41">12.2 Constructor variable names</a></h2>
+<p>The members of a constructor variable can be individually addressed in the
+following fashion:
+<dl><dt><b><em>Array</em></b><dd> Individual <em>Array</em> items MUST be addressed with a subscripted
+  expression. For an <em>Array</em> named <CODE class="literal">Temp</CODE>, the fourteenth member of the
+  <em>Array</em> is referenced as <CODE class="literal">Temp[13]</CODE> (all indexes start at zero). A
+  two-dimensional <em>Array</em> is addressed with two subscripts, contained in
+  separate brackets: <CODE class="literal">SurfaceTemp[13][3]</CODE>. See Section&nbsp;<a href="#id47">13.1.1</a>.
+<dt><b><em>Structure</em></b><dd> Members of a <em>Structure</em> are addressed by appending
+  the member name to the <em>Structure</em> name, separated by a dot
+  (<CODE class="literal">.</CODE>).  If the <em>Structure</em> <CODE class="literal">Position</CODE> has a member named
+  <CODE class="literal">Height</CODE>, then it is addressed as <CODE class="literal">Position.Height</CODE>.
+  The members of a <em>Structure</em> MUST have different names from one
+  another. 
+<dt><b><em>Grid</em></b><dd> The arrays in a <em>Grid</em> MAY be referenced in the same fashion as
+  the members of a <em>Structure</em>. For a two-dimensional <em>Grid</em> named <CODE class="literal">Cloud</CODE>,
+  with one-dimensional map vectors <CODE class="literal">Latitude</CODE> and <CODE class="literal">Longitude</CODE>, a
+  member of a map vector is be addressed like this: <CODE class="literal">Cloud.Latitude[36]</CODE>.
+  This refers to a single latitude value. It is also possible to request part
+  of the target array: <CODE class="literal">Cloud.Cloud[36][42]</CODE>, which will return a single
+  data measurement. The <em>Grid</em> itself MAY be addressed like an <em>Array</em>:
+  <CODE class="literal">Cloud[36][42]</CODE>, which will return a <em>Grid</em> containing the value
+  <CODE class="literal">Cloud.Cloud[36][42]</CODE> along with the two map vectors. See
+  Section&nbsp;<a href="#id38">11.2</a> for an explanation of how data types are
+  transformed by constraints.
+<dt><b><em>Sequence</em></b><dd> A <em>Sequence</em> member is addressed in the same fashion as a
+  <em>Structure</em>. That is, a time called <CODE class="literal">Releasedate</CODE> of a <em>Sequence</em> named
+  <CODE class="literal">Balloons</CODE> is addressed as <CODE class="literal">Balloons.Releasedate</CODE>. But note that
+  unlike a <em>Structure</em>, this name references as many different values as there
+  are entries in the <CODE class="literal">Balloons</CODE> <em>Sequence</em>. A single entry or range of
+  entries in a <em>Sequence</em> MAY be addressed with a hyperslab operator like the
+  items in an <em>Array</em>. The variables in a <em>Sequence</em> MUST have different names
+  from one another.
+</dl>
+
+<h2><a name="id42">12.3 Fully Qualified Names</a></h2>
+
+<p>The lexical scoping rules of the DAP require some description.  The
+important concept is the <em>fully qualified name</em>, which is an unambiguous name for
+some variable or attribute.
+
+<h3><a name="id43">12.3.1 Variable Names</a></h3>
+<p>The fully qualified name of a variable is composed of the ordered collection of variable
+names, starting at the <em>Dataset</em> level but not including the <em>Dataset</em> name,
+that can be followed to the terminal variable name. The names MUST be
+separated by the dot (.) character. Thus, if a <em>Dataset</em> named <CODE class="literal">test</CODE>
+contains a structure named <CODE class="literal">sst</CODE> which contains a variable named
+<CODE class="literal">foo</CODE>, the fully qualified name would be <CODE class="literal">sst.foo</CODE>.
+
+<h3><a name="id44">12.3.2 Attribute Names</a></h3>
+<p>The fully qualified name of an <em>Attribute</em> is composed of the ordered collection of <em>Attribute</em> names, starting at the <em>Dataset</em> level but not including the <em>Dataset</em> name,
+that can be followed to the terminal source <em>Attribute</em>. The names MUST be
+separated by the dot (.) character. Thus, if a <em>Dataset</em> named <CODE class="literal">test</CODE>
+contains a structure named <CODE class="literal">sst</CODE> which contains a variable named
+<CODE class="literal">foo</CODE>, the fully qualified name of the <em>Attributes</em> of foo would be <CODE class="literal">sst.foo</CODE>. If
+<CODE class="literal">foo</CODE> possessed an <em>Attribute</em> named <CODE class="literal">fruit</CODE> then the fully qualified name for
+<CODE class="literal">fruit</CODE> would be <CODE class="literal">sst.foo.fruit</CODE>.
+<p>  <p class="note"><b>NOTE: </b>Forming the fully qualified name for an <em>Attribute</em> is largely a formality in DAP/2.0
+since it is only possible to request all of the <em>Attributes</em>. However, the
+requirements are included here as a guide. Future versions of the DAP may
+require its implementation.</p>
+
+<h1><a name="id45">13 Requests</a></h1>
+
+<p>The DAP is a client-server protocol: the client makes a request
+of the server, and the server responds with some information.  The
+request and response travel via HTTP.  This section describes the form
+of requests to servers and responses to clients.
+
+<h2><a name="id46">13.1 URL Syntax</a></h2>
+
+A DAP URL is essentially an HTTP URL&nbsp;<a href="#rfc2616">[6]</a> with
+additional restrictions placed on the <CODE class="literal">abs-path</CODE> component.
+<p><pre class="cft">
+DAP-URL        =  "http://" host [ ":" port ] [ abs-path ]
+abs-path       =  server-path data-source-id [ "." ext [ "?" query ] ] 
+server-path    =  [ "/" token ] 
+data-source-id =  [ "/" token ] 
+ext            =  "das" | "dds" | "dods" 
+</pre>
+<p>The <CODE class="literal">server-path</CODE> is the pathname to the server, whereas
+<CODE class="literal">data-source-id</CODE> is the pathname to the data.
+<p>The DAP uses HTTP as its session protocol&nbsp;<a href="#stevens:unp">[21]</a>,
+so every DAP URL starts with the scheme
+<CODE class="literal">http:</CODE>. The <CODE class="literal">host</CODE> and optional <CODE class="literal">port</CODE> name a host and
+TCP port of an HTTP server that will handle the session. The
+<CODE class="literal">host</CODE> may also contain authentication information as described in
+RFC&nbsp;2617&nbsp;<a href="#rfc2617">[7]</a>.
+<p>The <CODE class="literal">abs-path</CODE> portion of the <CODE class="literal">DAP-URL</CODE> is composed of four
+parts:
+<dl><dt><b>server-path</b><dd> A pathname which identifies the DAP server to
+  handle the request. The servers may be implemented as Common Gateway Interface (CGI) programs or
+  they may use another equivalent scheme (<i>e.g.</i> the Apache HTTP daemon's
+  module system).
+<dt><b>data-source-id</b><dd> A string passed to the server named by
+  <CODE class="literal">server-path</CODE> that uniquely identifies the source of data on
+  <CODE class="literal">host</CODE>. The <CODE class="literal">data-source-id</CODE> may take the form of a pathname
+  within the HTTP server's document root directory, or it may name the
+  data source in some other way (<i>e.g.</i> the DAP server might maintain a
+  table of names mapped to tables in a relational database).
+<p>  Two special <CODE class="literal">data-source-id</CODE>s MUST be recognized by a DAP server. They are <CODE class="literal">version</CODE> and <CODE class="literal">help</CODE>. When a DAP server
+  receives the <CODE class="literal">data-source-id</CODE> <CODE class="literal">version</CODE> it MUST respond
+  with version information (see&nbsp;Section&nbsp;<a href="#id79">14.2.5</a>). When a DAP server receives the <CODE class="literal">data-source-id</CODE> <CODE class="literal">help</CODE> it MUST respond
+  with a help message (see&nbsp;Section&nbsp;<a href="#id80">14.2.6</a>).
+<dt><b>ext</b><dd> The optional <CODE class="literal">ext</CODE> part of the <CODE class="literal">abs-path</CODE> tells the DAP server which type of response to return. Each response has a three letter
+  string that is used by the requester. See&nbsp;Section&nbsp;<a href="#id56">14</a> for a
+  description of the responses and the <CODE class="literal">ext</CODE> strings used to request
+  them.<sup><a href="#id128">6</a></sup>
+<dt><b>query</b><dd> The optional <CODE class="literal">query</CODE> part of the <CODE class="literal">abs-path</CODE> is used
+  with data requests to limit those requests to specific variables or values
+  within the data source. See&nbsp;Section&nbsp;<a href="#id47">13.1.1</a>. The <CODE class="literal">query</CODE>
+  part MAY be used with the <CODE class="literal">dds</CODE> and <CODE class="literal">dods</CODE> <CODE class="literal">ext</CODE>.
+</dl>
+
+<h3><a name="id47">13.1.1 Constraint expressions</a></h3>
+
+<p>A Constraint Expression (CE) provides a way for clients to request certain variables, or parts
+of certain variables, from a data source. This section describes the syntax
+used to encode a constraint expression so that it can be sent, as part of a request, to a
+server. See&nbsp;Section&nbsp;<a href="#id32">11</a> for a general discussion of constraint expressions and the rules for
+their evaluation.
+<p>Some implementations of the DAP MAY choose to provide alternate constraint expression syntax, but all implementations MUST provide the one described here.
+<p>Constraint expressions have the following syntax:
+<p><pre class="cft">
+CE         = [ projection ] *("\&amp;" selection) 
+projection = variable | variable "," projection 
+variable   = id | function 
+function   = id "(" args ")" 
+args       = arg | arg "," args 
+arg        = id | quoted-string | integer | float | URL 
+id         = 1*&lt;any CHAR except CTLs or SP&gt; [ array-dim ]
+</pre>
+<p>The constraint expression MUST be encoded using US-ASCII characters. It MAY be used when
+requesting the DDS or DataDDS (<i>i.e.</i> when using the <CODE class="literal">dds</CODE> or
+<CODE class="literal">dods</CODE> extensions, see&nbsp;Section&nbsp;<a href="#id77">14.2.3</a>). It MAY NOT be used with
+the DAS, Version or Help Requests. When it is included in a request, it MUST
+appear in the request URL as described in&nbsp;Section&nbsp;<a href="#id46">13.1</a>. Note
+that a constraint expression is optional for both the DDS and DataDDS requests; if absent the
+request if for the entire contents of the data source.
+<p>A constraint expression has two parts, the projection and the selection. A projection lists
+the variables to be returned by the DAP server. If more than one
+variable is to be returned, then the projection is a comma-separated list of
+variables. Leaving the projection part of the CE empty is shorthand for
+requesting all the variables in the data source. A selection is used to
+request that variables, or instance of variables in the case of a <em>Sequence</em>,
+are returned only if they match certain values. Either or both the projection
+and selection part of the constraint expression MAY be null.
+
+<h4><a name="id48">13.1.1.1 Identifier names</a></h4>
+The encoding rules for identifier names are given in Section&nbsp;<a href="#id39">12</a>. A 
+valid identifier name MUST appear for <CODE class="literal">id</CODE> in the above grammar. To
+refer to one field of a constructor type, set <CODE class="literal">id</CODE> to the name of the
+constructor, followed by a period (<CODE class="literal">.</CODE>) and the field name. To request
+all of the fields in a constructor, set <CODE class="literal">id</CODE> to the name of the
+constructor. The <CODE class="literal">id</CODE> value is case-sensitive: the string <CODE class="literal">temp</CODE> is
+different than the string <CODE class="literal">Temp</CODE>.
+
+<h4><a name="id49">13.1.1.2 Hyperslab operators</a></h4>
+An <em>Array</em> MAY be accessed using only its name to return the entire array or
+using a hyperslab (<CODE class="literal">[]</CODE>) operator to return a rectangular section of
+the array. In the later case, the hyperslab is defined for each dimension by
+a starting index, and ending index, and an optional stride value. An <em>Array</em> or
+<em>Grid</em> variable MUST either be unconstrained or have a hyperslab constraint for
+each of its dimensions. Note that it is possible to combine the syntax that
+requests a field of a constructor with the <em>Array</em> hyperslab syntax to request
+a section of one of the <em>Array</em> variables held in a <em>Grid</em>.
+<p><pre class="cft">
+array-dim = [ start ":" stride ":" stop ] 
+            [ start ":" stop ] 
+            [ start ] 
+start, stride, stop = 1*DIGIT 
+</pre>
+<p>The omitted <CODE class="literal">stride</CODE> value indicates a default of one.  If the
+<CODE class="literal">stop</CODE> is also omitted, its default value is the same as the
+<CODE class="literal">start</CODE> value.  All of these must be integers greater than or
+equal to zero.
+
+<h4><a name="id50">13.1.1.3 Calling server-side functions</a></h4>
+Functions MAY be called as part of either the projection or selection
+clauses. In the case of a selection, the function MUST return a value which
+can be used when evaluating the clause. In the case of a projection, the
+function MUST return a DAP variable which will then be the return value of
+the request or it MUST return nothing in which case it is run for side effect
+only. 
+<p><pre class="cft">
+selection = *relation | *function 
+relation  = (id rel-op id) | (value rel-op id) 
+            | (id rel-op value) 
+value     = constant | ( "{" 1#constant "}" ) 
+constant  = quoted-string | &lt;int&gt; | &lt;float&gt; | URL 
+</pre>
+
+<h4><a name="id51">13.1.1.4 Syntax errors</a></h4>
+Syntax errors in the constraint expression MUST cause an Error response to be returned. The
+Error response SHOULD contain text that describes the error. The description
+SHOULD be human readable.
+
+<h2><a name="id52">13.2 Request Headers</a></h2>
+<p>The headers described in Sections&nbsp;<a href="#id53">13.2.1</a>
+to&nbsp;<a href="#id55">13.2.3</a> MUST be handled as described. Other headers which
+are part of HTTP 1.1 MAY be included in the request and MAY be honored
+by a DAP server.
+
+<h3><a name="id53">13.2.1 Accept-Encoding</a></h3>
+
+The <CODE class="literal">Accept-Encoding</CODE> request-header is used by a DAP client to tell
+a server that it can accept compressed responses. See RFC 2616&nbsp;<a href="#rfc2616">[6]</a>
+for this header's grammar. Values for encodings are <CODE class="literal">deflate</CODE>, <CODE class="literal">gzip</CODE>
+and <CODE class="literal">compress</CODE>. This header is OPTIONAL. When a client includes this
+header it is effectively asking the DAP server to encode the response
+using the given scheme. The server is under no obligation to use the
+requested encoding. A server MUST NOT use an encoding when a client has not
+requested it. A client MUST supply the header with every request for which it
+desires a special encoding.
+
+<h3><a name="id54">13.2.2 Host</a></h3>
+
+The <CODE class="literal">Host</CODE> request-header is used by a DAP client to provide its
+IP address or DNS name to the DAP server. See RFC 2616&nbsp;<a href="#rfc2616">[6]</a>
+for this header's grammar. This header MUST be included with every request.
+
+<h3><a name="id55">13.2.3 User-Agent</a></h3>
+
+The <CODE class="literal">User-Agent</CODE> request-header is used by a DAP client to
+provide specific information about the client software to the DAP server. See RFC 2616&nbsp;<a href="#rfc2616">[6]</a> for this header's grammar. This header is
+RECOMMENDED. DAP servers MAY log this information.
+
+<h1><a name="id56">14 Responses</a></h1>
+
+<p>A valid DAP response has the same form as a valid HTTP response. The
+first line contains the HTTP protocol version, a status code and reason
+phrase&nbsp;<a href="#rfc2616">[6]</a>. Following this are the response headers which vary
+depending on the request and payload of the response
+(see&nbsp;Section&nbsp;<a href="#id57">14.1</a> for a description of the headers). As
+described in RFC 822&nbsp;<a href="#rfc822">[5]</a>, the HTTP response status line and
+headers are separated from the response's payload by an extra set of
+CRLF<sup><a href="#id129">7</a></sup> characters which make a blank line.
+<p>The ten possible response payloads defined by the DAP are
+described in detail in&nbsp;Section&nbsp;<a href="#id65">14.2</a>.
+
+<h2><a name="id57">14.1 Response Headers</a></h2>
+
+<p>The DAP responses use several of the standard MIME headers, in
+addition to some DAP-specific headers.
+
+<h3><a name="id58">14.1.1 Content-Description</a></h3>
+The <CODE class="literal">Content-Description</CODE> header is used to tell clients which of the
+different basic responses is being returned or if an error message is being
+returned. For any of the basic responses (DDS, DAS, or
+DataDDS) or the error response, this header MUST be included. This
+header MUST NOT be included in Version or Help requests. See
+IETF&nbsp;RFC&nbsp;2045&nbsp;<a href="#rfc2045">[8]</a> for information about this header.
+<p><pre class="cft">
+Content-Description = "Content-Description :" tag 
+tag                 = "dods-dds" | "dods-das" | "dods-data" | "dods-error" 
+</pre>
+<p>Example:
+<pre class="ct">
+Content-Description: dods-error
+</pre>
+
+<h3><a name="id59">14.1.2 Content-Encoding</a></h3>
+If a DAP server applies an encoding to an entity, it MUST include the
+<CODE class="literal">Content-Encoding</CODE> header in the response. See RFC&nbsp;2616&nbsp;<a href="#rfc2616">[6]</a>
+for this header's grammar.
+<p>Example:
+<pre class="ct">
+Content-Encoding: deflate
+</pre>
+
+<h3><a name="id60">14.1.3 Content-Type</a></h3>
+The <CODE class="literal">Content-Type</CODE> header MUST be included in any response from a
+DAP server. Valid content types for DAP responses are:
+<CODE class="literal">text/plain</CODE>, <CODE class="literal">text/html</CODE> and
+<CODE class="literal">application/octet</CODE>.<sup><a href="#id130">8</a></sup> See RFC
+2616&nbsp;<a href="#rfc2616">[6]</a> for this header's grammar.
+<p>Example:
+<pre class="ct">
+Content-Type: application/octet
+</pre>
+
+<h3><a name="id61">14.1.4 Date</a></h3>
+The <CODE class="literal">Date</CODE> header provides a time stamp for the response. This header
+is needed for servers that support caching. See RFC 2616&nbsp;<a href="#rfc2616">[6]</a>
+for this header's grammar. Servers MUST provide this header.
+<p>Example:
+<pre class="ct">
+Date: Fri, 09 Feb 2001 18:54:55 GMT
+</pre>
+
+<h3><a name="id62">14.1.5 Server</a></h3>
+The <CODE class="literal">Server</CODE> header provides information about the server used to
+process the request. In this case the <em>server</em> MAY be either the
+DAP server or an underlying HTTP server if the DAP server uses
+that as part of its implementation. See RFC 2616&nbsp;<a href="#rfc2616">[6]</a>
+for this header's grammar. This header is OPTIONAL.
+<p>Example:
+<p><pre class="ct">
+Server: Apache/1.3.12 (Unix)  (Red Hat/Linux) PHP/3.0.15 mod_perl/1.21
+</pre>
+
+<h3><a name="id63">14.1.6 WWW-Authentication</a></h3>
+The <CODE class="literal">WWW-Authenticate</CODE> header MUST be included in an HTTP message that
+has a response code of 401. That is, when the DAP server is asked to provide
+access to a resource that is restricted and the request does not include
+authentication information (see "HTTP Authentication: Basic and Digest
+Access Authentication"&nbsp;<a href="#rfc2617">[7]</a>). then it must return with a response
+code of 401 and include the <CODE class="literal">WWW-Authenticate</CODE> header. See RFC
+2616&nbsp;<a href="#rfc2616">[6]</a> for this header's grammar.
+<p>Example:
+<p><pre class="ct">
+WWW-Authenticate: Basic realm="special directory, with CGIs"
+</pre>
+
+<h3><a name="id64">14.1.7 XDODS-Server</a></h3>
+<p>The <CODE class="literal">XDODS-Server</CODE> header is used to return DAP server's
+implementation version information to the client program.<sup><a href="#id131">9</a></sup> This header MUST be included in every response.
+<p><pre class="cft">
+XDODS-Server = "XDODS-Server : dods/" version 
+version      = DIGIT . DIGIT [ . DIGIT ]
+</pre>
+<p>Example:
+<pre class="ct">
+XDODS-Server: dods/3.2.2
+</pre>
+
+<h2><a name="id65">14.2 Response Bodies</a></h2>
+
+<p>There are several responses that can come from a server, but four of them are
+the core functionality of the system. The DAS, the DDS, and the DataDDS can
+be thought of as data objects containing representations of the data source's
+semantic metadata (<i>i.e.</i> attributes), its syntactic metadata
+(structure), and its data, respectively. The Error response MUST ONLY be used
+to signal problems with a request.
+
+<h3><a name="id66">14.2.1 DAS</a></h3>
+
+<div align="center"><p>
+  <table border="0"><tbody><tr><td colspan="1" align="LEFT">
+
+    URL Extension </td><td colspan="1" align="LEFT"> <CODE class="literal">das</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+Required Headers </td><td colspan="1" align="LEFT"> <CODE class="literal">Content-Description: dods-das</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Content-Type: text/plain</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Server:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Date:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">XDODS-Server:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></tbody></table>
+
+</p></div>
+The DAS response is returned as the payload of a message which MUST have
+<CODE class="literal">dods-das</CODE> as the value of <CODE class="literal">Content-Description</CODE> and <CODE class="literal">text/plain</CODE>
+as the value of <CODE class="literal">Content-Type</CODE>. The body of the response contains the
+persistent representation of the DAS object.
+<p>A DAS MUST have a container for each variable in the data source. The
+hierarchy of containers in a DAS MUST follow the hierarchy of constructor
+types in the DDS. It MAY contain any number of extra containers.
+<p><pre class="cft">
+das-doc        = "Attributes" "{" *attribute-cont "}"
+attribute-cont = attribute-cont | attribute 
+attribute      = atomic-decl id 1#value ";" 
+value          = &lt;float&gt; | &lt;int&gt; | id | quoted-string 
+</pre>
+
+<h4><a name="id67">14.2.1.1 Encoding Atomic types</a></h4>
+Atomic type attributes are encoded as
+follows: Each attribute has a print representation that consists of the type
+name followed by the attribute name followed by the value or values. The
+print representation of the value(s) is determined according to:
+<ol><li>integers: Each integer value is printed using the base 10 ASCII
+  representation of its value.
+<li>floating point: Each floating point value is printed using the base 10
+  ASCII representation of its value. The ouput MUST conform to ANSI C's
+  description of <CODE class="literal">printf</CODE> using the <CODE class="literal">&#37;g</CODE> format specification and
+  the precision is 6.
+<li>string and URL: Strings and URLs are printed in US-ASCII. If the value
+  of a string contains a space, it must be quoted using double quotes
+  (<CODE class="literal">"</CODE>). If the value contains a double quote, that MUST be escaped using
+  the backslash (<i>&#92;</i>) character. The backslash character is
+  represented as backslash-backslash (<i>&#92;&#92;</i>).
+</ol>
+
+<h4><a name="id68">14.2.1.2 Encoding attribute structures</a></h4>
+Attribute Structures are encoded
+  be printing the name of the Structure, followed by a curly brace
+  (<CODE class="literal">&#123;</CODE>), followed by the print representation of all its child
+  attributes followed by a closing curly brace (<CODE class="literal">&#125;</CODE>).
+<p>An example DAS is shown in <a href="#id69">Figure 6</a>.
+<p><p><pre class="cb">
+attributes {
+   catalog_number {
+   }
+   casts {
+      experimenter {
+      }
+      time {
+         string units "hour since 0000-01-01 00:00:00";
+         string time_origin "1-JAN-0000 00:00:00";
+      }
+      location {
+         lat {
+            string long_name "Latitude";
+            string units "degrees_north";
+         }
+         lon {
+            string long_name "Longitude";
+            string units "degrees_east";
+         }
+      }
+      xbt {
+         depth {
+            string units "meters";
+         }
+         t {
+            float32 missing_value -9.99999979e+33;
+            float32 _fillvalue -9.99999979e+33;
+            string history "From coads_climatology";
+            string units "Deg C";
+         }
+      }
+   }
+}
+</pre>
+<p class="rfc-caption">Figure 6: Example Dataset Attribute Response. This example matches the DDS shown
+   in Figure&nbsp;<a href="#id71">7</a>. Some of the variables in this fictional data source
+   (<i>e.g.</i> <CODE class="literal">catalog&#95;number</CODE>) have no attributes. Note that even though
+   they lack attributes, they still have a matching <em>Attribute</em> <em>Structure</em>.</p>
+<a name="id69">&nbsp;</A>
+
+<h3><a name="id70">14.2.2 DDS</a></h3>
+
+<div align="center"><p>
+  <table border="0"><tbody><tr><td colspan="1" align="LEFT">
+
+    URL Extension </td><td colspan="1" align="LEFT"> <CODE class="literal">dds</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+Required Headers </td><td colspan="1" align="LEFT"> <CODE class="literal">Content-Description: dods-dds</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Content-Type: text/plain</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Server:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Date:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">XDODS-Server:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></tbody></table>
+
+</p></div>
+The DDS response is returned as the payload of a message which MUST have
+<CODE class="literal">dods-dds</CODE> as the value of <CODE class="literal">Content-Description</CODE> and <CODE class="literal">text/plain</CODE>
+as the value of <CODE class="literal">Content-Type</CODE>. The body of the response contains the
+persistent representation of the DDS object.
+<p>The DDS is a textual description of the variables and their names and types
+that compose the entire data set. The data set descriptor syntax is similar
+too the variable declaration/definition syntax of <font size="-1">C</font> and C++. A
+variable that is a member of one of the base type classes is declared by by
+writing the class name followed by the variable name. The type constructor
+classes are declared using <font size="-1">C</font>'s brace notation.
+<p><pre class="cft">
+dds-doc   = "data-source" "{" *type-decl "}" id ";" 
+type-decl = atomic-decl  | array-decl 
+            | structure-decl | sequence-decl | grid-decl 
+</pre>
+<p>The <CODE class="literal">dataset</CODE> keyword has the same syntactic function as <CODE class="literal">structure</CODE>
+but is used for the specific job of enclosing the entire data source even
+when it does not technically need an enclosing element (because at the
+outermost level it is a single element such as a structure or sequence).
+<p>An example DDS is shown in <a href="#id71">Figure 7</a>.
+<p><p><pre class="cb">
+dataset {
+   int catalog_number;
+   sequence {
+      string experimenter;
+      int32 time;
+      structure {
+         float64 latitude;
+         float64 longitude;
+      } location;
+      sequence {
+         float depth;
+         float temperature;
+      } xbt;
+   } casts;
+} data;
+</pre>
+<p class="rfc-caption">Figure 7: Example Dataset Descriptor Response.</p>
+<a name="id71">&nbsp;</A>
+<p><p>Variables in the DAP have two forms. They are either atomic types or
+constructor types.
+
+
+<h4><a name="id72">14.2.2.1 Atomic variables</a></h4>
+Atomic variables are similar to predefined variables in procedural
+programming languages like C or Fortran (<i>e.g.</i> <tt>int</tt> or
+<tt>integer*4</tt>).
+<dl><dt><b>byte</b><dd> an 8-bit byte;unsigned char in ANSI C.
+<dt><b>int16</b><dd> a 16-bit signed integer.
+<dt><b>uint16</b><dd> a 16-bit unsigned integer.
+<dt><b>int32</b><dd> a 32-bit signed integer.
+<dt><b>uint32</b><dd> a 32-bit unsigned integer.
+<dt><b>float32</b><dd> the IEEE 32-bit floating point datatype (ANSI C's
+  <tt>float</tt>). 
+<dt><b>float64</b><dd> the IEEE 64-bit floating point datatype (ANSI C's
+  <tt>double</tt>) .
+<dt><b>string</b><dd> a sequence of bytes terminated by a null character.
+<dt><b>URL</b><dd> represented as a string, but may be dereferenced in a CE;
+  see&nbsp;Section&nbsp;<a href="#id32">11</a>.
+</dl>
+<p><pre class="cft">
+atomic-decl = atomic-type id ";" 
+atomic-type = "Byte" | "Int16" | "Uint16" | "Int32" | "Uint32" 
+                 | "Float32" | "Float64" | "String" | "Url" 
+id          = (ALPHA | "_" | "%" | "." ) 
+              *(ALPHA | DIGIT | "/" | "_" | "%" | "." ) 
+</pre>
+
+<h4><a name="id73">14.2.2.2 Array</a></h4>
+An <b>Array</b> is a one dimensional indexed data structure as defined by
+ANSI C. Multidimensional arrays are defined as arrays of arrays. The size of
+each array's dimensions must be given. Each dimension of an array may also be
+named.
+<p><pre class="cft">
+array-decl  = array-types id array-dims ";" 
+array-types = atomic-decl | structure-decl | sequence-decl | grid-decl 
+array-dims  = array-dim | array-dim array-dims 
+array-dim   = "[" [ name "=" ] 1*DIGIT "]" 
+</pre>
+<p>The number of dimensions MUST be greater than zero.
+
+<h4><a name="id74">14.2.2.3 <em>Structure</em> </a></h4>
+A structure groups variables so that the collection can be
+  manipulated as a single item. The variables can be of any type.
+<p><pre class="cft">
+structure-type  = structure "{" *structure-types "}" ";" 
+structure-types = atomic-type | array-type 
+                  | structure-type | sequence-type | grid-type 
+</pre>
+
+<h4><a name="id75">14.2.2.4 Sequence</a></h4>
+A sequence is an ordered set of <i>N</i> variables which has
+  several instantiations (or values). Variables in a sequence may be of
+  different types.  Each instance of a sequence is one instantiation of the
+  variables. Thus a sequence can be represented as:
+<blockquote><i>
+<table border="0"><tbody><tr><td colspan="1" align="CENTER">
+
+  s<sub>0 0</sub> </td><td colspan="1" align="CENTER"> ...</td><td colspan="1" align="CENTER"> s<sub>0 n</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+.</td><td colspan="1" align="CENTER"> </td><td colspan="1" align="CENTER"> .</td></tr>
+<tr><td colspan="1" align="CENTER">
+s<sub>i 0</sub> </td><td colspan="1" align="CENTER"> ...</td><td colspan="1" align="CENTER"> s<sub>i n</sub>
+</td></tr></tbody></table>
+
+</i></blockquote>
+<p>Every instance of sequence <i>S</i> has the same number, order, and type
+of variables. Thus in a sequence which contains an array, each instance of
+the array MUST be the same size. A sequence implies that each of the
+variables is related to each other in some logical way. A sequence is
+different from a structure because its constituent variables have several
+instances while a structure's variables have only one instance (or value).
+<p><pre class="cft">
+sequence-decl  = sequence "{" *sequence-types "}" ";" 
+sequence-types = atomic-type | array-type 
+                 | structure-type | sequence-type | grid-type 
+</pre>
+
+<h4><a name="id76">14.2.2.5 <em>Grid</em> </a></h4>
+
+ A grid is an association of an <i>N</i> dimensional array with <i>N</i>
+  named vectors, each of which has the same number of elements as the
+  corresponding dimension of the array. Each vector is used to map indices of
+  one of the array's dimensions to a set of values which are normally
+  non-integral (<i>e.g.</i> floating point values). The <i>N</i> (map) vectors may be
+  different types. <em>Grids</em> are similar to arrays, but add named dimensions and
+  maps for each of those dimensions.
+<p><pre class="cft">
+grid-decl = "Grid" "{" "Array:" array-decl "Maps:" 1*array-decl "}" ";" 
+</pre>
+
+<h3><a name="id77">14.2.3 DataDDS</a></h3>
+
+<div align="center"><p>
+  <table border="0"><tbody><tr><td colspan="1" align="LEFT">
+
+    URL Extension </td><td colspan="1" align="LEFT"> <CODE class="literal">dods</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+Required Headers </td><td colspan="1" align="LEFT"> <CODE class="literal">Content-Description: dods-data</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Content-Type: application/octet</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Server:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Date:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">XDODS-Server:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></tbody></table>
+
+</p></div>
+This response body is the one that returns data to the client.  It
+consists of a copy of the DDS, followed by data in its external
+representation, described in&nbsp;Section&nbsp;<a href="#id81">14.3</a>.
+<p>The DataDDS entity is returned as the payload of a message whose
+<CODE class="literal">Content-Type</CODE> header MUST be
+<CODE class="literal">application/octet</CODE>.<sup><a href="#id132">10</a></sup> The
+body of the response contains both text which holds a DDS which
+describes the variables listed in the request and the values for those
+variables encoded using XDR<a href="#xdr">[22]</a>. The text DDS and the binary data
+are separated in the response entity by the literal <CODE class="literal">Data:</CODE>.
+<p><pre class="cft">
+DataDDS = DDS CRLF "Data:" CRLF *OCTET
+</pre>
+<p>Clients MAY supply a constraint expression (see&nbsp;Section&nbsp;<a href="#id32">11</a>) with
+any <CODE class="literal">DataDDS</CODE> request. The DDS in the <CODE class="literal">DataDDS</CODE> response
+describes the variables returned. The order that the variables are listed in
+the DDS MUST match the order of the values in the binary section of the
+DataDDS response. If the response contains constructor types, then the
+variables are sent in the order they would be visited in a depth-first
+traversal of the accompanying DDS.
+
+<h3><a name="id78">14.2.4 Error</a></h3>
+
+<div align="center"><p>
+  <table border="0"><tbody><tr><td colspan="1" align="LEFT">
+
+    URL Extension </td><td colspan="1" align="LEFT"> n/a </td></tr>
+<tr><td colspan="1" align="LEFT">
+Required Headers </td><td colspan="1" align="LEFT"> <CODE class="literal">Content-Description: dods-error</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Content-Type: text/plain</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Server:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Date:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">XDODS-Server:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></tbody></table>
+
+</p></div>
+When a server encounters an error, either in its software or in the users
+request, it MUST return an error response. The body of the response contains
+an error code along with text that provides a description of the problem
+encountered. Server writers are encouraged to provide text that describes the
+problem with enough information to enable a user to correct the problem or
+submit a meaningful bug report to the server's maintainer.
+<p><pre class="cft">
+Error      = "Error" "{" "code=" error-code ";" 
+                         "message=" error-msg ";" "}" 
+error-code = 1*DIGIT 
+error-msg  = quoted-string 
+</pre>
+
+<h3><a name="id79">14.2.5 Version</a></h3>
+
+<div align="center"><p>
+  <table border="0"><tbody><tr><td colspan="1" align="LEFT">
+
+    URL Extension </td><td colspan="1" align="LEFT"> <i>none</i> </td></tr>
+<tr><td colspan="1" align="LEFT">
+Required Headers </td><td colspan="1" align="LEFT"> <CODE class="literal">Content-Type: text/plain</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Server:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Date:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">XDODS-Server:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></tbody></table>
+
+</p></div>
+The <CODE class="literal">version</CODE> response returns information about the DAP version,
+server version and may return information about a data source's version. The
+response may be requested two ways: by using the string <CODE class="literal">version</CODE>
+as the <CODE class="literal">data-source-id</CODE> or by appending the extension
+<CODE class="literal">ver</CODE> to the data source name (see&nbsp;Section&nbsp;<a href="#id46">13.1</a>). 
+<p><pre class="cft">
+abs-path       = server-path data-source-id [ "." ext [ "?" query ] ] 
+server-path    = &lt;name of DAP server&gt; 
+data-source-id = "version" 
+</pre>
+<p>If a DAP server receives a <CODE class="literal">version</CODE> request, it MUST return
+DAP version version information. If the request is made using the
+<CODE class="literal">ver</CODE> extension to a <CODE class="literal">data-source-id</CODE> then the server MUST return
+the DAP version and server version information. It MAY also return a
+data source version.
+<p>Version information should be returned as plain text in the payload of the
+response. This version information may be essentially that sane as the
+information in the XDODS-Server header. The intent is to present users and
+system maintainers with information about servers that can be used to track
+down problems or determine if a server can be upgraded to a newer version to
+fix a particular problem.
+<p><pre class="cft">
+version-response    = dap-version CRLF server-version 
+                       [ CRLF data-source-version ] 
+dap-version         = "Core version:" token "/" version-number 
+server-version      = "Server version:" token "/" version-number 
+data-source-version = "Dataset version:" token "/" version-number 
+token               = 1*&lt;any CHAR except CTLs or separators&gt; 
+version-number      = 1*DIGIT "." 1*DIGIT "." 1*DIGIT 
+</pre>
+
+<h3><a name="id80">14.2.6 Help</a></h3>
+
+<div align="center"><p>
+  <table border="0"><tbody><tr><td colspan="1" align="LEFT">
+
+    URL Extension </td><td colspan="1" align="LEFT"> n/a </td></tr>
+<tr><td colspan="1" align="LEFT">
+Required Headers </td><td colspan="1" align="LEFT"> <CODE class="literal">Content-Type: text/html</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Server:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">Date:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> <CODE class="literal">XDODS-Server:</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></tbody></table>
+
+</p></div>
+The <CODE class="literal">help</CODE> response MUST be returned when either the server receives a
+URL with no extension (<i>i.e.</i> a URL which asks for no object) or
+when the <CODE class="literal">data-source-id</CODE> portion of the URL is <CODE class="literal">help</CODE>.
+<p><pre class="cft">
+abs-path       = server-path data-source-id [ "." ext [ "?" query ] ] 
+server-path    = &lt;name of DAP server&gt; 
+data-source-id = "help" 
+</pre>
+<p>The second way of requesting the <CODE class="literal">help</CODE> response is analogous to 
+requesting the <CODE class="literal">version</CODE> response.
+<p>The <CODE class="literal">help</CODE> response MUST return an ASCII document which lists
+the extensions recognized by the server. The response MAY return other
+information as well.
+
+<h2><a name="id81">14.3 Encoding Values</a></h2>
+
+<p>This section describes the external (persistent) representation of
+values held by a 
+DAP Data Source.  This is the way the variables are encoded for
+inclusion in the DataDDS (see Section&nbsp;<a href="#id77">14.2.3</a>).  This
+specification should not be understood to dictate the storage of
+variables in a DAP client or server, in memory or on the disk.
+What a client does with this data is beyond the scope of this
+specification, which is only concerned with communicating the values
+from server to client.
+<p>From the point of view of the external representation, it is useful to
+divide the constructor types into aggregate types and array types,
+making--with the atomic types--three basic types of DAP variables.
+
+<h3><a name="id82">14.3.1 Atomic types</a></h3>
+
+<p>The DAP uses Sun Microsystems' XDR protocol&nbsp;<a href="#xdr">[22]</a> for the external
+representation of all of the atomic type variables. <a href="#id83">Figure 8</a>
+shows the XDR types used to represent the various base type
+variables.
+<p><p><p class="rfc-caption">Figure 8: The XDR data types used by the DAP as the external representations
+  of base-type variables</p>
+<a name="id83">&nbsp;</A>
+<div align="center"><p>
+<table border="1"><tbody><tr><td colspan="1" align="CENTER">
+ 
+<B>Base Type</B> </td><td colspan="1" align="CENTER"> <B>XDR Type</B> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<CODE class="literal">byte</CODE> </td><td colspan="1" align="LEFT"> <CODE class="literal">xdr byte</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<CODE class="literal">int16</CODE> </td><td colspan="1" align="LEFT"> <CODE class="literal">xdr short</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<CODE class="literal">uint16</CODE> </td><td colspan="1" align="LEFT"> <CODE class="literal">xdr unsigned short</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<CODE class="literal">int32</CODE> </td><td colspan="1" align="LEFT"> <CODE class="literal">xdr long</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<CODE class="literal">uint32</CODE> </td><td colspan="1" align="LEFT"> <CODE class="literal">xdr unsigned long</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<CODE class="literal">float32</CODE> </td><td colspan="1" align="LEFT"> <CODE class="literal">xdr float</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<CODE class="literal">float64</CODE> </td><td colspan="1" align="LEFT"> <CODE class="literal">xdr double</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<CODE class="literal">string</CODE> </td><td colspan="1" align="LEFT"> <CODE class="literal">xdr string</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+<CODE class="literal">URL</CODE> </td><td colspan="1" align="LEFT"> <CODE class="literal">xdr string</CODE> </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></tbody></table>
+
+</p></div>
+
+<h3><a name="id84">14.3.2 Constructor types</a></h3>
+<p>In order to transmit constructor type variables, the DAP defines how the
+various base type variables, which comprise the constructor type variable,
+are transmitted. Any constructor type variable may be subject to a constraint
+expression which changes the amount of data transmitted for the variable
+(see&nbsp;Section&nbsp;<a href="#id32">11</a>). For each of the four constructor types these
+definitions are:
+
+<h4><a name="id85">14.3.2.1 Array</a></h4>
+<p>An array is first sent by sending the number of elements in the array
+  twice.<sup><a href="#id133">11</a></sup> The array lengths are
+  32-bit integers encoded using <CODE class="literal">xdr&#95;long</CODE>.
+<p>  Following the length information, each array element is encoded in
+  succession. Arrays of bytes are handled differently than other arrays:
+<ol><li>An array of bytes: These are encoded as is and are padded to a
+  four-byte boundary. Thus an array of five bytes will be encoded as eight
+  bytes.
+<li>One-dimensional arrays of all types are encoded by encoding each
+  element of the array in the order they appear. Note that atomic types are
+  encoded as XDR would encode an array. Constructor types are encoded by
+  individually encoding each value as described in this section.
+<li>Multi-dimensional arrays are encoded by encoding the elements using
+  row-major ordering. Note that atomic types are
+  encoded as XDR would encode an array. Constructor types are encoded by
+  individually encoding each value as described in this section.
+</ol>
+<p><pre class="cft">
+Array        = length length values 
+length       = &lt;32-bit integer, signed, big endian&gt; 
+values       = bytes | other-values 
+bytes        = &lt;8-bit bytes padded to a four-byte boundary&gt; 
+other-values = numeric-values | strings | aggregates 
+</pre>
+
+<h4><a name="id86">14.3.2.2 <em>Structure</em> </a></h4>
+A structure is sent by encoding each field in the order
+  those fields are declared in the structure. For example, the structure:
+<p><pre class="it">
+Structure {
+    int32 x;
+    float64 y;
+} a;
+</pre>
+<p>Would be sent by encoding the int32 <CODE class="literal">x</CODE> and then the float64
+<CODE class="literal">y</CODE>. 
+<p>Nested structures are sent by encoding their `leaf nodes' as visited in a
+depth first traversal. For example:
+<p><pre class="it">
+Structure {
+    int32 x;
+    Structure {
+        String name;
+        Byte image[512][512];
+    } picture;
+    float64 y;
+} a;
+</pre>
+<p>Would be sent by encoding <CODE class="literal">x</CODE>, then <CODE class="literal">name</CODE>, <CODE class="literal">image</CODE> and
+finally <CODE class="literal">y</CODE>.
+
+<h4><a name="id87">14.3.2.3 <em>Sequence</em> </a></h4>
+A Sequence is transmitted by encoding each instance as for a structure and
+sending one after the other, in the order of their occurrence in the data
+set. The entire sequence is sent, subject to the constraint expression. In
+other words, if no constraint expression is supplied then the entire sequence
+is sent. However, if a constraint expression is given, only the records in the
+sequence that satisfy the expression are sent
+<p>Because a sequence does <em>not</em> have a length count, each instance is
+prefixed by a <CODE class="literal">start of sequence</CODE> marker. Also, to accommodate nested
+sequences, then end of each sequence as a whole is marked by a <CODE class="literal">end of
+sequence</CODE> marker.
+<p><pre class="cft">
+sequence      = instances end-of-seq 
+instances     = start-of-inst instance-values 
+end-of-seq    = &lt;byte value 0xA5&gt; 
+start-of-inst = &lt;byte value 0x5A&gt; 
+</pre>
+
+<h4><a name="id88">14.3.2.4 <em>Grid</em> </a></h4>
+A <em>Grid</em> is encoded as if it were a <em>Structure</em> (one component after the other,
+in the order of their declaration).
+
+<h1><a name="id89">15 Examples</a></h1>
+<p>Following are some examples, of requests sent to a server representing
+some data source, and the response documents returned by those
+requests.
+
+<h2><a name="id90">15.1 Simple request</a></h2>
+<p>Assume a server called <CODE class="literal">server.edu</CODE> has some temperature data, stored as
+a ten-element array named <CODE class="literal">Tmp</CODE>, in a single file called <CODE class="literal">temp.dat</CODE>,
+in a directory called <CODE class="literal">data</CODE> in the <CODE class="literal">htdocs</CODE> tree. A DAP URL
+requesting the DDS might look like this:
+<p><pre class="t">
+http://server.edu/data/temp.dat.dds
+</pre>
+<p>In all of the following examples, carriage returns and new lines are shown as
+<CODE class="literal">&lt;CRLF&gt;</CODE>. Only shown are the <CODE class="literal">&lt;CRLF&gt;</CODE> characters that
+are REQUIRED. Since some of all of each response is encoded as text, it makes
+sense to include extra line breaks to enhance their readability (as we've
+done here).
+<p>The document containing the DDS would look like this:
+<p><pre class="cft">
+Content-Description: dods-dds&lt;CRLF&gt;
+Content-Type: text/plain&lt;CRLF&gt;
+Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21&lt;CRLF&gt;
+Date: Fri, 09 Feb 2001 18:54:55 GMT&lt;CRLF&gt;
+XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1&lt;CRLF&gt;
+&lt;CRLF&gt;
+Dataset {
+  Float32 Tmp[10];
+} temp.dat;
+</pre>
+<p>Note that each of the response headers MUST end in a carriage-return
+line-feed pair. Also note that a carriage-return
+line-feed pair on an otherwise blank line MUST separate the response headers
+from the message body.<a href="#rfc2045">[8]</a><a href="#rfc2046">[9]</a>
+<p>The DAS would be requested like this:
+<p><pre class="t">
+http://server.edu/data/temp.dat.das
+</pre>
+<p>And its response might look like this:
+<p><pre class="ft">
+Content-Description: dods-das&lt;CRLF&gt;
+Content-Type: text/plain&lt;CRLF&gt;
+Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21&lt;CRLF&gt;
+Date: Fri, 09 Feb 2001 18:54:55 GMT&lt;CRLF&gt;
+XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1&lt;CRLF&gt;
+&lt;CRLF&gt;
+Attributes {
+  Tmp {
+    Float32 Lat 42.2;
+    Float32 Lon -89.3
+  }
+}
+</pre>
+<p>The data would be requested like this:
+<p><pre class="t">
+http://server.edu/data/temp.dat.dods
+</pre>
+<p>The DataDDS containing the data would look like this:
+<p><pre class="ft">
+Content-Description: dods-data&lt;CRLF&gt;
+Content-Type: application/octet-stream&lt;CRLF&gt;
+Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21&lt;CRLF&gt;
+Date: Fri, 09 Feb 2001 18:54:55 GMT&lt;CRLF&gt;
+XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1&lt;CRLF&gt;
+&lt;CRLF&gt;
+Dataset {
+  Float32 Tmp[10];
+} temp.dat;&lt;CRLF&gt;
+Data:&lt;CRLF&gt;
+&lt;Tmp length&gt;&lt;Tmp length&gt;&lt;value of Tmp[0]&gt; ... &lt;value of Tmp[9]&gt;
+</pre>
+<p>Where <CODE class="literal">&lt;Tmp length&gt;</CODE> (which appears twice) is the number (32-bit
+ big-endian twos-compliment signed integer) of elements in the array. In this
+ case it would be ten (<CODE class="literal">00 00 00 0A</CODE><i><sub>16</sub></i>) and <CODE class="literal">&lt;value of Tmp[0]&gt;</CODE>,
+ <i>et c.</i>, are the values (32-bit big endian IEEE 754 floating point).
+<p>Note that the <CODE class="literal">Content-Type</CODE> header's value is
+<CODE class="literal">application/octet-stream</CODE> for this type of response and that the the
+character sequence <CODE class="literal">&lt;CRLF&gt;Data:&lt;CRLF&gt;</CODE> serves as a separator for the
+response DDS and the binary data values.
+<p>The binary data which follows the <CODE class="literal">&lt;CRLF&gt;Data:&lt;CRLF&gt;</CODE> separator MUST
+NOT contain any carriage-return line-feed pairs.
+
+<h2><a name="id91">15.2 <em>Grid</em> </a></h2>
+<p>Suppose you know that there's a 30 by 50 <em>Grid</em> held in some data source at
+<CODE class="literal">server.edu</CODE>, and you want a 2 by 3 chunk of it. You can request a part of
+a <em>Grid</em> with a constraint expression like this: <CODE class="literal">grid[20:21][40:42]</CODE>.
+<p>  <p class="note"><b>NOTE: </b>In the remaining examples, we will omit the explicit indication
+  of carriage-return line-feed pairs to simplify presentation.</p>
+<p>Ask for the DDS of this data like this:
+<p><pre class="t">
+http://server.edu/grid-data/grid.dat.dds?grid[20:21][40:42]
+</pre>
+<p>The document containing the DDS would look like this:
+<p><pre class="ft">
+Content-Description: dods-dds
+Content-Type: text/plain
+Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21
+Date: Fri, 09 Feb 2001 18:54:55 GMT
+XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+
+Dataset {
+  Grid {
+    Array:
+      Float32 grid[xdimen = 2][ydimen = 3]
+    Maps:
+      Float32 xdimen[xdimen = 2];
+      Float32 ydimen[ydimen = 3];
+  } grid;
+} temp2.dat;
+</pre>
+<p>The DAS would be requested like this:
+<p><pre class="t">
+http://server.edu/grid-data/grid.dat.das?grid[20:21][40:42]
+</pre>
+<p>And its response might look like this:
+<p><pre class="ft">
+Content-Description: dods-das
+Content-Type: text/plain
+Server: Server: Apache/1.3.12 (Unix)  (Red Hat/Linux) PHP/3.0.15 mod_perl/1.21
+Date: Fri, 09 Feb 2001 18:54:55 GMT
+XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+
+Attributes {
+  grid{
+    String Date "3 Nov 2003, 1433Z";
+    String Instrument "Black &amp; Decker Spectrum Analyzer";
+  }
+}
+</pre>
+<p>The data would be requested like this:
+<p><pre class="t">
+http://server.edu/grid-data/grid.dat.dods?grid[20:21][40:42]
+</pre>
+<p>The DataDDS containing the data would look like this:
+<p><pre class="ft">
+Content-Description: dods-data
+Content-Type: text/plain
+Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21
+Date: Fri, 09 Feb 2001 18:54:55 GMT
+XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+
+Dataset {
+  Grid {
+    Array:
+      Float32 grid[xdimen = 2][ydimen = 3]
+    Maps:
+      Float32 xdimen[xdimen = 2];
+      Float32 ydimen[ydimen = 3];
+  } grid;
+} temp2.dat;
+Data:
+&lt;grid.grid length&gt;&lt;grid.grid length&gt;
+&lt;grid.grid[0][0]&gt;&lt;grid.grid[0][1]&gt;&lt;grid.grid[0][2]&gt;
+&lt;grid.grid[1][0]&gt;&lt;grid.grid[1][1]&gt;&lt;grid.grid[1][2]&gt;
+&lt;grid.xdimen length&gt;&lt;grid.xdimen length&gt;&lt;grid.xdimen[0]&gt;&lt;grid.xdimen[1]&gt;
+&lt;grid.ydimen length&gt;&lt;grid.ydimen length&gt;&lt;grid.ydimen[0]&gt;&lt;grid.ydimen[1]&gt;
+&lt;grid.ydimen[2]&gt;
+</pre>
+<p>The data held in a <em>Grid</em> type is encoded as for a <em>Structure</em>, one field at a
+time. In this example, first the <CODE class="literal">grid.grid</CODE> field is encoded, then the
+<CODE class="literal">grid.xdimen</CODE> and <CODE class="literal">grid.ydimen</CODE>
+
+<h2><a name="id92">15.3 <em>Sequence</em> </a></h2>
+<p>A Sequence of data called <CODE class="literal">seq</CODE> is also stored at <CODE class="literal">server.edu</CODE>. Each
+record of the sequence contains three values: <CODE class="literal">xval</CODE>, <CODE class="literal">yval</CODE>, and
+<CODE class="literal">zval</CODE>. A constraint which asks for all values of the <em>Sequence</em> where
+<CODE class="literal">xval</CODE> is less than fifteen would look like:
+<p><pre class="t">
+xval&lt;15
+</pre>
+<p>Ask for the DDS of these data like this:
+<p><pre class="t">
+http://server.edu/seq-data/seq.dat.dds?xval&lt;15
+</pre>
+<p>The document containing the DDS would look like this:
+<p><pre class="ft">
+Content-Description: dods-dds
+Content-Type: text/plain
+Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21
+Date: Fri, 09 Feb 2001 18:54:55 GMT
+XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+
+Dataset {
+  Sequence {
+    Int16 xval;
+    Int16 yval;
+    Int16 zval;
+  } seq;
+} temp3.dat;
+</pre>
+<p>The DAS would be requested like this:
+<p><pre class="t">
+http://server.edu/seq-data/seq.dat.das?xval&lt;15
+</pre>
+<p>And its response might look like this:
+<p><pre class="ft">
+Content-Description: dods-das
+Content-Type: text/plain
+Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21
+Date: Fri, 09 Feb 2001 18:54:55 GMT
+XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+
+Attributes {
+  xval {
+    String units "meters per second";
+  }
+  yval {
+    String units "kilograms per minute";
+  }
+  zval {
+    String units "tons per hour";
+  }
+}
+</pre>
+<p>The data would be requested like this:
+<p><pre class="t">
+http://server.edu/seq-data/seq.dat.dods?xval&lt;15
+</pre>
+<p>The DataDDS containing the data would look like this:
+<p><pre class="ft">
+Content-Description: dods-data
+Content-Type: text/plain
+Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21
+Date: Fri, 09 Feb 2001 18:54:55 GMT
+XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+
+Dataset {
+  Sequence {
+    Int16 xval;
+    Int16 yval;
+    Int16 zval;
+  } seq;
+} temp3.dat
+Data:
+&lt;0x5A&gt;&lt;first xval&gt;&lt;first yval&gt;&lt;first zval&gt;
+&lt;0x5A&gt;&lt;next xval&gt;&lt;next yval&gt;&lt;next zval&gt;
+&lt;0x5A&gt;&lt;next xval&gt;&lt;next yval&gt;&lt;next zval&gt;
+&lt;0x5A&gt;&lt;last xval&gt;&lt;last yval&gt;&lt;last zval&gt;&lt;0xA5&gt;
+</pre>
+<p>A <em>Sequence</em>'s values are transmitted one instance at a time. Each instance is
+prefixed by the <em>start of instance</em> marker which is <CODE class="literal">5A</CODE><i><sub>16</sub></i>. In
+this example, the constraint <CODE class="literal">xval&lt;15</CODE> causes four instances to be sent
+and each one is prefixed by the start of instance marker. Once all of the
+selected instances of the <em>Sequence</em> have been sent, the <em>end of sequence</em>
+marker (<CODE class="literal">A5</CODE><i><sub>16</sub></i> is written. 
+<p>Here's a second example of a DataDDS request/response pair for a more complex
+data source, one that has a <em>Sequence</em> within a <em>Sequence</em>. The DDS for this
+data source looks like:
+<p><pre class="ft">
+Dataset {
+  Sequence {
+    Float32 lat;
+    Float32 lon;
+    Sequence {
+      Int16 depth;
+      Float64 temp;
+    } sounding;
+  } track;
+} temp4.dat;
+</pre>
+<p>Suppose you wanted to get all the soundings in a lat/lon box that spans the
+area of 80 to 90 degrees north latitude and 50 to 60 degress west longitude
+(you would know the units of data source by looking at the attributes which
+have been omitted from this example). Here's the constraint expression:
+<p><pre class="ft">
+track.lat&gt;80.0&amp;track.lat&lt;90.0&amp;track.lon&gt;50.0&amp;track.lon&lt;60.0
+</pre>
+<p>If you requested the DataDDS using the constraint, the response would be:
+<p><pre class="ft">
+Content-Description: dods-data
+Content-Type: text/plain
+Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21
+Date: Fri, 09 Feb 2001 18:54:55 GMT
+XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+
+Dataset {
+  Sequence {
+    Float32 lat;
+    Float32 lon;
+    Sequence {
+      Int16 depth;
+      Float64 temp;
+    } sounding;
+  } track;
+} temp4.dat;
+Data:
+&lt;0x5A&gt;&lt;track.lat&gt;&lt;track.lon&gt;
+&lt;0x5A&gt;&lt;track.sounding.depth&gt;&lt;track.sounding.temp&gt;
+&lt;0x5A&gt;&lt;track.sounding.depth&gt;&lt;track.sounding.temp&gt;
+&lt;0x5A&gt;&lt;track.sounding.depth&gt;&lt;track.sounding.temp&gt;
+&lt;0x5A&gt;&lt;track.sounding.depth&gt;&lt;track.sounding.temp&gt;&lt;0xA5&gt;
+&lt;0x5A&gt;&lt;track.lat&gt;&lt;track.lon&gt;
+&lt;0x5A&gt;&lt;track.sounding.depth&gt;&lt;track.sounding.temp&gt;
+&lt;0x5A&gt;&lt;track.sounding.depth&gt;&lt;track.sounding.temp&gt;
+&lt;0x5A&gt;&lt;track.sounding.depth&gt;&lt;track.sounding.temp&gt;&lt;0xA5&gt;
+&lt;0x5A&gt;&lt;track.lat&gt;&lt;track.lon&gt;
+&lt;0x5A&gt;&lt;track.sounding.depth&gt;&lt;track.sounding.temp&gt;
+&lt;0x5A&gt;&lt;track.sounding.depth&gt;&lt;track.sounding.temp&gt;
+&lt;0x5A&gt;&lt;track.sounding.depth&gt;&lt;track.sounding.temp&gt;
+&lt;0x5A&gt;&lt;track.sounding.depth&gt;&lt;track.sounding.temp&gt;
+&lt;0x5A&gt;&lt;track.sounding.depth&gt;&lt;track.sounding.temp&gt;&lt;0xA5&gt;&lt;0xA5&gt;
+</pre>
+<p>In this example, the constraint has selected three instances of the outer
+<em>Sequence</em> <CODE class="literal">track</CODE>. For each instance of <CODE class="literal">track</CODE>, there is a complete
+inner <em>Sequence</em> <CODE class="literal">sounding</CODE> which, for this constraint, is sent in its
+entirety.<sup><a href="#id134">12</a></sup> Note that the end of sequence
+marker following <CODE class="literal">&lt;track.sounding.temp&gt;</CODE> is the marker for the end of the
+inner <em>Sequence</em>, called <CODE class="literal">sounding</CODE>. The final <CODE class="literal">A5</CODE><i><sub>16</sub></i> is the end
+of sequence marker for the outer <em>Sequence</em>, <CODE class="literal">track</CODE>.
+
+<h1><a name="id93">References</a></h1>
+<dl>
+<dt><b><a name="heading1">[Normative</A> References]</b><dd>
+<dt><b><a name="id95">&nbsp;</A>[2]</b><dd>
+ANSI X3.4-1986.
+Coded character set--7-bit american standard code for information
+  interchange., 1986.
+<dt><b><a name="rfc2396">&nbsp;</A>[3]</b><dd>
+T.&nbsp;Berners-Lee, R.&nbsp;Fielding, and L.&nbsp;Masinter.
+Uniform resource identifiers (URI): Generic syntax.
+RFC 2396.
+<dt><b><a name="rfc2119">&nbsp;</A>[4]</b><dd>
+S.&nbsp;Bradner.
+Key words for use in rfcs to indicate requirement levels.
+RFC 2119.
+<dt><b><a name="rfc822">&nbsp;</A>[5]</b><dd>
+David&nbsp;H. Crocker.
+Standard for the format of arpa internet text messages.
+RFC 822.
+<dt><b><a name="rfc2616">&nbsp;</A>[6]</b><dd>
+R.&nbsp;Fielding, J.&nbsp;Gettys, J.&nbsp;C. Mogul, H.&nbsp;Frystyk, L.&nbsp;Masinter, P.&nbsp;Leach, and
+  T.&nbsp;Berners-Lee.
+Hypertext transfer protocol -- HTTP/1.1.
+RFC 2616.
+<dt><b><a name="rfc2617">&nbsp;</A>[7]</b><dd>
+J.&nbsp;Franks, P.&nbsp;Hallam-Baker, J.&nbsp;Hostetler, S.&nbsp;Lawerence, P.&nbsp;Leach, A.&nbsp;Loutonen,
+  and L.Stewart.
+Http authentication: Basic and digest access authentication.
+RFC 2617.
+<dt><b><a name="rfc2045">&nbsp;</A>[8]</b><dd>
+N.&nbsp;Freed and N.&nbsp;Borenstein.
+Multipurpose internet mail extensions (MIME) part one: Format of
+  internet message bodies.
+RFC 2045.
+<dt><b><a name="rfc2046">&nbsp;</A>[9]</b><dd>
+N.&nbsp;Freed and N.&nbsp;Borenstein.
+Multipurpose internet mail extensions (MIME) part two: Media types.
+RFC 2046.
+<dt><b><a name="IEEE:754">&nbsp;</A>[10]</b><dd>
+IEEE 754-1985.
+IEEE standard for binary floating-point arithmetic, 1985.
+<dt><b><a name="ansi:c">&nbsp;</A>[11]</b><dd>
+ISO/IEC 9899.
+Programming languages - C, 1999.
+<dt><b><a name="heading2">[Informative</A> References]</b><dd>
+<dt><b><a name="Arnold:Java">&nbsp;</A>[13]</b><dd>
+Ken Arnold and James Gosling.
+<em>The Java Programming Language</em>.
+Addision Wesley, Reading, Massachusetts, 1996.
+<dt><b><a name="cornillon03">&nbsp;</A>[14]</b><dd>
+Peter Cornillon, James Gallagher, and Tom Sgouros.
+Opendap: Accessing data in a distributed, heterogeneous environment.
+<em>CODATA Data Science Journal</em>, 2:164-174, 2003.
+Online 5 November, 2003:
+  http://journals.eecs.qub.ac.uk/codata/Journal/contents/2&#95;03/2&#95;03pdfs/DS247.pdf.
+<dt><b><a name="date:DBMS">&nbsp;</A>[15]</b><dd>
+C.J. Date.
+<em>An Introduction to Database Systems</em>.
+Addison Wesley, Reading, Massachusetts, 2000.
+<dt><b><a name="gallagher:dods">&nbsp;</A>[16]</b><dd>
+James Gallagher and George Milkowski.
+Data transport within the distributed oceanographic data system.
+In <em>World Wide Web Journal: Fourth International World Wide Web
+  Conference Proceedings</em>, pages 691-702, 1995.
+<dt><b><a name="NCSA:HDF4">&nbsp;</A>[17]</b><dd>
+NCSA.
+HDF 4.1r3 user's guide.
+http://hdf.ncsa.uiuc.edu/UG41r3&#95;html/, 1999.
+Retrieved from the World Wide Web 13 October 2003.
+<dt><b><a name="NCSA:HDF5">&nbsp;</A>[18]</b><dd>
+NCSA.
+HDF5 - a new generation of HDF.
+http://hdf.ncsa.uiuc.edu/HDF5/, 2001.
+Retrieved from the World Wide Web 15 December 2002.
+<dt><b><a name="netcdf">&nbsp;</A>[19]</b><dd>
+Russ Rew, Glenn Davis, and Steve Emmerson.
+<em>NetCDF User's Guide</em>.
+Unidata Program Center, Boulder, Colorado, April 1993.
+Version 2.3.
+<dt><b><a name="steele:clisp">&nbsp;</A>[20]</b><dd>
+Guy&nbsp;L. Steele Jr.
+<em>Common Lisp: The Language</em>.
+Digital Press, Bedford, Massachusetts, 1984.
+<dt><b><a name="stevens:unp">&nbsp;</A>[21]</b><dd>
+W.&nbsp;Richard Stevens.
+<em>UNIX Network Programming</em>.
+Prentice-Hall, Inc., 2d edition, 1999.
+<dt><b><a name="xdr">&nbsp;</A>[22]</b><dd>
+Sun Microsystems, Mountain View, California.
+<em>XDR</em>.
+Version 4.
+</dl>
+
+<h1><a name="id116">Authors</a></h1>
+James Gallagher<br />OPeNDAP, Inc.<br />165 Dean Knauss Dr.<br />Narragansett, RI. 02882<br />Phone: 401.284.1304, email: jgallagher@opendap.org<br />
+<p>Nathan Potter<br />Oregon State University<br />Phone: 541.737.2293, email: ndp@coas.oregonstate.edu<br />
+<p>Tom Sgouros<br />Manual Writing NA.<br />Phone: 401.861.2831, email: tomfool@as220.org<br />
+<p>Steve Hankin<br />NOAA PMEL<br />Phone: 206.526.6080, email: Steven.C.Hankin@noaa.gov<br />
+<p>Glenn Flierl<br />MIT<br />Phone: 617.253.4692, email: glenn@lake.mit.edu<br />
+<h1><a name="app:grammar">16 Notational Conventions and Generic Grammar</a></h1>
+
+
+
+<h2><a name="id118">16.1 Augmented BNF</a></h2>
+All of the mechanisms specified in this document are described in both prose
+and an augmented Backus-Naur Form (BNF) similar to that used by RFC
+822&nbsp;<a href="#rfc822">[5]</a>. Implementors will need to be familiar with the notation in
+order to understand this specification. The augmented BNF includes the
+following constructs:
+<dl><dt><b><tt>name = definition</tt></b><dd> The name of a rule is simply the name
+  itself (without any enclosing <tt>"<i>&lt;</i>"</tt> and <tt>"<i>&gt;</i>"</tt>) and is
+  separated from its definition by the equal <tt>"="</tt> character. White
+  space is only significant in that indentation of continuation lines is used
+  to indicate a rule definition that spans more than one line. Certain basic
+  rules are in uppercase, such as SP, LWS, HT, CRLF, DIGIT, ALPHA, etc. Angle
+  brackets are used within definitions whenever their presence will
+  facilitate discerning the use of rule names.
+<dt><b><tt>"literal"</tt></b><dd> Quotation marks surround literal text. Unless
+  stated otherwise, the text is case-insensitive.
+<dt><b><tt>rule1 | rule2</tt></b><dd> Elements separated by a bar (<tt>"|"</tt>) are
+  alternatives, e.g., <tt>"yes | no"</tt> will accept <tt>yes</tt> or
+  <tt>no</tt>.
+<dt><b><tt>(rule1 rule2)</tt></b><dd> Elements enclosed in parentheses are treated
+  as a single element.  Thus, <tt>"(elem (foo | bar) elem)"</tt> allows the
+  token sequences <tt>"elem foo elem"</tt> and <tt>"elem bar elem"</tt>.
+<dt><b><tt>*rule</tt></b><dd> The character <tt>"*"</tt> preceding an element
+  indicates repetition. The full form is <tt>"<i>&lt;</i>n<i>&gt;</i>*<i>&lt;</i>m<i>&gt;</i>element"</tt>
+  indicating at least <tt><i>&lt;</i>n<i>&gt;</i></tt> and at most <tt><i>&lt;</i>m<i>&gt;</i></tt>
+  occurrences of element. Default values are 0 and infinity so that
+  <tt>"*(element)"</tt> allows any number, including zero;
+  <tt>"1*element"</tt> requires at least one; and <tt>"1*2element"</tt>
+  allows one or two.
+<dt><b><tt>[rule]</tt></b><dd> Square brackets enclose optional elements;
+  <tt>"[foo bar]"</tt> is equivalent to <tt>"*1(foo bar)"</tt>.
+<dt><b><tt>N rule</tt></b><dd> Specific repetition: <tt>"<i>&lt;</i>n<i>&gt;</i>(element)"</tt> is
+  equivalent to <tt>"<i>&lt;</i>n&gt;*<i>&lt;</i>n<i>&gt;</i>(element)"</tt>; that is, exactly
+  <tt><i>&lt;</i>n<i>&gt;</i></tt> occurrences of (element).  Thus 2DIGIT is a 2-digit
+  number, and 3ALPHA is a string of three alphabetic characters.
+<dt><b><tt>&#35;rule</tt></b><dd> A construct <tt>"&#35;"</tt> is defined, similar to
+  <tt>"*"</tt>, for defining lists of elements. The full form is
+  <tt>"<i>&lt;</i>n<i>&gt;</i>&#35;<i>&lt;</i>m<i>&gt;</i>element"</tt> indicating at least <tt><i>&lt;</i>n<i>&gt;</i></tt> and
+  at most <tt><i>&lt;</i>m<i>&gt;</i></tt> elements, each separated by one or more commas
+  (<tt>","</tt>) and OPTIONAL linear white space (LWS). This makes the usual
+  form of lists very easy; a rule such as <tt>( *LWS element *( *LWS ","
+    *LWS element ))</tt> can be shown as <tt>1&#35;element</tt> Wherever this
+  construct is used, null elements are allowed, but do not contribute to the
+  count of elements present. That is, <tt>"(element), , (element) "</tt> is
+  permitted, but counts as only two elements. Therefore, where at least one
+  element is required, at least one non-null element MUST be present. Default
+  values are 0 and infinity so that <tt>"&#35;element"</tt> allows any number,
+  including zero; <tt>"1&#35;element"</tt> requires at least one; and
+  <tt>"1&#35;2element"</tt> allows one or two.
+<dt><b><tt>;</tt> comment</b><dd> A semi-colon, set off some distance to the right
+  of rule text, starts a comment that continues to the end of line. This is a
+  simple way of including useful notes in parallel with the specifications.
+<dt><b>implied <tt>*LWS</tt></b><dd> The grammar described by this specification is
+  word-based. Except where noted otherwise, linear white space (LWS) can be
+  included between any two adjacent words (token or quoted-string), and
+  between adjacent words and separators, without changing the interpretation
+  of a field. At least one delimiter (LWS and/or separators) MUST exist
+  between any two tokens (for the definition of "token" below), since they
+  would otherwise be interpreted as a single token.
+</dl>
+
+<h2><a name="id119">16.2 Basic Rules</a></h2>
+<p>   The following rules are used throughout this specification to
+   describe basic parsing constructs. The US-ASCII coded character set
+   is defined by ANSI X3.4-1986&nbsp;<a href="#id95">[2]</a>.
+<p><pre class="it">
+       OCTET          = &lt;any 8-bit sequence of data&gt;
+       CHAR           = &lt;any US-ASCII character (octets 0 - 127)&gt;
+       UPALPHA        = &lt;any US-ASCII uppercase letter "A".."Z"&gt;
+       LOALPHA        = &lt;any US-ASCII lowercase letter "a".."z"&gt;
+       ALPHA          = UPALPHA | LOALPHA
+       DIGIT          = &lt;any US-ASCII digit "0".."9"&gt;
+       CTL            = &lt;any US-ASCII control character
+                        (octets 0 - 31) and DEL (127)&gt;
+       CR             = &lt;US-ASCII CR, carriage return (13)&gt;
+       LF             = &lt;US-ASCII LF, linefeed (10)&gt;
+       SP             = &lt;US-ASCII SP, space (32)&gt;
+       HT             = &lt;US-ASCII HT, horizontal-tab (9)&gt;
+       &lt;"&gt;            = &lt;US-ASCII double-quote mark (34)&gt;
+</pre>
+<p>   HTTP/1.1 defines the sequence CR LF as the end-of-line marker for all
+   protocol elements except the entity-body (see appendix 19.3 for
+   tolerant applications). The end-of-line marker within an entity-body
+   is defined by its associated media type, as described in section 3.7.
+<p><pre class="it">
+       CRLF           = CR LF
+</pre>
+<p>   HTTP/1.1 header field values can be folded onto multiple lines if the
+   continuation line begins with a space or horizontal tab. All linear
+   white space, including folding, has the same semantics as SP. A
+   recipient MAY replace any linear white space with a single SP before
+   interpreting the field value or forwarding the message downstream.
+<p><pre class="it">
+       LWS            = [CRLF] 1*( SP | HT )
+</pre>
+<p>   The TEXT rule is only used for descriptive field contents and values
+   that are not intended to be interpreted by the message parser. Words
+   of *TEXT MAY contain characters from character sets other than ISO-
+   8859-1 [22] only when encoded according to the rules of RFC 2047
+   [14].
+<p><pre class="it">
+       TEXT           = &lt;any OCTET except CTLs,
+                        but including LWS&gt;
+</pre>
+<p>   A CRLF is allowed in the definition of TEXT only as part of a header
+   field continuation. It is expected that the folding LWS will be
+   replaced with a single SP before interpretation of the TEXT value.
+<p>   Hexadecimal numeric characters are used in several protocol elements.
+<p><pre class="it">
+       HEX            = "A" | "B" | "C" | "D" | "E" | "F"
+                      | "a" | "b" | "c" | "d" | "e" | "f" | DIGIT
+</pre>
+<p>   Many HTTP/1.1 header field values consist of words separated by LWS
+   or special characters. These special characters MUST be in a quoted
+   string to be used within a parameter value (as defined in section
+   3.6).
+<p><pre class="it">
+       token          = 1*&lt;any CHAR except CTLs or separators&gt;
+       separators     = "(" | ")" | "&lt;" | "&gt;" | "@"
+                      | "," | ";" | ":" | "\" | &lt;"&gt;
+                      | "/" | "[" | "]" | "?" | "="
+                      | "{" | "}" | SP | HT
+</pre>
+<p>   Comments can be included in some HTTP header fields by surrounding
+   the comment text with parentheses. Comments are only allowed in
+   fields containing "comment" as part of their field value definition.
+   In all other fields, parentheses are considered part of the field
+   value.
+<p><pre class="it">
+       comment        = "(" *( ctext | quoted-pair | comment ) ")"
+       ctext          = &lt;any TEXT excluding "(" and ")"&gt;
+</pre>
+<p>   A string of text is parsed as a single word if it is quoted using
+   double-quote marks.
+<p><pre class="it">
+       quoted-string  = ( &lt;"&gt; *(qdtext | quoted-pair ) &lt;"&gt; )
+       qdtext         = &lt;any TEXT except &lt;"&gt;&gt;
+</pre>
+<p>   The backslash character ("<code>\</code>") MAY be used as a single-character
+   quoting mechanism only within quoted-string and comment constructs.
+<p><pre class="it">
+       quoted-pair    = "\" CHAR
+</pre>
+<div class="quote"><p>
+This appendix was copied verbatim from RFC 2616&nbsp;<a href="#rfc2616">[6]</a>.
+<p>Copyright (C) The Internet Society (1999).  All Rights Reserved.
+<div class="quote"><p>
+   This document and translations of it may be copied and furnished to
+   others, and derivative works that comment on or otherwise explain it
+   or assist in its implementation may be prepared, copied, published
+   and distributed, in whole or in part, without restriction of any
+   kind, provided that the above copyright notice and this paragraph are
+   included on all such copies and derivative works.  However, this
+   document itself may not be modified in any way, such as by removing
+   the copyright notice or references to the Internet Society or other
+   Internet organizations, except as needed for the purpose of
+   developing Internet standards in which case the procedures for
+   copyrights defined in the Internet Standards process must be
+   followed, or as required to translate it into languages other than
+   English.
+</p></div>
+<p></p></div>
+
+<h1><a name="id120">17 Acronyms and Abbreviations</a></h1>
+The following acronyms are used in this text.
+<dl><dt><b>BNF</b><dd> Backus-Naur Form
+<dt><b>CE</b><dd> Constraint Expression
+<dt><b>CGI</b><dd> Common Gateway Interface
+<dt><b>DAP</b><dd> Data Access Protocol
+<dt><b>DAS</b><dd> Dataset Attribute Structure
+<dt><b>DDS</b><dd> Dataset Descriptor Structure
+<dt><b>DODS</b><dd> Distributed Oceanographic Data System
+<dt><b>DataDDS</b><dd> Data Dataset Descriptor Structure
+<dt><b>HTML</b><dd> Hypertext Markup Language
+<dt><b>HTTP</b><dd> HyperText Transfer Protocol
+<dt><b>MIME</b><dd> Multimedia Internet Mail Extension
+<dt><b>SOAP</b><dd> Simple Object Access Protocol
+<dt><b>SRS</b><dd> Software Requirements Specification, See IEEE 830-1998
+<dt><b>URI</b><dd> Uniform Resource Identifier
+<dt><b>URL</b><dd> Uniform Resource Locator
+<dt><b>W3C</b><dd> The World Wide Web Consortium, See http://www.w3c.org/
+<dt><b>XDR</b><dd> External Data Representation
+<dt><b>XML</b><dd> Extensible Markup Language
+</dl>
+
+<h1><a name="id121">18 Errata</a></h1>
+<p>There are no errata for this document.
+
+
+
+<h2><a name="id122">Footnotes</a></h2>
+<dl>
+<dt><b><a name="id123">&nbsp;</A>(1)</b><dd>We use the term `persistent representation' instead
+of the term `on-the-wire representation' because this representation of values
+is often produced by creating a document which is then transmitted but could,
+just as easily, be stored in a file system, data base, et c., for later
+retrieval and transformed back into the binary information which resided in
+the computer's memory. In practice, the on-the-wire and persistent
+representations are one and the same, but technically the persistent
+representation can be used for other purposes than network transmission.
+  
+<dt><b><a name="id124">&nbsp;</A>(2)</b><dd><em>Attributes</em> appear in
+many data storage systems such as netCDF<a href="#netcdf">[19]</a>, HDF4<a href="#NCSA:HDF4">[17]</a>
+and HDF5<a href="#NCSA:HDF5">[18]</a>. They also appear under the moniker `property' in
+Common Lisp<a href="#steele:clisp">[20]</a>.
+  
+<dt><b><a name="id125">&nbsp;</A>(3)</b><dd>This restriction has been
+put in place to keep writing general clients tractable. If the set of data
+types in a <em>Grid</em>'s map <em>Arrays</em> is allowed to be a <em>Sequence</em>, for example, any
+general client would have to be capable of processing that data type in a
+response. Such a client would be very hard to build.
+  
+<dt><b><a name="id126">&nbsp;</A>(4)</b><dd>For some interfaces, it may be necessary to place more
+restrictions on hyperslab projections.
+  
+<dt><b><a name="id127">&nbsp;</A>(5)</b><dd>For many <em>Sequence</em> variables, it may never be the case
+  that the entire <em>Sequence</em> is accessed since it may contain millons of
+  instances.
+  
+<dt><b><a name="id128">&nbsp;</A>(6)</b><dd>The <CODE class="literal">ext</CODE> is optional because it is possible to request
+  eitehr the version or help response using a special <CODE class="literal">data-source-id</CODE>
+  of <CODE class="literal">version</CODE> or <CODE class="literal">help</CODE>, respectively.
+  See&nbsp;Section&nbsp;<a href="#id79">14.2.5</a>&nbsp;and&nbsp;Section&nbsp;<a href="#id80">14.2.6</a>.
+  
+<dt><b><a name="id129">&nbsp;</A>(7)</b><dd>The token `CRLF' is used to denote the carriage return and
+  linefeed characters which correspond to decimal value 10 and decimal vale
+  13.
+  
+<dt><b><a name="id130">&nbsp;</A>(8)</b><dd>It would be better to use a multipart
+  document in place of the <CODE class="literal">application/octet</CODE>.
+  
+<dt><b><a name="id131">&nbsp;</A>(9)</b><dd>The
+  version information should be changed to reflect the version of the
+  DAP.
+  
+<dt><b><a name="id132">&nbsp;</A>(10)</b><dd>This should be multipart/binary.
+  
+<dt><b><a name="id133">&nbsp;</A>(11)</b><dd>This is an artifact of the first implementation of the DAP and XDR. The DAP software needed length information to allocate memory for
+  the array so it sent the array length. However, XDR also sends the array
+  length for its own purposes. The demands of backward compatibility have
+  left it in current implementations. Suggestion: In DAP 2.1, add the
+  XDAP-Version header and use that to signal that this particular problem has
+  been fixed; in DAP 2.1 only send the size once.
+  
+<dt><b><a name="id134">&nbsp;</A>(12)</b><dd>You could write a different constraint expression that would choose only
+values at a certain depth, <i>et cetera</i>.
+  
+</dl>
+<hr /><address>James Gallagher &lt;jgallagher@opendap.org&gt;, 2004/09/14, 
+  Revision: 1.24</address><br />
+</body></html>

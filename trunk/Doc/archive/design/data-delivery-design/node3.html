@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Process Configuration</TITLE>
+<META NAME="description" CONTENT="Process Configuration">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="next" HREF="node4.html">
+<LINK REL="previous" HREF="node2.html">
+<LINK REL="up" HREF="node2.html">
+<LINK REL="next" HREF="node4.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html143"
+  HREF="node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html139"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html133"
+  HREF="node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html141"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html144"
+  HREF="node4.html">Client/Server and Program/Library Interfaces</A>
+<B> Up:</B> <A NAME="tex2html140"
+  HREF="node2.html">Introduction</A>
+<B> Previous:</B> <A NAME="tex2html134"
+  HREF="node2.html">Introduction</A>
+ &nbsp; <B>  <A NAME="tex2html142"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00021000000000000000"></A>
+<A NAME="ddd:process-config"></A>
+<BR>
+Process Configuration
+</H2>
+
+<P>
+The collection of processes involved in a single data transfer from a remote
+archive to a user program is shown in Figure&nbsp;<A HREF="#fig:client-executables"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>.
+In the figure, the components of each process are also shown. Initially the
+user program, which has been re-linked with the surrogate API
+implementation<A NAME="tex2html24"
+  HREF="footnode.html#foot459"><SUP>2</SUP></A>, sends a <A NAME="tex2html27"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/urls/urls.html">Uniform Resource Locator</A> (URL) to the <A NAME="tex2html28"
+  HREF="http://hoohoo.ncsa.uiuc.edu/docs/Overview.html">HTTPD</A>. HTTPD decodes the
+URL and executes the named CGI, passing to it parameters via environment
+variables. The CGI is run in a separate process, so once started, it
+operates independently from HTTPD. The CGI in turn examines its arguments and
+determines which of the DODS filter programs to execute. The filters
+write to standard output which, in this case, is a  socket connecting the
+filter to the remote client (because the filter is a child process of the CGI
+which in turn is a child of <TT>httpd</TT>; <TT>httpd</TT>'s standard input and
+output are connected to the remote client).
+
+<P>
+Each machine that makes data available to DODS clients must, first and
+foremost, have all the data to be accessible <EM>on line</EM>. By on line we
+mean that the data must be accessible without human intervention and without
+significant delay. It is unreasonable to expect that data to be incorporated
+into a user's display package will take a day to be transferred to their
+computer! Ideally, DODS users will not be able to tell that data they access
+is remote. This does not mean that data must be on a hard disk, however. Data
+could be stored on an auto changer, in a special purpose database machine or
+other mass storage device.
+
+<P>
+In addition to an on line data set, data providers will need to run HTTPD and
+will need to install a CGI and a set of filter programs. HTTPD is used as a
+network interfaceq, security and access logging tool for DODS. It is a
+standard piece of software distributed by <A NAME="tex2html29"
+  HREF="http://www.ncsa.uiuc.edu/">National Center for Supercomputing Applications</A> and is already installed on
+many computers.
+
+<P>
+In addition to HTTPD, a DODS data server consists of a CGI and a least three
+filter programs (See Figure&nbsp;<A HREF="#fig:server-executables"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>). The three filters
+handle, respectively, the client's requests to get the Data set Attribute
+Structure&nbsp;<A HREF="#api:das">
+<IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> (DAS), the Data set Description
+Structure&nbsp;<A HREF="#api:dds">
+<IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> (DDS) and to read the values of variables in
+the data set. These three executables along with HTTPD and the dispatch CGI
+make up a complete DODS data server.
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:client-executables"></A><A NAME="468"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+Run-Time Processes. The client connects to a HTTP server which then
+    forks and executes the CGI/Translation module software. The latter is
+    used to access the data.</CAPTION>
+<TR><TD><IMG
+ WIDTH="119" HEIGHT="14" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=process-config4.ps}}
+\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:server-executables"></A><A NAME="585"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+Executables needed to support access to a data set for DODS
+    clients. This collection of three CGIs along with the appropriately
+    coded translation modules and linked to the original implementation of
+    the API used to access the data set constitutes a <EM>Data Server</EM> for
+    DODS.</CAPTION>
+<TR><TD><IMG
+ WIDTH="119" HEIGHT="14" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=server-executables.ps}}
+\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html143"
+  HREF="node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html139"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html133"
+  HREF="node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html141"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html144"
+  HREF="node4.html">Client/Server and Program/Library Interfaces</A>
+<B> Up:</B> <A NAME="tex2html140"
+  HREF="node2.html">Introduction</A>
+<B> Previous:</B> <A NAME="tex2html134"
+  HREF="node2.html">Introduction</A>
+ &nbsp; <B>  <A NAME="tex2html142"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

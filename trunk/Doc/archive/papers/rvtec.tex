@@ -1,0 +1,214 @@
+
+% Paper for submission to TOS. This could also be the beginings of some user
+% documentation or a `welcome' page in our HTML doc tree...
+%
+% I think this actually appeared in a Journal called RV Tech. and was written
+% by George Milkowski and Peter Cornillon. 2/5/99 jhrg
+%
+% $Id$
+
+
+\documentstyle[12pt,psfig,margins]{article}
+
+\psfigurepath{tos1-figs}
+\topmargin -8ex
+\footskip 4ex
+\headheight 8ex
+\footheight -4ex
+\textwidth 6.25in
+\textheight 8.25in
+\oddsidemargin 0em
+%\parskip 1ex
+\def \dods{Distributed Oceanographic Data System }
+\def \dodsns{Distributed Oceanographic Data System}
+\def \1em{\hskip 1em}
+\def \2em{\hskip 2em}
+\def \3em{\hskip 3em}
+\def \4em{\hskip 4em}
+\def \dap{data access protocol }
+\def \dapns{data access protocol}
+
+\begin{document}
+\bibliographystyle{chicago}
+\Large
+\centerline {\bf DODS: Providing direct access }
+\centerline {\bf to distributed research data resources.}
+\normalsize
+
+\large
+\bigskip
+\noindent
+{\bf Introduction}
+\medskip
+\normalsize 
+
+It doesn't take long using the World Wide Web (WWW) to discover many hundreds
+of scientific datasets that are currently available on-line to researchers.
+For oceanographers the volume and diversity of data from national archives,
+special program offices or other researchers that is of potential value to
+their research is overwhelming.  However, while a large number of oceanographic
+datasets are on-line, from the research oceanographer's point of view there
+are significant impediments which often make acquiring and using these
+on-line data anything but easy.  What are the problems?
+
+To begin with, the storage format of data is many times system specific
+making it difficult to view or combine datasets from different systems.
+Also, a majority of data archives have developed their own data management
+systems with specialized interfaces for navigating their data resources.
+With the notable exception of NASA's EOSDIS Version 0 Information Management
+System\footnote{NASA's EOSDIS V0 IMS provides a single interface to 8 NASA
+  earth science data centers and the CIESIN social science data center}, none
+of these data systems interoperate with each other, making it necessary for a
+user to visit many systems and `learn' multiple interfaces in order to
+acquire data.  Finally, even after the data has been successfully transfered
+to the researcher's local system in order to {\em use} the data a researcher
+must convert that data into the format that his or her data analysis
+application requires or alternatively modify and recompile the analysis
+application's source code.
+
+To address these distributed data access problems, researchers at the
+University of Rhode Island and the Massachusetts Institute of Technology are
+creating a network tool that, while taking advantage of WWW data resources,
+resolves the issues of multiple data formats and different data systems
+interfaces.  This network tool, called the Distributed Oceanographic Data
+System or DODS, enables oceanographers to interactively access distributed,
+on-line science data using the one interface that a researcher is already
+most familiar with, his or her own personal data analysis application.  The
+architecture and design of DODS will make it possible for a researcher to
+open, read, subsample and import directly into his or her data analysis
+applications scientific data resources over the WWW.  The researcher will not
+need to know either what format is used to store the data or how the data is
+actually accessed and served by the remote data system.
+
+\large
+\bigskip
+\noindent
+{\bf DODS: An extension to existing interfaces}
+\medskip
+\normalsize 
+
+\noindent The Distributed Oceanographic Data System is not a data management
+system, nor is it used for creating data base schema and inventories.
+Rather, DODS is a specification for directly accessing, representing and
+transferring data on a network (the Internet).  It is a {\em data access
+  protocol} which defines both a common functional interface to data systems
+and a data model for representing data on those systems.  It is designed to
+be integrated {\em with\/} already existing user applications and resource
+management systems, not to replace them.  DODS extends the operational
+capabilities of existing systems in two important ways; first, through its
+network interface it transforms a user's application into an agent of a
+distributed client-server system and second, it provides a system
+independent, integrated view of their resources.
+
+For transforming a user's analysis application into network client DODS
+includes client libraries which when linked with the application provide the
+client-server network interface and necessary client-side operations
+supporting client-server communications.  
+
+The key to providing an integrated view of data resources is the DODS data
+model.  The DODS data model defines a set of data types and constructs which
+are used to represent the content and structure of data files (analogous to
+data types that are used in programming languages such as C and Fortran).
+All data transfered by a server to a DODS client is first translated into a
+canonical representation using the DODS data model.  When the client receives
+the data it then translates the DODS canonical representation to the data
+representation that is valid for the application.  For any new data format
+to be supported by DODS two translators need to be created.  One that
+translates from the data format to the DODS data model and one to translate
+from the DODS data model to the format.  The benefit of this approach is that
+newly created client DODS-to-application translator can immediately access
+any DODS data resources regardless of the format used by the remote system
+for storage of the data.  Likewise, a new server format-to-DODS translator
+will immediately support access by already existing DODS client applications. 
+
+
+Systems wishing to use DODS as a means of providing access to their data
+resources and/or in accessing other's resources through DODS do so through
+the implementation of the DODS client-server libraries.  The server libraries
+enable data systems developers to install servers which: 
+  \begin{itemize}
+    \item Utilize httpd as the network server for client-server interactions.
+    \item Define a DODS network server interface to the remote system that
+      then allows DODS client applications to query and access a server's data
+      resources.
+    \item Provide detailed information on the structure and attributes of a
+      server's data resources.
+    \item Translate data resources utilizing the DODS data model into a DODS
+      canonical representation for transfer. 
+  \end{itemize}
+
+%
+
+DODS compliant user applications use client libraries developed for specific
+common Application Programmers Interfaces or APIs\footnote{ An API is itself
+  a software tool that is typically a discrete set of procedures or commands
+  which provide a formal method of access to a computational resources such
+  as a disk file, a data management system or a device such as a display
+  screen}.  For a DODS compliant API the software libraries provide:
+  \begin{itemize}
+    \item A DODS surrogate library which maps API procedure calls to DODS API
+      procedure calls.
+    \item Means for encoding of user query for transmission to DODS servers 
+    \item Customized translators for decoding from the DODS canonical
+      representation of data to API specific data format.
+  \end{itemize}
+
+% DODS Architecture Figure
+
+ 
+\large
+\bigskip
+\noindent
+{\bf DODS: A Means of Accessing PI Data}
+\medskip
+\normalsize 
+
+One of the motivating factors leading to the development of DODS was the
+desire to access researcher held datasets as well as the the data resource of
+large data centers.  The large data systems being developed by agencies
+within the government were previously seen as focusing only on the data
+resources of those agencies and having no integrated plan to include datasets
+of individual researchers.  Datasets that are considered scientifically
+valuable to the research community.  The model for these large data systems
+was that researchers were data users and the agencies data providers.  Within
+DODS researchers are seen as both data providers and data users.  Therefore,
+designing a system which provides an effective option for researchers to
+serve as well as access data is one of the primary goals of DODS.
+
+
+
+
+\large
+\bigskip
+\noindent
+{\bf Status of DODS Development Effort}
+\medskip
+\normalsize
+
+A beta version of a NetCDF/DODS client-server libraries is now available.  In
+the very near future JGOFS/DODS libraries will also be distributed.  The
+client libraries are easily linked with existing applications without the
+need to modify application source code (i.e., the API procedure call names
+that are used by an application remain the same in DODS, relinking the
+application with the DODS client libraries causes the procedure calls to
+reference the DODS surrogate procedures).  DODS server libraries are
+installed behind a system's httpd server with a minimum of effort.  Binaries
+for DEC/ULTRIX, DEC-ALPHA/OSF, SUN/OS, SUN/SOLARIS, SGI/IRIX and IBM/AIX will
+be available.  Detailed technical information, how to get binaries or source
+code for the client-server libraries and papers documenting the development
+of DODS are available via the WWW at {\em http://dcz.gso.uri.edu/}.
+
+
+The \dods is being developed to help address the need within the
+oceanographic community for researchers to easily access and serve data
+resources over the Internet.  DODS developers are creating a data access
+protocol based on a client-server architecture in order to take advantage of
+and promote the availability of on-line research data.  Two unique aspects of
+the DODS system design are that it transforms researchers' data analysis
+applications into client agents within DODS and that it provides a system 
+independent view of the data resources available through its servers.  Rather
+than trying to replace or build a system from scratch, DODS is purposefully
+designed to be integrated with already existing data systems and user
+applications, taking advantage of and extending those systems' capabilities.
+
+\end{document}

@@ -1,0 +1,214 @@
+
+$Id$
+
+INTRODUCTION:
+
+There are two ways to get the DODS Matlab GUI: As source code and as part of
+the binary release of DODS. This distinction is pretty murky for the GUI
+since it consists mostly of Matlab dot-m files which are interpreted, so both
+the source and binary release contain essentially the same files. We have the
+two distributions because that fits well with the way the rest of DODS is
+distributed.
+
+If you have the binary distribution, then you have probably already expanded
+the tar file (and thus `installed' the browser). In that case, skip the next
+section and go to RUNNING THE BROWSER.
+
+INSTALLATION (From the source-code distribution):
+
+To unpack the Matlab GUI, go to the directory which contains your DODS root
+directory, decompress and un pack the tar file. In the following, $DODS_ROOT
+will be used wherever we mean the root directory of DODS on your system.
+
+     mv DODS-matlab-gui-<version>.tar.gz ${DODS_ROOT}/..
+     gzip -d -c DODS-matlab-gui-<version>.tar.gz | tar -xvf -
+
+     Notes: 1) ${DODS_ROOT}/.. is the directory which contains $DODS_ROOT
+	    2) If you don't have gzip on your computer, you can get a copy
+	    from our ftp archive or from the Gnu software archive at 
+	    prep.ai.mit.edu.
+
+This will create the directory $DODS_ROOT/src/matlab-GUI. In that directory
+you'll find the complete source files for the GUI.
+
+Change directory to $DODS_ROOT/src/matlab-GUI, run `configure' and `make
+install'. These steps will perform minimal customization of the browser to
+your machine and copy the files into your $DODS_ROOT/bin directory. Because
+the browser contains several files, the installation process creates a
+directory in $DODS_ROOT/bin (called matlab-gui) for these files. 
+
+RUNNING THE BROWSER:
+
+Note: In order to use the Matlab GUI, you'll need two support programs:
+loaddods and writeval. When you get the binary distribution of the Matlab
+GUI, these are included automatically. If you got the source distribution you
+must also get the `Matlab client' distribution (which contains both loaddods
+and writeval. Also worth noting is that these support programs can be used in
+your own Matlab scripts to retrieve data via DODS.
+
+In order to run the browser you should do two things so that Matlab can find
+various support software. First, define a shell environment variable named
+DODS_ROOT setting its value to the fully qualified path to the root of your
+copy of the DODS software. For example, suppose that the $DODS_ROOT directory
+is /usr/local/DODS-2.14c, then you'd add 
+
+	  setenv DODS_ROOT /usr/local/DODS-2.14c
+
+to your .cshrc (if you're using csh, or tcsh) or
+
+	  DODS_ROOT=/usr/local/DODS-2.14c
+	  export DODS_ROOT
+
+to your .profile (if you're using sh, ksh or bash).
+
+The second thing you need to do is add $DODS_ROOT/bin to your matlabpath. You
+can do this in Matlab once you have it running or in your Matlab startup file
+using the command:
+
+          addpath /usr/local/DODS-2.14c/bin
+
+Now change directory to the Matlab-GUI directory, run Matlab and type
+`browse' at the Matlab prompt.
+
+As an alternative, you can add $DODS_ROOT/bin/Matlab-GUI to you matlabpath
+and run the browser from any directory. E.G.:
+
+	  addpath /usr/local/DODS-2.14c/bin/Matlab-GUI
+
+PROBLEMS USING THE BROWSER:
+
+If you have a problem using the browser, check this FAQ to see if there is a
+solution to your problem here. If not send a message describing the problem
+to support@dods.gso.uri.edu. If you can, please include a copy of the any
+error messages printed by the software along with information so that we can
+repeat the problem. The latter helps immeasurably.
+
+PROBLEM: The browser complains about about not finding `loaddods'.
+
+FIX: Make sure that $DODS_ROOT/bin is on your matlabpath. See RUNNING THE
+BROWSER above.
+
+PROBLEM: The browser complains that is cannot find `writeval'
+
+FIX: Make user that your DODS_ROOT environment variable points towards the
+correct directory (and for Bourne Shell users, that it is exported). See
+RUNNING THE BROWSER above. 
+
+PROBLEM: The dataset I want to use has disappeared from the dataset list!
+
+FIX: 1: This means you have selected a time, depth or geographic range 
+that is 'out of range' for that dataset.  To be sure you are not eliminating
+datasets you might like to see, push the 'clear selections' button at the
+bottom of the browse window.  Now select the desired dataset, and the depth
+and geographic ranges will be set to those of the dataset.  Zoom in on the 
+time axis to select an appropriate time period within the dataset range, or 
+flip to 'view text' and type in an appropriate time range (use decimal years).
+
+2:  To view the ranges for a variety of datasets, simply click 'reset list'
+at the bottom of the dataset menu.  Each dataset may then be selected in
+turn, and the ranges for that set will appear on the browse window.  Once
+you have found a dataset you would actually like to use, click on the
+'clear selections' button (to clear selected ranges) and then re-select 
+the desired dataset.  Your depth and geographic selection ranges will 
+automatically be set to those of the dataset.  Zoom in on the time axis
+to select an appropriate time period within the dataset range, or flip
+to 'view text' and type in an appropriate time range (use decimal years).
+
+PROBLEM:  I've selected a dataset.  I click on 'get data' or 'get details'
+and nothing happens!
+
+FIX:  Look for messages in the main workspace.  Most likely, one or more
+of your selection ranges is not set, or possibly they are all set but are
+not within the valid ranges for that dataset.  In the former case, the
+browser will send a message prompting you to set all the ranges.  In the
+latter case, it will send a message that the dataset is out of range, and
+'de-select it'.
+
+PROBLEM: Plotting the dataset results in a box with some vertical
+lines running up through the middle of the range box.
+
+FIX:  This is because the dataset range given in the metadata is less than 
+the full 360 degrees.  For example, a range of [0 359.5].  When this is 
+displayed in longitude coordinates of [-180 180], vertical lines at -0.5 
+and 0 will result -- the browser has no way to determine if this gap is 
+'real' (a gap in the dataset > dx), or just a side effect of wraparound.
+We encourage data providers to list truly global datasets as having a 360 
+degree longitude range, and to write the supplementary software to handle
+such requests.
+
+PROBLEMS DUE TO KNOWN MATLAB BUGS 06/06/1997
+
+BUGS IN MATLAB V4:
+
+PROBLEM: An error when starting the browser that looks like this:
+
+        ???          OKCallback
+                     |
+         Undefined function or improper matrix reference.
+
+
+FIX: It appears some distributions of Matlab v4 do not contain the script
+'inputdlg.m'.  You are missing that function.  We have included it in this 
+distribution, as 'inputdlg.tpl' (renamed to avoid conflict with systems that
+DO have the script).  Simply copy the provided script (inputdlg.tpl) to 
+inputdlg.m (you can leave it right in the browser directory), quit Matlab, 
+and start again.
+
+PROBLEM: Zooming in on a displayed image causes it to disappear.
+
+FIX: This is a fundamental bug in the 'image' command of Matlab v4.  The 
+Mathworks has no plans to patch it now that v5 has been released.  The
+only fixes are: Fix 1) plot each dataset separately in its own window, and 
+then setting 'zoom on' in these windows.  In which case you may encounter 
+the following instability in Matlab v4.
+
+Image color indexing error in InterpolateImageWarped
+Image color indexing error in InterpolateImageWarped
+Image color indexing error in InterpolateImageWarped
+Image color indexing error in InterpolateImageWarped
+
+repeatedly scrolling up the screen.  Hit Control-C to stop!
+
+Fix 2) use the 'pcolor' command instead of 'image'. Fix 3) update to Matlab v5.
+
+PROBLEM: Zooming in on an image causes the image pixels to be located in the
+wrong place or to appear larger than actual (bleeding effect).
+
+FIX: This is an unavoidable side-effect of the 'image' command. Use pcolor
+instead.
+
+BUG IN MATLAB V5:
+
+PROBLEM: Repeated 'error' messages (it's not actually an error) of the nature:
+  Warning: Future versions will return empty for empty == scalar comparisons
+  In dispmenu.m at line 23
+  In dispmenu.m at line 458
+  In browse.m at line 997
+  In browse.m at line 975
+or
+  Warning: One or more output arguments not assigned during call to 'browse'.
+etc.
+
+FIX: There are no real problems here.  If you find the messages annoying, type 
+'warning off' at the Matlab prompt.
+
+PROBLEM: The slider bar on the dataset and variables menus (only visible when > 20
+items on the list) 'jumps', not scrolling the list smoothly.
+
+FIX: This is a bug in the Unix/Linux release of Matlab v5.  They have promised
+a patch.  Contact tech-support@mathworks.com or (508) 653-1415 to find out
+if a patch is available yet.
+
+PROBLEM: Zooming in causes vertical lines (for example, the vertical parts of
+dataset range boxes or the selection range boxes) to disappear.
+
+FIX:  This is a bug in the Linux release of Matlab v5.  The Mathworks has 
+been notified.  Contact tech-support@mathworks.com or (508) 653-1415 to find 
+out if a patch is available yet.
+
+PROBLEM: Zooming in on an image causes the image pixels to be located in the
+wrong place or to appear larger than actual (bleeding effect).
+
+FIX: This is an unavoidable side-effect of the 'image' command. Use pcolor
+instead.
+

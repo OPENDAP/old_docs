@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Data Format</TITLE>
+<META NAME="description" CONTENT="Data Format">
+<META NAME="keywords" CONTENT="data-delivery-arch">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-arch.css">
+
+<LINK REL="previous" HREF="node7.html">
+<LINK REL="up" HREF="node3.html">
+<LINK REL="next" HREF="node9.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html160"
+  HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html156"
+  HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html152"
+  HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html158"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html161"
+  HREF="node9.html">Data Delivery Architecture</A>
+<B> Up:</B> <A NAME="tex2html157"
+  HREF="node3.html">Important Terms and Technologies</A>
+<B> Previous:</B> <A NAME="tex2html153"
+  HREF="node7.html">Data Model</A>
+ &nbsp; <B>  <A NAME="tex2html159"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00035000000000000000">
+Data Format</A>
+</H2>
+
+<P>
+It is important to distinguish a data format from a data model. The later is
+the convention used to store information so that a program can access the
+information. A data format defines only the form of the information, not the
+operations that can be performed on it. In contrast, a data model often does
+<EM>not</EM> define a particular format. For example, an integer data type
+(which includes properties of the object like its range and the operations
+which can be applied to it) does not specify exactly how such an object will
+be stored in a computer. It is possible to build (in software) many different
+implementations of a given data model which have a high degree of
+interoperability but which all use different internal representations.
+
+<P>
+Many data formats imply a particular data model or set of data models. Thus
+it is possible to translate information stored in one format to another when
+the two formats share data models. However, the problems that plague many
+APIs (lack of formalism, ...) are worse for data formats because the set
+of operations, rather than being at least partially defined, is purely
+conventional. Thus features of a particular format which may be in fact
+consequences of a particular implementation often must be accounted for in
+the definitions of the operations. Lossless translations between data formats
+are very hard even in limited cases and, as with APIs, impossible in general.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html160"
+  HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html156"
+  HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html152"
+  HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html158"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html161"
+  HREF="node9.html">Data Delivery Architecture</A>
+<B> Up:</B> <A NAME="tex2html157"
+  HREF="node3.html">Important Terms and Technologies</A>
+<B> Previous:</B> <A NAME="tex2html153"
+  HREF="node7.html">Data Model</A>
+ &nbsp; <B>  <A NAME="tex2html159"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

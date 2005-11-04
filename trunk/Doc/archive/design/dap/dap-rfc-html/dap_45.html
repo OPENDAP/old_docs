@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:13 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- Augmented BNF</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_46.html"><img alt="Basic Rules" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_44.html"><img alt="Notational Conventions and Generic Grammar" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_44.html"><img alt="Notational Conventions and Generic Grammar" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Augmented BNF</b></td></tr></table>
+<h2>Augmented BNF</h2>
+All of the mechanisms specified in this document are described in both prose
+and an augmented Backus-Naur Form (BNF) similar to that used by RFC
+822&nbsp;<a HREF="dap_43.html#rfc822">[3]</a>. Implementors will need to be familiar with the notation in
+order to understand this specification. The augmented BNF includes the
+following constructs:
+<dl><dt><b><tt>name = definition</tt></b><dd> The name of a rule is simply the name
+  itself (without any enclosing <tt>"<i>&lt;</i>"</tt> and <tt>"<i>&gt;</i>"</tt>) and is
+  separated from its definition by the equal <tt>"="</tt> character. White
+  space is only significant in that indentation of continuation lines is used
+  to indicate a rule definition that spans more than one line. Certain basic
+  rules are in uppercase, such as SP, LWS, HT, CRLF, DIGIT, ALPHA, etc. Angle
+  brackets are used within definitions whenever their presence will
+  facilitate discerning the use of rule names.
+<dt><b><tt>"literal"</tt></b><dd> Quotation marks surround literal text. Unless
+  stated otherwise, the text is case-insensitive.
+<dt><b><tt>rule1 | rule2</tt></b><dd> Elements separated by a bar (<tt>"|"</tt>) are
+  alternatives, e.g., <tt>"yes | no"</tt> will accept <tt>yes</tt> or
+  <tt>no</tt>.
+<dt><b><tt>(rule1 rule2)</tt></b><dd> Elements enclosed in parentheses are treated
+  as a single element.  Thus, <tt>"(elem (foo | bar) elem)"</tt> allows the
+  token sequences <tt>"elem foo elem"</tt> and <tt>"elem bar elem"</tt>.
+<dt><b><tt>*rule</tt></b><dd> The character <tt>"*"</tt> preceding an element
+  indicates repetition. The full form is <tt>"<i>&lt;</i>n<i>&gt;</i>*<i>&lt;</i>m<i>&gt;</i>element"</tt>
+  indicating at least <tt><i>&lt;</i>n<i>&gt;</i></tt> and at most <tt><i>&lt;</i>m<i>&gt;</i></tt>
+  occurrences of element. Default values are 0 and infinity so that
+  <tt>"*(element)"</tt> allows any number, including zero;
+  <tt>"1*element"</tt> requires at least one; and <tt>"1*2element"</tt>
+  allows one or two.
+<dt><b><tt>[rule]</tt></b><dd> Square brackets enclose optional elements;
+  <tt>"[foo bar]"</tt> is equivalent to <tt>"*1(foo bar)"</tt>.
+<dt><b><tt>N rule</tt></b><dd> Specific repetition: <tt>"<i>&lt;</i>n<i>&gt;</i>(element)"</tt> is
+  equivalent to <tt>"<i>&lt;</i>n&gt;*<i>&lt;</i>n<i>&gt;</i>(element)"</tt>; that is, exactly
+  <tt><i>&lt;</i>n<i>&gt;</i></tt> occurrences of (element).  Thus 2DIGIT is a 2-digit
+  number, and 3ALPHA is a string of three alphabetic characters.
+<dt><b><tt>&#35;rule</tt></b><dd> A construct <tt>"&#35;"</tt> is defined, similar to
+  <tt>"*"</tt>, for defining lists of elements. The full form is
+  <tt>"<i>&lt;</i>n<i>&gt;</i>&#35;<i>&lt;</i>m<i>&gt;</i>element"</tt> indicating at least <tt><i>&lt;</i>n<i>&gt;</i></tt> and
+  at most <tt><i>&lt;</i>m<i>&gt;</i></tt> elements, each separated by one or more commas
+  (<tt>","</tt>) and OPTIONAL linear white space (LWS). This makes the usual
+  form of lists very easy; a rule such as <tt>( *LWS element *( *LWS ","
+    *LWS element ))</tt> can be shown as <tt>1&#35;element</tt> Wherever this
+  construct is used, null elements are allowed, but do not contribute to the
+  count of elements present. That is, <tt>"(element), , (element) "</tt> is
+  permitted, but counts as only two elements. Therefore, where at least one
+  element is required, at least one non-null element MUST be present. Default
+  values are 0 and infinity so that <tt>"&#35;element"</tt> allows any number,
+  including zero; <tt>"1&#35;element"</tt> requires at least one; and
+  <tt>"1&#35;2element"</tt> allows one or two.
+<dt><b><tt>;</tt> comment</b><dd> A semi-colon, set off some distance to the right
+  of rule text, starts a comment that continues to the end of line. This is a
+  simple way of including useful notes in parallel with the specifications.
+<dt><b>implied <tt>*LWS</tt></b><dd> The grammar described by this specification is
+  word-based. Except where noted otherwise, linear white space (LWS) can be
+  included between any two adjacent words (token or quoted-string), and
+  between adjacent words and separators, without changing the interpretation
+  of a field. At least one delimiter (LWS and/or separators) MUST exist
+  between any two tokens (for the definition of "token" below), since they
+  would otherwise be interpreted as a single token.
+</dl>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_46.html"><img alt="Basic Rules" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_44.html"><img alt="Notational Conventions and Generic Grammar" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_44.html"><img alt="Notational Conventions and Generic Grammar" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Augmented BNF</b></td></tr></table></body></html>

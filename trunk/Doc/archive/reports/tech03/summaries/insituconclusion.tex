@@ -1,0 +1,50 @@
+An interesting, non-trivial, and critical challenge to \ac{OPeNDAP} developers
+is storing and accessing in-situ data in a fashion that will allow
+fast access to those data by selecting on a large variety of
+conditions which cut across the stored indices and variables
+in unforseen ways.  In-situ data are stored with varying structures
+that are determined more by the database they are stored in (in some
+cases) or by the needs or knowledge of the data provider, than by
+any consideration for access by other, ``outside'' users.  As users
+try to access in-situ data stored in \ac{OPeNDAP}-served datasets,
+determining access times or even how to make appropriate requests
+across different datasets for similar data have become problematic.
+Therefore, an ad-hoc working group of interested parties has been
+addressing the general problem of handling in-situ data within
+\ac{OPeNDAP}.  The breakout was a result of some of those considerations
+and is one step in a continuing process.
+
+Conclusions:
+
+\begin{enumerate}
+ \item The field chosen for indexing is not always the most obvious or
+advantageous for accessing particular subsets of data.  Searchable
+header fields, usually identified ahead of time to allow caching
+and extraction.  However, such identification is not consistent.
+
+ \item The data model is at least adequate to handle general in-situ
+data.  
+
+ \item One possible extension of the architecture is to have data files
+with a separate store/cache/database for header information.
+
+ \item Having a server that can aggregate in-situ data is extremely
+important.  Joe Wielgosz will consider developing a \ac{NetCDF}
+in-situ aggregation capability.
+\end{enumerate}
+
+% $Id$
+%
+% $Log: insituconclusion.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

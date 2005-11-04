@@ -1,0 +1,70 @@
+James Gallagher reviewed the ongoing development of a new
+specification of the Data Access Protocol (DAP 4.0).  The goals are:
+
+\begin{enumerate}
+  \item Separate different logical parts into different specifications,
+  \item Adopt \ac{XML},
+  \item Add a \ac{SOAP} interface, or something similar, to provide a
+        web services interface for \ac{OPeNDAP} servers, 
+  \item Facilitate implementations using different transport protocols,
+  \item Provide a complete specification, not just a reference 
+        implementation.
+\end{enumerate}
+
+The ultimate goal is to get people to \emph{use} the \ac{DAP}.
+The \ac{DAP} 3.0 and earlier were intertwined with \ac{HTTP}.
+In \ac{DAP} 4.0, the intent is to support all transport protocols
+equally, e.g. \ac{GridFTP} and local file accesses, as well as 
+\ac{HTTP}.  
+
+An organization of the specification documents was proposed:
+
+\begin{itemize}
+  \item Overview
+  \item Data model and Objects
+  \item Services
+\end{itemize}
+
+The object representation was described.  While the \ac{DAP} 
+architecture is fairly old, it is so close to XML that it seems
+foolish not to adopt XML.  The advantages of an XML representation
+were described, as well as the distinction between objects and
+services.  The data model was described including the atomic and
+constructor data types.  The four objects in the proposed \ac{DAP}
+4.0 were listed:
+
+\begin{enumerate}
+  \item \ac{DDX}
+  \item \ac{BLOB}
+  \item ErrorX
+  \item Version
+\end{enumerate}
+
+The end goals of DAP 4.0 are:
+
+\begin{itemize}
+  \item Promote adoption by other groups,
+  \item Use standard technologies.
+\end{itemize}
+
+Expected topics for the breakout session were:
+
+\begin{itemize}
+   \item Persistence
+   \item Constraint expressions
+   \item Services
+\end{itemize}
+
+% $Id$
+%
+% $Log: gallagherdapspecsummary.tex,v $
+% Revision 1.3  2003/05/09 20:59:09  paul
+% Address James's comments: consistently consistently; SOAP word changes.
+%
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%

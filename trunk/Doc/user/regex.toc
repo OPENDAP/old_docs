@@ -1,0 +1,11 @@
+\sffamily 
+\contentsline {chapter}{\numberline {1}Beginning Regular Expresions}{5}
+\contentsline {section}{\numberline {1.1}The Simple Version}{6}
+\contentsline {section}{\numberline {1.2}Difficult Characters}{7}
+\contentsline {section}{\numberline {1.3}Multiple Matches}{9}
+\contentsline {section}{\numberline {1.4}Grouping Strings and Alternate Patterns}{10}
+\contentsline {section}{\numberline {1.5}Character Classes}{10}
+\contentsline {subsection}{\numberline {1.5.1}Special Classes}{11}
+\contentsline {section}{\numberline {1.6}Special Characters}{12}
+\contentsline {chapter}{\numberline {2}DODS-Specific Examples}{13}
+\contentsline {chapter}{\numberline {3}Backreferences, Extensions, and What-Have-You}{15}

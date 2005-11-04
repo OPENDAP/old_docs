@@ -1,0 +1,160 @@
+
+* Release 3.2 plan
+
+Why such a big deal? Because its been a while since the last release and
+because I'd like to continue the trend of improvement in our release's
+quality.
+
+I propose the following schedule:
+
+1) Make the organizational changes described first on the trunk.
+   *** Done some time ago 2/12/2001 jhrg ***
+
+2) Make the 3.2 release branch once #1 is done but before Reza and I start
+   integrating the translation code.
+   *** Done some time ago 2/12/2001 jhrg ***
+
+2.1) Either decide to release 3.2 then and there or,
+     *** We have decided to release 3.2, pending final approval of Peter. It
+     is already available to the group in source form. But the concept of a
+     release is a bit more complicated since now Dan and Reza (and others)
+     own all of the function code `products'. 2/12/2001 jhrg ***
+
+2.2) Add some/all of 3.2's features on the 3.2 branch and then release.
+     *** Right now all but password stuff is there. 2/12/2001 jhrg ***
+
+3) With the translation code on the trunk, modify the servers and test.
+4) release 3.3 when ready.
+
+Time constraints: We need to create the 3.2 branch *before* Reza and I
+start work on translation. That's going to happen in the first week of
+October. It would be best if all the 3.2 features were in place at that time
+(i.e., I'd much rather do 2.1 than 2.2!). 
+
+* Features in the 3.2 release
+
+There are two groups of features to consider as part of the 3.2
+release. Some are features that are running already and some are
+features still in development, but almost ready. Finally, datatype
+translation will be added to DODS, but as a follow on to 3.2. Here's the list
+of features, separated into those that are ready and working and those that
+are still need work, and the justification for separating them from the
+translation software.
+
+* Working now:
+Native Win32 builds (using MS VC++)
+    This means the dap++ library and some of the clients can be built on
+    Windows 95, 98, NT and 2000. Note that some parts of DODS already  build
+    under Cygnus (the Win32 UNIX emulation environment).
+
+Client-side caching
+    Client-side caching is described in the Caching SRS. The design is pretty
+    simple so there's no need for a formal design. However, there's lots of
+    the SRS that has not been implemented. During the curse of most of 3.1
+    there has not been too much work on the servers in general (there are some
+    exceptions, but the features supported by all the servers have not
+    changed). To complete the SRS, all of the servers will need some
+    modification. 
+
+Progress indicator with cancel button
+    A popup window that shows that transmission is taking place. Can be
+    controlled by environment variables.
+
+Separate dap++ libraries for clients and servers
+    The client dap++ has all the Tcl/Tk stuff needed for the progress
+    indicator (which means X11 for Unix). The server does not. This means
+    that the servers are smaller than would otherwise be the case.
+
+Proxy server support
+    Another requested feature. 
+
+Common name for all DODS servers
+    Replace the 6-10 (depends on how you count them) DODS servers with a
+    single name. The DODS server will be called `nph-dods'. In this version
+    of DODS, a configuration file will be used to determine which of the
+    various programs should be called to produce a response. This fixes a bug
+    in the directory traversal service as well as removing a wart DODS has
+    carried along for quite a while. Maintaining lists of datasets will be
+    much simpler than before.
+
+Improved error reporting
+    Specifically, using C++'s exceptions for errors. This simplifies
+    getting error messages out of the servers and back to clients. The
+    problem was particularly acute in the expression parser and analyzer.
+
+Password support
+    This feature has been requested by several groups. It is surprisingly
+    hard to do well. Several ways of supplying the username and password will
+    be supported, including one way that does not require the use of the
+    Tcl/Tk popup.
+
+* In progress:
+
+*** As of 2/12/2001, all the features planned for 3.2 are done. ***
+
+* Translation:
+
+0) I'd like to release the above features (or at least the currently working
+   features) now as 3.2. Merging changes from the 3.1 release back into the
+   software is getting harder and harder. But, more importantly, translation
+   will require that servers and clients be modified in unison to be
+   effective, and it will require different testing than that used by the
+   above features. So, rather than hold back everything...
+
+1) We should add translation to the 3.2 code base and release it, along with
+   the modified servers and clients, as 3.3. The 3.2 release does not need to
+   be the current release for as long as 3.1; we can get the other features
+   out and do a good job with translation by making sure it gets the
+   attention it deserves.
+
+2) Once translation works, release it without delay. Using the same
+   fix-on-branch-and-merge-to-trunk technique that has worked with 3.1, it
+   will be possible to keep bug fixes from the current release moving back
+   into the development code quickly. This will help prevent the problems
+   we had with 3.0.
+
+* Organizational things to do for the 3.2 release:
+
+1) Change the organization of the packages code. Currently people are told to
+   get this and that tar ball and to get the packages code. There's also
+   always a bit of confusion about which version of the third party software
+   is involved when someone reports a bug. I propose that we move the code
+   now in the DODS_ROOT/packages directory into the DODS_ROOT/src/dap
+   directory. The packages are all required to build the dap and they are not
+   directly used by any of the servers (although they could be since the
+   servers all require the dap...). GNU automake supports this; we can
+   actually use automake or just follow its pattern. However, ...
+   *** Done 2/12/2001 jhrg ***
+
+2) I'd like to move over to using automake. This GNU development tool makes
+   it simple to create Makefile(.in)s that work with the configure scripts
+   we're already using *and* work with all varieties of the make utility
+   (which I've tried to do but with only partial success). Automake also
+   follows the GNU distribution standards which means that we can ease off on
+   documenting our releases somewhat. Finally, the Makefiles have an
+   uninstall target, something we could use.
+
+   The Makefile.in files generated by automake are hard to read, but the
+   Makefile.am files are much, much simpler. In the long run (and maybe the
+   short run, too), using automake is going to simplify development and
+   improve the quality of our releases.
+
+   Finally, there are features requested that have to do with the build that
+   we'll get for `free' by switching to automake.
+
+   *** This will take some time to put in place. 10/25/2000 jhrg
+
+3) There are some source code formatting issues we need to address. This will
+   help make DODS more of an open source project. We should adopt a source
+   code standard and use it over all the project's code. GNU has one, plus
+   emacs and indent support it. However, that might be too ambitious for now.
+   At the minimum, I will move the source file's Log comments from the top
+   of the files to their ends. That way the information is in the file but
+   you don't have to skip over it while working with the file. Doing this
+   with files on a branch is a royal pain.
+
+   *** Done 10/25/2000 jhrg
+
+$Log: release-3.2.txt,v $
+Revision 1.3  2001/02/12 23:07:07  jimg
+Added some annotations (see ***).

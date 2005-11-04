@@ -1,0 +1,404 @@
+
+% Another take on the registry SRS. This time follow IEEE 830-1998.
+% 1/11/2000 jhrg
+%
+% $Id$
+
+\documentclass{article}
+%\usepackage{html}
+\usepackage{psfig}
+\usepackage{changebar}
+\usepackage{acronym}
+\usepackage{gloss}
+%\input{../../boiler/html-refs}
+\psfigurepath{registry-figs}
+
+% Note: to get the gloosary to work, run bibtex in the registry.gls.aux file,
+% then latex registry, then bibtex *.gls, then latex. Also, make sure to set
+% your BST and BIBINPUTS environment variables so that the BST and BIB files
+% will be found.
+\makegloss
+
+% Change paragraph typesetting; eliminate indenting and add more space between
+% paragraphs. 2/15/2000 jhrg
+%\setlength{\parindent}{0em}     % Amount of indentation
+%\addtolength{\parskip}{1ex}     % Vertical separation
+
+\begin{document}
+
+\title{DODS Dataset List SRS}
+\author{James Gallagher\thanks{The University of Rhode Island,
+    jgallagher@gso.uri.edu}}
+\date{\today \\ $Revision$ }
+
+\bibliographystyle{plain}
+
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+
+This is the \ac{SRS} for the DODS List. The List provides a way for users to
+find and access DODS datasets.
+
+This document is the first \ac{SRS} written for DODS using the IEEE 830-1998
+\ac{SRS} standard as a guide. Since the standard covers a wide range of
+possible projects, some of the information in it is not appropriate for this
+part of DODS. Where that is the case, or I think it is the case, I have
+marked the section N/A.
+
+\textbf{Bold face} type is used to indicate a word or phrase that may be
+found in the glossary.
+
+\emph{Emphasized} text contained in square brackets ([]) is used to indicate
+an editorial comment about the information that should be provided in this
+part of the \ac{SRS}.
+
+% This contains the requirements for the DODS Dataset registry. This document
+% and its companions---the DODS File server \ac{SRS} and the DODS Dataset List
+% \ac{SRS}---describe pieces of a general purpose interface that should
+% work for all DODS datasets. This interface should provide access to any DODS
+% data, as either ASCII or binary, from computers running UNIX, Mac or MS
+% operating systems. 
+
+\subsection{Purpose}
+This \ac{SRS} contains the requirements for the Dataset List. Its audience is
+the entire \textbf{DODS core group}\gloss[nocite]{dods-core-group}.
+
+\subsection{Scope}
+The software to be produced is: the Dataset List.
+
+The List will contain an entry for each \textbf{registered dataset}
+\gloss[nocite]{reg-dataset}. The List will ultimately be built using 
+information from the Registry~\cite{gallagher:registry-srs}. However, the
+development of the List should be decoupled from the development of the
+Registry so initial versions of the List may be built some other way (e.g.,
+by modifying an existing list of datasets).
+
+The List will not be responsible for collecting information about datasets
+nor will it be responsible for performing quality control on the information
+about datasets. Those are requirements of the Registry.
+
+The goal of the List is to build on existing parts of DODS and to provide a
+more comprehensive way to access data. Using only a \textbf{web browser}
+\gloss[nocite]{web-browser} it should be possible to find servers for
+specific datasets and access data from those servers. Specifically, a user
+should be able to get to any data served by DODS in only a few mouse clicks
+using nothing more than a web browser.
+
+\subsection{Overview}
+
+The remainder of this document is organized as follows:
+\begin{enumerate}
+\item Section~\ref{sec:overall} provides background for the specific
+requirements and relates those requirements to the rest of DODS.
+\item Section~\ref{sec:specific} lists the specific requirements for the List.
+\item Following Section~\ref{sec:specific} are a list of acronyms and
+  abbreviations, a change log, a glossary and references.
+\end{enumerate}
+
+Because the List is essentially a web document, there are no functional
+requirements, only interface requirements. The functions behind the List is
+contained in other parts of DODS (e.g., the \texttt{html} and \texttt{info}
+services of the DODS servers).
+
+\section{Overall Description}
+\label{sec:overall}
+
+\emph{[This section of the SRS should describe the general factors that
+  affect the product and its requirements. This section should not state
+  specific requirements. Instead, it provides a background for those
+  requirements, which should be defiend in Section 3.]}
+
+\subsection{Product perspective}
+
+Part of the philosophy of \acs{DODS} is that \textbf{data providers}
+\gloss[nocite]{data-prov} should have as much freedom when installing a
+\acs{DODS} server as do people who install {\tt ftp} or {\tt http} servers.
+There is no requirement that \textbf{\acs{DODS} servers}
+\gloss[nocite]{dods-server} be registered or authorized in any way.  However,
+this system-wide requirement does not mean that additional capabilities
+cannot be made available by a dataset list subsystem, it only means that data
+providers cannot be forced to include their datasets in such a system.
+
+The List is designed to augment \acs{DODS}' current client base by building
+on the existing Web capabilities of the servers. As of version 3.1,
+\acs{DODS} servers can provide an HTML form\cite{gallagher:HTMLform} which
+can be used to request either ASCII or binary data objects. However, there is
+currently no organized way to find a \textbf{\acs{DODS} dataset}
+\gloss[nocite]{dods-dataset}.  The List is intended to fill that void.
+
+Because the List will work with web browsers, it should provide a simple way
+for users to access the Web form interface of the \acs{DODS} servers. Doing
+so will link dataset location and data access. That linkage is a fundamental
+goal of the software described by this \ac{SRS}.
+
+The List will ultimately be generated by software using information from the
+Registry. This software will be able to assume that the Registry contains
+only valid information. Thus, neither the List nor the software that
+ultimately will generate the List needs to perform QC operations on that
+inforamtion. Such operations are requriements of the Registry system.
+
+Figure~\ref{fig:prod-perspective} shows how the List relates
+to other parts of \acs{DODS}.
+
+\begin{figure}
+\begin{center}
+\psfig{file=prod-perspective.ps,width=5in}
+\end{center}
+\caption{The relation of the List software to other relevant parts
+  of DODS.}
+\label{fig:prod-perspective}
+\end{figure}
+
+The following sections describe how the software operates within various
+constraints.
+
+\subsubsection{System interfaces}
+The system interface is a web server.
+
+\subsubsection{User interfaces}
+The user interface for the List will be a web browser.
+
+\subsubsection{Hardware interfaces}
+N/A
+
+\subsubsection{Communications interfaces}
+N/A
+
+\subsubsection{Memory}
+N/A
+
+\subsubsection{Operations}
+The List will be checked for errors at least once every four days.
+
+\subsubsection{Site adaptation requirements}
+N/A
+
+\subsection{Product functions}
+Functions for the List:
+\begin{enumerate}
+\item Access the List.
+\item Access information from a dataset (using the Info service).
+\item Access the HTML form for a dataset (using the HTML service).
+\end{enumerate}
+
+\begin{quote}
+Design Note:
+
+The List should not actually access data from a dataset. When a user views
+the List and chooses a dataset, it is nominally the HTML form service of that
+dataset's server that provides access to the data (although the actual
+implementation might be different). The List itself \emph{will probably}
+directly access the HTML form and Info services.
+\end{quote}
+
+\subsection{User characteristics}
+Users of the List will be all types of \acs{DODS} users including very
+technical users, science users and possibly K--12 users. The List may not be
+the most appropriate dataset location tool for the latter group and another
+more inclusive tool might need to be developed for this group of users.
+
+\subsection{Constraints}
+\emph{[This section lists any other items that may limit the developer's
+  options.]}
+
+\subsubsection{Regulatory policies}
+N/A
+
+\subsubsection{Hardware limitations}
+The List system must run on UNIX.
+
+\subsubsection{Interfaces to other applications}
+\begin{enumerate}
+\item DODS servers, version 3.1 and greater.
+\item Standalone HTML form genreation web services.\footnote{These will be
+    needed until the transition to the 3.1$+$ servers is complete.}
+\item HTTP 1.1
+\item \acs{CGI} 1.1
+\item Apache {\tt httpd} 1.3.x
+\item Netscape Navigator 3.x and higher.
+\item MS Internet Explorer 5.x and higher.
+\end{enumerate}
+
+\subsubsection{Parallel operations}
+N/A 
+
+\subsubsection{Audit functions}
+N/A 
+
+\subsubsection{Control functions}
+N/A 
+
+\subsubsection{Higher-order language requirements}
+N/A 
+
+\subsubsection{Signal handshake protocols}
+N/A 
+
+\subsubsection{Reliability requirements}
+The List must not contain invalid entries for more than four days.
+
+\subsubsection{Criticality of the application}
+N/A 
+
+\subsubsection{Safety and security considerations}
+N/A
+
+\subsection{Assumptions and dependencies}
+\label{sec:assumptions}
+The System designers can assume that the following are true:
+\begin{enumerate}
+\item The software will run on one of the UNIX platforms we support and that
+  they will be able to choose which platform if there are tradeoffs between
+  them.
+\item All users will have access to the Internet and a web browser.
+\item All QC of information about datasets will be performed elsewhere.
+\item A separate system will build the List.
+\end{enumerate}
+
+\section{Specific Requirements}
+\label{sec:specific}
+\emph{[This section of the \ac{SRS} all of the software requirements to a
+  level of detail sufficient to enable designers to design a system to
+  satisfy those requirements, and testers to test that the systems satisfies
+  those requirements.]}
+
+\subsection{External interfaces}
+\subsubsection{User interfaces}
+
+This interface must provide, in a web browser, a page of HTML which lists
+every DODS dataset. Once the Registry has been built, \emph{every DODS
+  dataset} will mean, every dataset in the Registry. Until the Registry has
+been built it will mean every dataset accessible with the Matlab
+GUI~\cite{sgouros:MLGUI} or otherwise known to the group to be
+\textbf{publicly accessible} \gloss[nocite]{publicly-accessible}.
+
+Each dataset in the HTML page will be represented by a link to the dataset's
+HTML form interface.\footnote{For a single-file dataset, the HTML form
+  generated by the 3.1 servers will be shown. For a multi-file dataset, the
+  HTML form will need to be fixed up.} Specifically, the information to be
+provided for each dataset is:
+  \begin{description}
+  \item [Title] The title of this dataset. A sentence or phrase. This will
+    start the entry for the dataset and will appear on a new line on the HTML
+    page. The text will reference\footnote{A \textbf{reference} in this
+      context is a hyperlink in HTML.} the HTML
+    form~\cite{gallagher:HTMLform} interface of this dataset.
+
+    \begin{quote}
+      Note: 
+
+      This feature of a DODS server may be accessed using the \texttt{.html}
+      URL suffix. However, this feature of the DODS servers has just been
+      introduced and, as of 2/15/2000, has only been released as beta
+      software. Furthermore the HTML form interface may not work well for
+      multi-file dataset. These problems will have to be addressed by the
+      design of the HTML form service of the DODS servers
+      (see~\cite{gallagher:HTMLform}). 
+    \end{quote}
+
+  \item [More Information... (button)] This HTML button displays the text
+    returned by the datasets \emph{info}\footnote{This feature of a DODS
+      server is accessed using the \texttt{.info} URL suffix.} service. This
+    information will be displayed in a separate window (but not a separate
+    browser window\ldots e.g., it could be displayed using a JavaScript
+    window). 
+  \end{description}
+%   \item [Science contact] Email for questions/feedback about the content of
+%     the dataset. 
+
+%     Optional.
+
+%   \item [Technical contact] Email for questions/feedback about the DODS server
+%     or other computer issues. 
+
+%     Optional.
+
+%   \item [Description] A paragraph describing the contents of the dataset.
+
+%     Optional.
+
+%   \item [Date] The date when this dataset was added to the List or its entry
+%     in the List was last changed (not when the dataset itself was added or
+%     last changed).
+
+%     Optional. 
+
+  The Title will be used to link to the web-based user interfaces for the
+  dataset. The URL may be used by \textbf{web crawlers}
+  \gloss[nocite]{web-crawler}.
+
+  \begin{quote}
+    I'm pushing the Science contact, Technical contact, Description and Date
+    information into the ancillary DAS and/or the suplementatl HTML that
+    users can bind with datasets using the info service. This means that the
+    FGCD-CS\ldots [I forget the full abbreviation] information used/displayed
+    by the List will now be in the DAS along with whatever other stuff we put
+    there. Also, it means that the List is now decoupled from the metadata
+    part of the project. If we decide there needs to be more (or less)
+    metadata the requirements for the List do not change (and presumably
+    neither does the design).
+
+    On the flip side, this means that the List will not have as uniform an
+    information content as if \emph{it} contained the contact, etc.,
+    information. 
+  \end{quote}
+
+\subsubsection{Hardware interfaces}
+N/A
+\subsubsection{Software interfaces}
+N/A
+\subsubsection{Communications interfaces}
+N/A
+
+\subsection{Functions}
+The User Interface requirements are sufficient to describe the List.
+
+\appendix
+
+\section{Acronyms and Abbreviations}
+\begin{acronym}
+\acro{SRS}{Software Requirements Specification}, See IEEE 830--1998
+\acro{DODS}{Distributed Oceanographic Data System}, See the DODS home page:
+{\tt http://unidata.ucar.edu/packages/dods/}
+\acro{CGI}{Common Gateway Interface}, Version 1.1
+\end{acronym}
+
+\section{Change log}
+
+\begin{verbatim}
+$Log: list.tex,v $
+Revision 1.4  2000/07/20 21:35:58  jimg
+Minor changes
+
+Revision 1.3  2000/02/16 00:36:48  jimg
+More of Peter's changes, plus the split is now complete.
+
+Revision 1.2  2000/02/15 06:00:41  jimg
+First crack at Peter's changes.
+
+Revision 1.1  2000/02/15 00:13:33  jimg
+Created List-only SRS from the combined List and Registry SRS.
+
+Revision 1.9  2000/01/21 21:16:27  jimg
+Fixed up the List User Interface section.
+
+Revision 1.8  2000/01/21 06:56:32  jimg
+Added glossary and User interface requirements. Maybe they are all the
+requirements these sub-systems need?
+
+Revision 1.7  2000/01/21 00:51:24  jimg
+Moved in place of old version
+
+Revision 1.1  2000/01/18 01:39:19  jimg
+Initial version
+\end{verbatim}
+
+\printgloss{dods-glossary}
+
+\raggedright
+
+\bibliography{dods}
+
+\end{document}

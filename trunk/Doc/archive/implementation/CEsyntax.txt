@@ -1,0 +1,43 @@
+
+The CE argument is any valid CE. 
+
+Here is the CE syntax/semantics for the version 2.0 which I'll be moving over
+to hollywood later today (so you'll have it by Mon, if all goes well). The
+version you now have is more limited.
+
+CE		Means
+i		send variable `i'; this is a simple projection
+i, j, k		send variables i, j and k; a multi variable projection
+l[1:10]		send the first ten elements of array l
+seq.p, seq.r	send `seq' members `p' and `r'
+seq		send all the members of `seq'
+
+NB: the above are all CEs which contain only projections, here are some with
+both projections ad selections:
+
+CE			Means
+i & i < 10		send i if i is less than 10
+i,j & i < 10		send i and j if i < 10
+i,j & i < 10 & i < j	send i and j if i < 10 *and* i < j
+i & i < {7, j}		send i if i is less than 7 *or* i is less than j
+i & i < nth(list, 4)	send i if i < the nth element of list `list'
+
+Spaces don't matter. A field specifier can go anywhere a variable can go. A
+URL can go anywhere a variable can go. (e.g., `i&i<*"http://mach/data?v"' is
+legal; it means send i if i < v in the dataset `data' found on machine
+`mach'. Note the `*' used to dereference the URL and also note that the URL
+must be quoted when it is a literal. If a dataset contains a Url type
+variable it does not need to be quoted).
+
+There are no limits as to the type of the variables used in the CE. Thus it
+is possible to say `a < 10' where `a' is an array. At runtime the less than
+operator will complain, however. This makes it possible for server builders
+to add functions (there is an interface for this) which take ctor variables
+and do interesting things with them.
+
+Also note that a CE does not *have* to have a projection part. When it is
+not given, the project defaults to the entire data set.
+
+Hope this helps, let me know what is not clear.
+
+James

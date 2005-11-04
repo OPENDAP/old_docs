@@ -1,0 +1,151 @@
+%
+% Specification for the HTML response of the HTTP implementation of the DAP
+%
+
+\documentclass[justify]{dods-paper}
+\usepackage{acronym}
+\usepackage{xspace}
+\usepackage{gloss}
+\rcsInfo $Id$
+
+\include{dap_boiler}
+
+\title{\DAPHTMLTitle\\ DRAFT}
+\htmltitle{\DAPHTMLTitle\ -- DRAFT}
+\author{James Gallagher\thanks{The University of Rhode Island,
+    jgallagher@gso.uri.edu}, Tom Sgouros}
+\date{Printed \today \\ Revision \rcsInfoRevision}
+\htmladdress{James Gallagher <jgallagher@gso.uri.edu>, 
+  \rcsInfoDate, Revision: \rcsInfoRevision}
+\htmldirectory{html}
+\htmlname{dapm}
+\figpath{dap_figs}
+
+\begin{document}
+
+\maketitle
+\T\tableofcontents
+
+\section{Introduction}
+
+When one knows that data may be available from some \opendap server,
+it is useful to be able to find out what data that might be.  Also,
+because \DAP URLs are somewhat confusing for many people, it is useful
+to provide a point-and-click way to build these URLs.  The \opendap
+specification provides an HTTP service to aid these tasks. 
+
+The reference implementation of the HTTP \DAP, supported by the
+\opendap project, includes a server capacity to build interactive web
+pages referring to the data served. This is good both for users trying
+to navigate an \opendap server, and for those who simply want to find
+out more detail about the data served.  This is not a required part of
+the \DAP specification.  However, should other implementators of the
+\DAP choose to implement this feature, they should do so as specified
+in this document.
+
+There are two aspects to the HTML response of the HTTP implementation.
+The \HTML response provides data about a specific data file, and the
+\DIR response provided data about what datasets might be available
+there.
+
+\section{\HTML}
+\label{sec-html}
+
+The \HTML response MUST present the user with an HTML document
+that can be used to access values from the dataset. The document MUST show
+all of the variables in the dataset along with their attributes and it MUST
+show the dataset's attributes. Structural information SHOULD be preserved. 
+
+The intent of the \HTML response it to provide a simple interface to
+the dataset that can be used with a WWW browser.  Users should be able
+to look at the variables in the dataset, read attributes and request
+values without making multiple requests.
+
+\Figureref{fig-ifh} contains a picture of an implementation of the
+\HTML response.  This provides a form interface that allows users to
+build an \opendap URL, request data with it, and either display the
+data in the browser if it is returned as formatted ASCII data, or
+download it or pipe it to some application program if it is returned
+as binary data.
+
+\figureplace{\HTML Response Example}{h}{fig-ifh}{ifh.ps}{ifh.gif}%
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.html}
+
+The \HTML response is triggered by a client using \lit{.html} as the
+URL suffix.  See the discussion of \opendap URLs in \DAPHTTP.
+
+\begin{textoutput}{Required Headers:}
+XDODS-Server: dods/4.0 \\
+Content-Type: text/html\\
+Date: \emph{date}
+\end{textoutput}
+
+
+
+\section{\DIR}
+\label{sec-dir}
+
+The \DIR response is an HTML document that provides a simple way for
+users to navigate among different datasets that may be accessed with a
+particular server. The actual presentation mechanism is up to the
+server implementor.  However, when datasets are represented in the
+response there must be a URL which references the \HTML response for
+that dataset.  The \HTML response and the \DIR response together make
+a rudimentary browsing mechanism, allowing users to learn some of the
+details of a server's datasets using a standard web browser.
+
+\Figureref{fig-dir} contains a picture of an implementation of the
+directory response.  The links there, such as the one labeled
+\lit{sst.mnmean.nc} are actually links to the \HTML response for that
+dataset. 
+
+\figureplace{\DIR Response Example}{h}{fig-dir}%
+{ifh-dir.ps}{ifh-dir.gif}%
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/}
+
+The \DIR response is triggered by a URL that contains an
+incomplete Dataset ID, composed only of a directory, and without the
+filename part.
+
+\begin{textoutput}{Required Headers:}
+XDODS-Server: dods/4.0\\
+Content-Type: text/html\\
+Date: \emph{date}
+\end{textoutput}
+
+
+
+
+\appendix
+
+\bibliographystyle{plain}
+\T\addcontentsline{toc}{section}{References}
+\T\raggedright
+\bibliography{../../../boiler/dods}
+
+\section{Change log}
+
+\begin{verbatim}
+$Log: dap_html.tex,v $
+Revision 1.6  2003/07/24 22:17:26  tom
+accurate, though perhaps not detailed enough
+
+Revision 1.5  2003/07/18 21:34:17  tom
+progress
+
+Revision 1.4  2003/07/16 01:06:08  tom
+progress on comments, fixed titles
+
+Revision 1.3  2003/05/23 22:08:30  tom
+makefile repairs, bibliography
+
+Revision 1.2  2003/05/23 21:50:52  tom
+progress made
+
+Revision 1.1  2003/05/23 19:27:42  tom
+new files, rearranging DAP spec into separate documents
+
+
+\end{verbatim}
+
+\end{document}

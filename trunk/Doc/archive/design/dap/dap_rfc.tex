@@ -1,0 +1,1912 @@
+%
+% $Id$
+%
+% Documentation for the DAP. Intended to be like an RFC document.
+%
+
+\documentclass{article}
+%\usepackage{html}
+%\usepackage{epsfig}
+\usepackage{changebar}
+\usepackage{hyperlatex}
+\usepackage{verbatim}
+\usepackage{vcode}
+\usepackage{acronym}
+\usepackage{xspace}
+\usepackage{gloss}
+\W\usepackage{sequential}
+\W\usepackage{dods-look}
+
+%\W\renewcommand{\HlxIcons}{http://dcz.dods.org/images/}
+\W\newenvironment{ttfamily}{\xml{tt}}{\xml{/tt}}
+
+% latex and HTML macros. Some latex commands become nops for HTML. 4/10/2001
+% jhrg 
+\T\newcommand{\Cpp}{\rm {\small C}\raise.5ex\hbox{\footnotesize++}\xspace}
+\T\newcommand{\C}{\rm {\small C}\xspace}
+
+\W\newcommand{\Cpp}{C++}
+\W\newcommand{\C}{C}
+\W\newcommand{\vdots}{}
+\W\newcommand{\ddots}{}
+
+% Note: to get the glossary to work, run bibtex on the *.gls.aux file,
+% then latex the file, then bibtex *.gls, then latex again. Also, make
+% sure to set your BST and BIBINPUTS environment variables so that the
+% BST and BIB files will be found.
+\makegloss
+
+% Change paragraph typesetting; eliminate indenting and add more space between
+% paragraphs. 2/15/2000 jhrg
+\T\setlength{\parindent}{0em}     % Amount of indentation
+\T\addtolength{\parskip}{1ex}     % Vertical separation
+\T\setcounter{secnumdepth}{4}
+\T\setcounter{tocdepth}{4}
+
+\htmltitle{DODS DAP 2.0 -- DRAFT}
+\htmladdress{James Gallagher <jgallagher@gso.uri.edu>, $Date$, $Revision$}
+\htmldirectory{htmlrfc}
+\htmlname{daprfc}
+
+\begin{document}
+
+\title{The DODS Data Access Protocol---DAP 2.0 \\ DRAFT}
+\author{James Gallagher\thanks{The University of Rhode Island,
+    jgallagher@gso.uri.edu}}
+\date{$Date$ \\ $Revision$}
+
+\bibliographystyle{plain}
+
+\maketitle
+\T\tableofcontents
+
+\section{Introduction}
+
+\subsection{Purpose}
+
+This specification defines the protocol reffered to as ``DAP/2.0.'' 
+
+The \ac{DAP} is a presentation- and application-level protocol for
+distributed access to data organized as name-datatype-value tuples. The
+protocol has been used by \ac{DODS} since 1996. The first version of the
+protocol delt only with the three psuedo-objects the DAP uses to describe
+information sources. Version 2.0 added constraint expressions that provide a
+way to extract part of a data source. In addition, version 2.0 added services
+that integrate the \ac{DAP} more with the rest of the \ac{WWW}.
+
+While the name-datatype-value model is a nearly universal \emph{conceptual}
+organization of data, the actual organization takes nearly as many forms as
+there are individual collections. Information in a computer
+can often be broken down into a set of variables that have names, datatypes
+and values. For example, data from a satellite might be stored in a named
+array of bytes. However, there are many different file formats, APIs and
+file/directory organizations used to house data.
+
+The \ac{DAP} was designed to hide the implementation of different collections
+of data behind a simple language-like interface based on the
+name-datatype-value conceptual model. In practice this has worked well.
+However, as the number of different implementations of the \ac{DAP}
+increases, it becomes more important that they all implement the same
+protocol. 
+
+There are now several groups which have built servers
+\gloss[nocite]{dap-server} \gloss[nocite]{dap-client} supporting the
+\ac{DAP}. This document provides a concise description of the \ac{DAP} to
+simplify this task and to ensure that all the servers implement the same
+protocol.
+
+As people apply the protocol to a wider variety of data sources, it also
+becomes more likely that deficiencies in the protocol will appear. If the
+\ac{DAP} is found to fall short in some way, it should be extended and once
+implemented, those extensions should be documented by amending this document
+and incrementing the protocol's version number.
+
+\subsection{Requirements}
+
+The key words ``MUST'', ``MUST NOT'', ``REQUIRED'', ``SHALL'', ``SHALL NOT'',
+``SHOULD'', ``SHOULD NOT'', ``RECOMENDED'', ``MAY'' and ``OPTIONAL'' in this
+document are to be interpreted as described in RFC 2119~\cite{rfc2119}.
+
+An implementation is not compliant if it fails to satisfy one or more of the
+``MUST'' or ``REQUIRED'' level requirements for the protocols it implements.
+An implementation that satisfies all of the ``MUST'' or ``REQUIRED'' level
+and all of the ``SHOULD'' level requirements for its protocols is said to be
+`unconditionally compliant'; one that satisfies all the ``MUST'' level
+requirements but not all the ``SHOULD'' level requirements for its protocols
+is said to be `conditionally compliant.'
+
+\subsection{Overall Operation}
+
+The \ac{DAP} uses the request-response
+paradigm. A client program issues a request and a named server returns a
+response.  Once the server has returned a response, the interaction ends
+until a new request is made. The \ac{DAP} uses the \ac{HTTP} to frame the
+request-response pair. 
+
+The \ac{DAP} contains elements of both a presentation- and an
+application-level protocol. The \ac{DAP} defines ten different responses,
+four of which are at the presentation-level; the remaining responses are
+application-level.
+
+% The \ac{DAP} is a request-response application-level protocol. It uses
+% \ac{HTTP}~\cite{rfc2616} as a session-level protocol~\cite{stevens:unp}. The
+% \ac{DAP} uses \ac{HTTP}'s \ac{URL} and MIME-like request and response
+% documents. However, it supports only a subset of all the possible \ac{HTTP}
+% responses and places further restrictions on both the \ac{URL} and
+% request/response headers.
+
+To represent a \gloss[word]{dods-dataset} the \ac{DAP} uses three responses.
+Two of these responses, the \ac{DDS} and \ac{DAS}, characterize the
+variables, their datatypes, names and \gloss[word]{dods-attributes}. The
+third response, the \ac{DataDDS}, holds data values along with name and
+datatype information.  The three responses are complete in and of themselves
+so that, for example, the data response can be used by a client without ever
+requesting either of the two other responses.
+
+The \ac{DAP} sends error information using an Error object. If a request for
+any of the three basic responses cannot be returned, an Error response is
+returned in its place.
+
+In addition to the three basic responses and the error response, the \ac{DAP}
+also defines several other responses which tie \ac{DAP} servers closely to
+the \ac{WWW}. These additional responses build \ac{HTML} or text documents
+that can be interpreted by \ac{WWW} browsers, \ac{HTML}-aware spreadsheets,
+\emph{et cetera}. In most cases these documents are are created by first
+accessing one or more of the three basic responses and interpreting their
+contents.  Section~\ref{sec:responses} describes the different types of
+responses.
+
+\begin{quote}
+  \textbf{Note:} The first implementation of the \ac{DAP} was written in \Cpp
+  and the three basic responses correspond with objects in that
+  implementation. For this reason these responses are referred to as
+  `objects' in some of the \ac{DODS} documentation. In some cases it is
+  easier to think of these responses as objects and, in those cases, we will
+  use that term in this paper, too. See Section~\ref{sec:responses} for a
+  discussion of the object/response duality.
+\end{quote}
+
+Operationally, a \ac{DAP} client sends a request to a server using \ac{HTTP}.
+The request consists of a \ac{HTTP} GET request method, a
+\ac{URI}~\cite{rfc2396} that encodes information specific to DODS (see
+Section~\ref{sec:url-syntax}) and an \ac{HTTP} protocol version number
+followed by a MIME-like message containing various headers that further
+describe the request. In practice, DAP clients use a third-party library
+implementation of \ac{HTTP}/1.1 so the GET request, \ac{URI} and \ac{HTTP}
+version information are hidden from the client; it sees only the \ac{DAP}
+\ac{URL} and some of the request headers. The \ac{DAP} server responds with a
+status line that includes the \ac{HTTP} protocol version and an error or
+success code, followed by a MIME-like message containing information about
+the response and the response itself. The \ac{DAP} response is the payload of
+the MIME-like \ac{HTTP} response.
+
+\section{Characterization of a Dataset}
+
+The \ac{DAP} characterizes a dataset as a collection of variables and a
+collection of attributes. Variables contain the names, datatypes and vlaues
+of the information in the dataset. A dataset may also have associated with
+each variable zero or more attributes. Each attribute has a name, datatype
+and value. 
+
+A dataset's variables are described by two of the three basic responses. The
+\ac{DDS} response holds the name and datatype of each variable in the
+dataset. It is essentially a declaration of the variables in the dataset.
+Sections~\ref{simple-variables} and~\ref{sec:ctor-vars} describe the diffent
+types of variables in the \ac{DAP}. 
+
+The \ac{DAS} response holds all of the attribute information for the dataset.
+Attributes are a way to bind extra information to a variable and to an entire
+dataset. While the datatypes supported for attributes are limited to simple
+types and vectors of simple types, the actual collection of attributes is
+completely unconstrained. Furthermore, the \ac{DAP} does not have any
+standard set of attributes it requires for variables or datasets. See
+Section~\ref{sec:das} for more information about the \ac{DAS} response.
+
+Both the \ac{DDS} and \ac{DAS} responses describe the dataset and the
+variables it contains. To request data, a client asks a server for a
+\ac{DataDDS} object. The \ac{DataDDS} class is a subclass of \ac{DDS} and as
+such it holds information about the names and types of variables in the data
+source. In addition, a \ac{DataDDS} object holds values for those variables.
+See Section~\ref{sec:rep-of-values} for information about encoding values in
+a \ac{DataDDS} response.
+
+\subsection{Simple Variables}
+\label{simple-variables}
+
+Variables in the \ac{DAP} have two forms. They are either base types or type
+constructors. Base type, or simple, variables are similar to predefined
+variables in procedural programming languages like C or Fortran (e.g.,
+\texttt{int} or \texttt{integer*4}).
+
+\begin{description}
+\item [byte] an 8-bit byte;unsigned char in ANSI C\@.
+\item [int16] a 16-bit signed integer.
+\item [uint16] a 16-bit unsigned integer.
+\item [int32] a 32-bit signed integer.
+\item [uint32] a 32-bit unsigned integer.
+\item [float32] the IEEE 32-bit floating point datatype (ANSI C's
+  \texttt{float}). 
+\item [float64] the IEEE 64-bit floating point datatype (ANSI C's
+  \texttt{double}) .
+\item [string] a sequence of bytes terminated by a null character.
+\item [URL] represented as a string, but may be dereferenced in a \ac{CE};
+  see Section~\ref{sec:ce}.
+\end{description}
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+simple-decl & = & simple-type id ";" \\
+simple-type & = & "byte"| "int16" | "uint16" | "int32" | "uint32" \\
+                & & | "float32" | "float64" | "string" | "url" \\
+id & = & (ALPHA | "\_" | "\%" | ".") \\
+       & & *(ALPHA | DIGIT | "/" | "\_" | "\%" | ".") \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\subsection{Constructor Variables} 
+\label{sec:ctor-vars}
+
+Constructor variables describe the grouping of one or more variables or values
+within a data set. These variables are used to describe different types of
+relations between the variables that comprise the data set. There are five
+classes of type constructor variables defined by the \ac{DAP}: lists, arrays,
+structures, sequences, and grids. 
+
+The types are defined in Sections~\ref{sec:list}~to~\ref{sec:grid}.
+
+\subsubsection{List}
+\label{sec:list}
+
+ The \textbf{List} type constructor is used to hold lists of 0 or
+  more items of one type. Lists of \texttt{byte}, \ldots, \texttt{grid} are
+  specified using the keyword \texttt{list} before the variable's class. The
+  list can be of any type \textbf{except \texttt{List}}.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+list-decl & = & "list" (simple-decl  | array-decl | structure-decl \\
+          & & | sequence-decl | grid-decl) \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+Examples:
+\begin{quote}
+\begin{vcode}{t}
+list int32 heights;
+List Float64 x[10][10];
+\end{vcode}
+\end{quote}
+
+\subsubsection{Array}
+An \textbf{Array} is a one dimensional indexed data structure as defined by
+ANSI \C. Multidimensional arrays are defined as arrays of arrays. The size of
+each array's dimensions must be given. Each dimension of an array may also be
+named.
+
+Multi-dimensional arrays are stored in \gloss[word]{row-major} order (as is
+the case with ANSI \C or \Cpp). Any array stored in row-major order is stored
+so that the last dimension varies most quickly. For example suppose the two
+dimensional array \texttt{String letter[2][3]} has two rows of three columns
+each and looks like:
+\begin{displaymath}
+\begin{array}{ccc}
+A & B & C \\
+D & E & F \\
+\end{array}
+\end{displaymath}
+the values would be stored as $A~B~C~D~E~F$ in memory.
+
+% Define whether multi-dimensional arrays are row-major or not.  Don't
+% use the phrase ``row-major'' without also giving an example; people
+% don't ever remember which is which.  (Except perhaps for you.)
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+array-decl & = & array-types id array-dims ";" \\
+array-types & = & simple-decl | structure-decl | sequence-decl | grid-decl \\
+array-dims & = & array-dim | array-dim array-dims \\
+array-dim & = & "[" [ name "=" ] DIGIT *DIGIT "]" \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\subsubsection{Structure}
+ A structure groups variables so that the collection can be
+  manipulated as a single item. The variables can be of any type.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+structure-type & = & "structure" "\{" *structure-types "\}" ";" \\
+structure-types & = & simple-type | list-type | array-type \\
+                & & | structure-type | sequence-type | grid-type \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\subsubsection{Sequence}
+ A sequence is an ordered set of $N$ variables which has
+  several instantiations (or values). Variables in a sequence may be of
+  different types.  Each instance of a sequence is one instantiation of the
+  variables. Thus a sequence can be represented as:
+
+\begin{displaymath}
+\begin{array}{ccc}
+  s_{0 0} & \cdots & s_{0 n} \\
+  \vdots & \ddots & \vdots \\
+  s_{i 0} & \cdots & s_{i n}
+\end{array}
+\end{displaymath}
+
+\noindent Every instance of sequence $S$ has the same number, order, and
+type of variables. Thus in a sequence which contains an array, each instance
+of the array MUST be the same size.\footnote{But a sequence may contain a
+  list and each instance of the list may have a different number of elements.
+  This is because arrays must have their size declared while lists do not.} A
+sequence implies that each of the variables is related to each other in some
+logical way. A sequence is different from a structure because its constituent
+variables have several instances while a structure's variables have only one
+instance (or value).
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+sequence-decl & = & "sequence" "\{" *sequence-types "\}" ";" \\
+sequence-types & = & simple-type | list-type | array-type \\
+                & & | structure-type | sequence-type | grid-type \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\subsubsection{Grid}
+\label{sec:grid}
+ A grid is an association of an $N$ dimensional array with $N$
+  named vectors, each of which has the same number of elements as the
+  corresponding dimension of the array. Each vector is used to map indices of
+  one of the array's dimensions to a set of values which are normally
+  non-integral (e.g., floating point values). The $N$ (map) vectors may be
+  different types. Grids are similar to arrays, but add named dimensions and
+  maps for each of those dimensions.
+  \label{page:grids} 
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+grid-decl & = & "grid" "\{" "array:" *array-decl "maps:" *array-decl "\}" ";" \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\section{Requests}
+
+\subsection{URL Syntax}
+\label{sec:url-syntax}
+A \ac{DAP} \ac{URL} is essentially an \ac{HTTP} \ac{URL}~\cite{rfc2616} with
+additional restrictions placed on the \texttt{abs\_path} component.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+DAP\_URL & = & "http:" "//" host [ ":" port ] [ abs\_path ] \\
+abs\_path & = & server\_path dataset\_id "." ext [ "?" query ] \\
+server\_path & = & \\
+dataset\_id &= & \\
+ext & = & "das" | "dds" | "dods" | "ver" | "html" | "info" | "asc" \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+The \ac{DAP} uses \ac{HTTP} as its session protocol~\cite{stevens:unp}(need a
+better reference), so every \ac{DAP} \ac{URL} starts with the scheme
+\texttt{http:}. The \texttt{host} and optional \texttt{port} name a host and
+TCP port of an \ac{HTTP} server that will handle the session. The
+\texttt{host} may also contain authentication information as described in RFC
+2617~\cite{rfc2617}.
+
+The \texttt{abs\_path} portion of the \texttt{DAP\_URL} is composed of four
+parts:
+\begin{description}
+\item [server\_path] A pathname which identifies the \ac{DAP} server to
+  handle the request. The servers may be implemented as \ac{CGI} programs or
+  they may use another equivalent scheme (e.g., the Apache \ac{HTTP} daemon's
+  module system).
+\item [dataset\_id] A string passed to the server named by
+  \texttt{server\_path} that uniquely identifies the source of data on
+  \texttt{host}. The \texttt{dataset\_id} may take the form of a pathname
+  within the \ac{HTTP} server's document root directory, or it may name the
+  data source in some other way (e.g., the \ac{DAP} server might maintain a
+  table of names mapped to tables in a relational database).
+  
+  Two special \texttt{dataset\_id}s SHOULD be recognized by a \ac{DAP}
+  server. They are \texttt{version} and \texttt{help}. When a \ac{DAP} server
+  receives the \texttt{dataset\_id} \texttt{version} it SHOULD respond
+  with version information (see Section~\ref{sec:version}). When a \ac{DAP}
+  server receives the \texttt{dataset\_id} \texttt{help} it SHOULD respond
+  with a help message (see Section~\ref{sec:help}).
+\item [ext] The \texttt{ext} part of the \texttt{abs\_path} tells the
+  \ac{DAP} server which type of response to return. Each response has a three
+  letter string that is used by the requester. See
+  Section~\ref{sec:responses} for a description of the responses and the
+  \texttt{ext} strings used to request them.
+\item [query] The optional \texttt{query} part of the \texttt{abs\_path} is
+  used with ASCII and binary data requests to limit those requests to
+  specific variables or values within the data source. See
+  Section~\ref{sec:ce}.
+\end{description}
+
+\subsubsection{Constraint expressions}
+\label{sec:ce}
+
+A \ac{CE} provides a way for clients to request certain
+variables, or parts of certain variables, from a dataset. Many datasets are
+large and many variables in datasets are also large. Clients are often
+interested in only a small number of values from the entire dataset.
+Constraint expressions provide a way for clients to tell a server which
+variables, and in many cases, parts of those variables, thy would like.
+
+Constraint expressions have the following syntax:
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+CE & = & *(projection) *(\& selection) \\
+projection & = & ids | function \\
+ids & = & id | id , ids \\
+function & = & id ( args ) \\
+args & = & arg | args arg \\
+arg & = & id | <quoted string> | <int> | <float> | [ deref ] URL \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+A \ac{CE} has two parts, the projection and the selection. A project lists the
+variables to be returned by the \ac{DAP} server. If more than one variable is
+to be returned, then the projection is a comma separated list of variables.
+Leaving the projection part of the The \ac{CE} empty is shorthand for
+requesting all the variables in the dataset.
+
+To request one field of a constructor type, set \texttt{id} to the name of
+the constructor, followed by a dot (\texttt{.}) and the field name. To
+request all of the fields in a constructor, set \texttt{id} to the name of
+the constructor.
+
+An array may be accessed using only its name to return the entire array or
+using a hyperslab (\texttt{[]}) operator to return a rectangular section of
+the array. In the later case, the hyperslab is defined for each dimension by
+a starting index, and ending index, and a stride value. \cbstart An Array or
+Grid variable must either be unconstrained or have a hyperslab constraint for
+each of its dimensions. It is an error for an $N$ dimensional object to have
+$N-1$ or fewer hyperslabs Obviously, it is also an error for such a variable
+to have $N+1$ or greater hyperslabs. In either of these two cases the server
+must return an \texttt{Error} response. \cbend Specifying a stride $>$ 1 will
+cause the dimension to be subsampled by the stride value.
+
+When an object of type URL is dereferenced using the \texttt{*} operator, the
+server must open the data set referenced by that URL and read its value(s).
+The value(s) is/are used in the constraint. If the URL returns a datatype
+that is incompatible with the context in which it is used, the server must
+return an \texttt{Error} response. If the URL is not explicitly dereferenced
+then it is treated as a string literal (with the URL text as its value).
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+array-dim & = & [ start : stride : stop ] \\
+          & & [ start : stop ] ; stride is one \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+In addition to variable names, functions can be called in the projection
+subexpression. There is not limit to what these function can do so long as
+the \ac{DAP} is not violated. These are an experimental part of the \ac{DAP}
+and are used to insert new variables into the \ac{DDS}. 
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+selection & = & *relation | *function \\
+relation & = & (id rel\_op id) | (value rel\_op id) \\
+         & & | (id rel\_op value) \\
+value & = & id | <quoted string> | <int> | <float> | [ deref ] URL \\
+deref & = & "*" \\
+URL & = & <any valid DODS URL> \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+All of the classes listed in section~\ref{simple-variables} are local to the
+data set except the \texttt{URL} type. \ac{URL}s are handled as described
+previously.
+
+\subsection{Request Headers}
+
+The headers described in Sections~\ref{sec:accept-encoding}
+to~\ref{sec:accept-types} MUST be handled as described. Other headers which
+are part of \ac{HTTP} 1.1 MAY be included in the request and MAY be honored
+by a \ac{DAP} server.
+
+\subsubsection{Accept-Encoding}
+\label{sec:accept-encoding}
+The \texttt{Accept-Encoding} request-header is used by a \ac{DAP} client to
+tell a server that it can accept compressed responses. See RFC
+2616~\cite{rfc2616} for this header's grammar.  Values for encodings are
+\texttt{deflate}, \texttt{gzip} and \texttt{compress}. This header is
+OPTIONAL. When a client includes this header it is effectively asking the
+\ac{DAP} server to encode the response using the given scheme. The server is
+under no obligation to use the requested encoding. However, a server MUST NOT
+use an encoding when a client has not requested it. In addition, a client
+MUST supply the header with every request for which it desires a special
+encoding.
+
+\subsubsection{Host}
+\label{sec:host}
+The \texttt{Host} request-header is used by a \ac{DAP} client to provide its
+IP address or DNS name to the \ac{DAP} server. See RFC 2616~\cite{rfc2616}
+for this header's grammar. This header MUST be included with every request.
+
+\subsubsection{User-Agent}
+\label{sec:user-agent}
+The \texttt{User-Agent} request-header is used by a \ac{DAP} client to
+provide specific information about the client software to the \ac{DAP}
+server. See RFC 2616~\cite{rfc2616} for this header's grammar. This header is
+RECOMMENDED. \ac{DAP} servers MAY log this information.
+
+\subsubsection{XDODS-Accept-Types}
+\label{sec:accept-types}
+The \texttt{XDODS-Accept-Types} experimental request-header is used by a
+\ac{DAP} client to tell a \ac{DAP} server which of the standard \ac{DAP}
+datatypes the client can understand. The server SHOULD NOT return datatypes
+to the client that it does not understand. This header is OPTIONAL; if absent
+a server can assume that a client understands all the standard datatypes. 
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+XDODS-Accept-Types & = & [ "!" ] type\_list | all \\
+type\_list & = & type | type "," type\_list \\
+all & = & "All" \\
+type & = & "Byte" | "Int16" | "UInt16" | "Int32" \\
+       & & | "UInt32" | "Float32" | "Float64" \\
+       & & | "String" | "URL" | "Array" | "List" \\ 
+       & & | "Structure" | "Sequence" | "Grid" \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+A \ac{DAP} server determines which datatypes are understood by a client using
+the following rules:
+\begin{enumerate}
+\item If the value of the header is \texttt{All}, then the client understands
+  all the datatypes.
+\item If a datatype is listed in the value-string, then that type is
+  understood, otherwise it is not understood.
+\item If the value-string starts with the literal \texttt{!} then the type(s)
+  listed are \emph{not} understood by the client and the remaining types are
+  understood. 
+\end{enumerate}
+
+\section{Responses}
+\label{sec:responses}
+
+A valid \ac{DAP} response has the same form as a valid \ac{HTTP} response.
+The first line contains the \ac{HTTP} protocol version, a status code and
+reason phrase~\cite{rfc2616}. Following this are the response headers which
+vary depending on the request and payload of the response (see
+Section~\ref{sec:resp-headers} for a description of the headers). As
+described in RFC 822~\cite{rfc822}, the \ac{HTTP} response status line and
+headers are separated from the response's payload by an extra set of CRLF
+characters which make a blank line.
+
+The ten response payloads defined by the \ac{DAP} are described in detail
+in Section~\ref{sec:resp-bodies}. 
+
+\emph{[Add some text describing how the three basic responses can be thought
+  of as objects]}
+
+\subsection{Response Headers}
+\label{sec:resp-headers}
+
+\subsubsection{Content-Description}
+The \texttt{Content-Description} header is used to tell clients which of the
+different basic responses is being returned or if an error message is being
+returned. For any of the basic responses (\ac{DDS}, \ac{DAS}, or
+\ac{DataDDS}) or the error response, this header MUST be included. This
+header SHOULD NOT be included by the ASCII, HTML, INFO, version or directory
+responses. See RFC 2045~\cite{rfc2045} for information about this header.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+Content-Description & = & "Content-Description" ":" tag \\
+tag & = & "dods-dds" | "dods-das" | "dods-data" | "dods-error" \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+Example:
+\begin{vcode}{ct}
+Content-Description: dods-error
+\end{vcode}
+
+\subsubsection{Content-Encoding}
+If a \ac{DAP} server applies an encoding to an entity, it MUST include the
+\texttt{Content-Encoding} header in the response. See RFC 2616~\cite{rfc2616}
+for this header's grammar. The sole recognized encoding for the \ac{DAP} is \texttt{deflate}.
+
+Example:
+\begin{vcode}{ct}
+Content-Encoding: deflate
+\end{vcode}
+
+\subsubsection{Content-Type}
+The \texttt{Content-Type} header MUST be included in any response from a
+\ac{DAP} server. Valid content types for \ac{DAP} responses are:
+\texttt{text/plain}, \texttt{text/html} and
+\texttt{application/octet}.\footnote{It would be better to use a multipart
+  document in place of the \texttt{application/octet}.} See RFC
+2616~\cite{rfc2616} for this header's grammar.
+
+Example:
+\begin{vcode}{ct}
+Content-Type: application/octet
+\end{vcode}
+
+\subsubsection{Date}
+The \texttt{Date} header provides a time stamp for the response. This header
+is needed for servers that support caching. See RFC 2616~\cite{rfc2616}
+for this header's grammar. Servers MUST provide this header.
+
+Example:
+\begin{vcode}{ct}
+Date: Fri, 09 Feb 2001 18:54:55 GMT
+\end{vcode}
+
+\subsubsection{Keep-Alive}
+A \ac{DAP} server (or an underlying \ac{HTTP} server if one is used to
+implement the \ac{DAP} server) MAY return a \texttt{Keep-Alive} header for an
+authenticate (code 401) response. For all other responses, the \ac{DAP}
+server MUST NOT return this header.\footnote{This is a shortcoming of the
+  \ac{DAP}. It should support HTTP/1.1's persistent connections. However, to
+  do requires that the responses also return Content-Length. Since none of our
+  servers do this, I've got no experience with persistent connections.} See
+RFC 2616~\cite{rfc2616} for this header's grammar.
+
+\subsubsection{Server}
+The \texttt{Server} header provides information about the server used to
+process the request. In this case the \emph{server} MAY be either the
+\ac{DAP} server or an underlying \ac{HTTP} server if the \ac{DAP} server uses
+that as part of its implementation. See RFC 2616~\cite{rfc2616}
+for this header's grammar. This header is OPTIONAL.
+
+Example:
+
+\begin{vcode}{ct}
+Server: Apache/1.3.12 (Unix)  (Red Hat/Linux) PHP/3.0.15 mod\_perl/1.21
+\end{vcode}
+
+\subsubsection{WWW-Authentication}
+The \texttt{WWW-Authenticate} header MUST be included in a message that has a
+response code of 401. That is, when the \ac{DAP} server is asked to provide
+access to a resource that is restricted and the request does not include
+authentication information (see ``HTTP Authentication: Basic and Digest
+Access Authentication''~\cite{rfc2617}). then it must return with a response
+code of 401 and include the \texttt{WWW-Authenticate} header. See RFC
+2616~\cite{rfc2616} for this header's grammar.
+
+Example:
+
+\begin{vcode}{ct}
+WWW-Authenticate: Basic realm="special directory, with CGIs"
+\end{vcode}
+
+\subsubsection{XDODS-Server}
+The \texttt{XDODS-Server} header is used to return \ac{DAP} server's
+implementation version information to the client program.\footnote{The
+  version information should be changed to reflect the version of the
+  \ac{DAP}.} This header MUST be included in every response.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+XDODS-Server & = & "XDODS-Server" ":" "dods/" version \\
+version & = & DIGIT "." DIGIT [ "." DIGIT ]
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+Example:
+\begin{vcode}{ct}
+XDODS-Server: dods/3.2.2
+\end{vcode}
+
+\subsection{Response Bodies}
+\label{sec:resp-bodies}
+
+\emph{[Add a paragraph about the DAS, DDS and DataDDS responses. Also, the
+  Error response]}
+\emph{[Make each response stand alone (list the special headers it must use
+  plus say which extension triggers it.]}
+
+The ASCII, INFO, HTML or Directory services all return \ac{HTML} or plain
+text documents. The ASCII service returns data in a plain text document so
+that it may be easily read into a spreadsheet of similar program. The INFO
+service formats information contained in the \ac{DDS} and \ac{DAS} objects
+using \ac{HTML} so that it may be displayed in a \ac{WWW} browser. The HTML
+service returns a dynamic \ac{WWW} form that can be used to request specific
+variables from the data source. This service provides a low-level user
+interface to a data source. The Directory service provides a rudimentary form
+of navigation for data sources which are composed of multiple files.
+
+\subsubsection{DAS}
+\label{sec:das}
+The \ac{DAS} entity is returned as the payload of a message whose
+\texttt{Content-Type} header MUST be \texttt{text/plain}. The body of the
+response contains text which holds all of the attribute containers and
+values.
+
+The \ac{DAS} is used to store attributes for both the entire dataset and
+variables in the dataset. The \ac{DAS} consists of a number of
+\emph{containers} each of which hold zero or more attributes. Each attribute
+is a name-datatype-value tuple. Values may be either scalar or vector. Note
+that two, three, \ldots, dimensional attribute values are \emph{not}
+supported.  The name of the attribute container MUST be the same as
+the name of the variable to which its attributes refer.
+% added a MUST.  ts.
+
+A \ac{DAS} MUST have a container for each variable in the dataset. It MAY
+contain any number of extra containers.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+das-doc & = & "attributes" "{" *attribute-cont "}" \\
+attribute-cont & = & attribute-cont | attribute \\
+attribute & = & simple-decl id value *(, value) ";" \\
+value & = & <Float> | <int> | id | <quoted string> \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+The purpose of attributes is to hold additional information beyond the name,
+datatype and value of a variable and/or to hold extra information about a
+dataset as a whole. This extra information can make the contents of the
+dataset much easier to use. For example, extra information contained in the
+\ac{DAS} might provide unit names, scaling factors or the missing-value
+values. Additional information about an entire dataset might contain
+information about who collected the information, under what circumstances
+\emph{et cetera}. 
+
+Many systems rely on attributes to store extra information that is necessary
+to perform certain manipulations with data. In effect, attributes are used to
+store information that is used `by convention' rather than `by design'.
+\ac{DODS} can effectively support these conventions by passing the attributes
+from data set to user program via the \ac{DAS}. Of course, \ac{DODS} cannot
+enforce conventions in data sets where they were not followed in the first
+place.
+
+An example \ac{DAS} is shown in Figure~\ref{fig:das}.
+
+\begin{figure}
+\begin{vcode}{cb}
+attributes {
+   catalog_number {
+   }
+   casts {
+      experimenter {
+      }
+      time {
+         string units "hour since 0000-01-01 00:00:00";
+         string time_origin "1-JAN-0000 00:00:00";
+      }
+      location {
+         lat {
+            string long_name "Latitude";
+            string units "degrees_north";
+         }
+         lon {
+            string long_name "Longitude";
+            string units "degrees_east";
+         }
+      }
+      xbt {
+         depth {
+            string units "meters";
+         }
+         t {
+            float32 missing_value -9.99999979e+33;
+            float32 _fillvalue -9.99999979e+33;
+            string history "From coads_climatology";
+            string units "Deg C";
+         }
+      }
+   }
+}
+\end{vcode}
+\caption{Example Dataset Attribute Entry. This example matches the DDS shown
+   in Figure~\ref{fig:dds}. Some of the variables in this fictional dataset
+   (e.g., \texttt{catalog\_number}) have no attributes. }
+\label{fig:das}
+\end{figure}
+
+\subsubsection{DDS}
+\label{sec:dds}
+The \ac{DDS} entity is returned as the payload of a message whose
+\texttt{Content-Type} header MUST be \texttt{text/plain}. The body of the
+response contains text which holds all of the variables, their names and
+datatypes.
+
+The DDS is a textual description of the variables and their names and types
+that compose the entire data set. The data set descriptor syntax is similar
+too the variable declaration/definition syntax of {\small C} and \Cpp. A
+variable that is a member of one of the base type classes is declared by by
+writing the class name followed by the variable name. The type constructor
+classes are declared using {\small C}'s brace notation.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+dds-doc & = & "dataset" "\{" *type-decl "\}" id ";" \\
+type-decl & = & simple-decl | list-decl | array-decl \\
+          & & | structure-decl | sequence-decl | grid-decl \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+The \texttt{dataset} keyword has the same syntactic function as
+\texttt{structure} but is used for the specific job of enclosing the entire
+dataset even when it does not technically need an enclosing element (because
+at the outermost level it is a single element such as a structure or
+sequence).
+
+An example DDS is shown in Figure~\ref{fig:dds}.
+
+\begin{figure}
+\begin{vcode}{cb}
+dataset {
+   int catalog_number;
+   sequence {
+      string experimenter;
+      int32 time;
+      structure {
+         float64 latitude;
+         float64 longitude;
+      } location;
+      sequence {
+         float depth;
+         float temperature;
+      } xbt;
+   } casts;
+} data;
+\end{vcode}
+\caption{Example Dataset Descriptor Entry.}
+\label{fig:dds}
+\end{figure}
+
+
+\subsubsection{DODS}
+\label{sec:dods}
+The \ac{DataDDS} entity is returned as the payload of a message whose
+\texttt{Content-Type} header MUST be
+\texttt{application/octet}.\footnote{This should be multipart/binary.} The
+body of the response contains both text which holds a \ac{DDS} which
+describes the variables listed in the request and the values for those
+variables encoded using XDR\cite{xdr}. The text \ac{DDS} and the binary data
+are separated in the response entity by the literal \texttt{Data:}.
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+DataDDS & = & DDS CR "Data:" CR <Binary values>
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+Clients MAY supply a constraint expression (see Section~\ref{sec:ce}) with
+any \texttt{DataDDS} request. The \ac{DDS} in the \texttt{DataDDS} response
+describes the variables returned. The order that the variables are listed in
+the \ac{DDS} MUST match the order of the values in the binary section of the
+\ac{DataDDS} response. If the response contains constructor types, then the
+variables are sent in the order they would be visited in a depth-first
+traversal of the accompanying \ac{DDS}.
+
+\paragraph{Encoding Values}
+\label{sec:rep-of-values}
+
+\emph{[Describe different types of variables as three groups: scalar, vector
+  and aggregate]}
+
+The \ac{DAP} uses Sun Microsystems' XDR protocol~\cite{xdr} for the external
+representation of all of the base type variables. Table~\ref{tab:base-xdr}
+shows the XDR types used to represent the various base type
+variables.
+
+\begin{table}
+\caption{The XDR data types used by the DAP as the external representations
+  of base-type variables}
+\label{tab:base-xdr}
+\begin{center}
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c}{\textsc{Base Type}} & \multicolumn{1}{c|}{\textsc{XDR Type}} \\
+\hline \hline
+\texttt{byte} & \texttt{xdr byte} \\ \hline
+\texttt{int16} & \texttt{xdr short} \\ \hline
+\texttt{uint16} & \texttt{xdr unsigned short} \\ \hline
+\texttt{int32} & \texttt{xdr long} \\ \hline
+\texttt{uint32} & \texttt{xdr unsigned long} \\ \hline
+\texttt{float32} & \texttt{xdr float} \\ \hline
+\texttt{float64} & \texttt{xdr double} \\ \hline
+\texttt{string} & \texttt{xdr string} \\ \hline
+\texttt{URL} & \texttt{xdr string} \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+In order to transmit constructor type variables, the \ac{DAP} defines how the
+various base type variables, which comprise the constructor type variable,
+are transmitted. Any constructor type variable may be subject to a constraint
+expression which changes the amount of data transmitted for the variable (see
+Section~\ref{sec:ce}). For each of the six constructor types these
+definitions are:
+
+\begin{description}
+  
+\item [Array] An array id first sent by sending the number of elements in the
+  array twice.\footnote{This is an artifact of the first implementation of
+    the DAP and XDR. The DAP software needed length information to allocate
+    memory for the array so it sent the array length. However, XDR also sends
+    the array length for its own purposes. This could be fixed but it is more
+    of an annoyance than anything else.} The array lengths are 32-bit
+  integers encoded using \texttt{xdr\_long}.
+
+  Following the length information, each array element is encoded in
+  succession. Arrays of bytes are handled differently than other arrays:
+\begin{enumerate}
+\item An array of bytes: These are encoded as is and are padded to a
+  four-byte boundary. Thus an array of five bytes will be encoded as eight
+  bytes.
+  
+\item One dimensional arrays of all other types are encoded by encoding each
+  element of the array in the order they appear.
+
+\item Multi0dimensional arrays are encoded by encoding the elements using
+  row-major ordering.
+\end{enumerate}
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+Array & = & length length values \\
+length & = & <32-bit integer, signed, big endian> \\
+values & = & bytes | other-values \\
+bytes & = & <8-bit bytes padded to a four-byte boundary> \\
+other-values & = & numeric-values | strings | aggregates \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\item [List] A list is sent as if it were an array. Even though the length of
+  a list is not declared, at the time the list's value(s) are to be sent, its
+  length must be known. Thus it is possible to think of a list as a vector of
+  values and hence use the same encoding for those values as would be used
+  for an equivalent array.
+
+\item [Structure] A structure is sent by encoding each field in the order
+  those fields are declared in the structure. For example, the structure:
+
+\begin{vcode}{it}
+Structure {
+    int32 x;
+    float64 y;
+} a;
+\end{vcode}
+
+Would be sent by encoding the int32 \texttt{x} and then the float64
+\texttt{y}. 
+
+Nested structures are sent by encoding their `leaf nodes' as visited in a
+depth first traversal. For example:
+
+\begin{vcode}{it}
+Structure {
+    int32 x;
+    Structure {
+        String name;
+        Byte image[512][512];
+    } picture;
+    float64 y;
+} a;
+\end{vcode}
+
+Would be sent by encoding \texttt{x}, then \texttt{name}, \texttt{image} and
+  finally \texttt{y}.
+
+\item [Sequence] A Sequence is transmitted by encoding each instance as for a
+  structure and sending one after the other, in the order of their occurrence
+  in the data set. The entire sequence is sent, subject to the constraint
+  expression. In other words, if no constraint expression is supplied then
+  the entire sequence is sent. However, if a constraint expression is given
+  all the records in the sequence that satisfy the expression are
+  sent
+
+  Because a sequence does \emph{not} have a length count, each instance
+  is prefixed by a \texttt{start of sequence} marker. Also, to accommodate
+  nested sequences, then end of each sequence as a whole is marked by a
+  \texttt{end of sequence} marker.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+sequence & = & instances end-of-seq \\
+instances & = & start-of-inst instance-values \\
+end-of-seq & = & <byte value 0xA5> \\
+start-of-inst & = & <byte value 0x5A> \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\item [Grid] A grid is encoded as if it is a Structure (one component
+  after the other, in the order of their declaration).
+
+\end{description}
+
+\subsubsection{ERROR}
+\label{sec:error}
+When a server encounters an error, either in its software or in the users
+request, it MUST return an error response. The body of the response contains
+an error code along with text that provides a description of the problem
+encountered. Server writers are encouraged to provide text that describes the
+problem with enough information to enable a user to correct the problem or
+submit a meaningful bug report to the server's maintainer.
+
+\emph{[Error objects can, in theory, contain a short Java or TCL/Tk program
+  to help users resubmit URLs, et cetera. However, we've never used this
+  feature]}
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+Error & = & "Error" "\{" "code=" error-code ";" \\
+      & & "message=" error-msg ";" "\}" \\
+error-code & = & 1*DIGIT \\
+error-msg & = & quoted-string \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\subsubsection{Version}
+\label{sec:version}
+The \texttt{version} response returns information about the \ac{DAP} version,
+server version and may return information about a dataset's version. The
+response may be requested two ways: by using the string \texttt{version}
+as the \texttt{dataset\_id} or by appending the extension
+\texttt{ver} to the dataset name (see Section~\ref{sec:url-syntax}). 
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+abs\_path & = & server\_path dataset\_id "." ext [ "?" query ] \\
+server\_path & = & <name of DAP server> \\
+dataset\_id & = & "version" \\
+ext & = & "ver" \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+If a \ac{DAP} server receives a \texttt{version} request, it MUST return
+return \ac{DAP} version version information. If the request is made using the
+\texttt{ver} extension to a \texttt{dataset\_id} then the server MUST return
+the \ac{DAP} version and server version information. It MAY also return a
+dataset version.
+
+Version information should be returned as plain text in the payload of the
+response. This version information may be essentially that sane as the
+information in the XDODS-Server header. The intent is to present users and
+system maintainers with information about servers that can be used to track
+down problems or determine if a server can be upgraded to a newer version to
+fix a particular problem.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+version-response & = & dap-version CRLF server-version \\
+                 & & [ CRLF dataset-version ] \\
+dap-version & = & "Core version:" token "/" version-number \\
+server-version & = & "Server version:" token "/" version-number \\
+dataset-version & = & "Dataset version:" token "/" version-number \\
+token & = & 1*<any CHAR except CTLs or separators> \\
+version-number & = & 1*DIGIT "." 1*DIGIT "." 1*DIGIT \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\subsubsection{ASCII}
+\label{sec:ascii}
+The \texttt{ASCII} response provides a way for a client to get data from a
+\ac{DAP} server formatted as ASCII text. Server implementors may develop
+custom ASCII representations for their data as long as they meet the
+requirements given here:
+
+\begin{enumerate}
+\item The formatting MUST use \ac{CSV} with text that associates a name with
+  a value or group of values.
+\item The response body SHOULD be easy to incorporate into commonly available
+  spreadsheet programs.
+\item There MUST be enough structural information in the response to remove
+  any ambiguity about which variable(s) it contains.
+\end{enumerate}
+
+\paragraph{Suggested ASCII representations}
+
+In this section variables are classified as either simple types or complex
+types. Simple types are the elemental datatypes in DODS (Byte, \ldots, Url).
+Complex types are Arrays, Lists and the constructor types Structure, Sequence
+and Grid. Since a dataset groups together a collection of otherwise unrelated
+variables, it will be considered a Structure in this section. That is, each
+dataset has an implicit (anonymous) Structure as its outermost variable.
+
+Simple datatypes are represented in ASCII using common print representations
+for those those types. Integer and floating point variables can be converted
+using whatever language and/or library facilities are available to the
+server.
+
+The ASCII representations for complex datatypes are given below. In general,
+complex datatypes each have two different representations, one when they
+contain only other simple types and another when they contain other complex
+types. 
+
+\begin{enumerate}
+\item Grid
+\begin{enumerate}
+\item A Grid with only a single dimension will be represented as a table of
+  values. The values of the sole map vector will be printed in a row,
+  separated by commas and prefixed by the map vector's name. The values of
+  the Grid's Array will be prefixed by its name and printed on the following
+  row, also as CSVs. See Example ??.
+\item A Grid with two or more map vectors will be printed as follows. The
+  rightmost dimension/map will be printed on one line as CSVs and prefixed
+  by the map vector's name as is the case for a Grid with only a single map.
+  The Array-part's values will be printed on subsequent lines which enumerate
+  all of the indices of the other dimensions/maps so that the rightmost
+  varies fastest. Each row of values will be prefixed by the array-part's
+  name and the list of bracketed map vector values which describe the given
+  row's data. See Examples ??--??.
+\end{enumerate}
+
+\T\begin{minipage}{5in}
+Example :
+\T\medskip
+
+\begin{vcode}{ti}
+Dataset {
+  Grid {
+    Array:
+      Byte x[5];
+    Maps:
+      Float64 lat[5];
+  } values;
+} ex14;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+values.lat, $values.lat[0]$, \ldots, $values.lat[4]$\\
+values.x, $values.x[0]$, \ldots, $values.x[4]$
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\T\begin{minipage}{5in}
+Example :
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+  Grid {
+    Array: 
+      Byte temp[lat=5][lon=5];
+    Maps:
+      Float64 lat[5];
+      Float64 lon[5];
+  } v;
+} ex15;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+v.lon, $v.lon[0]$, \ldots, $v.lon[4]$\\
+v.temp[v.lat=$v.lat[0]$], $v.temp[0][0]$, \ldots, $v.temp[0][4]$\\
+\vdots\\
+v.temp[v.lat=$v.lat[4]$], $v.temp[4][0]$, \ldots, $v.temp[4][4]$
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\T\begin{minipage}{5in}
+Example :
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+  Grid {
+    Array: 
+      Byte temp[t=4][lat=5][lon=5];
+    Maps:
+      Int32 t[4];
+      Float64 lat[5];
+      Float64 lon[5];
+  } v;
+} ex16;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+v.lon, $v.lon[0]$, \ldots, $v.lon[4]$\\
+v.temp[v.t=$v.t[0]$][v.lat=$v.lat[0]$], $temp[0][0][0]$, \ldots, $temp[0][0][4]$\\
+\vdots\\
+v.temp[v.t=$v.t[0]$][v.lat=$v.lat[4]$], $temp[0][4][0]$, \ldots, $temp[0][4][4]$\\
+\vdots\\
+v.temp[v.t=$v.t[3]$][v.lat=$v.lat[0]$], $temp[3][0][0]$, \ldots, $temp[3][0][4]$\\
+\vdots\\
+v.temp[v.t=$v.t[3]$][v.lat=$v.lat[4]$], $temp[3][4][0]$, \ldots, $temp[3][4][4]$\\
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\item Structure
+\begin{enumerate}
+\item Structures that contain only simple types are printed as a table with a
+  single row. That is, a row of comma separated field names followed by a row
+  of comma separated values. See Example ??.
+\item A Structure contains simple types and/or other structures which
+  themselves contain only simple types will be flattened and printed as if it
+  were a single structure composed of solely of simple types. See Example ??.
+\item A Structure that contains one or more Array, Sequence or Grid variables
+  uses a vertical ordering of its fields. Each field is printed by writing
+  its print representation on successive rows, starting with the first field
+  and going in order to the last. For each row the type of variable
+  determines the specific format of the output. Example ?? shows a structure
+  which contains a String and a Grid.
+\end{enumerate}
+
+\T\begin{minipage}{5in}
+Example :
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+  Structure {
+    String name;
+    String date;
+    Float64 lat;
+    Float64 lon;
+  } drop;
+} ex6;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+drop.name, drop.date, drop.lat, drop.lon\\
+$drop.name$, $drop.date$, $drop.lat$, $drop.lon$
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\T\begin{minipage}{5in}
+Example :
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+  Structure {
+    String name;
+    String date;
+    Structure {
+      Float64 lat;
+      Float64 lon;
+    } point;
+  } drop;
+} ex7;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+drop.name, drop.date, drop.point.lat, drop.point.lon\\
+$drop.name$, $drop.date$, $drop.point.lat$, $drop.point.lon$
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\T\begin{minipage}{5in}
+Example :
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+  Structure {
+    String date;
+    Grid {
+      Array: 
+      Byte temp[lat=5][lon=5];
+      Maps:
+      Float64 lat[5];
+      Float64 lon[5];
+    } values;
+  } test;
+} ex8;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+test.date, $test.date$\\
+test.v.lon, $test.v.lon[0]$, \ldots, $temp.lon[4]$\\
+test.v.temp[$test.v.lat[0]$]: $test.v.temp[0][0]$, \ldots, $test.v.temp[0][4]$\\
+\vdots\\
+test.v.temp[$test.v.lat[4]$]: $test.v.temp[4][0]$, \ldots, $test.v.temp[4][4]$
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\item Sequence
+\begin{enumerate}
+\item Sequences containing only simple types will be represented as tables.
+  The first row of output will list the Sequence's field names separated by
+  commas. Each instance of the Sequence will be listed on subsequent rows as
+  comma separated values.
+\item Sequences containing simple types and/or other Sequences or Structures
+  which themselves contain only simple types will be flattend and printed as
+  a table.
+\item Sequences which contain either, directly or indirectly, Arrays or Grids
+  will be printed with each field on its own row. Successive rows of the
+  Sequence will be printed as successive blocks of rows. To print each field
+  its type-dependent print representation will be used. 
+\end{enumerate}
+
+\T\begin{minipage}{5in}
+Example :
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+  Sequence {
+    String name;
+    Float64 lat;
+    Float64 lon;
+  } drop;
+} ex8;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+drop.name, drop.lat, drop.lon\\
+$drop.name$, $drop.lat$, $drop.lon$\\
+\vdots
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\T\begin{minipage}{5in}
+Example :
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+  Sequence {
+    String name;
+    Sequence {
+      Float64 lat;
+      Float64 lon;
+    } loc;
+  } drop;
+} ex10;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+drop.name, drop.loc.lat, drop.loc.lon\\
+$drop.name$, $drop.loc.lat$, $drop.loc.lon$\\
+\vdots
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\T\begin{minipage}{5in}
+Example :
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+  Sequence {
+    String name;
+    Structure {
+      Float64 lat;
+      Float64 lon;
+    } loc;
+  } drop;
+} ex11;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}  
+Dataset: $dataset name$\\
+drop.name, drop.loc.lat, drop.loc.lon\\
+$drop.name$, $drop.loc.lat$, $drop.loc.lon$\\
+\vdots
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\T\begin{minipage}{5in}
+Example :
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+  Sequence {
+    String name;
+    Array temps[5];
+  } data;
+} ex12;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+data.name, $data.name$\\
+data.temps, $data.temps[0]$, \ldots, $data.temps[4]$\\
+\vdots
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\T\begin{minipage}{5in}
+Example :
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+  Sequence {
+    String name;
+    Array temps[5][5];
+  } data;
+}ex13;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+data.name, $data.name_0$\footnote{The subscripts are here to reinforce that a
+  sequence consists of $N$ values (or instances) and thus there are $N$
+  values for both \texttt{name} and \texttt{temps}.}\\
+data.temps[0], $data.temps[0][0]_0$, \ldots, $data.temps[0][4]_0$\\
+\vdots\\
+data.temps[4], $data.temps[4][0]_0$, \ldots, $data.temps[4][4]_0$\\
+\vdots\\
+data.name, $data.name_N$\\
+data.temps[0], $data.temps[0][0]_N$, \ldots, $data.temps[0][4]_N$\\
+\vdots\\
+data.temps[4], $data.temps[4][0]_N$, \ldots, $data.temps[4][4]_N$\\
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\item Array 
+\begin{enumerate}
+\item An one-dimensional array of simple types is printed as a name and comma
+  separated list of values of the vector, all on a single line. See Example
+  ??.
+\item A multidimensional array of simple types of rank $N$ is represented by
+  writing out, for each of its $N-1$ dimensions' indices, the name, the index
+  and a row of values. See Examples ??--??.
+\item Each element of an array of complex types is printed on a group of
+  lines. For an array of complex types of rank $N$, each row will be prefixed
+  by the array name and the index for that row. 
+\end{enumerate}
+
+\T\begin{minipage}{5in}
+Example 1:
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+    Int32 x[10];
+} ex1;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+x, $x[0]$, \ldots, $x[9]$
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\T\begin{minipage}{5in}
+Example 3:
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+    Int32 x[20][10];
+} ex3;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+x[0], $x[0][0]$, \ldots, $x[0][9]$\\
+\vdots\\
+x[19], $x[19][0]$, \ldots, $x[19][9]$\\
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\T\begin{minipage}{5in}
+Example 4:
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+    Int32 x[5][10][15];
+} ex4;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+x[0][0], $x[0][0][0]$, \ldots, $x[0][0][14]$\\
+\vdots\\
+x[0][9], $x[0][9][0]$, \ldots, $x[0][9][14]$\\
+\vdots\\
+x[4][0], $x[4][0][0]$, \ldots, $x[4][0][14]$\\
+\vdots\\
+x[4][9], $x[4][9][0]$, \ldots, $x[4][9][14]$\\
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\T\begin{minipage}{5in}
+Example 2:
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+    Structure {
+        Int32 x;
+        String name;
+    } pair[10];
+} ex2;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+pair[0], $pair[0].x$, $pair[0].name$\\
+\vdots\\
+pair[9], $pair[9].x$, $pair[9].name$
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\T\begin{minipage}{5in}
+Example 5:
+\T\medskip
+
+\begin{vcode}{it}
+Dataset {
+    Structure {
+        Int32 x;
+        String name;
+    } pair[5][10];
+} ex5;
+\end{vcode}
+\T\medskip
+
+Output:\\
+\begin{ttfamily}
+Dataset: $dataset name$\\
+pair[0][0], $pair[0][0].x$, $pair[0][0].name$\\
+\vdots\\
+pair[0][9], $pair[0][9].x$, $pair[0][9].name$\\
+\vdots\\
+pair[4][0], $pair[4][0].x$, $pair[4][0].name$\\
+\vdots\\
+pair[4][9], $pair[4][9].x$, $pair[4][9].name$\\
+\end{ttfamily}
+\T\end{minipage}
+\T\bigskip
+
+\end{enumerate}
+
+\subsubsection{HTML}
+\label{sec:html}
+\emph{[Add text \ldots]}
+
+The \texttt{HTML} response MUST present the user with an \ac{HTML} document
+that can be used to access values from the dataset. The document MUST show
+all of the variables in the dataset along with their attributes and it MUST
+show the dataset's attributes. Structural information SHOULD be preserved. 
+
+The intent of the \texttt{HTML} response it to provide an interface to the
+dataset that can be used with a \ac{WWW} browser. Users should be able to
+look at the variables in the dataset, read attributes and request values from
+one \ac{WWW} location without making multiple requests. 
+
+Because \ac{DAP} \ac{URL}s are somewhat confusing for many people, this
+interface should provide a point-and-click way to build those \ac{URL}s.
+
+\subsubsection{INFO}
+\label{sec:info}
+\emph{[Add text \ldots]}
+
+The \texttt{info} response MUST present the user with an \ac{HTML} document
+that contains the information in the \ac{DDS} and \ac{DAS}. This intent is to
+present this information in a way that can be rendered by a \ac{WWW}
+browser. Structural information about the dataset SHOULD be preserved so that
+users can build URLs by hand.
+
+The \texttt{info} response MAY also return other information. If server
+installers and/or dataset maintainers add \ac{HTML} which describes the
+dataset or the server, this information MUST be merged into the \ac{HTML}
+document returned in response to the \texttt{info} request.
+
+The purpose of the \texttt{info} response is to supply information about the
+dataset in a form that is easy for people to read. It should be structured so
+that after only a little experience people can easily assess a dataset using
+the document. In addition, the \texttt{info} response may be used in creating
+various user interfaces which access data using \ac{DAP} servers.
+
+The usage server should provide:
+\begin{enumerate}
+\item The hierarchical relation of container variables.
+\item Each variable's datatype.
+\item Each variable's attributes.
+\item Any global attributes that the dataset contains.
+\item Extra information supplied by the dataset creator/maintainer.
+\end{enumerate}
+
+Mechanism:
+\begin{enumerate}
+\item Access to the HTML version of the usage information will be via a URL
+  with the suffix \texttt{.info}.
+  
+\item Dataset creators/maintainers will be able to supply a set
+  of pseudo-HTML documents that will be concatenated with the information
+  derived from the DAS and DDS objects. 
+
+\begin{vcode}{i}
+Here in a vcode temporarily...
+Per-dataset HTML*:
+
+
+    <h3>
+    About the Fleet Numerical Ocean Winds dataset
+    </h3>
+
+    The FNOC dataset is used as a sample dataset for testing of DODS. It is a
+    `real' scientific dataset, but I really don't understand what it means.
+
+    <p>
+
+NB: This file must be in the same directory as the dataset. Note that the
+same <basename><digits>.html scheme used for the override file is used
+here.
+
+Per-server HTML*:
+
+    <h3>
+    Server Functions:
+    </h3>
+    <dl>
+    <dt>geolocate(variable, lat1, lat2, lon1, lon2)
+    <dd>Returns the elements of <em>variable</em> that fall within the box
+    created by <em>lat1</em>, <em>lon1</em> and <em>lat2</em>, <em>lon2</em>.
+
+    <p>
+
+    <dt>time(variable, start\_time, stop\_time)
+    <dd>Returns the elements of <em>variable</em> that fall within the time
+    interval <em>start\_time</em> and <em>stop\_time</em>.
+    </dl>
+
+    <p>
+
+NB: This file must reside with the server. For the netcdf server (which is
+made up of nph-nc, nc\_das, nc\_dds adn nc\_dods) this file is called nc.html).
+\end{vcode}
+
+\item There will be an override mode where only the user supplied HTML is
+  returned. Thus if the automatically generated part of the server fails for
+  a particular dataset the creator/maintainer can work around that problem.
+
+  If an override file is present, the \texttt{info} response MUST return that
+  file INSTEAD of the automatically generated \ac{HTML} document. The
+  contents of the override file MUST be well formed \ac{HTML}.
+
+  An override file is a file who's extension is \texttt{.ovr} and who's
+  basename\footnote{Define basename as the part of the filename before the
+  last dot (\texttt{.}).} matches that of the dataset of which the
+  \texttt{info} request was made. This requirement is amended in one way; if
+  a dataset's basename ends in a number, an override document need not
+  include that number in its basename. In this case, the override document
+  SHALL be applicable to all of the datasets which have a common basename not
+  including the number if and only if an override file with a name which
+  matches exactly is not present.
+
+  Some example dataset names and override files:
+  \begin{itemize}
+    \item [temp.ovr] Matches: temp.dat.
+    \item [fnoc.ovr] Matches: fnoc1.nc, fnoc2.nc, \ldots, fnoc10.nc. It does
+      not match fnocx.nc.
+    \item [fnoc1.ovr] Matches: fnoc1.nc and fnoc10.nc but not fnoc2.nc. But
+      if a fnoc10.ovr file is present that must take precedent.
+  \end{itemize}
+
+\end{enumerate}
+
+\emph{[Insert information from usage-server.txt]}
+
+\subsubsection{Help}
+\label{sec:help}
+The \texttt{help} response MUST be returned when either the server receives a
+\ac{URL} with no extension (i.e., a \ac{URL} which asks for no object) or
+when the \texttt{dataset\_id} portion of the \ac{URL} is \texttt{help}.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+abs\_path & = & server\_path dataset\_id "." ext [ "?" query ] \\
+server\_path & = & <name of DAP server> \\
+dataset\_id & = & "help" \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+The second way of requesting the \texttt{help} response is analogous to one
+of the ways of requesting the \texttt{version} response.
+
+The \texttt{help} response MUST return an \ac{HTML} document which lists
+the extensions recognized by the server. The response MAY return other
+information as well.
+
+\subsubsection{Directory}
+\label{sec:dir}
+\emph{[Needs significant design work \ldots]}
+
+The Directory response is an \ac{HTML} document which provide a simple way
+for users to navigate among different datasets that may be accessed with the
+server. The actual presentation mechanism is up to the server implementor.
+However, when datasets are represented in the response there must be a
+\ac{URL} which references the \texttt{HTML} response for that dataset.
+
+\printgloss{dods-glossary}
+
+\T\addcontentsline{toc}{section}{References}
+\T\raggedright
+\bibliography{dods}
+
+\T\appendix
+
+\section{Notational Conventions and Generic Grammar}
+\label{app:grammar}
+\input{../../../boiler/bnf-grammar.tex}
+
+\section{Acronyms and Abbreviations}
+\begin{acronym}
+\input{../../../boiler/dods-def}
+\input{../../../boiler/acronyms.tex}
+\end{acronym}
+
+\section{Change log}
+
+\begin{verbatim}
+$Log: dap_rfc.tex,v $
+Revision 1.22  2004/04/24 21:37:22  jimg
+I added every directory in preparation for adding everyting. This is
+part of getting the opendap web pages going...
+
+Revision 1.21  2003/05/23 19:27:02  tom
+moved html output so not to interfere with the newer DAP spec docs
+
+Revision 1.20  2003/01/14 19:50:33  jimg
+Fixed text about Arrays and Grids.
+
+Revision 1.19  2002/06/12 00:36:12  jimg
+Added text about Array/Grid constrains. It's an error for either to be
+partially constrained.
+
+Revision 1.18  2001/09/18 18:28:50  jimg
+Fixed some formatting problems with the ASCII output examples.
+Changes a few words in that section, too.
+
+Revision 1.17  2001/09/12 21:55:53  jimg
+I've added a considerable amount of text describing how ASCII output should
+be generated. Once I've implemented this I'll make changes and ask for
+group-wide comments.
+
+Revision 1.16  2001/07/19 21:47:09  jimg
+Added text about the info service.
+
+Revision 1.15  2001/05/17 00:09:01  jimg
+Merged the revision at the tail end of the hlx-version branch back to the
+text on the trunk. I think I did not undo stuff, but there are still three
+conflicts I don't know how to resolve. So this revision won't make it through
+latex.
+
+Revision 1.14  2001/05/16 23:55:29  jimg
+Added just a little support for hyperlatex
+
+Revision 1.11.2.4  2001/05/16 15:02:43  tom
+aligned with hyperlatex needs
+
+Revision 1.13  2001/04/13 21:01:51  jimg
+Ok. After all that. This version is the result of my backing out the hlx
+changes from the latex on the trunk.
+
+Revision 1.11  2001/03/26 19:53:26  jimg
+Added a second round of changes suggested by Paul.
+
+Revision 1.10  2001/03/23 01:53:48  jimg
+Read over all but 4.2.4 ro 4.2.10. Added more examples, esp. in the section
+on URL syntax.
+
+Revision 1.9  2001/03/22 08:55:41  jimg
+Added examples; most of Paul's and Tom's comments.
+
+Revision 1.8  2001/03/20 23:46:57  jimg
+Added examples.
+
+Revision 1.7  2001/03/13 18:09:43  jimg
+Started on Tom's second round of changes...
+
+Revision 1.6  2001/03/12 03:13:55  tom
+incorporated some of Paul's typo-finds.
+
+Revision 1.5  2001/03/12 02:56:37  tom
+fixed typos, rearranged a tiny bit
+
+Revision 1.4  2001/03/08 23:05:19  jimg
+Made various structural changes. Moved text from the Characterization...
+section into the Responses section. Divided the paper in to three parts:
+one that describes the characterization of a dataset as a collection of
+variables, one that describes the requests and one that describes the
+responses. There are other changes in the text.
+
+Revision 1.3  2001/03/08 06:36:31  jimg
+Made the first few changes suggested by Tom. Checkpoint here before making
+major structural changes.
+
+Revision 1.2  2001/03/06 00:49:09  jimg
+Partially complete; Response section needs text.
+
+Revision 1.1  2001/02/27 18:56:26  jimg
+Added
+\end{verbatim}
+
+\end{document}

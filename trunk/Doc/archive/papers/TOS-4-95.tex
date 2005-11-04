@@ -1,0 +1,384 @@
+
+% Paper for submission to TOS. This could also be the beginings of some user
+% documentation or a `welcome' page in our HTML doc tree...
+%
+% $Id$
+
+
+\documentstyle[12pt,psfig,margins,chicago]{article}
+
+\psfigurepath{tos1-figs}
+\topmargin -8ex
+\footskip 4ex
+\headheight 8ex
+\footheight -4ex
+\textwidth 6.25in
+\textheight 8.25in
+\oddsidemargin 0em
+%\parskip 1ex
+\def \dods{Distributed Oceanographic Data System }
+\def \dodsns{Distributed Oceanographic Data System}
+\def \1em{\hskip 1em}
+\def \2em{\hskip 2em}
+\def \3em{\hskip 3em}
+\def \4em{\hskip 4em}
+\def \dap{data access protocol }
+\def \dapns{data access protocol}
+%\pagestyle{empty}
+
+\begin{document}
+\bibliographystyle{chicago}
+\Large
+\centerline {\bf DODS: Providing direct access }
+\centerline {\bf to distributed research data resources.}
+\normalsize
+
+\renewcommand{\baselinestretch}{1.5}
+
+%\begin{htmlonly}
+%\section{Introduction}
+%\end{htmlonly}
+%\begin{latexonly}
+\large
+\bigskip
+\noindent
+{\bf Introduction}
+\medskip
+\normalsize 
+%\end{latexonly}
+\renewcommand{\baselinestretch}{1.5}
+
+\noindent
+This paper describes the design of a distributed data system for
+oceanographic data. The system, currently under development will enable
+research oceanographers to interactively access and directly import
+distributed, on-line science data using their own personal research analysis
+and processing applications. The system is being developed jointly by
+researchers and staff at the University of Rhode Island Graduate School of
+Oceanography and the Massachusetts Institute of Technology.
+
+The realization that such a system was needed first became evident in 1992 at
+The Oceanography Society meeting held in Seattle.  At that meeting a
+significant number of on-line data systems were demonstrated that illustrated
+the potential of providing access to research data over the Internet.
+However, no pair of the demonstrated systems could communicate easily.  It
+was clear that while numerous useful oceanographic data systems were being
+developed there had been no coordination to permit interoperability between
+them.
+
+In October 1993, the issue of developing an interoperable, distributed system
+for accessing oceanographic research data was explored in detail at a
+workshop organized with the help of The Oceanography Society and held at the
+W. Alton Jones Campus of the University of Rhode Island.  The workshop was
+made possible with funds from NASA and NOAA.  In order to obtain a diverse
+and representative perspective of different groups' needs regarding the
+application and management of oceanographic data, oceanographic researchers,
+data system developers and data archive managers were invited.
+
+The workshop had three primary objectives: 1) to develop a vision of a
+distributed data system for oceanographic research data, 2) to generate a set
+of requirements for such a system and 3) to identify system architectures
+that would meet these requirements.  A report, titled ``Report on the First
+Workshop for the Distributed Oceanographic Data System''
+\cite{cornillon:dodsws1} of the workshop has been published and can be
+accessed via the Internet\footnote{\tt http://lake.mit.edu/dods.html}.  At
+the end of the workshop, the Distributed Oceanography Data System, DODS,
+development team was formed.  The development team was tasked with the
+responsibility of generating a detailed system design and building the core
+components of DODS.
+
+In this article I will summarizes the motivation for embarking on the
+development of the \dods in the first place and provide an overview of the
+design and implementation strategy.
+
+%\begin{htmlonly}
+%\section{Motivation}
+%\end{htmlonly}
+%\begin{latexonly}
+\large
+\bigskip
+\noindent
+{\bf Motivation}
+\medskip
+\normalsize 
+%\end{latexonly}
+
+\noindent The motivation for the development of the \dods was spurred by the
+rapid increase in the number of data sets available on the Internet coupled
+with the lack of coordination between the systems that were developed to
+access and/or distribute these data.  Particularly within the oceanographic
+community, researchers were making large data sets available on-line (e.g;
+University of Hawaii's AVHRR ftp site, University of Colorado's SANDDUNES,
+Scripps Institute of Oceanography SSABLE, University of Rhode Island
+XBrowse).  Within the federal government, agencies were beginning to explore
+development of distributed data systems within the context of Global Change
+(e.g; NASA's Mission to Planet Earth, NOAA's Climate and Global Change) and
+federal archives were looking to providing on-line access to archives.
+However, it appeared from the outside that these federal efforts were being
+undertaken with little or no actual development coordination.  As for the
+systems being developed by individual researchers there had been no
+development coordination between them and as a result they were incompatible.
+Even though, as in the case of the systems sited above, many were serving the
+same data sets (i.e.; NOAA satellite AVHRR data).
+
+Another issue, of concern to oceanographic researchers, was the feeling that
+the the data resources of individual researchers were being overlooked within
+the scope of the federal data management programs.  This was considered a
+serious oversight.  Why?  Because, researchers produce data as well as use
+it.  Researchers tend to invest a considerable amount of effort `cleaning
+up', calibrating and processing raw data for use in their research.  The time
+and knowledge they put into massaging their data increases its scientific
+value significantly, making it more valuable to the research community as a
+whole.  The federal data systems being developed had not identified the need
+to integrate access to individual PI's data sets within their systems.  Thus
+high quality research data from researchers would not be readily available
+through these systems.  Eventually, the raw version of a PI's data would end
+up in one of the national data centers where it would be available to the
+federal data systems, however, the valuable undocumented knowledge that the
+PI initially invested in preparing the data for his or her research would be
+lost to the system and the community.
+
+%\begin{htmlonly}
+%\section{DODS: An extension to existing interfaces}
+%\end{htmlonly}
+%\begin{latexonly}
+\large
+\bigskip
+\noindent
+{\bf DODS: An extension to existing interfaces}
+\medskip
+\normalsize 
+%\end{latexonly}
+
+\noindent The Distributed Oceanographic Data System (DODS) is not a single
+stand alone data management or archive system.  It is not a system for
+creating data base schema and inventories nor for managing archival
+data sets.  Rather, DODS is a method for directly accessing data on the
+Internet.  It is a {\em data access protocol} that provides both a common
+functional interface to data systems with on-line data and a well
+defined data model with which to represent the data on those systems.  It is
+designed to be integrated {\em with\/} already existing user applications and
+resource management systems, not to replace them.  DODS extends the
+operational capabilities of existing systems in two important ways; first, it
+transforms them to a distributed client-server system and second, it provides
+a integrated view of their resources which is system independent.
+
+In order to implement these extended operational capabilities DODS provides
+both a defined data delivery model and software tools.  The data delivery
+model provides the necessary infrastructure and semantics for application
+clients and data servers to interoperate with one another.  The tools enable
+data systems developers to create servers that generate a canonical
+representation of their data resources. In many cases without modification of
+the storage form of data sets.  In addition the tools, through the use of
+customized translators, will allow data users to utilize their data analysis
+and processing applications as interpreters of the canonical data
+representation provided by the servers. DODS then is envisioned as a
+cooperative network of autonomous systems, both large and small, which
+interoperate via the DODS \dap and supported interfaces.
+
+In order to better understand what the tangible objectives of DODS are, it is
+useful to pose a research scenario that will help to illustrate the
+functional concepts that are being implemented within DODS.
+
+A physical oceanographer at the University of Rhode Island has put together a
+program of research that involves the tracking of isopycnal floats within the
+Gulf Stream and the Western North Atlantic.  The parameters that he deals
+with are float position (determined from sound source telemetry), time,
+temperature and pressure.  In addition he often utilizes CTD, xbt, current
+meter and satellite data in his analysis.  The researcher utilizes a suite of
+processing and analysis applications that he has customized specifically for
+his research data and he uses these applications on an almost daily basis as
+new float data comes in.
+
+Currently he is involved in a program studying the dynamics of the North
+Atlantic Current in the region east of the Canadian Maritimes.  Because he
+had not worked in this area before he was interested in acquiring historical
+data in order to gain some long term perspective of the major dynamic
+processes occuring in the region and to help determine how best to organize
+and execute a field study with his isopycnal floats.  WOCE CMDAC current
+meter data from Oregon State University, GTSPP temperature and salinity data
+at NODC and URI's satellite SST data are available on-line and are data sets
+that might contain information of interest.  The researcher \underline{will}
+utilize his own processing and analysis application for looking at any
+historical data that is relevant.
+
+The researcher is also interested in exchanging data with other researchers
+who are collaborating in the North Atlantic Current Study.  These data sets
+are the most relevant to his research and are only available through
+proprietary arrangements with his colleagues.  Again the researcher will want
+to be able to use his own software applications for conducting his analysis.
+
+\medskip \centerline{\bf The DODS Implementation Scenario}
+
+DODS client libraries are linked to the researcher processing and analysis
+applications, in effect making the applications procedure calls, such as {\bf
+  open, read, plot,} etc., surrogates for DODS supported operations.  DODS
+server libraries are installed at the systems that provide on-line access to
+data as well as at the systems of the research collaborators.  The researcher
+at URI is able to interactively analyzes the historical data from the three
+different on-line data systems by providing a WWW universal reference locator
+with embedded search constraints as the argument to one of his application
+procedure calls (i.e.; {\bf read}).  The underlying DODS applications
+transparently submits a request from the client application to the
+appropriate DODS data server.  The DODS data server takes advantage of the
+data system's querying capabilities to locate the data of interest and
+translates that data into a DODS specified canonical form.  The DODS server
+then transmits it to the client.  The DODS client application translates the
+canonical representation into the format that the initiating application
+procedure (i.e.; {\bf read}) expects and then imports the data into the
+application.  The research can then continue his processing and analysis
+using the tools that he prefers for doing research.
+
+The same is true for the data that he and his research collaborators wish to
+exchange.  They access remote data over the Internet and have it imported
+into their systems in the format that they support.  The data system access,
+query, data translation and transfer are all transparent to the researcher.
+Each researcher maintains data on his system in the format that he or she
+utilizes locally without needing to be concerned about the format
+requirements of other researchers.
+
+\medskip \centerline{\bf Current Data Access Scenario} Prior to the
+researcher utilizing his own applications to review the historical data there
+are a number of preliminary steps that he must go through.  First he must
+access each data system either through TELNET or WWW and utilize each
+system's query interface to locate data of interest.  Next he must transfer
+the data to his system, typically utilizing ftp to copy the data files.  In the case of the GTSPP data, he must also uncompress it.  If the
+data is in a format that is not supported by his applications he must either,
+reformat the data or recode, recompile and relink his application.  Finally, a GTSPP file contains
+the global coverage of temperature and salinity data for a three month period
+and is large (10,000 records, 10MB).  The researcher
+will want to extract the data of interest and discard the rest of the file,
+if only for space considerations since a year's worth of data would require
+40MBytes of disk space.  Having gone through these steps the data can now be
+imported into the researcher's applications for analysis.
+
+In order to exchange data with collaborating researchers, the URI researcher
+must go through many of the same steps that were required to get the
+historical data.  He could make arrangements with his colleagues to ensure
+that the data was provided in a form that his software could read but this
+could lead to multiple copies of the same dataset in cases where more than
+one format were required.  This only complicates the data management burden
+on researchers who wish to provide their research data to other researchers.
+
+It is important to reiterate that in the illustration of DODS implementation
+above the URI researcher has not needed to modify his analysis application
+nor to learn how to use a new program or system in order to access
+distributed data resources from both large data archives or individual PIs.
+The only procedure necessary to make the researcher's application DODS
+compliant was to relink it with DODS client library software.  Another
+important feature is that the very application the researcher turns to
+everyday for conducting his research processing and analysis has been
+transformed into an agent that support access to distributed data resources.
+And finally, regardless of the form that the data is in at the remote server
+source when it is imported to the client application it is translated into
+the format that the calling procedure expects.
+
+%\begin{htmlonly}
+%\section{Current Status of DODS Development Effort}
+%\end{htmlonly}
+%\begin{latexonly}
+\large
+\bigskip
+\noindent
+{\bf Current Status of DODS Development Effort}
+\medskip
+\normalsize
+%\end{latexonly}
+
+\noindent The DODS development team has made significant progress toward the
+goal of developing the system envisioned at the workshop.  As a result of the
+developments team's evaluations, along with ideas and comments contributed
+from the workshop attendees and other interested individuals, many of the
+ideas put forward at the meeting have evolved during the formative stages of
+the design process.  An open dialogue with individuals outside of the
+development team was particularly helpful to the design of the data model.
+The following specific issues have been addressed by the development team
+since the workshop:{\renewcommand{\baselinestretch}{1.0} \footnote{For those
+    interested in learning more about the detailed technical aspects of the
+    \dods development effort, DODS developers maintain online documentation
+    at {\tt http:/lake.mit.edu/dods.html}.}}
+
+\begin{itemize}
+ 
+   \item Specified a DODS system architecture based on the client-server
+     model.  With the success of systems such as NCSA Mosaic, gopher and URI's
+     XBrowse a client-server based approached was considered the most
+     versatile and extensible.  
+
+   \item Designed the DODS data delivery architecture.  The data delivery
+     architecture specifies the configuration of client and server
+     components, the operations performed by the system, and where those
+     operations are performed.
+
+   \item Designed a DODS data model which can support a wide range of earth
+     science data types and structures.  The DODS data model is the central
+     component of the DODS data access protocol.  It provides the means for
+     translating between different data access mechanisms.
+
+   \item Implemented a prototype of DODS using remote procedure calls (RPC)
+     in order to determine feasibility of remote data access through existing
+     interfaces such as netCDF.
+
+   \item Identified HTTP as the network transfer protocol that will be used
+     by DODS.  HTTP was selected for a number of reasons.  It is already a
+     widely used protocol and is effectively managed by developers at NCSA,
+     CERN and elsewhere.  Many researchers already have installed HTTP client
+     and server software on their systems (e.g., NCSA Mosaic and NCSA HTTPD)
+     and are familiar with its use. In addition the Common Gateway
+     Interface (CGI) mechanism of HTTPD is flexible enough to allow
+     sophisticated specialization of the server.
+
+   \item Identified two candidate system applications for prototype
+     development: netCDF and JGOFS. These two interfaces have different
+     underlying data models and are representative of different types of
+     data systems.  JGOFS supports a relational data model, whereas netCDF is
+     designed for gridded data.  Implementing these two different
+     application will present a broader overview of the technical challenges
+     to extending DODS beyond these interfaces.
+\end{itemize}
+
+Currently, the JGOFS and netCDF client libraries and data servers are being
+coded.  A DODS {\em toolkit} composed of core components that can be used to
+build DODS client libraries and data servers for different systems is also
+under development.  The toolkit will provide modules that manage the network
+communications, implement the DODS data model, manage URLs, implement the
+\dap operators, etc.  Prototyping of parts of the system will be taking
+place in the Winter of 1995.
+
+%\begin{htmlonly}
+%\section{Summary}
+%\end{htmlonly}
+%\begin{latexonly}
+\large
+\bigskip
+\noindent
+{\bf Summary}
+\medskip
+\normalsize
+%\end{latexonly}
+
+\noindent
+The \dods is being developed to help address the need within the
+oceanographic community for researchers to easily access data resources over
+the Internet.  DODS developers are creating a system that will allow
+researchers to take advantage of the rapidly increasing availability of data
+on-line by implementation of a data access protocol within a client-server
+based infrastructure.  Two unique aspects of the DODS system design are that
+it utilizes researchers' data analysis and processing applications for
+accessing distributed data resources by transforming them into client agents
+within DODS and it supports a system independent view of the data resources
+available through its servers.  Rather than trying to replace or build a
+better system, DODS is purposefully designed to be integrated with other
+already existing data systems and user applications and to take advantage of
+and extend those systems' capabilities.
+
+\medskip
+\large
+\noindent{\bf Acknowledgements}\\
+\normalsize
+I would like to thank James Gallagher for his careful review of the paper and
+critical input.
+
+\bibliography{TOS-4-95}
+
+\end{document}

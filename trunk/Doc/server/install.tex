@@ -1,0 +1,2608 @@
+
+% A guide to installing the OPeNDAP server.
+
+\documentclass{dods-book}
+\usepackage{longtable}
+
+\rcsInfo $Id$
+\newcommand{\DOCdate}{\rcsInfoDate}
+
+\include{../boiler/layout}
+\include{../boiler/dods-def}
+\include{install/install-def}
+
+
+\figpath{install/figs}
+
+\makeindex
+
+\begin{document}
+%------------------------------------front matter
+\title{OPeNDAP Server Installation Guide\\\DOCdate}
+\author{Tom Sgouros \and James Gallagher }
+\date{Revision: \rcsInfoRevision}
+\pagenumbering{arabic}
+\maketitle
+
+\copyrightmatter
+
+\W\pslink{http://www.opendap.org/pdf/install.pdf}
+
+%\include{install/preface}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\clearemptydoublepage
+%------------------------------------book body
+
+%  Outline of this book:
+%
+%
+%  How to install a DODS server.
+%
+%    What a DODS server is.
+%      httpd server equipped with a special set of CGI scripts and
+%      access to data to be served.
+%    How to set one up.
+%      Start by putting the scripts and perl modules in the cgi
+%      directory.  Can DODS be set up to run from the other kind of
+%      cgi setup?  (e.g. nph-dods.cgi)
+%    Putting the data someplace.
+%      Find a place to put the data where the cgi programs can find
+%      it.
+%    Testing, and building the URL
+%      How to make a URL based on the names of the machine, CGI
+%      directory, and so forth.  Easy ways to test your installation.
+%    Building a catalog (file) server for your data.
+%      Just another DODS dataset, served by the FreeForm server.  The
+%      files are simple ASCII files, described by this .fmt file, and
+%      containing these fields.
+
+%
+%  DODS Server Installation Guide
+
+\T\chapter{The OPeNDAP Server}
+
+The OPeNDAP software provides a way to access data over the Internet,
+from programs that weren't originally designed for that purpose, as
+well as some that were. The OPeNDAP software implements the Data
+Access Protocol\footnote{http://spg.gsfc.nasa.gov/rfc/004} (DAP),
+version 2. A \new{DAP server} is a program that sends data in a
+standard transmission format to a client that has requested it. A
+\new{DAP client} is a program, running on a networked computer
+somewhere in the world, that requests and receives data. A client can
+be a specialized DAP client, or a standard web browser.
+
+Though originally developed to deal with oceanographic data, the
+OPeNDAP software has found wide use outside that community, and is now
+used for several different kinds of science data.
+
+Nothing limits the use of the DAP to science data; its framework will
+support many different data types. But the DAP has facilities for
+accommodating large arrays, relational tables, irregular grids, and
+many other otherwise anomalous data types. DAP servers can be adapted
+to serve data from any kind of storage format, and versions that
+support several popular data storage formats are readily available.
+
+\texorhtml{}{\htmlmenu{4}\chapter{The OPeNDAP Server}}
+
+The OPeNDAP DAP server is just an ordinary \indc{WWW server}WWW server
+\indc{server!WWW}\indc{httpd}(\lit{httpd}) equipped with a CGI program
+that enable it to respond to requests for data from DAP client
+programs. Web servers and CGI programs are standard parts of the Web,
+and the details of their operation and \subj{The OPeNDAP DAP server is
+  just a http server with special CGI programs.} installation are
+beyond the scope of this guide. (That is, there are too many different
+varieties of web servers out there for us to help you install each
+different one of them.) Once you have one installed, this guide will
+explain how to use it to serve data using the OPeNDAP server for the
+DAP.
+
+Entire books are written about the operation of the Internet and the
+WWW, and about client/server systems. This is not one of them. To
+understand the OPeNDAP server's architecture, you need only understand
+the following:
+
+\begin{itemize}
+  
+\item A \ind{Web server} is a process that runs on a computer (the
+  host machine) connected to the Internet. When it receives a URL from
+  some Web client, such as a user somewhere operating Netscape (or a
+  specialized \ind{DAP client}) it packages and returns the data
+  specified by the \ind{URL} to that client. The data can be text, as
+  in a web page, but it may also be images, sounds, a program to be
+  executed on the client machine, or some other data.
+  
+\item A properly specified URL can cause a Web server to invoke a
+  \new{CGI program} on its host machine, accepting as input a part of
+  the URL, or some other data, and returning the output of that
+  program to the client that sent the URL in the first place. The CGI
+  is executed on the server.
+
+\end{itemize}
+
+The way the server is configured depends on the storage format of the
+data you intend to serve. The OPeNDAP server supports a variety of
+storage formats, including \netcdf , HDF4, and DSP. The server can
+also read data using the \ffnd\ and \jgofs\ libraries, which can be
+\subj{The CGI programs you need depend on the data you want to serve.}
+configured to read files with nearly any data format.
+
+\xname{install_B}
+\section{Server Architecture}
+\label{dods-server,arch}
+
+The OPeNDAP server consists of a set of programs, and a CGI \new{dispatch
+script} used to decide which program can handle whatever request is
+at hand.
+% It's a fine point, but the only part of the server that's a CGI is the
+% dispatch script. The other programs are just regular programs. 5/7/2002
+% jhrg.
+
+\indc{architecture!server} \indc{server!architecture} A user can make
+three different sorts of requests to the server.
+The first request is for the ``shape'' of the data, and consists of
+the \new{data descriptor structure} (DDS).  The second request is for
+the \new{data attribute structure} (DAS) of the data types described
+\subj{You need to know the shape of the data before you request the data.}
+in the DDS.  (\DODSquick\ and \DODSuser\ contain more information
+about these structures.)  Both of these requests return plain text
+data, readable in a web browser like Netscape Navigator.  You can see
+a typical DDS \texorhtml{in \figureref{reynolds,dds}.}{here:}
+
+\figureplace{A DDS (One of the basic response types defined by the
+  DAP, version 2)(\lit{sst.mnmean.nc.dds})}{htb}
+{reynolds,dds}{reynolds-dds.ps}{reynolds-dds.gif}{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.dds}
+
+\T\pagebreak
+
+\texorhtml{There's a DAS from the same dataset in
+  \figureref{reynolds,das}}{Here's a DAS from the same dataset:} 
+\subj{Other metadata is helpful, too.}
+
+\figureplace{A DAS (\lit{sst.mnmean.nc.das})}{h}
+{reynolds,das}{reynolds-das.ps}{reynolds-das.gif}
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.das}
+
+After getting the \new{metadata} (defined, for DAP purposes, as the
+contents of the DAS and DDS), the DAP client can request actual data.  This
+is binary data, and is often too large to view easily in a web
+browser.  (See \DODSquick\ for strategies to use to examine DAP data
+from a standard web browser.)
+
+Depending on the data format in use, the DAS and DDS are either
+generated from the data served, or from ancillary information
+\subj{The DODS/OPeNDAP Quick Start Guide shows how to look at all the
+  services provided by the OPeNDAP Server.} text files you have to
+supply (or both). The data in these structures may be cached by the
+client system.
+
+In addition to the three basic message types (DAS, DDS, and data), the
+OPeNDAPserver can also provide information about the server operation
+and about the data, can return data in ASCII comma-separated tables,
+and can provide a query form allowing users to craft subsampling
+requests to the server. Some of these services are provided by other
+service programs that must be installed with the dispatch script and
+its companions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% jhrg 9/12/05 Stoped here.
+
+\T\pagebreak
+
+\section{More Explanation of How It Works}
+
+To understand the operation of the OPeNDAP server, it is useful to
+follow the actions taken to reply to a data request. The diagrams in
+\figureref{dods-server,fig,server-design1} and
+\figureref{dods-server,fig,server-design2} lay out the relationship
+between the various entities. Consider a DAP request URL such as the
+following:
+
+\begin{vcode}{sib}
+http://test.opendap.org/opendap/nph-dods/data/nc/fnoc1.nc
+\end{vcode}
+
+\subj{A description of the different URL parts.}  The URL as written
+refers to the entire data file, but any particular request must be
+slightly more specific.  The precision is supplied by appending a
+suffix to the data URL.  Do you want binary data (\lit{.dods}), ASCII
+data (\lit{.asc}), the DDS (\lit{.dds}), the DAS (\lit{.das}), usage
+information (\lit{.info}), or a query form (\lit{.html})?  To get a
+DDS, for example, you would use this URL:
+
+\begin{vcode}{sib}
+http://test.opendap.org/opendap/nph-dods/data/nc/fnoc1.nc.dds
+\end{vcode}
+
+A DAP client may silently add the appropriate suffix to the URL, but
+if you're using a standard WWW client, such as Netscape, you have to
+add the suffix yourself.
+
+Once the proper suffix has been appended to the URL, the URL is sent
+out into the world.  Through the magic of IP addressing, it makes its
+way to the web server (\lit{httpd}) running on the platform,
+\lit{test.opendap.org}.  \Figureref{dods-server,fig,server-design1} shows
+these first steps.  The client makes an internet connection to the
+\lit{test.opendap.org} machine, and the \lit{httpd} daemon executes the
+dispatch script (\lit{opendap/nph-dods}) and forwards it the remaining
+parts of the URL it had received.\footnote{The actual directory name,
+  or whether the CGI programs are kept in a particular directory (or
+  named with a particular convention) is another detail of the
+  specific web server and configuration used.  The web server might
+  refer to the directory as the \lit{ScriptAlias} directory, as it
+  does with Apache.}  (In this case, that would be
+\lit{data/nc/fnoc1.nc.dods}.)  DAP requests are ``GET''
+requests, not ``POST''\indc{GET}\indc{POST} requests, so all the
+information forwarded is in the URL.\footnote{When you fill out some
+  HTML form, you are usually sending data in a ``POST'' request.  When
+  you type a URL into your web browser, this is a ``GET'' request.
+  HTTP servers can respond to both kinds of request.}
+
+\figureplace{The Architecture of the OPeNDAP Server, part I.}{htbp}
+{dods-server,fig,server-design1}{installfig1.ps}{installfig1.gif}{}
+
+\Figureref{dods-server,fig,server-design2} illustrates what happens
+next.  Sitting in the CGI directory (here called \lit{opendap}) with
+the dispatch script are several \new{service programs}, also called
+\new{services} or \new{helper programs}.  The dispatch script
+(\lit{nph-dods}) analyzes the suffix on the URL to figure out what
+kind of request this is, and executes the corresponding service
+program.
+
+\note{\label{note,dispatch-name} As of DODS release 3.2, the dispatch
+  script is named \lit{nph-dods} and OPeNDAP will use this name for
+  all of its version 3.x releases.  Earlier releases of DODS used
+  different dispatch scripts, depending on the storage format of the
+  data.  For earlier releases, there would be a \lit{nph-nc} to handle
+  netCDF data, \lit{nph-jg} to handle JGOFS data, and so on.}
+
+In the case illustrated, the \lit{.dods} suffix indicates that this is
+a request for binary data.  Therefore, the dispatch script executes
+the \lit{dap_nc_handler} service, and forwards to it the rest of the URL,
+which includes a data object name (which may be a file or not,
+depending on the API), and possibly a \new{constraint
+expression}.\footnote{This is not shown in this illustration, but it
+  would follow a question mark in the URL, like this:
+  \lit{http://test.opendap.org/opendap/nph-dods/temp.nc.asc?temp[0:180][0:45]}.
+  For more information about constraint expressions, see \DODSquick\ 
+  or \DODSuser.}  It's up to the service program to find the data,
+read it, read and parse the constraint expression (if any), and output
+the data message.  If the service requires any ancillary data, it
+may also read an ancillary data file or two, as necessary.
+
+\figureplace{The Architecture of the OPeNDAP Server, part II.}{htbp}
+{dods-server,fig,server-design2}{installfig2.ps}{installfig2.gif}{}
+
+The standard output of the service program is redirected to the output of
+the \lit{httpd}, so the client will receive the program output as the
+reply to its request.
+
+For APIs that are designed to read data in files, such as netCDF, the
+CGI program will be executed with the working directory (also called
+the default directory) specified by the \lit{httpd} configuration.
+However, the OPeNDAP software will look for its data relative to the
+document root tree.  On the \lit{test.opendap.org} server, for
+example, the nph-dods
+CGI program is executed native to the directory
+\lit{/usr/local/share/dap-server/}, but the document root directory
+is \lit{/var/www/html/}.  The last section of the URL,
+then, specifies the file \lit{fnoc1.nc} in the directory: \subj{Data
+  files are specified relative to the document root directory.}
+
+\begin{vcode}{ib}
+/var/www/html/data/nc/
+\end{vcode}
+
+Some existing data APIs, such as JGOFS, are not designed with file
+access as their fundamental paradigm. The JGOFS system, for example,
+uses an arrangement of ``dictionaries'' that define the location and
+method of access for specified data ``objects.'' A URL addressing a
+JGOFS object may appear to represent a file, like the netCDF URL
+above. 
+
+\begin{vcode}{ib}
+http://test.opendap.org/opendap/nph-dods/station43
+\end{vcode}
+
+\indc{data dictionary!JGOFS} \indc{JGOFS!data dictionary} However, the
+identifier (\lit{station43}) after the CGI program name (\lit{nph-dods})
+represents, not a file, but an entry in the JGOFS data dictionary.
+The entry will, in turn, identify a file or a database index entry
+(possibly on yet another system) and a method to access the data
+indicated.  These are JGOFS server-specific installation issues
+covered in the installation documentation for that server.
+
+Note that the name and location of the CGI directory (\lit{opendap}), as
+well as the name and location of the working directory used by the CGI
+programs, are local configuration details of the particular web server
+in use. The location of the JGOFS data dictionary is a configuration
+issue of the JGOFS installation. That is to say these details will
+probably be different on different machines.
+
+\section{Service Programs}
+\label{dods-server,service}
+
+\indc{server!services}\indc{DAP services} \indc{services!helper
+  programs} When the server gets a DAP request, it executes the
+dispatch script, which then figures out which service program should
+be invoked.  The output from that program is what gets returned to the
+client.
+
+\subj{The service programs do the real work of the server.}
+\texorhtml{\Tableref{dods-server,tab,suffixes} contains a list
+  of}{Here is a table of} the service programs required for each of
+the services of the server.  The dispatch script is
+called \lit{nph-dods}.  (Though see note \texorhtml{on page
+  \pageref{note,dispatch-name}}{\ref{note,dispatch-name}}.)  For
+another DODS server, the names of some of the helper programs would
+have a different root than \lit{nc}.  (For example, \lit{ff}
+identifies the FreeForm server, \lit{jg} for JGOFS, and so on.)
+
+%
+% Updates to this list should also be reflected in the user guide.
+\begin{table}[htbp]
+  \caption[DODS Services, with their suffixes and helper programs\@.]%
+  {Services, with their suffixes and helper programs\@. In the OPeNDAP
+    server, different handlers are used for each supported data access
+    format, e.g. \lit{nc} for netCDF, \lit{jg} for JGOFS, and so on.}
+\label{dods-server,tab,suffixes}
+\begin{center}
+\begin{tabular}{|p{1.15in}|p{0.75in}|p{1.35in}|} \hline
+\tblhd{Service} & \tblhd{Suffix} & \tblhd{Helper Program} \\ \hline \hline
+Data Attribute & \lit{.das} & \lit{dap\_nc\_handler} \\ \hline
+Data Descriptor & \lit{.dds} & \lit{dap\_nc\_handler} \\ \hline
+DODS Data & \lit{.dods} & \lit{dap\_nc\_handler} \\ \hline
+ASCII Data & \lit{.asc} or \lit{.ascii} & \lit{dap\_asciival} \\ \hline
+Information & \lit{.info} & \lit{dap\_usage}, see
+\chapterref{sec,document-data}.
+ \\ \hline
+\ifh & \lit{.html} & \lit{dap\_www\_int} \\ \hline
+Version & \lit{.ver} & None \\ \hline
+Compression & None & \lit{deflate} \\ \hline
+Help & Anything else & None \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+The service programs are started by the dispatch script depending on
+the extension given with the URL. If the URL ends with `.das' and the
+file name in the URL ends in `.nc', then the DAS service program
+(\lit{dap_nc_handler}) is started using the \lit{-O das} argument.
+Similarly, the extension `.dds' will cause the \lit{dap_nc_handler}
+service to be run with the \lit{-O dds} argument, and so on. \subj{The
+  service program invoked, and its arguments, depends on the URL suffix.}
+
+On the client side, when using a DAP client, the user may never see
+the `.das,' `.dds,' or `.dods' URL extensions. Nor will the user
+necessarily be aware that each data URL given to the DAP client may
+produce three different requests for information. These manipulations
+happen within the DAP client software, and the user need never be
+aware of them.
+
+\note{This is only true \emph{when using a DAP client}. Programs that
+  don't use the OPeNDAP client libraries, or similar, can still be
+  clients of a DAP server. You can use Netscape to contact a DAP
+  server and get data, in which case you have unmoderated access to the
+  server and need to include the service program URL extensions.}
+
+\xname{install_A}
+\section{Choosing a Data Handler}
+
+%%%%%%%%%%%%%%%%%%%
+%
+% stopped 9/13/05 jhrg
+
+There are a variety of data format handlers available for the OPeNDAP
+data server, each designed to handle a different data storage format.
+Data handlers from OPeNDAP exist to serve data stored in the netCDF,
+HDF and HDF-EOS, and DSP storage formats (other groups have built data
+handlers for other formats). If you have data stored with one of these
+formats, the choice is quite simple: choose the one that works with
+your data.
+
+\indc{Java}\indc{Serving relational databases}\indc{Relational DBMS!Serving}
+\indc{DRDS}\indc{DBMS!Serving}\indc{JDBC}
+There is also a JDBC server, written in Java, for serving data
+stored in relational databases.  See \chapterref{server,java} for more
+information about installing that software.
+See \xlink{the DRDS Download page}
+{http://www.opendap.org/download/drds_server.html}
+for more information about the DODS Java software.
+
+\indc{ncgen}\indc{netCDF!converting your data to}
+If your data is not already stored in one of the supported formats,
+don't despair.  Some standard API formats include tools for
+translating data into that format.  For example, netCDF includes an
+application called \lit{ncgen} you can use to translate array data
+into standard netCDF files by writing a data description in the netCDF
+CDL (Common Data Language).  See the \xlink{netCDF
+  documentation}{http://www.unidata.ucar.edu/packages/netcdf/guidef/guidef-15.html#MARKER-2-3320}
+for more information about this.\footnote{A user has contributed
+  examples for this.  Go to
+  \xlink{http://seawater.tamu.edu/noppdodsgom}{http://seawater.tamu.edu/noppdodsgom} and click on ``Resources.''}
+
+If your data is not in a supported format and you don't want to
+translate it into one of those formats, there is still a way to serve
+your data.  \subj{There are two data handlers that can accommodate
+  various file formats.}  There are two other data handlers available
+that can be used to serve data that are not already in one of these
+formats.  These are the FreeForm and JGOFS servers.  It may be that
+one of these servers can be easily adapted to your uses.  The FreeForm
+handler is somewhat easier to set up, and the JGOFS handler is more
+flexible. A key difference is that the JGOFS handler can process data
+contained in several different data files.  (The FreeForm handler can,
+as well, but, being slightly less flexible, it may require the files
+to be rearranged or renamed.)
+
+\texorhtml{There's a brief comparison of the two in
+  \tableref{tab:jgofs,vs,ff}}{Here's a brief comparison of the two:}
+
+\begin{table}[h]
+  \begin{center}
+    \begin{tabular}{|p{.5in}|p{2in}|p{2in}|} \hline
+      \tblhd{Server} & \tblhd{Advantages} & \tblhd{Disadvantages} \\ \hline
+      FreeForm & 
+      Simple to set up.  Serving data in a new format requires only
+      creating a text file describing that format. Serves data in
+      Arrays or Sequences.  & 
+      Not quite as flexible as its name implies.  If the format in
+      question is too complex or too variable, the FreeForm API cannot
+      handle it.  Sequences can be served, but only flat ones.  (That
+      is, Sequences that contain other Sequences will not work.)
+      Generally, data must line up in columns.\\ \hline 
+      
+      JGOFS    & 
+      Extremely flexible.  Uses specialized access methods
+      to read data, and these methods can be extensively customized.
+      Optimized for Sequence data (relational tables), including
+      hierarchical Sequences (Sequences that contain other
+      Sequences). & 
+      Writing a
+      data access method can be complex, since it involves writing a
+      program in C or \Cpp .  Does not support Array data types. \\ \hline
+    \end{tabular}
+    \caption{Advantages and Disadvantages of the Two Flexible DODS Servers}
+    \label{tab:jgofs,vs,ff}
+  \end{center}
+\end{table}
+
+It is possible that none of these options is the right one for you, in
+which case you can use the OPeNDAP DAP library to craft a server of your
+very own.  The library is available in both \Cpp\ and Java.
+If you choose this route, contact OPeNDAP; we may be
+able to direct you to someone who has already done something like
+it.  The \DODSapi\ contains useful information about the DAP library,
+including instructions on how to construct servers and clients.
+
+\chapter{Installing the OPeNDAP Server}
+\label{dods-server,install}
+
+\indc{server!installing}\indc{installing!server} Most of the task of
+installing the OPeNDAP server consists of getting the required Web server
+installed and running.  The variety of available Web servers make this
+task beyond the scope of this guide. Proceed with the following steps
+only after the Web server itself works.  Look at
+\chapterref{server,testing} for hints on how to tell whether the
+server is working.  \subj{First, get the web server working.  Then
+  install the OPeNDAP Server.}
+
+If you want to install the DODS Relational Database Server (DRDS), to
+serve data stored in a relational DBMS, like Oracle or SQL Server, see
+\chapterref{server,java}.
+
+\section{Step by Step}
+
+\indc{server!configuration} \indc{configuration!server}
+\indc{installation!server} Here are the steps to installing the
+server's base software and data handlers (these are the components of
+the server) and data to be served. \textbf{\begin{enumerate}
+\item Install the web server.
+\item Download and install the OPeNDAP server base software.
+\item Choose one or more data handlers, download and install.
+\item Configure your data.
+\end{enumerate}}
+
+In a little more detail, here are those same steps:
+
+\begin{enumerate}
+\item Install the web server to be used.  This is not an OPeNDAP program,
+  and will have its own documentation.  If the server is already
+  installed, figure out how to run a CGI program with that server.
+  
+  \emph{Testing:} If your web server is running, you should be able to
+  request a web page from it. From a web browser, try sending a simple
+  request containing only the machine name: \lit{http://machine},
+  where \var{machine} should be replaced by the name of the computer
+  you're doing the installation on. When the simple page works, try
+  executing a CGI program. (The simplest CGI Perl program is on
+  \pageref{simple,perl}.) See
+  \chapterref{server,testing} for more ways to check if the web server
+  is working.
+
+\item Download and install the OPeNDAP server base software. It is
+  usually easiest to use the pre-compiled binary distributions. Look
+  at the \DODShome\ to get the software. See \appref{install} for more
+  information.
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% jhrg 9/21/05
+
+  \emph{Testing:} The software should all be installed in three
+  directories: 1) The Perl software in
+  \lit{/usr/local/share/dap-server}; 2) The CGI program in
+  \lit{/usr/local/share/dap-server-cgi}; and 3) The binary programs
+  \lit{dap\_usage}, \lit{dap\_asciival} and \lit{dap\_www\_int} in
+  \lit{/usr/local/bin}. If you build the software from sources you can
+  install the server software in a root that is different from
+  \lit{/usr/local}.
+
+% *** 'data handlers' should be indexed. jhrg
+
+\item Once the server software has been installed, you'll need to
+  install one or more \new{data handlers}. OPeNDAP provides data
+  handlers for NetCDF, HDF4 (and HDF-EOS), DSP, JGOFS, and FreeForm.
+  You need to download these separately and follow their installation
+  instructions.
+
+\item Next you will need to configure the server's CGI so that it can
+  find the handlers. During this step a handful of configuration
+  parameters must be set. Locate the file named \lit{dap-server.rc} in
+  \lit{/usr/local/share/dap-server-cgi}.
+  See \sectionref{install,config,server} for instructions about how to
+  configure this file.
+
+  \emph{Testing:} When the server is working, you should get a
+  response to a \emph{version} request, where you query the software for
+  its version (release) number.  To do this, enter a URL like the
+  following into a web browser:
+
+\begin{vcode}{ib}
+http://machine/cgi-bin/nph-dods/version
+\end{vcode}
+
+Remember to replace \var{machine} with the machine you're using. Also,
+the CGI directory you're using may not be called \lit{cgi-bin}. If
+you're not using a CGI directory, see the next step.
+
+\begin{itemize}
+
+\item If your server uses name conventions to identify CGI
+  programs, change the names of the dispatch script to conform with
+  the local convention: e.g. \lit{nph\_dods} to \lit{nph\_dods.cgi}.
+  The other service program names do not need to be changed.
+
+  \emph{Testing:} Try to get a version number from the server.
+  If your CGI programs are identified with a suffix like \lit{.cgi},
+  try a URL like this:
+
+\begin{vcode}{ib}
+http://machine/nph-dods.cgi/version
+\end{vcode}
+
+\item If you are using DODS release 3.5 or later, you also need to
+  make sure that the dispatch configuration file \lit{dap-server.rc} is
+  also copied into the directory with the CGI and correctly protected.  See
+  \sectionref{install,config,server} for instructions about how to
+  configure this file. Note that earlier servers (from version 3.2
+  through 3.4 used a configuration file named \lit{dods.in} or \lit{dods.rc}).
+
+  \emph{Testing:} This cannot be tested without having some data
+  installed.
+
+\end{itemize}
+
+\item See \chapterref{install,data-install} for instructions on
+  installing and testing the data to be served. 
+\end{enumerate}
+
+See \chapterref{server,testing} for more tests to make sure you've
+done each step correctly.
+
+\note{In addition to some specialized Perl modules, the OPeNDAP server
+  uses the HTML::Parser Perl module. You should have installed this
+  prior to installing the dap-server package.}
+
+The CGI configuration of a web server is dependent on the particular
+web server you use. Consult the documentation for that server for more
+information. Our observations are that for most servers, having a CGI
+directory is the default situation, and there are a couple of
+potential security holes avoided with that configuration.
+
+\subj{How to find the CGI directory.}
+To find which directory is the cgi-bin directory, you can
+look in the server's configuration file for a line like:
+
+\begin{vcode}{sib}
+ScriptAlias /cgi-bin/ /var/www/cgi-bin/
+\end{vcode}
+
+For both the NCSA and Apache servers, the option \lit{ScriptAlias}
+defines where CGI programs may reside. In this case they are in the
+directory \lit{/var/www/cgi-bin}.  URLs with \lit{cgi-bin} in their
+path will automatically refer to programs in this directory.
+
+At this point, you will be wondering if things are working yet or not.
+Again, check out \chapterref{server,testing} for a detailed set of
+tests to get you going.
+
+\section{Configure the Server}
+\label{install,config,server}
+
+Starting with version 3.5, the OPeNDAP server makes much more
+extensive use of its configuration file. The \lit{dap-server.rc}
+configuration file is used to tailor the server to your site. The file
+contains a handful of parameters plus the mappings between different
+data sources (typically files, although that doesn't have to be the
+case) and hander-programs. The format of the configuration file is:
+  
+
+\begin{vcode}{sib}
+     <parameter> <value> ... <value>
+\end{vcode}
+
+  The configuration file is line-oriented, with each parameter appearing on
+  its own line. Blank lines are ignored and the \lit{\#} character is used to
+  begin comment lines. Comments have to appear on lines by themselves.
+
+  The parameters recognized are:
+
+\begin{itemize}
+
+\item data\_root
+
+\begin{vcode}{sib}
+  data_root <path>
+\end{vcode}
+
+Define this if you do not want the server to assume data are located
+under the web server's DocumentRoot. The value \lit{<path>} should be the
+fully qualified path to the directory which you want to use as the
+root of your data tree. For example, we have a collection of netcdf,
+hdf, {\it et c.}, files that we store in directories named
+\lit{/usr/local/test_data/data/nc},
+\lit{/usr/local/test\_data/data/hdf}, {\it et c.}, and we set
+\lit{data\_root} to \lit{/usr/local/test\_data}. The value of \lit{<path>}
+should not end in a slash.
+
+\note{The OPeNDAP server's directory browsing functions do not work
+  when using the \lit{data\_root} option. They do still work when locating
+  data under DocumentRoot. Also, it's not an absolute requirement that this
+  path be a real directory or that your data are in `files.' Data can
+  reside in a relational database, for example, and in that case the base
+  software will use \lit{<path>} as a prefix to the path part of the
+  URL it receives from the client.}
+
+\item timeout
+
+\begin{vcode}{sib}
+  timeout <seconds>
+\end{vcode}
+
+This sets the OPeNDAP server timeout value, in seconds. This is
+different from the httpd timeout. OPeNDAP servers run independently of
+httpd once the initial work of httpd is complete. Setting
+\lit{timeout} ensures that your OPeNDAP server does not continue
+indefinitely if something goes wrong ({\it i.e.}, a user makes a huge
+request to a database).
+
+Default is 0 which means no time out.
+
+\item cache\_dir
+
+\begin{vcode}{sib}
+  cache_dir <directory>
+\end{vcode}
+
+When data files are stored in a compressed format such as gzip or UNIX
+compress, the OPeNDAP server first decompresses them and then serves
+the decompressed file. The files are cached as they are decompressed.
+This parameter tells the server where to put that cache. 
+
+Default: \lit{/usr/tmp}
+
+\item cache\_size
+
+\begin{vcode}{sib}
+  cache_size <size in MB>
+\end{vcode}
+
+How much space can the cached files occupy? This value is given in
+MegaBytes. When the total size of all the decompressed files exceeds
+this value, the oldest remaining file will be removed until the size
+drops below the parameter value. If you are serving large files, make
+\emph{sure} this value is at least as large as the largest file.
+
+\item maintainer
+
+\begin{vcode}{sib}
+  maintainer <email address>
+\end{vcode}
+
+The email address of the person responsible for this server. This
+email address will be included in many error messages returned by the
+server.
+
+Default: \lit{support@unidata.ucar.edu}
+
+\item curl
+
+\begin{vcode}{sib}
+  curl <path>
+\end{vcode}
+
+This parameter is used to set the path to the curl executable. The
+curl command line tool is used to dereference URLs when the server
+needs to do so. In some cases the curl executable might not be found
+by the CGI. This can be a source of considerable confusion because a
+CGI program run from a web daemon uses a very restricted PATH
+environment variable, much more restricted than a typical user's PATH.
+Thus, even if you, as the server installer have curl on your PATH,
+nph-dods may not be able to find the program unless you tell it
+exactly where to look.
+
+\item exclude
+
+\begin{vcode}{sib}
+  exclude <handler> ... <handler>
+\end{vcode}
+
+This is a list of handlers whose regular expressions should not be
+used when building the HTML form interface for this server. In
+general, this list should be empty. However, if you have a handler
+that is bound to a regular expression that is very general (such as
+\lit{.*} which will match all files), then you should list that
+handler here, enclosing the name in double quotes. See the next item
+about the 'handler' parameter. Default: No handlers are
+excluded.
+
+\item handler
+
+\begin{vcode}{sib}
+  handler <regular expression> <handler name>
+\end{vcode}
+
+The handler parameter is used to match data sources with particular
+handler programs used by the server. In a typical OPeNDAP server
+setup, the data sources are files and the regular expressions choose
+handlers based on the data file's extension. However, this need not be
+that case. The OPeNDAP server actually matches the entire pathname of
+the data source when searching for the correct handler to use.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% jhrg 9/22/2005
+
+Here are the values assigned to the \lit{handler} parameter in the
+default \lit{dap-server.rc} file:
+
+\begin{vcode}{ib}
+# Look for common file extensions. 
+handler .*\.(HDF|hdf|EOS|eos)(.Z|.gz)*$ /usr/local/bin/dap_hdf_handler%$
+handler .*\.(NC|nc|cdf|CDF)$ /usr/local/bin/dap_nc_handler %$
+handler .*\.(dat|bin)$ /usr/local/bin/dap_ff_handler %$
+handler .*\.(pvu)(.Z|.gz)*$ /usr/local/bin/dap_dsp_handler %$
+
+# For JGOFS datasets, match either the dataset name or the absence of an
+# extension. The later case is sort of risky, but if you have lots of JGOFS
+# datasets it might be appealing.
+handler .*/test$ /usr/local/bin/dap_jg_handler%$
+# handler .*/[^/]+$ /usr/local/bin/dap_jg_handler%$
+\end{vcode}
+
+Consider a URL like this:
+
+\begin{vcode}{sib}
+http://test.opendap.org/opendap/nph-dods/data/nc/fnoc1.nc
+\end{vcode}
+
+When the \lit{nph-dods} script is executed, the ``file name'' part of
+the URL is \lit{/data/nc/fnoc1.nc}. Testing this against the default
+initialization file matches the second line, which indicates that the
+\lit{dap_nc_handler} (NetCDF) data handler should be used to process
+this request. The request is then dispatched to the handler for
+processing.
+
+\note{The default configuration file used to be set up so that files without
+  extensions are handled by the JGOFS data handler. This caused some
+  problems for sites where data files did not always use common
+  extensions for data files. If you need to serve many JGOFS data
+  files, then uncomment this line of write special regular expressions
+  for the JGOFS data sources.}
+
+``Regular expressions'', advanced pattern-matching languages, are a
+powerful feature of Perl and many other computer languages. Powerful
+enough, in fact, to warrant at least one book about them (Mastering
+Regular Expressions by Jeffrey Friedl, O'Reilly, 1997). 
+
+% I cannot find this on our web page. jhrg 9/26/05
+%
+% You can find a brief tutorial to regular expressions in the OPeNDAP
+% bookshelf\texorhtml{. See the OPeNDAP documentation page at \DODShome
+%   .}{at \DODSregex}.
+
+(For a complete reference online, which is not a particularly good
+place to learn about them for the first time, see
+\xlink{http://www.perldoc.com/perl5.6/pod/perlre.html}
+{http://www.perldoc.com/perl5.6/pod/perlre.html}.)
+
+Briefly, however, the above patterns test whether a filename is of the form 
+\var{file}\lit{.}\var{ext}\lit{.}\var{comp}, where \var{comp} (if
+present) is \lit{Z} or \lit{gz}, and \var{ext} is one of several
+possible filename extensions that might indicate a specific storage
+API.
+
+If these default rules will not work for your installation, you can
+rewrite them.  For example, if all your files are HDF files, you could
+replace the default configuration file with one that looks like this:
+
+\begin{vcode}{ib}
+handler .* /usr/local/bin/dap_hdf_handler
+\end{vcode}
+
+The \lit{.*} pattern matches all possible patterns (the \lit{.}
+matches a single character and \lit{*} matches zero or more
+occurrences of the previous character or \new{metacharacter}), and
+indicates that whatever the name of the file sought, the HDF service
+programs are the ones to use.
+
+If you have a situation where all the files in a particular directory
+(whatever its extension) are to be handled by the DSP service
+programs, and all other files served are JGOFS files, try this:
+
+\begin{vcode}{ib}
+handler \/dsp_data\/.*$ /usr/local/bin/dap_dsp_handler %$
+handler .*/[^/]+$ /usr/local/bin/dap_jg_handler %$
+\end{vcode}
+
+The rules are applied in order, and the first rule with a successful
+match returns the handler that will be applied. The above set of rules
+implies that everything in the \lit{dsp\_data} directory will be
+processed with the DSP handler, and everything else will be sent to
+the JGOFS handler.
+
+\end{itemize}
+
+\section{Compression}
+
+\indc{compression}\indc{data compression} Data compression can be a
+confusing subject for people installing the OPeNDAP server. Part of
+the confusion arises because there are two entirely separate issues
+here. The first is that data may be \emph{stored} in a compressed
+format, and the second is that data may be \emph{transmitted} in a
+compressed format. These issues are completely independent of one
+another; data stored in compressed form can be transmitted in
+uncompressed form, and \emph{vice versa}.
+
+\subsection{Storing Your Data In Compressed Form}
+
+\indc{data compression!storage files}\indc{compression!storage files}
+\indc{data compression!gzip}\indc{compression!gzip}\indc{compress}
+\indc{gzip}\indc{data compression!compress}\indc{compression!compress}
+\indc{uncompress}\indc{data
+  compression!uncompress}\indc{compression!uncompress} The OPeNDAP
+server can process compressed data, even when the native API which
+should be used to read the data cannot process it. The nph-dods CGI
+program will decompress the file(s) and cache them in a temporary
+directory. If a request URL arrives for a data file ending with
+\lit{.Z} or \lit{.gz}, the dispatch script uses \lit{uncompress} or
+\lit{gzip} to produce a decompressed file in a temporary location.
+
+\subj{Create a temporary directory to hold uncompressed data.}
+If you have compressed data and need to take advantage of this
+feature, follow these steps:
+
+\begin{enumerate}
+\item Check to make sure that \lit{uncompress} or \lit{gzip} is
+  installed on your computer.
+  
+\item Create a temporary directory somewhere.  Make sure that this
+  directory is owned (or at least writable) by the \lit{httpd}
+  process.\footnote{The user is yet another configurable feature.  For
+    the Apache server, you can look for a line in the configuration
+    file specifying the user, using the keyword \lit{User}.  On my
+    machine, where \lit{httpd} runs as \lit{nobody}, it looks like
+    this: \lit{User nobody}.}
+
+\indc{cache_dir}\indc{caching data}
+\item Edit the \lit{dap-server.rc} configuration file to change the
+  value of \lit{cache\_dir} to point to the new temporary directory.
+  By default, this is \lit{/usr/tmp}.
+
+\end{enumerate}
+
+That should be enough to make your server serve compressed files.
+
+The dispatch script will keep your temporary directory from
+overflowing by occasionally deleting old files. The default maximum
+cache size is 50 megabytes. If you have more files in the directory
+than that, the script starts deleting the oldest ones first until the
+size is lower than the given limit. Edit \lit{dap-server.rc} and
+change the value of \lit{cache\_size} to the maximum size that you
+want the contents of this directory to be.
+
+\indc{bzip2}
+If you need to serve files compressed with another compression
+technique (besides \lit{gzip} or \lit{compress}), you can edit the
+\lit{DODS\_Cache.pm} perl module.
+
+First change the regular expression that marks compressed files to
+something like this:
+
+\begin{vcode}{sib}
+my $compressed_regex = "(\.gz|\.Z|\.bz2)";
+\end{vcode}
+%$
+
+Then edit the \lit{decompress\_and\_cache} function to contain a test
+for bzip2 files.  This might read like this:
+
+\begin{vcode}{sib}
+sub decompress_and_cache {
+    my $pathname = shift;
+    my $cache_dir = shift;
+
+    my $cache_entity = cache_name($pathname, $cache_dir);
+
+    if ((! -e $cache_entity) && (-e $pathname)) { 
+      if ($pathname =~ m/.*\.bz2/) {
+        my $uncomp = "bzip2 -c -d " . $pathname . " > " .  $cache_entity;
+      } else {
+        my $uncomp = "gzip -c -d " . $pathname . " > " . $cache_entity;
+      }
+        system($uncomp); 
+    }
+
+    return $cache_entity;
+}
+\end{vcode}
+
+\subsection{Enabling Transmission of Compressed Data}
+
+\indc{data compression!data transmission}\indc{compression!deflate}
+\indc{compression!data transmission}\indc{data compression!deflate}
+\indc{deflate}
+To save communication bandwidth, the OPeNDAP server can send compressed
+data to certain clients who are equipped to handle it.  When making a
+request for data, a client can signal the server that data may be
+sent in a compressed form.  If a server receives such a signal, it looks for a
+helper program called \lit{deflate}, and it runs the outgoing data
+through that program on its way back to the client.
+
+All the OPeNDAP servers can handle data compression for transmission if
+the \lit{deflate} program is installed on the \lit{\$PATH} used by the
+web server. In version 3.5 of libdap, \lit{deflate} is installed in
+\lit{\$prefix/bin} (libdap is required to run the server).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% jhrg 9/26/05
+
+\section{Security}
+
+\indc{security!server}\indc{server!security}\indc{password access}
+\indc{data security}\indc{limiting access to data}\indc{access
+  control} Many data providers ask whether the OPeNDAP server can be
+configured to limit access to a particular file or sets of files. The
+answer is that it is as flexible as the http server you use to
+implement it. Clients built using the OPeNDAP DAP2 library are capable of
+prompting the user for usernames and passwords if the http daemon
+instructs them to. Most web servers will also allow usernames and
+passwords to be embedded in the requesting URL like this:
+
+\begin{vcode}{sib}
+http://user:password@test.opendap.org/nph-dods/...
+\end{vcode}
+
+Depending on the specific web server, you can restrict access to the
+CGI programs or to the individual data files or directories.
+
+By using the web server's authorization software we are ensuring that
+the security checks used by the server have been tested by many many
+sites. In addition, WWW servers already support a very full set of
+security features and many system administrators are comfortable with,
+and confidant in, them. The tradeoff with using the web server's
+security system for our servers is that two security settings must be
+made for each group of data to be configured and more than one copy of
+the nph-dods CGI program and dap-server.rc configuration file may be
+needed even if you're serving only one type of data.
+
+Because the security features rely almost entirely on the host
+machine's WWW server, the steps required to install a secure the
+server will vary depending on the WWW server used. Thus, before
+installing a secure server, check over your WWW server's documentation
+to make sure it provides the following security features: Access
+limits to files in the document root on a per user and/or per machine
+basis, and; The ability to place CGI scripts in protected directories.
+
+There are two levels of security which the OPeNDAP server supports:
+Domain restrictions and user restrictions. In conjunction with a WWW
+server, access to the OPeNDAP server can be limited to a specific
+group of users (authenticated by password), specific machine(s) or a
+group of machines within a given domain or domains.
+
+\note{Because security features are used to protect sensitive or
+  otherwise important information, once set-up they should be tested
+  until you are comfortable that they work. You should try accessing
+  from at least one machine that is not allowed to access your data.
+  If you would like, we will help you evaluate your set-up.}
+
+It is important to distinguish securing a server from securing data.
+If data are served, then those data may also be accessible through a
+web browser. If so the data themselves need to be stored in
+directories that have limited access. If all data access will take
+place through the server this limitation can exclude all access except
+the local machine. This is the case because some the server's
+directory function requires being able to read the data through the
+local host's web server.
+
+It bears repeating: If you're serving sensitive information with the OPeNDAP
+server and those data are located under the WWW daemon's DocumentRoot, that
+information is accessible two ways: via the OPeNDAP server and through the
+WWW server. You need to make sure \emph{both} are protected.
+
+\note{With version 3.5 of the OPeNDAP server, you can use the
+  \lit{data_root} parameter in the \lit{dap-server.rc} configuration
+  file to serve data that are not accessible using your WWW server.
+  This simplifies securing the data but has the drawback that the
+  directory response is not supported by the OPeNDAP server.}
+
+\subsection{About serving both limited- and open-access data from the same server}
+
+In the past it was possible to install two or more OPeNDAP servers on a
+computer and assign different protections to each one. However, in practice
+this has proven to be very hard to configure correctly. In many cases
+where this feature was used, a secure server was setup up for one group of
+data while an open server was set up for another. It was often the case that
+all the data were accessible using the open server! Thus, if you need to
+secure some data, it is best to host all the sensitive information on one
+machine and put other data on a second machine with an open-access server. If
+you must run two or more servers from the same physical host, we suggest
+that you configure your web server to see two (or more) virtual hosts. This
+will provide the needed separation between the groups of data.
+
+\subsection{Using a secure opendap server}
+
+Using a secure sever is transparent if the server is configured to allow
+access based on hosts or domains. Give the URL to a client; the server will
+respond by answering the request if allowed or with an error message if
+access is not allowed.
+
+Accessing a server which requires password authentication is a little
+different and varies depending on the type of client being used. All OPeNDAP
+clients support passing the authentication information along with the URL. To
+do this add \lit{<username>:<password>@} before the machine name in a URL. For
+example, suppose I have a secure server set up on `test.opendap.org' and the
+user `guest' is allowed access with the password `demo'. A URL for that
+server would start out:
+
+\begin{vcode}{sib}
+    http://guest:demo@test.opendap.org/...
+\end{vcode}
+
+For example,
+
+\begin{vcode}{sib}
+    http://guest:demo@test.opendap.org/secure/nph-dods/sdata/nc/fnoc1.nc.info
+\end{vcode}
+
+will return the info on the data set fnoc1.nc from a secure server. You
+cannot access the data without including the username and password \lit{guest}
+and \lit{demo}.
+
+Some clients will pop up a dialog box and prompt for the username and
+password. Netscape, and some other web browsers, for example, will do this.
+Similarly, some DODS clients may also popup a dialog.
+
+\subsection{Configuring a server}
+
+In the following I'll use the Apache 1.3.12 server as an
+example\footnote{\ldots also tested on Apache 2.0.40, 07/25/03 jhrg}
+and describe how to install a server which limits access to a set of
+users. While this example uses the Apache server, it should be simple
+to perform the equivalent steps for any other WWW server that supports
+the set of required security features.
+
+\subsubsection{Create a directory for the server}
+
+To limit access to a  dataset to particular machine, begin by creating a
+special directory for the server. This maybe either an additional CGI bin
+directory or a directory within the web server's document root. In this
+example, I chose the latter.
+
+\begin{vcode}{sib}
+    cd /var/www/html/
+    mkdir secure
+\end{vcode}
+
+\subsubsection{Establish access limitations for that directory}
+
+Establish the access limitations for this directory. For the Apache
+server, this is done either by adding lines to the server's
+\lit{httpd.conf} file or by using a per-directory access control file.
+Note: The use of per-directory access control files is a configurable
+feature of the Apache server; look in the server's \lit{httpd.conf
+  file} for the value of the AccessFileName resource.
+
+I modified Apache's \lit{httpd.conf} file so that it contains the
+following:
+
+\begin{vcode}{sib}
+    # Only valid users can use the server in 'secure'. 7/6/2000 jhrg
+    <Directory /var/www/html/secure>
+        Options ExecCGI Indexes FollowSymLinks
+
+        Order deny,allow
+        Deny from all
+        # ALLOW SERVER (IP OF SERVER) MACHINE TO REQUEST DATA ITSELF
+        Allow from __YOUR_SERVER_HERE__ 
+        Require valid-user
+        # ALL VISITORS NEED USERNAME AND PASS BUT NOT SERVER
+        Satisfy any
+
+        AuthType Basic 
+        AuthUserFile /etc/httpd/conf/htpasswd.users 
+        AuthGroupFile /etc/httpd/conf/htpasswd.groups
+        AuthName "Secure server"
+    </Directory>
+
+    # Protect the directory used to hold the secure data.
+    <Directory /var/www/html/sdata>
+        Options Indexes
+
+        Order deny,allow
+        Deny from all
+        # ALLOW SERVER (IP OF SERVER) MACHINE TO REQUEST DATA ITSELF
+        Allow from __YOUR_SERVER_HERE__ 
+        Require valid-user
+        # ALL VISITORS NEED USERNAME AND PASS BUT NOT SERVER
+        Satisfy any
+
+        AuthType Basic 
+        AuthUserFile /etc/httpd/conf/htpasswd.users 
+        AuthGroupFile /etc/httpd/conf/htpasswd.groups
+        AuthName "Secure data"
+    </Directory>
+\end{vcode}
+
+and
+
+\begin{vcode}{sib}
+    ScriptAlias /secure/ "/var/www/html/secure/"
+\end{vcode}
+
+The first group of lines establishes the options allowed for the
+\lit{secure} directory, including that it can contain CGI programs.
+The lines following that establish that only users in the Apache
+password file can access the contents of the directory, with the
+exception that this server is allowed to access the directory without
+authentication. This last bit is important because OPeNDAP servers
+sometimes make requests to themselves (e.g., when generating the
+directory response) but don't pass on the authentication
+information.\footnote{Brock Murch \lit{<bmurch@marine.usf.edu>} worked
+  out some thorny configuration details for securing the
+  Apache/DODS/OPeNDAP combination.}
+
+The ScriptAlias line tells Apache that executable files in the
+directory are CGIs. You can also do this by renaming the
+\lit{nph-dods} script to \lit{nph-dods.cgi} and making sure
+\lit{httpd.conf} contains the line:
+
+\begin{vcode}{sib}
+    AddHandler cgi-script .cgi
+\end{vcode}
+
+The AuthType directive selects the type of authentication used. Apache 2.0
+supports 'Basic' and 'Digest' while other servers may also support
+GSS-Negotiate and NTLM. Version 3.4 onward of the DAP software supports all
+these authentication schemes, although only Basic and Digest have been
+thoroughly tested. Configuration of Apache 2.0 for Digest authentication is
+slightly different then for Basic authentication, but is explained well in
+Apache's on line documentation.
+
+\subsubsection{Copy the server into the new directory}
+
+Copy the CGI program (\lit{nph-dods}) and the server configuration
+file to the newly created directory. Note that if you're using the
+extension `.cgi' to tell Apache that \lit{nph-dods} is a CGI you must
+rename it to \lit{nph-dods.cgi}. If you forget to do that then you
+will get a Not Found (404) error from the server and debugging
+information generated by the server won't appear in Apache's
+\lit{error_log} even if it has been turned on.
+
+You are done.
+
+\subsection{Tips}
+
+Here are some tips on setting up secure servers:
+
+\begin{itemize}
+\item Using the per-directory limit files makes changing limits easier
+  since the server reads those every time it accesses the directory,
+  while changes made to the \lit{httpd.conf} file are not read until
+  the server is restarted or sent the HUP signal. However, using
+  \lit{httpd.conf} for your security configuration seems more
+  straightforward since all the information is in one place.
+
+\item If the protections are set up so that it is impossible for the
+  server host to access the data and/or the OPeNDAP server itself,
+  then an infinite loop can result. This can be frustrating to debug,
+  but if you see that accesses generate an endless series of entries
+  in the access_log file, it is likely that is the problem. Make sure
+  that you have \lit{allow from <server host name>} set for both the
+  directory that holds the OPeNDAP server and that holds the data.
+  Also make sure that the server's name is set to the full name of the
+  host.
+
+\item Configuring a secure server can be frustrating if you're testing
+  the server using a web browser that remembers passwords. You can
+  turn this feature off in some browsers. Also, the getdap tool
+  supplied with OPeNDAP's libdap (which is required to build the
+  server) can be useful to test the server since it will not remember
+  passwords between runs.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% jhrg 9/26/05
+
+\chapter{Installing Your Data}
+\label{install,data-install}
+
+After installing the server, the data to be provided must be put in
+some location where it may be served to clients. The server navigates
+a directory tree rooted in the web \subj{Now the server is installed,
+  you have to install the data.} server's \new{document root}
+directory. This is the directory (often called \lit{htdocs} or the
+\lit{DocumentRoot}) in which the web server first looks for web pages
+to serve. If you send your web server this URL:
+
+\begin{vcode}{sib}
+http://yourmachine/page.html
+\end{vcode}
+
+It will look for the file \lit{page.html} in the document root
+directory.  Again, the location of this directory depends entirely on
+the web server you use and its configuration data.  A server may also
+be enabled to follow links from the root directory tree, which means
+that you can store your data somewhere else, and make symbolic links
+to it from the root directory tree.  By default, this is disabled for
+most servers, since it can become a security problem, but it is
+relatively easy to enable it.  (The option is called
+\lit{FollowSymLinks} for Apache users.)  Further, there may be 
+other options provided by the specific server used in a particular
+installation.  In other words, there is really no way to avoid
+consulting the configuration instructions of the web server you use.
+
+\note{You can also use the server's \lit{data_root} configuration
+  parameter to tell the server where to look for data. The value of
+  \lit{data_root} is used as a prefix for the location of data. Using
+  this you can configure a server for data that cannot also accessed
+  using the web. The only drawback to serving data this way is that
+  the directory browsing functions of the OPeNDAP server will not
+  work.}
+
+As noted, the location of the data depends not only on the
+\subj{Fortunately, this is not hard.}  configuration of the Web
+server, but also on the API used to access the data requested.  For
+example, the netCDF server simply stores data in files with a pathname
+relative to the document root directory, \lit{htdocs}, while the JGOFS
+server uses its data dictionary to specify the location of its data.
+Refer to the specific installation notes for each API for more
+information about the location of the data.
+
+\section{Special Instructions for the NetCDF, HDF, and DSP handlers}
+
+To install data for the NetCDF, HDF, or DSP formats, follow these
+steps:
+
+\note{The \lit{data_root} parameter can be substituted for the web
+  server's \lit{DocumentRoot} in the discussion that follows.}
+
+\begin{enumerate}
+\item Make a data directory somewhere in the document root tree.  For
+  Apache, this is the \lit{htdocs} directory and all its
+  subdirectories.  If your web browser is configured to follow
+  symbolic links (Apache: \lit{FollowSymLinks} is enabled), you can
+  just put links to the data files or to their directories in the
+  document root tree.  Do be aware that the reason symbolic links are
+  not enabled by default is that there are potential security holes in
+  its use.  Consult your web server's documentation for more
+  information. 
+
+\item Put the data files into the data directory you've just made.
+
+
+\item Test the URL with a web browser.  See \DODSquick\ for
+  information about how to construct a URL if you know the machine name.
+
+\end{enumerate}
+
+That's all.
+
+
+\section{Special Instructions for the OPeNDAP/JGOFS Server}
+
+The JGOFS data system is a distributed, object-based data management
+system for multidisciplinary, multi-institutional programs. It
+provides the capability for all JGOFS scientists to work with the data
+without regard for the storage format or for the actual location where
+the data resides.
+
+A full description of the JGOFS data system and U.S JGOFS program can
+be found at \xlink{http://www1.whoi.edu/}{http://www1.whoi.edu/}.
+
+\subsection{About JGOFS Servers}
+
+In the JGOFS data system, scientific datasets are encapsulated in
+\new{data objects}.  Data objects are simply names defined in the
+JGOFS \new{objects} dictionary which associate specific scientific
+datasets with a computer program, known as an access \new{method},
+which can \subj{The JGOFS API reads "objects", not files.}  read them.
+This mechanism provides a single, uniform access methodology for all
+scientific datasets served by this data server, regardless of whether
+they are simple single file or complex multi-file datasets.
+
+Here is an example of a JGOFS object dictionary entry:
+
+\begin{vcode}{sib}
+test0=def(/usr/local/apache/htdocs/data/t0) 
+\end{vcode}
+
+In this example, 
+
+\begin{description}
+\item[\lit{test0}]  defines the data object name.
+\item[\lit{def}] specifies the access 'method' or program used to read
+  the scientific dataset.
+\item[\lit{/usr/local/apache/htdocs/data/t0}] specifies the scientific
+  dataset to read.
+\end{description}
+         
+The OPeNDAP/JGOFS server requires only two components of a complete JGOFS 
+installation to function, the `objects' dictionary and the access 
+`methods' used to read local data files.
+
+For those sites who wish to use the OPeNDAP/JGOFS server without
+installing a complete JGOFS data system we provide these required
+components.  For sites which currently have a JGOFS data system 
+installed the OPeNDAP/JGOFS servers can be configured to use the current 
+installation.
+ 
+\subj{Sample data is included for testing purposes.}
+Included with the OPeNDAP/JGOFS server is an example object dictionary,
+named \lit{.objects}, and a binary version of the JGOFS default
+(\lit{def}) method.  The \lit{def} method can read single or
+multi-file flat ASCII datasets.  An example ASCII dataset is also
+provided to test the server installation.
+
+\note{The OPeNDAP/JGOFS server currently \emph{requires} the object
+dictionary to be named \lit{.objects}.}
+
+The server uses two mechanisms for determining the location of the data 
+objects dictionary and access method directory:
+
+\begin{enumerate}
+\item The CGI dispatch script \lit{nph-dods} defines two shell
+  variables, \lit{JGOFS_OBJECT} and \lit{JGOFS_METHOD}.  These are
+  used by the server to determine the location of the objects
+  dictionary and access method directory.  Initially, the definition
+  of these variables is set to the OPeNDAP server's directory (i.e.,
+  the directory that contains \lit{nph-dods}).
+  
+\item If the shell variables \lit{JGOFS_OBJECT} and \lit{JGOFS_METHOD}
+  are not defined, the OPeNDAP/JGOFS server checks for the existence of a
+  \lit{jgofs} user in the \lit{/etc/passwd} file.  If a \lit{jgofs}
+  user exists it will set the \lit{JGOFS_METHOD} location to
+  \verb+~jgofs/methods/+, and the \lit{JGOFS_OBJECT} location to
+  \verb+~jgofs/objects/+.
+  
+\item If the server cannot locate the objects directory using either
+  of the above two mechanisms it will search the current working
+  directory.
+\end{enumerate}
+
+If the OPeNDAP/JGOFS server cannot resolve the filesystem paths for the
+objects dictionary or methods directory using any of these mechanisms
+it will report an error to the client and exit.
+
+\note[Tip]{If you have an existing \lit{jgofs} user but would like to
+  use a different objects dictionary for the OPeNDAP server, then
+  specifying the \lit{JGOFS_OBJECT} and \lit{JGOFS_METHOD} variables
+  in the \lit{nph-dods} script will override your existing JGOFS setup.}
+
+\tbd{usage-jg?}
+
+% Once you have installed the DODS service programs (the helper programs
+% that belong in the CGI directory), you must insure that the OPeNDAP/JGOFS
+% server can locate the objects dictionary and methods directory.
+
+To use the \lit{.objects} dictionary and \lit{def} access method
+supplied with the OPeNDAP/JGOFS server, edit the \lit{nph-dods}
+script. In the \lit{nph-dods} script, update the lines specifying the
+\lit{JGOFS_OBJECT} and \lit{JGOFS_METHOD} variables. These variables
+must contain the directory name containing the \lit{.objects}
+dictionary and \lit{def} access method. Don't forget to remove the
+comment specifiers at the beginning of these lines.
+
+\note[Tip]{Though not required, copying these two files to the cgi-bin
+  location will keep all the OPeNDAP/JGOFS files in one convenient
+  location.}
+
+\subj{The httpd must have permissions to access the dictionary.} To
+make data accessible via the server, the entries in the objects
+dictionary must define an object name, and associate that name with an
+access method and a dataset to serve. Datasets served as JGOFS objects
+can be located anywhere within your computer's filesystem. However,
+the user and group used to run the WWW daemon must have permission to
+read these files.
+
+\note[Another tip]{To find out which user/group httpd is running as,
+     look in the \lit{httpd.conf} file for lines like:
+
+     \lit{User nobody}
+
+     \lit{Group nobody}
+}
+
+To test your server installation using the provided dictionary, and
+test data, edit the \lit{.objects} dictionary so that the \lit{test0}
+object points to the files located in the
+\lit{\$prefix/share/dap-server/jgofs_data}
+directory.\footnote{`\$prefix' is `/usr/local/' unless you built the
+  server from source code and specified a different root directory for
+  its installation.} You are free to move these files to any location
+on your computer so long as the WWW daemon has permission to read
+these files, and the objects dictionary points to their location.
+
+Using the supplied test datasets, try issuing the following URL:
+
+\begin{vcode}{sib}
+http://yourmachine/cgi-bin/nph-dods/test0.dds
+\end{vcode}
+
+You will see something like this:
+
+\begin{vcode}{sib}
+Dataset {
+    Sequence {
+        String leg;
+        String year;
+        String month;
+        Sequence {
+            String station;
+            String lat;
+            String lon;
+            Sequence {
+                String press;
+                String temp;
+                String sal;
+                String o2;
+                String sigth;
+            } Level_2;
+        } Level_1;
+    } Level_0;
+} test0;
+\end{vcode}
+
+You can go further and ask for some data:
+
+\begin{vcode}{sib}
+http://yourmachine/cgi-bin/nph-dods/test0.asc  
+\end{vcode}
+
+You should see a comma-separated list of data values.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% jhrg 9/27/05
+
+\subsection{Attribute Data for OPeNDAP/JGOFS}
+\label{jgofs,das}
+
+The JGOFS data access API does not support a wide variety of attribute
+data. The OPeNDAP server will \subj{You may need to add ancillary
+  attribute data for a JGOFS install.} look for a file that contains 
+\new{ancillary data} file named \var{object}\lit{.das}, in the same
+directory which contains the JGOFS methods (i.e., the directory
+referenced by \$JGOFS_METHODS).
+
+\note{In the past the server looked in the same directory as the
+  data.}
+
+For example, suppose that you have installed the OPeNDAP/JGOFS server, as
+described above, and a partial listing of the data objects dictionary
+contained the following definitions:
+
+\begin{vcode}{sib}
+test0=def(/home/httpd/htdocs/data/test0.data)
+s87_xbt=def(/home/httpd/htdocs/data/xbt.catalog)
+\end{vcode}
+
+To find attribute data for the JGOFS object `test0', the server will
+search for the file: 
+
+\begin{vcode}{sib}
+$JGOFS_METHODS/test0.das
+\end{vcode}
+%$
+
+The file itself should simply be a text version of the DAS you wish
+the server to supply to clients.  For example:
+
+\begin{vcode}{sib}
+Attributes {
+    leg {
+       String Description "The number of the voyage leg.";
+    }
+    year {
+       String Range "Data between 1982 and 1992";
+    }
+}  
+\end{vcode}
+
+\subsection{Data Types for OPeNDAP/JGOFS Data}
+
+The JGOFS data access system returns string data when using the
+default (\lit{def}) method. That is, all data is returned to the
+client as character strings. The OPeNDAP/JGOFS server supports a
+variety of other data \subj{The OPeNDAP server allows JGOFS to support
+  new data types.} types, allowing the data provider (i.e., you) to
+specify the variable type to use when returning data to the remote
+client. To accomplish this, the server will look for an ancillary DAS
+file (described in
+\sectionref{jgofs,das}) for the object, and search that file for
+attribute containers for each variable.  If the variable's container
+exists, it will then look for the \lit{DODS_Type}, and
+\lit{missing_value} attributes in that container.
+
+If \lit{DODS_Type} exists it will set the output type of the variable.
+If the \lit{missing_value} attribute is set, it well replace any
+\lit{nd}, or missing data values in the output stream for that
+variable to the value specified in the \lit{missing_value} attribute.
+If the \lit{missing_value} attribute is not specified, the server will
+set the missing value field to the largest value possible for
+specified type. The server assumes that the data provider knows the
+proper data type to use to contain the full range of possible data
+values for the object.  If the JGOFS variable values cannot be
+converted to the specified data type, then a \lit{missing_value} value
+will be returned.
+
+Suppose that you have installed the OPeNDAP/JGOFS server, as described
+above, and a partial listing of the data objects dictionary contained
+the following definitions:
+
+\begin{vcode}{sib}
+test0=def(/home/httpd/htdocs/data/test0.data)  
+\end{vcode}
+
+The ancillary DAS file for this dataset could contain these new attributes:
+
+\begin{vcode}{sib}
+Attributes {
+    leg {
+        String DODS_Type "Int32";
+        Int32 missing_value -99;
+    }
+    press {
+        String DODS_Type "Float32"; 
+        Float32 missing_value -1.99.;
+    }
+    temp {
+        String DODS_Type "Float64";
+    }
+}
+\end{vcode}
+
+The server will use the values specified in the \lit{DODS_Type}
+attribute for any variable container provided, to define the output
+variable type. In this example, the variable named \lit{leg} will be
+returned as a 32-bit integer (Int32), with missing values set to -99.
+Similarly, variable \lit{press} will be returned as a 32-bit floating
+point number, with missing values set to -1.99. The variable
+\lit{temp} will be returned as a 64-bit floating point number, but
+missing values will be returned as the largest possible 64-bit
+floating point number (1.797693e+308).
+
+\subsection{Limiting Access to a OPeNDAP/JGOFS Server}
+
+Generally speaking, it is straightforward to configure OPeNDAP servers
+with limited access. \subj{JGOFS offers new opportunities for limiting
+  data access.} However, the data dictionary structure of the JGOFS
+data access API provides an additional way to differentiate between public
+and private datasets. To do this, you would maintain different data
+object dictionaries which encapsulate different scientific datasets.
+One dictionary would define data objects for general public access,
+and other dictionaries could define data objects for specific user
+communities, where access is restricted.
+     
+To accomplish this the site would maintain different versions of the
+\lit{nph-dods} dispatch script. For example, using \lit{nph-dods} for
+public access, this file would set the \lit{JGOFS_OBJECT} variable to
+the public-access dictionary, and another dispatch script, say
+\lit{nph-dods-globec} would set the \lit{JGOFS_OBJECT} variable to a
+restricted-access dictionary. The WWW daemon is then configured to
+permit general access to \lit{nph-dods} and restricted access to
+\lit{nph-dods-globec}.
+
+\section{Special Instructions for the FreeForm Server}
+
+The OPeNDAP FreeForm data handler can serve data stored in a wide variety of
+formats.  To read data, it uses a \new{format file} that describes the
+structure of the data file to be read.  Armed with a knowledge of the
+file structure, the server can read a data file, and send it along to
+the client.
+
+The FreeForm server has its own documentation: see \DODSffbook .  You
+will find a complete description of the server, as well as
+instructions on how to write a format file for your data.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% jhrg 9/27/05
+
+\xname{install_C}
+\chapter{Installing the OPeNDAP Relational Database Server}
+\label{server,java}
+
+\indc{Java}\indc{Serving relational databases}\indc{Relational DBMS!Serving}
+\indc{DRDS}\indc{DBMS!Serving}\indc{\ind{JDBC}}\indc{Oracle}\indc{SQL}
+\indc{mySQL}
+The OPeNDAP Relational Database Server (DRDS) allows data managers to
+serve data stored in relational DBMS systems, such as Oracle, SQL
+Server, or mySQL.  The DRDS is written in Java, and uses the Java
+Database Connectivity API (JDBC) to connect with the DBMS.
+
+\indc{DRDS!limitations}\indc{limitations!DRDS}\indc{views!DBMS}
+\indc{joins!DBMS table}\indc{DBMS!table joins}
+As of version 1.1, the DRDS cannot issue table join commands.  This
+means it cannot serve multiple tables connected by index numbers.  If
+your DBMS supports views, you can use these to allow users to query
+multiple tables.  If your DBMS does not support views, you need to put
+your data into a single table to use DRDS.
+
+Here is a brief description of how to set up the DRDS.  These instructions
+are for DRDS version 1.1 and later.
+
+\subj{This Java program requires some software already installed. Like Java.}
+There are a certain number of prerequisites.  The variety of
+installations and software make it impossible to describe here how to
+install these things and figure out the relevant parameters.
+Nonetheless, they must be installed.  Though we can't offer
+instruction, we can at least offer a checklist.  Here is a list of the
+software that must be installed, and the parameters you must determine:
+
+\indc{DRDS!installation requirements}\indc{installation requirements!DRDS}
+
+\begin{enumerate}
+\item Java.  You must have at least Java version 1.4.\footnote{We have
+    reports that our Java DAP libraries work with versions as old as
+    1.2. jhrg 10/13/05.}
+\item Data in a database that supports Java Database Connectivity
+  (JDBC).  If your data is in multiple tables, you will need to
+  prepare a view of the data to be served.
+\item A web server that can execute servlets.  DRDS has been
+  extensively tested with the
+  \xlink{Tomcat}{http://jakarta.apache.org} servlet engine, which can
+  be run either as a module to Apache, or by itself.\indc{Tomcat!Java
+    servlet engine}
+\item The JDBC client library (also called the ``driver'') for your
+  DBMS.  This is specific to the kind of DBMS.  That is, an Oracle
+  JDBC driver won't necessarily work with a MySQL DBMS.
+\item You must know the name of the driver.  This is a string of
+  characters identifying the particular JDBC driver in use.  For
+  Oracle, it reads something like this: \lit{oracle.jdbc.driver.OracleDriver}.
+\item Your DBMS must have a user with enough privilege to read data
+  from the network.  The DRDS is a read-only application, and cannot
+  issue commands that will try to change the data.
+\item You must know the ``Connection URL'' that will be used to
+  contact your DBMS.  This is a long and awkward-looking string that
+  identifies the machine, the driver, the port, and some other
+  information used by the JDBC driver to contact your DBMS.  For a
+  recent Oracle installation, the Connection URL looked like this:
+  \indc{connection URL!JDBC}\indc{URL!JDBC connection}\indc{JDBC!connection URL}
+
+\begin{vcode}{ib}
+jdbc:oracle:thin:@dods.org:1521:orcl    
+\end{vcode}
+
+  Figuring out the Connection URL will probably be the most
+  challenging part of installing DRDS.  It's not a great deal of help
+  to say so, but we're hoping to make up in sympathy what we cannot
+  offer in concrete assistance.\indc{sympathy!ours}
+
+\end{enumerate}
+
+After you've checked off the items in this list, download the DRDS
+distribution from the \DODShome or the \DODSjava.  For a basic
+installation, you want the file called \lit{dods.war}.  To install the
+server, put this entire file into the ``webapps'' directory of your
+servlet engine (e.g. Tomcat).  When you restart the servlet engine, it
+will unpack the archive into the directory \lit{webapps/dods}.
+
+To configure the servlets, you'll need to edit the file
+\lit{webapps/dods/WEB-INF/web.xml}.   This is described in the next
+two sections.  After you finish editing the configuration file,
+restart the servlet engine again, and the server should be running.
+\indc{web.xml}
+
+\section{Test Server}
+
+\indc{DTS!Java test server}\indc{test server!Java}\indc{configuring
+  DRDS}\indc{DRDS!configuring} When installing a server, it's useful
+to isolate the steps so you're not trying to tune several parameters
+at the same time. To assist here, the DRDS comes with a test server
+that invents data to return to a client requesting data. You can use
+it to test your servlet engine and the servlet installation, without
+taxing the JDBC drivers or your DBMS. \subj{Use the test server to
+  test your installation}
+
+
+Edit the file \lit{webapps/dods/WEB-INF/web.xml}.  In the
+\lit{ContextManager} element, add this text:
+
+\begin{vcode}{ib}
+<Context path="/dods"
+    docBase="webapps/dods"
+    crossContext="false"
+    debug="0"
+    reloadable="true" >
+</Context>
+\end{vcode}                                  
+
+\indc{servlet declaration}\indc{declaration!servlet}
+In the \lit{web-app} section, you'll want a servlet declaration like
+the following:
+
+\begin{vcode}{sib}
+<!-- DODS test server (DTS) setup -->
+<servlet>
+    <servlet-name>
+        dts
+    </servlet-name>
+    <servlet-class>
+        dods.servers.test.dts
+    </servlet-class>
+    <init-param>
+        <param-name>iniFilePath</param-name>
+        <param-value>/home/user/dodsServer/dts</param-value>
+    </init-param>
+    <init-param>
+        <param-name>iniFileName</param-name>
+        <param-value>dods.ini</param-value>
+    </init-param>
+</servlet>
+<servlet-mapping>
+    <servlet-name>dts</servlet-name>
+    <url-pattern>/dts</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+    <servlet-name>dts</servlet-name>
+    <url-pattern>/dts/*</url-pattern>
+</servlet-mapping>
+<!-- End - DODS test server (DTS) setup -->
+\end{vcode}
+
+The servlet engine is now configured with information that will allow
+it to run the DTS servlet. Now we need to configure the DTS servlet
+itself. The \lit{web.xml} file indicates a file containing
+initialization information for the DTS servlet. In the above, we've
+called it \lit{dods.ini} (Look at the \lit{init-param} elements named
+\lit{iniFilePath} and \lit{iniFileName} parameters). For the test
+server, we can use the following for the text of this file:
+\indc{dods.ini}\indc{DTS configuration file}\indc{configuration
+  file!DTS}
+
+\begin{vcode}{sib}
+[Server]
+info_dir      = /home/user/dodsServer/dts/info/
+dds_cache_dir = /home/user/dodsServer/dts/dds/
+das_cache_dir = /home/user/dodsServer/dts/das/
+\end{vcode}
+
+\indc{DDS cache!DTS}\indc{DTS!DDS cache}
+\indc{DAS cache!DTS}\indc{DTS!DDS cache}
+These declarations tell the test server where to find the DDS and DAS
+files necessary for serving data.
+
+\subj{Describe the imaginary datasets with the DDS and DAS.}
+For each dataset you want to test, you will need to describe the
+dataset in terms of the DDS, DAS, and ``info'' responses you would get
+from the DODS dataset.  These are text files containing data about the
+data to be served.  The \DODSuser\ has more information about each
+of these data structures.  This will require the creation of two files
+with the same name.  One should contain the DDS information and one
+the DAS.  (You can ignore the \lit{info} data for now.)
+
+\indc{DDS!DRDS sample}
+Here's a sample DDS:
+
+\begin{vcode}{ib}
+Dataset {
+  Sequence {
+    String dou;
+    Float64 mcd_id;
+    String month_id;
+    String ship;
+    String cruiseid;
+    UInt32 year_id;
+    String crdate_begin;
+    String crdate_end;
+  } CRUISES;
+} GLOBEC;
+\end{vcode}
+
+Here's a DAS that can go with this DDS:
+\indc{DAS!DRDS sample}
+
+\begin{vcode}{ib}
+Attributes {
+  CRUISES {
+    dou {
+    }
+    mcd_id {
+      String long_name "MCD_ID";
+    }
+    month_id {
+    }
+    ship {
+    }
+    cruiseid {
+      String long_name "CRUISEID";
+    }
+    year_id {
+    }
+    crdate_begin {
+    }
+    crdate_end {
+    }
+  }
+}
+\end{vcode}
+
+Note that according to the DAP2 RFC, every variable in a DDS must have
+a corresponding container in the DAS, even if that container is empty.
+
+Put these files in the directories indicated by the \lit{dds\_cache\_dir}
+and \lit{das\_cache\_dir} lines in the \lit{dods.ini} file.  Give them
+the same name, say \lit{RALPH}, and you're
+ready to test the server.  Restart the servlet to read the
+configuration files, and try a URL like this in a web browser:
+
+\begin{vcode}{sib}
+http://localhost:8080/dods/dts
+\end{vcode}
+
+The machine and port name are specific to the servlet engine you are
+using.  The above is the default if you're using Tomcat as a
+standalone server.  The ``dods'' in the URL is from the subdirectory
+of the \lit{webapps} directory, and the ``dts'' is from the
+\lit{servlet-mapping} section of the \lit{web.xml} file.  This URL
+should bring up a list of datasets you can select from, which should
+include your fake dataset ``RALPH.''
+
+\section{Serve Real Data}
+\label{server,drds,real-data}
+
+To install the real data in your servlet engine, you will have to
+complete the installation of JDBC, make sure your DBMS is correctly
+configured, and reconfigure the DRDS to use the JDBC library to find
+your data.  Before starting this part, make sure that the JDBC drivers
+are properly installed.
+
+\subj{Now that the test server works, attach the DRDS to real data.}
+\indc{web.xml}\indc{servlet!configuration file}\indc{configuration file!servlet}
+To begin, edit the \lit{web.xml} file to include the real DRDS
+information.  Here's an example:
+
+\begin{vcode}{sib}
+<!-- DODS SQL server (DRDS) setup -->
+<servlet>
+    <servlet-name>
+        drds
+    </servlet-name>
+    <servlet-class>
+        dods.servers.sql.drds
+    </servlet-class>
+    <init-param>
+        <param-name>iniFilePath</param-name>
+        <param-value>/home/user/dodsServer/drds</param-value>
+    </init-param>
+    <init-param>
+        <param-name>iniFileName</param-name>
+        <param-value>dods.ini</param-value>
+    </init-param>
+</servlet>
+<servlet-mapping>
+    <servlet-name>drds</servlet-name>
+    <url-pattern>/drds</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+    <servlet-name>drds</servlet-name>
+    <url-pattern>/drds/*</url-pattern>
+</servlet-mapping>
+<!-- End - DODS SQL server (DRDS) setup -->
+\end{vcode}
+
+You can use the same initialization file as for the test server, if
+you add a section to it containing JDBC information, including the
+JDBC driver name, the Connection URL, and the username and password
+for the DBMS. \indc{connection URL!DRDS}\indc{DRDS!connection URL}
+\indc{configuration file!DRDS}\indc{DRDS!configuration file}
+
+\label{server,dodsini,example}
+\begin{vcode}{sib}
+[JDBC]
+Driver            = oracle.jdbc.driver.OracleDriver
+ConnectionURL     = **your-jdbc-connection-url**
+username          = **username**
+password          = **password**
+MaxResponseLength = 300
+
+[Server]
+info_dir      = /home/user/dodsServer/drds/info/
+dds_cache_dir = /home/user/dodsServer/drds/dds/
+das_cache_dir = /home/user/dodsServer/drds/das/
+\end{vcode}
+
+\subsection{Configure the Table Data Types}
+
+Each database table (including table ``views'') you wish to serve must
+be described with a DDS and DAS.  Optionally, you may also include
+an ``info'' message to provide information to users about the source
+and quality of the data provided, as well as restrictions on its use.
+These structures are contained in text files that must be tailored to
+each table to be served.
+\indc{data types!conversion}\indc{conversion!data types}
+\indc{DRDS!data types}\indc{DRDS!data types}
+
+Here is an example using a table called ``b31'' that is defined like
+this (using Oracle):
+
+\begin{center}
+\begin{tabular}[c]{lll}\\
+\tblhd{Name} & \tblhd{Null?} & \tblhd{Type} \\ \hline
+\lit{ID} &     \lit{NOT NULL} & \lit{NUMBER} \\
+\lit{CLASS} &  \lit{NOT NULL} & \lit{CHAR(1)} \\
+\lit{TEXT} &   \lit{NOT NULL} & \lit{VARCHAR(270)} \\
+\end{tabular}
+\end{center}
+
+\subj{Determine the DAP data types that most closely match yours.}
+First, determine the DAP data types that correspond with the JDBC
+data types (see the data type mapping in
+\tableref{tab,jdbc-mapping}). These mappings are used to
+create a DDS.  In the cache directories defined in the DRDS
+\lit{dods.ini} file, create the files \lit{dds/b31} (see the example
+DDS below), \lit{das/b31} (see the example DAS below), and
+\lit{info/b31} (if desired).
+
+
+\begin{table}[htbp]
+  \begin{center}
+    \begin{tabular}[c]{ll} \\
+      \tblhd{JDBC Data Type} & \tblhd{DAP2 Data Type} \\ \hline
+      \lit{TINYINT} &       \lit{Byte} \\
+      \lit{SMALLINT} &      \lit{Int16} \\
+      \lit{INTEGER} &       \lit{Int32} \\
+      \lit{BIGINT} &        No sensible mapping.  Use \lit{Int32}. \\
+      \lit{REAL} &          \lit{Float32} \\
+      \lit{FLOAT} &         \lit{Float64} \\
+      \lit{DOUBLE} &        \lit{Float64} \\
+      \lit{DECIMAL} &       No sensible mapping.  Use \lit{Float64} \\
+     \lit{NUMERIC} &        No sensible mapping.  Use \lit{Float64} \\
+     \lit{BIT} &            \lit{Boolean} \\
+     \lit{CHAR} &           \lit{String} \\
+     \lit{VARCHAR} &        \lit{String} \\
+     \lit{LONGVARCHAR} &    \lit{Array}(of bytes) \\
+     \lit{BINARY} &         \lit{Array}(of bytes) \\
+     \lit{VARBINARY} &      \lit{Array}(of bytes) \\
+     \lit{LONGVARBINARY} &  \lit{Array}(of bytes) \\
+     \lit{DATE} &           \lit{String} \\
+     \lit{TIME} &           \lit{String} \\
+     \lit{TIMESTAMP} &      \lit{String} \\
+    \end{tabular}
+    \caption{Mapping from JDBC Data Types to DAP2 Data Types}
+    \label{tab,jdbc-mapping}
+  \end{center}
+\end{table}
+
+\note{The data types described in \tableref{tab,jdbc-mapping} are only
+  the primitive data types (except for Array). DAP2 supports more
+  sophisticated data types: Grids, Arrays, Structures, and Sequences,
+  among others For information about all these, refer to the
+  \DODSuser.}
+
+\subsubsection{Make a DDS}
+
+\indc{DDS!making for DRDS}\indc{DRDS!making a DDS}
+\indc{DBMS!describing your data}\indc{table structure!DBMS}
+\indc{DBMS!table structure}
+In a file named for your table, in the directory nominated by the
+\lit{dds\_cache\_dir} directive in the \lit{dods.ini} file (see
+\pageref{server,dodsini,example}), put a DDS for your table.  This
+must contains declarations for each of the data types you expect a
+user to ask for (or select over).  The fields you don't list are
+effectively invisible to the user of the DRDS.  Use
+\tableref{tab,jdbc-mapping} to determine the data types that
+most closely correspond to the data in your tables.
+
+\subj{Describe the structure of your dataset with the DDS.}
+The data served from a DRDS server is always enclosed in a DAP2 data
+type called a ``Sequence.''  Each instance of a Sequence corresponds
+to one row of a relational table.  In effect, the DDS declares the
+data types and arrangement of the table columns.  For more information
+about what the DDS is, see \DODSuser.   There is also a very cursory
+introduction to these structures in \DODSquick.
+
+\note{When writing your DDS, be sure the name of the top-level
+  sequence matches the database table name. It is the sequence name,
+  rather than the dataset name, that is used in the SQL statement that
+  will be submitted to your DBMS.}
+
+% \note[From Nathan:]{In fact, in the case of MS-SQL Server the data set
+%   name needs to be something like the db_owner.db_name and the
+%   sequence name needs to be the table_name (from the db) in order for
+%   the ting to work. In general the sequence name must be the same as
+%   the table/view that the data is to be extracted from. [I'm not ure
+%   how these are different\ldots jhrg 10/12/05]}
+
+For our example server, we would create a file called ``b31,'' and put
+it in the \lit{dds\_cache\_dir}.  The file contents would look like
+this: 
+
+\begin{vcode}{ib}
+Dataset {
+  Sequence {
+    Int16 id;
+    String class;
+    String text;
+  } b31;  # Sequence name
+} b31;    # Dataset name
+\end{vcode}
+ 
+\subsubsection{Make a DAS}
+
+\indc{DAS!making for DRDS}\indc{DRDS!making a DAS}
+\indc{DBMS!describing your variables}\indc{data attributes!DBMS}
+\indc{DBMS!data attributes}
+\subj{Provide details about each variable with the DAS.}
+Making a DAS is precisely comparable to the DDS.  Make a file called
+``b31,'' and put it in the \lit{das\_cache\_dir}.  Here's the DAS for
+our example.
+
+\begin{vcode}{ib}
+Attributes {
+  b31 {
+    id {
+      String long_name "Id";
+    }
+    class {
+      String long_name "class";
+    }
+    text {
+      String long_name "text";
+    }
+  }
+}
+\end{vcode}                  
+
+\subsubsection{Make an Info File}
+
+\indc{info files!DRDS}\indc{DRDS!info files}\indc{documenting your
+  data}\indc{user friendliness}\indc{friendliness!user}\indc{HTML!data
+  documentation}\indc{data documentation!HTML}
+\subj{Info files can make your data more useful to users.}
+This is entirely optional, but it can be helpful to users who want to
+know more about your data.  Create a file with HTML in it
+(without the HTML or BODY tags), and put it in the
+\lit{info\_cache\_dir} directory with the same name as the DDS and DAS
+files, it will be served to the user when they make an info request.
+See \DODSquick\ for information about the contents of the info
+response. 
+
+
+\subsubsection{Done}
+\label{server,drds,done}
+
+\indc{URL!making for DRDS data}\indc{DRDS!URL for
+  data}\indc{testing!DRDS}\indc{DRDS!testing} 
+You should now be done installing the DRDS.  The URL for this server
+should be the same as the URL for the test server, using the ``drds''
+directory instead of ``dts,'' per the \lit{servlet-mapping} direction
+in the \lit{web.xml} file.  (See \sectionref{server,drds,real-data}.)
+This should bring up a list of datasets you can select from.
+
+ 
+\chapter{Constructing the URL}
+
+After a dataset has been installed, and the handler programs installed,
+you need to know what its address is.  If you've tested the web server
+installation as in \chapterref{dods-server,install}, you know the
+beginning of the URLs that will point to data at your site.
+
+(If you're using the DRDS Java server, see \sectionref{server,drds,done}.)
+
+\subj{How do you address the data you just installed?}
+Suppose your web server's document root is at:
+
+\begin{vcode}{sib}
+/var/www/html/
+\end{vcode}
+
+And you are serving netCDF data that you've stored at:
+
+\begin{vcode}{sib}
+/var/www/html/datasets/atlantic/cooldata.nc
+\end{vcode}
+
+Following the test URL in \chapterref{dods-server,install}, this would
+be the URL to use in a client.
+
+\begin{vcode}{sib}
+http://yourmachine/cgi-bin/nph-dods/datasets/atlantic/cooldata.nc
+\end{vcode}
+
+Note that this URL will work for a DAP client, but not for a standard
+web browser. If you want to use a standard web browser to test your
+installation, read on, and also take a look at \DODSquick . See note
+\texorhtml{on page
+  \pageref{note,dispatch-name}}{\ref{note,dispatch-name}}.
+
+
+\section{Constructing a OPeNDAP/JGOFS URL}
+
+Suppose that you have installed the OPeNDAP/JGOFS handler, as described
+above, on the machine \lit{test.opendap.org}.  And a partial listing
+of the the data objects dictionary contained the following
+definitions:
+\subj{The situation is slightly different for JGOFS data.}
+
+\begin{vcode}{sib} 
+test0=def(/var/www/html/data/test0.data)
+s87_xbt=def(/var/www/html/data/xbt.catalog)
+s87_ctd=def(/var/www/html/data/ctd.catalog)
+htf=autoedges(/fronts/hatteras-to-florida/edges)
+htn=autoedges(/fronts/hatteras-to-nova-scotia/edges)
+glk=autoedges(/fronts/great-lakes/edges)
+\end{vcode}
+
+A URL that references the data object 's87_xbt' would look like:
+  
+\begin{vcode}{sib}
+http://test.opendap.org/cgi-bin/nph-dods/s87_xbt  
+\end{vcode}
+
+\chapter{Testing the Installation}
+\label{server,testing}
+
+\indc{server!testing}\indc{testing a DODS server} It is possible to
+test the server to see whether an installation has been properly done.
+The easiest way to test the installation is with a simple Web client
+like Netscape. (A command-line web client called \lit{\ind{getdap}} is
+provided with \lit{libdap} which can retrieve text from Web servers,
+and print it on standard output. Look for it in the
+\lit{/usr/local/bin} directory. If you try it out on a couple of URLs
+you are familiar with, you'll quickly see how it works.) \subj{Check
+  out the Quick Start Guide for information about forming DAP URLs.}
+
+You can test the web server installation first, and when you are sure
+the server is working well, test the OPeNDAP server.
+
+\section{Testing the Web Server}
+
+To begin, confirm that the web server works properly by simply sending a
+URL for a simple web page, or without a file at all:
+
+\begin{vcode}{sib}
+http://yourmachine
+\end{vcode}
+
+If you don't get anything with this, examine the document root
+directory (\lit{htdocs}), and make a request for a file in that
+directory:
+
+\begin{vcode}{sib}
+http://yourmachine/somefile.html
+\end{vcode}
+
+Debugging these early steps is essential to getting an OPeNDAP server
+to work, but troubleshooting any problems you have with these steps is
+an issue specific to the web server you are using.
+
+Once you have a web server that can return a web page, you should
+exercise the CGI configuration.  Here is the simplest possible CGI
+program: \label{simple,perl}
+
+\begin{vcode}{sib}
+#!/usr/bin/perl
+print "Content-type: text/html\n\n";
+print "Hello World!\n\n";
+\end{vcode}
+
+Put this text in a file, and try to execute it from the command line.
+You may have to edit the first line in case your copy of Perl isn't
+stored in the \lit{/usr/bin} directory. Don't forget to make the file
+executable. (Use the \lit{chmod} command.)
+
+When you can execute this from the command line, put it into the CGI
+directory (and make sure that the permissions will allow the
+\lit{httpd} to execute it), and try to execute it with a URL like
+this:
+
+\begin{vcode}{sib}
+http://yourmachine/cgi-bin/test-cgi
+\end{vcode}
+
+If you are configuring your site to use suffixes instead of a
+directory to identify CGI files, name it accordingly:
+
+\begin{vcode}{sib}
+http://yourmachine/test.cgi
+\end{vcode}
+
+Entering one of these URLs in a web server should cause the ``Hello,
+World!'' text to appear in the web browser window.  If not, check the
+permissions of the CGI program, then consult the documentation for the
+web server.
+
+If everything works so far, it's time to move on to testing the
+OPeNDAP server installation.  
+
+\section{Testing the OPeNDAP Server}
+
+You can run the handler programs locally, that is, without going over
+the Internet.  Sometimes this is the simplest way to make sure that
+everything is running.  
+
+\begin{vcode}{ib}
+./dap_nc_handler -o dds  datafile.nc
+\end{vcode}
+
+The program should print the dataset's DDS on standard output. Use the
+\lit{-h} option to see the list of options the handlers accept.
+
+The simplest remote test is simply to ask for the version of
+the server, sending a URL like this:
+
+\begin{vcode}{sib}
+http://yourmachine/cgi-bin/nph-dods/version
+\end{vcode}
+
+The server will respond to this URL with some text containing release
+numbers. If you enter this URL into a standard web browser you're
+doing fine if you see a message like this:
+
+\begin{vcode}{sib}
+Core version: DODS/3.2.5
+Server version: nc/3.2.2
+\end{vcode}
+
+The dispatch script can respond to a number of requests without the
+assistance of its helper programs, or the existence of any data.
+Besides the version request, you can also ask for the help and info
+messages:
+
+\begin{vcode}{ib}
+> getdap http://test.opendap.org/opendap/nph-dods/data/nc/test.nc.ver
+> getdap http://test.opendap.org/opendap/nph-dods/data/nc/test.nc.info
+> getdap http://test.opendap.org/opendap//nph-dods/data/nc/test.nc.help
+\end{vcode}
+
+Now we need to test the requests that use the handler programs, such
+as \lit{dap_nc_handler}. These programs compose their output by
+looking at data files, so testing these requires data to be in place.
+
+To return the data attribute structure of a dataset, use a URL such as
+the following:
+
+\begin{vcode}{ib}
+> getdap http://test.opendap.org/opendap/nph-dods/data/nc/test.nc.das
+\end{vcode}
+
+The \lit{getdap} program knows about the DAP protocol, so you can
+also omit the \lit{.das} suffix, and use the \lit{-a} option to the
+\lit{geturl} command.  This tells \lit{getdap} to append \lit{.das}
+for you:
+
+\begin{vcode}{ib}
+> getdap -a http://test.opendap.org/opendap/nph-dods/data/nc/test.nc
+\end{vcode}
+
+Refer to \DODSuser\ for a description of a data attribute structure.
+You can compare the description against what is returned by the above
+URL to test the operation of the server.
+
+Check the list of services and helper programs in
+\sectionref{dods-server,service}. From a web browser, you can access
+all the DAP services, except the data service, which returns binary,
+not ASCII, data. That one can only be easily tested from a DAP-enabled
+client. However, if all the service programs work, and the data
+service is configured the same way, the odds are on your side.
+
+Using the \lit{.html} suffix produces the \ind{\ifh}, providing a
+forms-based interface with which a user can query the dataset using a
+simple web browser.  There's more about the \ifh\ in \DODSuser .
+
+\section{Error Logs}
+
+\indc{error logs}\indc{logs!error}\indc{Apache!error
+  logs}\indc{server!error logs} When troubleshooting an OPeNDAP data
+server, the logs of the web server are quite useful. The Apache server
+keeps two logs, an Access log and an Error log. (You can find these in
+the \lit{logs} subdirectory where you installed Apache.) The OPeNDAP
+server software writes any messages it issues to the error log.
+
+You can make the error messages slightly more verbose by editing the
+\lit{DODS\_Dispatch.pm} file (in \lit{/usr/share/dap-server}). Find
+the \lit{\$debug} variable, and set it to 1 or 2 instead of zero. Note
+that these messages are, as of version 3.5, now written to the
+\lit{dbg_log} file which is usually in \lit{/usr/share/dap-server}.
+Check the \lit{DODS\_Dispatch.pm} file to determine the actual path.
+
+\section{User Support}
+
+\indc{user!support}\indc{support!user}\indc{technical
+  assistance}\indc{assistance!technical} As a last resort, you can use
+the OPeNDAP technical support service. OPeNDAP provides technical
+support by email: \DODSsupport.
+
+\chapter{Documenting Your Data}
+\label{sec,document-data}
+
+\indc{documenting data}\indc{data!documenting}
+\indc{service!info}\indc{info!service} OPeNDAP's version 3.5 server
+contains provisions for supplying documentation to users about a
+server, and also about the data that server provides. When a server
+receives an information request (through the \lit{info} service that
+invokes the \lit{dap\_usage} program), it returns to the client an HTML
+document created from the DAS and DDS of the referenced data. It may
+also return information about the server, and more detail about the
+dataset. \subj{Documenting your data will make it useful to more
+  people.}
+
+Users access this information by appending \lit{.info} to a DAP URL.
+For example to get the HTML info page for an netCDF file, you might
+type something like this:
+
+\begin{vcode}{sib}
+http://test.opendap.org/opendap/nph-dods/data/nc/fnoc1.nc.info
+\end{vcode}
+
+The Info service will return important information about your dataset
+even if you do not write custom HTML files for it. If you do write
+those files they will be concatenated with the default information
+returned by the usage server.
+
+If you would like to provide more information about a dataset than is
+contained in the DAS and DDS, simply create an HTML document (without
+the \lit{<html>} and \lit{<body>} tags, which are supplied by the
+\lit{info} service), and store it in the same directory as the
+dataset, with a name corresponding to the dataset filename.  For
+example, the dataset \lit{fnoc1.nc} might be documented with a file
+called \lit{fnoc1.html}.
+
+You can also provide documentation for a class of files that may have
+a common root in their names.  For example, a file that would be used
+for data files called \lit{S00443.nc}, \lit{S00444.nc} and
+\lit{S00445.nc} could be called \lit{S.html} (or \lit{S00.html} in
+this case). This file should be located in the directory where the
+data is located.
+
+If you'd like to append information to the \lit{info} message for all
+the files on a server, you can write a file called
+\var{servername}\lit{.html}, where \var{servername} is one of
+\lit{nc}, \lit{ff}, \lit{hdf}, \lit{jg}, and so on.
+
+You may prefer to override this method of creating documentation and
+simply provide a single, complete HTML document that contains general
+information for a dataset.  If you call your documentation file
+\lit{fnoc2.ovr}, the client will see only the contents of that file,
+and will not get the text generated by the dataset DAS and DDS, or the
+\var{servername}\lit{.html} file.
+
+More information about providing user information, including sample
+HTML files, and a complete description of the search procedure for
+finding the dataset documentation, may be found in \DODSapi .
+
+\section{Special Instructions for the OPeNDAP/JGOFS Handler}
+
+The JGOFS handler provides usage data in almost the same way as the
+other servers, but the \lit{dap\_usage} helper program is called
+\lit{usage-jg}, and it functions slightly differently. For the general
+JGOFS handler and for each data object it serves, you can write a HTML
+document which the usage server will return when requested by users.
+You can write a HTML document that describes any special \subj{Yes,
+  this is different for JGOFS, too.} features of your particular JGOFS
+handler and save that document in a file named \lit{jg.html} in the
+cgi-bin directory that holds the server programs.
+
+\note[Tip]{The \lit{jg.html} file could be used to provide descriptive
+  information, including the names, for all the data objects served at
+  your site.}
+
+The only special thing about this file is that you should include only
+those HTML tags that would fall between the \lit{<body>} and
+\lit{</body>} tags.  Thus it should not contain the \lit{<html>},
+\lit{<head>}, \lit{<body>} or their matching counterparts.
+
+To provide HTML for each JGOFS data object you serve, create a file
+whose name is based on the names of the data object you want to
+describe.  For example, a file that would be used for all the
+\lit{s87_xbt} data object used in the previous section's example would
+be \lit{s87_xbt.html}. This file must be located in the directory
+where the top-level datafile is located, as defined in the data
+objects dictionary.
+
+Users access this information by appending \lit{.info} to a DAP URL.
+For example to get the HTML page for the URL used in the previous
+section, you'd type:
+
+\begin{vcode}{sib}
+http://dods.gso.uri.edu/cgi-bin/nph-dods/s87_xbt.info  
+\end{vcode}
+   
+\include{install/cat-chap}
+
+\chapter{Building OPeNDAP Data Handler}
+\label{dods-server,building}
+
+Though several different handlers are included in the OPeNDAP
+software, some users may wish to write their own data handlers. The
+architecture of the \lit{httpd} server and the OPeNDAP software make
+this a relatively simple task.
+
+\subj{There are a few occasions when it makes sense to build your own server.}
+A user may wish to write his or her own data handler for any or all of
+the following reasons:
+
+\begin{itemize}
+  
+\item The data to be served may be stored in a format not compatible
+  with one of the existing handlers.
+  
+\item The data may be arranged in a fashion that allows a user to
+  optimize the access of those data by rewriting one of the handlers.
+  
+\item The user may wish to provide ancillary data to clients not
+  anticipated by the writers of the servers available.
+
+\end{itemize}
+
+The design of the OPeNDAP libdap library makes the task a relatively
+simple one for a programmer already familiar with the data access API
+to be used. The library provides a complete set of classes with most
+of the hard parts done already: evaluation of constraint expressions,
+network connections, and so on. You can create working sub-classes
+simply by adding the read methods which read data from the local disk.
+
+Also, though the handlers provided with the server are written in C++,
+they may be written in any language from which the OPeNDAP libraries
+may be called. There is also a Java version of the class library.
+
+Once it is invoked, a CGI program scoops up whatever input is going to the
+standard input stream of the Web server (\lit{httpd}) that invoked it.
+Further, the standard output of the CGI is sent directly back to the
+requesting client. This means that the CGI program itself need only read its
+input from standard input and write its output to standard output.
+% In this paragraph, I changed the part that said the output was piped to
+% libwww. It's not; libwww is used only on the client side. We link with
+% libwww when building a server because the DAP library is not implemented
+% very efficiently. 5/7/2002 jhrg
+
+Most of the task of writing a server, then, consists of reading the
+data with the data access API and loading it into the libdap classes.
+Methods defined for each class make it simple to output the data so
+that it may be sent back to the requesting client.
+
+Refer to \DODSapi\ for specific information about the classes and the
+facilities of the libdap software, and instructions about how to write
+a new server.
+
+%\chapter{Advertising}
+
+%There are two separate parts to the task of installing a DODS data
+%server: installing and configuring the server itself, and telling the
+%universe of possible users about it.\footnote{The second step is, of
+%  course, optional.} Only the first will be considered in this
+%guide.  DODS provides avenues for doing the second, including a
+%Catalog Service indexing DODS datasets, and cooperation with the
+%Global Change Master Directory, but these are still under
+%construction.
+
+\appendix
+\chapter{Getting the OPeNDAP Software}
+\label{install}
+
+Get the software from \DODShome .  If you can, it is usually advisable
+to download the pre-compiled binaries.  If you do so, be sure to
+follow the directions that acompany the distributions, even if you're
+upgrading a server, since the places where the server's components are
+installed can change as the software evolves. Installation
+instructions for the binary distributions can be found on the web
+pages where you downloadded the software.
+
+If you can't use the pre-compiled binaries, download the source code
+from the \DODShome . You will need a few different files, depending on
+the handler(s) you want to install. The ``Download Software'' page has
+instructions specifying which files to use. If you are building the
+software yourself, be sure to read the README, INSTALL and NEWS files
+included in the distributions.
+
+You will need to download the dap-server `base' software and one or
+more handlers. The base software and each handler each is contained in
+a single \lit{tar.gz} or source \lit{rpm} file. To build the source
+files, expand them, run the enclosed \lit{configure} script, run
+\lit{make} and then \lit{make install}. Once the software is
+installed, see the configuration instructions
+in \sectionref{dods-server,install}. 
+
+\include{../boiler/fdl_appendix}
+
+\printindex
+
+\end{document}
+
+
+
+
+
+% $Log: install.tex,v $
+% Revision 1.16  2004/08/24 22:55:12  jimg
+% Fixed a broken link to sst.mnmean dds.
+%
+% Revision 1.15  2004/07/07 23:10:38  jimg
+% Updated to dods-book, rcsInfoDate and pdf link.
+%
+% Revision 1.14  2004/04/24 21:37:23  jimg
+% I added every directory in preparation for adding everyting. This is
+% part of getting the opendap web pages going...
+%
+% Revision 1.13  2003/02/25 18:53:22  tom
+% fixed Java DODS link
+%
+% Revision 1.12  2002/12/02 04:28:25  tom
+% added aggregation server documentation to tree
+%
+% Revision 1.11  2002/06/04 17:41:07  tom
+% fixed "make World"
+%
+% Revision 1.10  2002/05/10 20:38:24  jimg
+% A small correction regarding which parts of a C++ DAP server is a CGI
+% and which are just regular programs. Only the dispatcher is a CGI, the
+% rest are regular programs.
+%
+% Revision 1.9  2002/05/07 23:05:39  jimg
+% I fixed some factual errors in section 8 (about writing DODS servers).
+%
+% Revision 1.8  2002/03/14 12:52:28  tom
+% fixed bugzilla bugs number 226, 253, 374
+%
+% Revision 1.7  2001/05/04 15:07:20  tom
+% fixed pslink
+%
+% Revision 1.6  2001/05/04 14:39:02  tom
+% added note about dods.ini, added pdf to Makefile
+%
+% Revision 1.5  2001/04/03 01:38:33  tom
+% ethan's corrections
+%
+% Revision 1.4  2001/03/23 17:17:35  tom
+% fixed error in documenting the info facility
+%
+% Revision 1.3  2001/02/19 20:31:30  tom
+% incorporated editorial changes
+%
+% Revision 1.2  2000/11/30 15:27:32  tom
+% ready for 1st review
+%
+% Revision 1.1  2000/11/20 22:29:30  tom
+% first draft of new installation mini-document
+%
+
+
+

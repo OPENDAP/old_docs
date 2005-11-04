@@ -1,0 +1,13 @@
+This is makeindex, version 2.14 [02-Oct-2002] (kpathsea + Thai support).
+Scanning style file ./../latex/dods-book.ist...
+** Input style error (file = ./../latex/dods-book.ist, line = 19):
+   -- Unknown specifier \endinput.
+done (3 attributes redefined, 1 ignored).
+Scanning input file guide.idx....done (322 entries accepted, 0 rejected).
+Sorting entries.....done (2894 comparisons).
+Generating output file guide.ind....
+## Warning (input = guide.idx, line = 134; output = guide.ind, line = 315):
+   -- Conflicting entries: multiple encaps for the same page under same key.
+done (443 lines written, 1 warning).
+Output written in guide.ind.
+Transcript written in guide.ilg.

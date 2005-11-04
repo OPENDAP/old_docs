@@ -1,0 +1,336 @@
+
+% Another take on the registry SRS. This time follow IEEE 830-1998.
+% 1/11/2000 jhrg
+%
+% $Id$
+
+\documentclass{article}
+%\usepackage{html}
+\usepackage{psfig}
+\usepackage{changebar}
+\usepackage{acronym}
+\usepackage{gloss}
+%\input{../../boiler/html-refs}
+\psfigurepath{registry-figs}
+
+% Note: to get the gloosary to work, run bibtex in the registry.gls.aux file,
+% then latex registry, then bibtex *.gls, then latex. Also, make sure to set
+% your BST and BIBINPUTS environment variables so that the BST and BIB files
+% will be found.
+\makegloss
+
+% Change paragraph typesetting; eliminate indenting and add more space between
+% paragraphs. 2/15/2000 jhrg
+%\setlength{\parindent}{0em}     % Amount of indentation
+%\addtolength{\parskip}{1ex}     % Vertical separation
+
+\begin{document}
+
+\title{DODS Dataset Registry}
+\author{James Gallagher\thanks{The University of Rhode Island,
+    jgallagher@gso.uri.edu}}
+\date{\today \\ $Revision$ }
+
+\bibliographystyle{plain}
+
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+
+This is the \ac{SRS} for the dataset Registry. The Registry provides a way
+for data providers to tell the DODS project about their dataset(s). This
+inforamtion may be used by the project in a number of ways; building lists of
+datasets for users to search~\cite{gallagher:list-srs}, sending information
+about DODS datasets to other projects, etc.
+
+\textbf{Bold face} type is used to indicate a word or phrase that may be
+found in the glossary.
+
+\emph{Emphasized} text contained in square brackets ([]) is used to indicate
+an editorial comment about the information that should be provided in this
+part of the \ac{SRS}.
+
+% This contains the requirements for the DODS Dataset registry. This document
+% and its companions---the DODS File server \ac{SRS} and the DODS Dataset List
+% \ac{SRS}---describe pieces of a general purpose interface that should
+% work for all DODS datasets. This interface should provide access to any DODS
+% data, as either ASCII or binary, from computers running UNIX, Mac or MS
+% operating systems. 
+
+\subsection{Purpose}
+This \ac{SRS} contains the requirements for the Dataset Registry. Its
+audience is the entire \textbf{DODS core group}
+\gloss[nocite]{dods-core-group}.
+
+\subsection{Scope}
+The software to be produced is the Dataset Registry.
+
+The Registry will provide a way for dataset URLs to be recorded at one site.
+Each time a DODS server is installed or a new dataset is added to an existing
+server, the \textbf{data provider} \gloss[nocite]{data-prov} will be able
+to register that dataset using the Registry.
+
+\subsection{Overview}
+
+The Registry requirements are discussed in this document.
+
+This document conforms to the IEEE 830-1998 \ac{SRS} recommended practice.
+Since that document covers a wide range of possible projects, some of the
+information in it is not appropriate for this part of DODS. Where that is the
+case, or I think it is the case, I have marked the section N/A.
+
+\section{Overall Description}
+
+\subsection{Product perspective}
+
+Part of the philosophy of \acs{DODS} is that data providers should have as
+much freedom when installing a \acs{DODS} server as do people who install
+{\tt ftp} or {\tt http} servers.  There is no requirement that
+\textbf{\acs{DODS} servers} \gloss[nocite]{dods-server} be registered or
+authorized in any way.  However, this system-wide requirement does not mean
+that additional capabilities cannot be made available by a registration
+subsystem, it only means that users cannot be forced to use such a system.
+
+The Registry is a web-based software tool. It will hold URLs to DODS datasets
+and provide access to that information so that the List may be automatically
+built. The List software will use output from the Registry. In addition to
+direct input from a user, the Registry may interact with DODS servers (for
+example, to get status information or to verify the reference).  The intent
+of the Registry is to provide a semi-automated way to maintain the List and
+to provide data providers with a way to add their DODS servers to the List.
+
+Figure~\ref{fig:prod-perspective} shows how the Registry relates to other
+parts \acs{DODS}.
+
+\begin{figure}
+\begin{center}
+\psfig{file=prod-perspective.ps,width=5in}
+\end{center}
+\caption{Relation of the Registry software to other relevant parts
+  of DODS.}
+\label{fig:prod-perspective}
+\end{figure}
+
+The following sections describe how this software operates within various
+constraints.
+
+\subsubsection{System interfaces}
+For the Registry, the system interfaces are:
+\begin{itemize}
+\item An HTML/form for input of information.
+\item An undetermined interface for passing information to the List system.
+\end{itemize}
+
+\subsubsection{User interfaces}
+The user interface for the Registry will be a \textbf{web browser}.
+\gloss[nocite]{web-browser}
+
+\subsubsection{Hardware interfaces}
+N/A
+
+\subsubsection{Communications interfaces}
+N/A
+
+\subsubsection{Memory}
+N/A
+
+\subsubsection{Operations}
+The Registry will need weekly (manual) maintenance to ensure that information
+added by data providers is correct. 
+
+\subsubsection{Site adaptation requirements}
+N/A
+
+\subsection{Product functions}
+The  Registry functions provide a way for users to add \acs{DODS}
+datasets to a central registry and to access that central registry.
+
+Functions for the Registry:
+\begin{enumerate}
+\item Post a dataset entry: Add a dataset reference to the registry. In
+  addition, this function will provide an way to bind other information to
+  the dataset reference. Anyone should be able to post an entry, but the
+  entry should not actually be added to registry until some form of QC is
+  performed by the Registry maintainer(s).
+
+\item Remove a dataset entry: Remove a particular reference to a dataset. This
+  operation should be restricted to the maintainer(s) of the registry.
+\end{enumerate}
+
+\subsection{User characteristics}
+Users of the List will be all types of \acs{DODS} users including very
+technical users, science users and possibly K--12 users. The List may not be
+the most appropriate dataset location tool for the latter group and another
+more inclusive tool might need to be developed for this group of users.
+
+Users of the Registry will be \acs{DODS} server installers and generally they
+will be technical or semi-technical users.
+
+\subsection{Constraints}
+This section lists any other items that may limit the developer's options.
+
+\subsubsection{Regulatory policies}
+N/A
+
+\subsubsection{Hardware limitations}
+The List and Registry systems must run on UNIX.
+
+\subsubsection{Interfaces to other applications}
+\begin{enumerate}
+\item HTTP 1.1
+\item \acs{CGI} 1.1
+\item Apache {\tt httpd} 1.3.x
+\item Netscape Navigator 3.x and higher.
+\item MS Internet Explorer 5.x and higher.
+\end{enumerate}
+
+\subsubsection{Parallel operations}
+N/A 
+
+\subsubsection{Audit functions}
+N/A 
+
+\subsubsection{Control functions}
+N/A 
+
+\subsubsection{Higher-order language requirements}
+N/A 
+
+\subsubsection{Signal handshake protocols}
+N/A 
+
+\subsubsection{Reliability requirements}
+New entries to the Registry should not be automatically included until they
+have been validated.
+
+\subsubsection{Criticality of the application}
+N/A 
+
+\subsubsection{Safety and security considerations}
+\label{sec:security}
+Any use of \ac{CGI} should be robust to attacks (i.e., hacking). They should
+be resistant to shell-escape attacks.
+
+Functions that are not accessible to the public should be password protected.
+
+\subsection{Assumptions and dependencies}
+The System designers can assume that the following are true:
+\begin{itemize}
+\item The software will run on one of the UNIX platforms we support and that
+  they will be able to choose which platform if there are tradeoffs between
+  them.
+\item It will be OK to use \ac{CGI}---there will be no security limits placed
+  on CGI software assuming it meets the basic security requirements (see
+  section~\ref{sec:security}).
+\item All users will have access to the Internet and a web browser.
+\end{itemize}
+
+\section{Specific Requirements}
+
+\subsection{External interfaces}
+\subsubsection{User interfaces}
+\begin{enumerate}
+\item Post an entry: Used to queue an entry for addition to the Registry.
+  This interface must provide the user with a way to supply the following
+  information:
+  \begin{enumerate}
+  \item URL: The reference to the dataset to be registered. If this dataset
+    has a file/catalog server, this URL should reference that server. This
+    is a required item.
+  \item Title: A short---phrase or sentence, no more---description of the
+    dataset. This is a required item.
+  \item Update: A boolean flag; true indicates that this entry is intended
+    to change an entry that was previously posted and included in the
+    registry. Required.
+  \item Science contact: Name and phone, email and/or mail contact
+    information. To be used for questions about content. This is an
+    optional item.
+  \item Technical contact: Name and phone, email and/or mail contact
+    information. To be used for questions about content. This is an
+    optional item.
+  \item Description: Text description of the dataset. Can be any text.
+    Optional.
+  \end{enumerate}
+  When this information is requested of a user, the required items should be
+  listed/shown first, then the optional items. Whether an item is required
+  or optional should be explicitly stated for each item.
+
+  When users prepare and entry for posting, they should be shown what will be
+  posted and asked whether to continue or cancel.
+
+  This interface will be usable by all users.
+
+\item QC an entry: Look at an entry that has been posted to the Registry.
+  If the entry is OK, add it to the registry. An entry is OK if:
+  \begin{enumerate}
+  \item The URL references a DODS dataset.
+  \item The Title is spelled correctly.
+  \item Update: if state of this item matches the contents of the registry
+  \item All other fields: They are spelled correctly.
+  \end{enumerate}
+  If any of the fields are not OK, then use the technical and/or science
+  contact information to talk to someone and get the information corrected. 
+
+  This interface will have limited access; only the registry maintainer(s)
+  should be able to access it.
+
+\item Remove a dataset entry: This interface must provide a way for the
+  Registry maintainer(s) to remove an entry. The entry to be removed will
+  be specified by either its title or URL. The interface must show the
+  selected entry and offer the option to remove or cancel. 
+
+  This interface will be accessible to the registry maintainer(s) only.
+\end{enumerate}
+
+\subsubsection{Hardware interfaces}
+N/A
+\subsubsection{Software interfaces}
+N/A
+\subsubsection{Communications interfaces}
+N/A
+
+\subsection{Functions}
+The User Interface requirements are sufficient to describe the Registry.
+
+
+\appendix
+
+\section{Acronyms and Abbreviations}
+\begin{acronym}
+\acro{SRS}{Software Requirements Specification}, See IEEE 830--1998
+\acro{DODS}{Distributed Oceanographic Data System}, See the DODS home page:
+{\tt http://unidata.ucar.edu/packages/dods/}
+\acro{CGI}{Common Gateway Interface}, Version 1.1
+\end{acronym}
+
+\section{Change log}
+
+\begin{verbatim}
+$Log: registry.tex,v $
+Revision 1.11  2000/05/12 19:30:55  jimg
+*** empty log message ***
+
+Revision 1.10  2000/02/15 04:03:24  jimg
+Removed information about the List; see list.tex for that SRS. Folded in
+Peter's first set of changes.
+
+Revision 1.9  2000/01/21 21:16:27  jimg
+Fixed up the List User Interface section.
+
+Revision 1.8  2000/01/21 06:56:32  jimg
+Added glossary and User interface requirements. Maybe they are all the
+requirements these sub-systems need?
+
+Revision 1.7  2000/01/21 00:51:24  jimg
+Moved in place of old version
+
+Revision 1.1  2000/01/18 01:39:19  jimg
+Initial version
+\end{verbatim}
+
+\bibliography{dods}
+
+\printgloss{dods-glossary}
+
+\end{document}

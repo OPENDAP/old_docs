@@ -1,0 +1,211 @@
+% Chapter three to the DODS Data Standards Guide
+%
+%
+% You have a server running, how do you add data attributes?
+
+% $Id$
+%
+% $Log: ch03.tex,v $
+% Revision 1.2  1999/10/18 21:37:43  tom
+% updated for newest consensus
+%
+% Revision 1.1  1999/07/01 16:05:27  tom
+% added example chapter
+%
+%
+%
+
+\chapter{Adding Data Attributes}
+\label{adding-attr}
+
+One of the original design goals of DODS was to permit data providers
+to use DODS with as little work as possible.  A corollary to this
+requirement is that if ancillary information about a dataset is
+required, it must be very easy to provide.  The DODS architecture
+allows a data provider to add attribute information to a dataset
+without modifying the data files at all.  All that is required is a
+separate file, stored in the same directory as the data.
+
+This chapter shows how you can easily add attribute information to an
+existing dataset to comply with the DODS data standard.  We start by
+creating a small dataset and serving it with \DODSffs .  A similar
+example is presented in \DODSffbook , highlighting different aspects.
+
+All the files used in this chapter are available on the \DODSexamples .
+
+\section{A Worked Example}
+
+Consider the following table of numbers:
+
+\begin{vcode}{ib}
+-47.303545 -176.161101  1.17125
+-25.928001   -0.777265  2.07288
+-28.286662   35.591879  2.36377
+ 12.588231  149.408117 -100.000
+-63.223548   55.319598  0.04503
+ 54.118314 -136.940570  1.04085
+-38.818812   91.411330  1.39978
+-34.577065   30.172129  2.09096
+ 27.331551 -155.233735  2.30917
+ 11.624981 -113.660611  2.75036
+\end{vcode}
+
+This table represents a series of temperature measurements at ten
+different geographical locations.  The latitudes and longitudes are
+given in decimal degrees, and the temperatures are given in units of
+ten degrees.  That is, the temperature as recorded, times ten, equals
+the temperature in Celsius.  There is one temperature measurement
+missing, and its place is marked with a value of \lit{-100.0}.
+
+(This dataset, and the ancillary files discussed in this chapter, are
+in the DODS examples directory, and is available at the \DODSexamples ,
+under \lit{dasex.*}.)
+
+The dataset shown here can be served as is, with the \DODSffs , using
+the following format file (\lit{dasex.fmt}):\footnote{See the
+  \DODSffbook\ for more information about that software.}
+
+\begin{vcode}{ib}
+ASCII_data "lat/lon"
+latitude 1 10 double 6
+longitude 12 22 double 6
+t 24 31 double 4
+\end{vcode}
+
+Put both of these files in your \lit{htdocs} directory (refer to the
+documentation for your web server to locate this directory).  After
+installing the \DODSffs , you can issue data requests on this
+dataset.  Use a web browser like netscape, and enter the following
+URL (Use your own server's name instead of \lit{machine.edu}.):
+
+\begin{vcode}{ib}
+http://machine.edu/cgi-bin/nph-ff/dasex.dat.dds
+\end{vcode}
+
+You should see something like this:
+
+\begin{vcode}{ib}
+Dataset {
+    Sequence {
+        Float64 latitude;
+        Float64 longitude;
+        Float64 t;
+    } lat/lon;
+} dasex;
+\end{vcode}
+
+The is the DDS (Data Description Structure) of the dasex dataset.  (See
+\DODSuser\ for more information about the DDS and what it means, as
+well as a description of what a Sequence is.)  Instead of \lit{.dds} at
+the end of the URL, you can use \lit{.asc} to see the data itself.
+Try that.  
+
+To see data attributes, try the same URL, ending with \lit{.das}:
+
+\begin{vcode}{ib}
+http://machine.edu/cgi-bin/nph-ff/dasex.dat.das
+\end{vcode}
+
+You should see something like this:
+
+\begin{vcode}{ib}
+Attributes {
+ FF_GLOBAL {
+   String Server "DODS FFND release 4.2.3";
+   String Native_file " ...";
+    }
+}
+\end{vcode}
+
+The DAS is a list of the dataset's attributes.  This dataset has two,
+and they are global ones.  That is, they describe the entire dataset,
+and don't correspond to any of the data variables listed in the DDS.
+They are also in a container called \lit{FF_GLOBAL}, which is another
+hint that they are global attributes.  The \lit{Server} string
+describes the actual DODS server that sent the data, and the
+\lit{Native_file} string is a long one, containing information about
+the original file, and what it contained.
+
+This is all very well, but what if someone wanted to know what units
+the \lit{t} variable was in, or where the data came from, or what that
+value of -100 is supposed to imply, or even whether the variable
+represents temperature or time.  The data themselves are silent on
+those issues, so either we have to provide additional documentation,
+or we have to introduce attributes for the data variables, to make the
+dataset self-documenting.  We do that with an ancillary file of data
+attributes.  Call this file \lit{dasex.das}\footnote{It is called
+  dasex1.das in the \DODSexamples .  You will have to rename this file
+  to make it work.}:
+
+\begin{vcode}{ib}
+Attributes {
+  t {
+    String short_name "Temperature";
+    String units "DegreesC";
+    Float64 missing_data -100.0;
+    Float64 scale_factor 10.0;
+  }
+  latitude {
+    String short_name "Latitude";
+    String units "degree_north";
+  }
+  longitude {
+    String short_name "Longitude";
+    String units "degree_east";
+  }
+}
+\end{vcode}
+
+Now the DAS that is returned from the dataset looks like this:
+
+\begin{vcode}{ib}
+Attributes {
+    FF_GLOBAL {
+        String Server "DODS FFND release 4.2.3";
+        String Native_file "...";
+    }
+    temp {
+        String short_name "Temperature";
+        String units "DegreesC";
+        Float64 missing_data -100.0;
+        Float64 scale_factor 10.0;
+    }
+    latitude {
+        String short_name "Latitude";
+        String units "degree_north";
+    }
+    longitude {
+        String short_name "Longitude";
+        String units "degree_east";
+    }
+}
+\end{vcode}
+
+Now you can see that \lit{t} stands for ``Temperature'' and that the
+\lit{-100} is missing data, and that all the measurements have to
+multiplied by 10 before they are in degrees Celsius.
+
+Now that the data have these additional attributes, the dataset is
+compliant with level 1 of the DODS data standard.  This can also be
+noted in the DAS, with the addition of another global attribute
+container called \lit{DODS}.  A file called \lit{dasex2.das} contains
+the following:
+
+\begin{vcode}{ib}
+DODS {
+  String Conventions "DODS";
+  String Acknowledge "Example dataset from the DODS documentation.";
+  String history "Created for DODS standards book.";
+}
+\end{vcode}
+
+Add this information to the bottom of the \lit{dasex.das} file
+(\emph{before} the last closing bracket), and now the dataset is
+compliant with level 2 of the DODS data standard.
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

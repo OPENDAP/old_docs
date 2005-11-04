@@ -1,0 +1,39 @@
+$Id$
+
+This directory contains the chapters for two distinct, but
+overlapping, books.  One is the documentation for the FreeForm ND
+System of Flexible Format translation, and the other is a FreeForm
+application, a DODS server to serve arbitrarily-formatted data.
+
+The two books cover much similar material, so the books share several
+chapters.  If you are updating one of those chapters, please make sure
+your additions are general enough to cover both cases.  Otherwise, put
+them in a chapter that will only be seen by one set of users.
+
+If you absolutely must put specific material in a chapter that will
+appear in both books, you can use the following LaTeX construct to
+restrict it to one or the other book:
+
+Restrict material to the FF ND book:
+
+\begin{ifclear}{ffs}
+blah blah blah
+\end{ifclear}
+
+Restrict material to the DODS FF Server book:
+
+\begin{ifset}{ffs}
+higgle haggle huggle
+\end{ifset}
+
+(n.b. the macro \ffs stands for "DODS FreeForm Server", and is only
+defined in the book covering that software.  The ifset and ifclear
+environments are provided by hyperlatex.sty.)
+
+The FF ND documentation is in ff.tex, and the DODS FF Server
+documentation is in dff.tex.  Both these files should be in the parent
+directory, along with a Makefile to make them.  They both use the dods
+documentation package of LaTeX (see dods-book.dtx).
+
+-Tom Sgouros
+ 27 March 1999

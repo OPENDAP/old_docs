@@ -1,0 +1,4232 @@
+%
+% Documentation for the DAP. Intended to be like an RFC document.
+%
+
+\documentclass[justify]{dods-paper}
+\usepackage{longtable}
+\usepackage{acronym}
+\usepackage{xspace}
+\usepackage{gloss}
+\usepackage{changebar}
+\rcsInfo $Id$
+
+\include{dap_boiler}
+
+% Note: to get the glossary to work, run bibtex on the *.gls.aux file,
+% then latex the file, then bibtex *.gls, then latex again. Also, make
+% sure to set your BST and BIBINPUTS environment variables so that the
+% BST and BIB files will be found.
+% \makegloss
+
+\title{\DAPObjectsTitle\\ DRAFT}
+\htmltitle{\DAPObjectsTitle\ -- DRAFT}
+\author{James Gallagher\thanks{The University of Rhode Island,
+    jgallagher@gso.uri.edu}, Nathan Potter\thanks{Oregon State University, 
+    ndp@coas.oregonstate.edu}, Tom Sgouros}
+\date{Printed: \today \\ Revision: \rcsInfoRevision}
+\htmladdress{James Gallagher <jgallagher@gso.uri.edu>, \rcsInfoDate, 
+  Revision: \rcsInfoRevision}
+\htmldirectory{html}
+\htmlname{dapo}
+
+\begin{document}
+
+\maketitle
+\T\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%% Introduction %%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+
+\note{This document contains the design for DAP4. It was written
+  before the DAP2 RFC document and contains some information that
+  conflicts with the information in that document. The most important
+  information here is the DDX and related XML reponses which will be
+  included in DAP4 and serve as replacements for the `curly-brace'
+  reponses defined by DAP2.}
+
+This document describes the \new{Data Model} of the
+\opendap\footnote{Note that \opendap refers to a project, managed by
+  OPeNDAP, Inc., a Rhode Island not-for-profit corporation, while \DAP
+  refers to the Data Access Protocol which is a central component of
+  the \opendap project.} Data Access Protocol (\DAP) version 4. The
+data model is the framework---the set of data types and
+representations---with which the \DAP represents the contents of a
+data source. The data model also encompasses the objects in which
+these data types are encoded: the replies with which an \opendap
+server responds to requests for data.
+
+This document contains several sections.  
+
+\begin{description}
+\item[\Sectionref{sec-variables}] defines what is meant by a data
+  source and describes the kinds of variables a data source may
+  contain.  These variables include the basic \new{atomic} types,
+  and the more complex \new{constructor} types.
+\item[\Sectionref{sec-Attributes}] All \DAP variables can have
+  \Attributes to describe them further.  Representation of this
+  information is described here.
+\item[\Sectionref{sec-ce}] Variables in a data source may be
+  sampled by means of a constraint expression, defined in this
+  section. 
+\item[\Sectionref{sec-interaction}] describes the interaction between
+  a client requesting data and the server providing it.
+\item[\Sectionref{sec-dataobject}] The variables in a data source are
+  given their persistent representation in the data objects defined
+  here.  This is the representation used to communicate between a
+  server and client.
+\end{description}
+
+The \DAP is independent of the lower-level communication protocols used to
+implement it, such as HTTP, FTP, GridFTP, {\it et cetera}. \DAP
+implementations currently exist for several communication protocols. HTTP is
+the most commonly-used implementation, and a separate document, \DAPHTTP, is
+available from the \opendap project to specify its use. The \opendap project
+does not issue specifications for implementations using other protocols. This
+is left to the groups making the implementation.
+
+A note about terminology. In this document, the words "client'' and "server''
+are meant only to imply a program making a request via the \DAP and another
+program making a reply via the \DAP, respectively. The two programs are
+probably running on machines remote from one another, but this is not
+essential. Like WWW clients and servers, there can be (and are) many
+different varieties of \DAP clients and servers. The only thing that ties
+them together is that the client making the request and the server fulfilling
+it follow the strictures of this specification.
+
+The \DAP specification describes the dialog between requesting clients and
+responding servers, but it does not specify the implementation of that
+dialog. So long as your program can hold up its end of the conversation,
+there is no limit on how it is done. Specifically, this means that though the
+\DAP specifies the persistent representation of its abstract data types (this
+is the form taken by a message), it does not specify the data structures that
+may implement these data types in a computer program. This also means that
+the programs can use any means to transport the requests and responses,
+although the \DAP protocol has been designed with protocols such as SOAP over
+HTTP, GridFTP, {\it et c.}, in mind.
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection {Lexicographical Conventions}
+
+The keywords ``MUST'', ``MUST NOT'', ``REQUIRED'', ``SHALL'', ``SHALL NOT'',
+``SHOULD'', ``SHOULD NOT'', ``RECOMMENDED'', ``MAY'' and ``OPTIONAL'' in this
+document are to be interpreted as described in RFC 2119.\cite{rfc2119}
+
+The \DAP data model contains a model element called an \Attribute. XML
+element tags also contain attributes. In order to avoid confusion in this
+document when we are referring to OPeNDAP \Attributes we will capitalize the
+first letter (``A''). When we are referring to XML attributes we will not
+capitalize the first letter (``a''). In the event that this distinction is not
+adequate we will endeavor to make the distinction clear, either from context
+or from additional illuminating language.
+
+\note{Suggestion: Drop the capitalized `Attribute' and say `XML attribute'
+  where appropriate. Relying on capitalization confuses people.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Variables %%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Variables}
+\label{sec-variables}
+
+The \DAP characterizes a data source as a collection of variables. Each
+variable consists of a name, a type, a value, and a collection of
+\Attributes. \Attributes, in turn, are themselves composed of a name, a type,
+and a value (\Sectionref{sec-Attributes}). The distinction between
+information in a variable and in an \Attribute is somewhat
+arbitrary.\footnote{This is especially true in the case of global
+\Attributes; see \Sectionref{sec-Attributes} for information about global
+attributes.} However, the intention is that \Attributes hold information that
+aids in the interpretation of data held in a variable.\footnote{\Attributes
+appear in many data storage systems such as netCDF\cite{netcdf},
+HDF4\cite{NCSA:HDF4} and HDF5\cite{NCSA:HDF5}. They also appear under the
+moniker `property' in Common Lisp\cite{steele:clisp}.} Variables, on the
+other hand, hold the primary content of a data source.
+
+Each variable in a data source MUST have a name, a type and some value or
+values. Using just this information and armed with an understanding of the
+definition of the \DAP data types, a program can read any or all of the
+information from a data source. The names and types of a data source's
+variables constitute its \new{syntactic metadata}.\cite{sgouros:DAP3}
+
+The \DAP variables come in several different types. There are several
+\new{atomic} types, the basic indivisible types representing integers,
+floating point numbers and the like, and four \new{constructor} types (also
+called \new{container} types)  which can be used to define new types
+by combining instances of both the atomic and constructor types.
+
+This section describes the abstractions that constitute the variable
+type menagerie: the range of values and the kind of data each type can
+represent.  For each abstract variable type, there is a more
+concrete persistent representation, which is the information actually
+communicated between a \DAP server and \DAP clients.  The persistent
+representation consists of two parts: the declaration of the type and
+the encoding of its value(s).  For a description of the persistent 
+representation see \Sectionref{sec-dataobject}. To see how the types are to
+be declared, see \Sectionref{sec-DDX}.  For the encoding of
+these variable types (how they are to be packaged for
+transmission) see \Sectionref{sec-blob}.
+
+Each variable MAY have one or more \Attributes associated with it.  For
+information about \Attributes, see \Sectionref{sec-Attributes}.
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{Atomic variables}
+\label{sec-atomic-variables}
+
+As their name suggests, \new{atomic} data types are indivisible. There are no
+\CE operators\footnote{\Sectionref{sec-ce}} that can be used to request part
+of an instance of one of these types (\Sectionref{sec-ce}). Atomic variables
+are used to store integers, enumerations, booleans and real numbers as well
+as strings, URLs and times. There are four families of atomic types, with
+each family containing one or more variation:
+
+\begin{itemize}
+\item Integer, Boolean and Enumeration types
+\item Floating-point types
+\item String types
+\item Binary images
+\end{itemize}
+
+\subsubsection{Integer types}
+\label{sec-atomic-int}
+
+The integer types are summarized in Table~\ref{tab-ints}. Each of the types
+is loosely based on the corresponding data type in ANSI \C \cite{ansi:c}.
+However, the \DAP, unlike ANSI \C, does specify the bit-size of each of the
+integer types. This is done so that when values are transfered between
+machines they will be held in the same type of variable, at least within the
+limits of the software that implements the \DAP.
+
+
+\note{{\it move this to a more appropriate section, maybe its
+own\ldots Maybe a section that combines the length spec and other
+stuff that is used in several places. jhrg 11/2/03}
+
+\begin{quote}
+ When implementing the \DAP, it is important, of course, to match information
+in a data source or read from a \DAP response to the {\it local} data type
+which best fits those data. In some cases an exact match may not be
+possible. For example Java lacks unsigned integer types\cite{Arnold:Java}.
+Implementations faced with such limitations MUST ensure that clients will be
+able to retrieve the full range of values from the data source. As a
+practical consideration, this may be implemented by hiding the variable in
+question or returning an error.
+
+If a variable is automatically hidden ({\it i.e.}, the server analyzes the data
+source and determines that a particular variable cannot be represented
+correctly and automatically removes it from those variables made accessible
+using the \DAP, this MUST be noted by adding a global \Attribute to the data
+source indicating this has taken place. The note MUST include the name of the
+variable(s) and the reason(s) for their exclusion. If a variable is removed
+by a human, this \Attribute is OPTIONAL.
+\end{quote}
+} 
+
+In their persistent representation in the \DAP, integer values MUST stored as
+ \new{twos-compliment} \new{big-endian} numbers.\footnote{Big-endian is the
+ default byte order for data transmissions, but see
+ \Sectionref{sec-request-response} regarding negotiation of byte order.} See
+ \Sectionref{sec-blob-atomic}.
+
+\begin{table}[htbp]
+\caption{The \ac{DAP} Integer Data types.}
+\label{tab-ints}
+\begin{center}
+\begin{tabular}{lll}
+\tblhd{name} & \tblhd{description} & \tblhd{range} \\ \hline 
+\type{Byte} & 8-bit unsigned char & 0 to $2^{8}-1$ \\ \hline
+\type{Int16} & 16-bit signed short integer & -$2^{15}$ to $2^{15}-1$ \\ \hline
+\type{Uint16} & 16-bit unsigned short integer & 0 to $2^{16}-1$ \\ \hline
+\type{Int32} & 32-bit signed integer & -$2^{31}$ to $2^{31}-1$ \\ \hline
+\type{Uint32} & 32-bit unsigned integer & 0 to $2^{32}-1$ \\ \hline
+\type{Int64} & 64-bit signed integer & -$2^{63}$ to $2^{63}-1$ \\ \hline
+\type{Uint64} & 64-bit unsigned integer & 0 to $2^{64}-1$ \\ \hline
+\end{tabular} 
+\end{center}
+\end{table}
+
+\subsubsection{Booleans}
+\label{sec-atomic-boolean}
+
+Data which can take on only one of two values, true or false, may be
+represented using the \Boolean data type. This type is used by 
+data storage software such as HDF5\cite{NCSA:HDF5} and data communication
+specifications such as ASN.1\cite{Dubuisson:ASN1}. 
+
+See \Sectionref{sec-blob-atomic} for the description of how \Booleans
+are encoded for transmission.
+
+\begin{table}[hbtp]
+\caption{The \DAP \Boolean type.}
+\label{tab-boolean}
+\begin{center}
+\begin{tabular}{lp{3.0in}}
+\tblhd{name} & \tblhd{description} \\ \hline
+\Boolean & One of two possible values: either true or false. \\ \hline
+\end{tabular} 
+\end{center}
+\end{table}
+
+\subsubsection{Enumerations}
+
+An \Enum is used to represent a set of discrete named values. The values
+MUST be integers between $-2^{31}$ and $2^{31}-1$. No value may be used more
+than once. The intent is that the size of the set will be small; an \Enum
+should not be used to represent a set of thousands or millions of values,
+although there's nothing in principle preventing such a use. To represent the
+values, a signed 32-bit integer is used. An \Enum MUST include a symbolic
+name for each integer value.
+
+See \Sectionref{sec-blob-atomic} for the description of how \Enums
+are encoded for transmission.
+
+\begin{table}[hbtp]
+\caption{The \DAP \Enum type.}
+\label{tab-enum}
+\begin{center}
+\begin{tabular}{lp{3.0in}}
+\tblhd{name} & \tblhd{description} \\ \hline
+\Enum & a set of unique discrete integral values between $-2^{31}$ and
+$2^{31}-1$, each enumerated and bound to symbol. \\ \hline
+\end{tabular} 
+\end{center}
+\end{table}
+
+\subsubsection{Floating point types}
+\label{sec-atomic-float}
+
+The floating point data types are summarized in Table~\ref{tab-fp}.
+The two floating point data types use IEEE 754 \cite{IEEE:754} to
+represent values.  The two types correspond to ANSI \C's
+\texttt{float} and \texttt{double} data types.
+
+In their persistent representation, floating point values MUST be stored by
+default using big-endian notation.\footnote{Big-endian is the default byte
+order for data transmissions, but see \Sectionref{sec-request-response}
+regarding negotiation of byte order.} See \Sectionref{sec-blob-atomic}.
+
+\begin{table}[hbtp]
+\caption{The \ac{DAP} Floating Point Data types.}
+\label{tab-fp}
+\begin{center}
+\begin{tabular}{lp{1.5in}p{2.1in}}
+\tblhd{name} & \tblhd{description} & \tblhd{range} \\ \hline
+\type{Float32} & IEEE 32-bit floating point \cite{IEEE:754}
+     & {\raggedright $\pm 1.175494351 \times 10^{-38}$  to \\
+       $\pm 3.402823466 \times 10^{38}$} \\ \hline
+\type{Float64} & IEEE 64-bit floating point 
+     & {\raggedright $\pm 2.2250738585072014 \times 10^{-308}$ to \\
+       $\pm 1.7976931348623157 \times 10^{308}$} \\ \hline
+\end{tabular} 
+\end{center}
+\end{table}
+
+\subsubsection{String types}
+\label{sec-atomic-string}
+
+The string data types are summarized in Table~\ref{tab-string}.  There
+are three.  The first is a simple string type corresponding to the ANSI
+\C notion of a string: a series of Unicode (ISO 10646) characters.
+The \DAP uses the UTF-8 encoding of Unicode characters.  
+
+There is no limit to the size of a \String; the length is specified using a
+\emph{Length Specifiaction} (See \Sectionref{sec-length-spec}). Unicode
+characters can each be several bytes long, but note that UTF-8 encoding is
+identical to US-ASCII encoding for character values up to 127 (hexadecimal
+\lit{7f}). This means that strings that contain only characters from the
+7-bit ASCII set are one byte per character, and use the standard ASCII
+encoding. Characters from 128 to 255 (hex \lit{80} to \lit{ff}) are encoded
+into two bytes in UTF-8 \cite{RFC2277}.
+
+The \DAP also provides a \URL data type which is the same as \String except
+that it MUST be limited to standard (7-bit) US-ASCII characters, , due to the
+limitations of the syntax of Internet URLs\cite{rfc2396}, and has the
+specific meaning of a pointer to some WWW resource. If the W3C definition of
+a URL should change, the \DAP definition will change to conform to the W3C
+definition. 
+
+In \DAP applications this is usually used to refer to another data source, in
+a manor reminiscent of a C pointer.]
+
+The last string type the \DAP provides is the \Time data type which is
+the same as \String except that it MUST have the specific syntax of an
+ISO8601\cite{ISO:8601} date/time string. 
+
+The ISO Date/Time standard provides a way to encode dates, both local and UTC
+times and time ranges\cite{UWV:ISO8601}. The \Time data type is included in
+the \DAP so that date and time information may be represented in a standard
+fashion.
+
+% Nathan, I think that this is general enough that is should appear here and
+% not be moved down to a services paper. SOAP, HTTP/GET, GridFTP, ..., they
+% all should provide Time variables for stuff encoded in `unique' ways.
+% 10/27/03 jhrg
+
+In general, most data sources will not use ISO8601 date-time
+strings; servers SHOULD provide both the native representation of date-time
+information and the ISO8601 representation. This will allow savvy clients to
+exploit the native representation while more generic clients can access the
+data source without the need to accommodate its quirks.
+
+\Strings are individually sized.  This means that in constructor data
+types containing multiple instances of some \String, such as \Sequences
+and \Arrays, successive instances of that \String MAY be of different
+sizes.
+
+See \Sectionref{sec-blob-atomic} for other details of the persistent
+representation of \Strings.
+
+\begin{table}[hbtp]
+\caption{The \DAP String Data types.}
+\label{tab-string}
+\begin{center}
+\begin{tabular}{lp{3.0in}}
+\tblhd{name} & \tblhd{description} \\ \hline
+\String & a series of Unicode (UTF-8) characters. \\ \hline
+\URL & a series of US-ASCII characters (the Internet doesn't support Unicode in
+URLs), meant to represent an on-line resource somewhere, usually
+another data source. \\ \hline
+\Time & a series of Unicode (UTF-8) characters which contain a valid ISO 8601
+date/time string.\cite{ISO:8601}
+\end{tabular} 
+\end{center}
+\end{table}
+
+\subsubsection{Binary images}
+\label{sec-atomic-binary}
+
+\Bis are\footnote{Paul suggests 'MUST be' in place of 'are.' I'm not sure
+  jhrg 12/8/03.} uninterpreted, opaque, lumps of digital data. There is no
+  limit to the size of a \Bi; the length MUST be specified using a \emph{Length
+  Specifiaction} (See \Sectionref{sec-length-spec}). 
+
+\Bis are meant as a way for a server to pass elaborate data types to a client
+without having to encode them in the \DAP data model. For example, a digital
+sound clip, say an MP3 file, could be represented as a one-dimensional \DAP
+\Array of integer values. But if the server stores these as MP3 files, and
+the client can play them as such, then it may not be efficient to convert
+from MP3 to the \DAP \Array and then back again.\footnote{Note that, as with
+the case of the MP3, the word "images'' does not necessarily refer to image
+data, though obviously you can use a \Bi to transmit GIF data, for example.
+The word only implies that the binary data within a \Bi is uninterpreted, and
+MUST be preserved intact through any representation transformation.}
+
+\Bis are individually sized.  This means that in constructor data
+types containing multiple instances of some image, such as \Sequences
+and \Arrays, successive instances of that \Bi MAY be of different
+sizes.
+
+See \Sectionref{sec-blob-atomic} for the description of how binary
+images are encoded for transmission.
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{Constructor variables} 
+\label{sec-constructor-vars}
+
+The \new{constructor} types are assembled from collections of other
+variables. A constructor type MAY contain both atomic and constructor types.
+There are no restrictions on the number of levels of nesting.
+
+There are four constructor data types:
+
+\begin{itemize}
+\item \Array
+\item \Structure
+\item \Grid
+\item \Sequence
+\end{itemize}
+
+\subsubsection{\Array}
+\label{sec-constructor-array}
+
+An \Array is a one-dimensional indexed data structure similar to that defined
+by ANSI \C.  An \Array's member variable MAY be of any \DAP data
+type. % with the exception of the \Enum type. 
+
+Multidimensional \Arrays are defined as \Arrays of \Arrays. Multi-dimensional
+\Arrays MUST be stored in \new{row-major} order (as is the case with ANSI \C).
+The size of each \Array's dimensions MUST be given. There is no limit to the
+size or number of an \Array's dimensions; the length MUST be specified using a
+\emph{Length Specifiaction} (See \Sectionref{sec-length-spec}).
+
+Each dimension of an \Array MAY also be named.
+
+\Arrays of \Strings and binary images MAY contain elements of varying
+lengths. However, multi-dimensional \Arrays MUST have rows of the same length
+and columns of the same length. 
+
+If you need a data structure which has varying row lengths or an
+indeterminate number of rows, consider a \Sequence of \Sequences or a
+\Sequence of \Arrays. Note that in the latter case, a \Sequence of \Arrays,
+each instance of the array MUST be the same size.\footnote{The types of the
+variables comprised bya Sequence MUST be the the same for each instance ({\it
+i.e.} 'row') of that Sequence. For arrays, the 'shape' is part of the
+type.Where the protocol demands that Sequence be used, an interface for
+client application programs is free to make those look like arrays with
+varying lengths.}
+
+See \Sectionref{sec-constructor-sequence} for more about the possibilities
+and the limitations.
+
+\subsubsection{\Structure}
+\label{sec-constructor-structure}
+
+A \new{Structure} groups variables so that the collection can be
+manipulated as a single item.  The \Structure's member variables MAY be
+of any type, including other constructor types.  The order of items in
+the \Structure is significant only in relation to the persistent
+representation of that \Structure.
+
+There is a special case of the \Structure data type, called
+\Dataset.  This is the container that encompasses all the
+variables provided in some data source.
+
+\subsubsection{\Grid}
+\label{sec-constructor-grid}
+
+\note{Suggestion: Change this so that there is no distinction between target
+  and map(s). make all arrays in a Grid have an equal footing. The Grid
+  indicates that the elements are related but does not specify which is an
+  independent or dependent variable.}
+
+A \Grid is a special case of a \Structure, used to supply information
+to aid in the interpretation of \Arrays.  A \Grid sets up an
+association between a target \Array and a collection of map
+\Arrays.  Each dimension of the target array MUST correspond to one or
+more dimensions of the map arrays.  For example, a two-dimensional
+target array could map to a collection of identically-sized
+two-dimensional map arrays, or to an assortment of one-dimensional map
+vectors.  A three dimensional array might map to a collection of one-,
+two-, and three-dimensional map arrays.
+
+A common use for this kind of data might be raw satellite data, where
+measurements are frequently not on a regular latitude-longitude grid.
+In the example shown, data values ($z_{m n}$) can be associated with
+arbitrary latitude ($y_{m n}$) and longitude ($x_{m n}$) values, while
+still retaining their gridded nature.  One can easily add a time
+dimension to the collection, as well.  The result is that any element
+in the target array has a corresponding latitude, longitude, and time
+value.
+
+%%% Should deal with Paul's degenerate case, where one map is used
+%%% repeatedly.  ts.
+
+\label{fig-grid-ex}
+\begin{displaymath}
+  target = \left[
+    \begin{array}{cccc}
+      z_{1 1} & z_{2 1} & \cdots & z_{m 1} \\
+      z_{1 2} & z_{2 2} & \cdots & z_{m 2} \\
+      z_{1 3} & z_{2 3} & \cdots & z_{m 3} \\
+      \vdots  & \vdots  & \ddots & \vdots  \\
+      z_{1 n} & z_{2 n} & \cdots & z_{m n} 
+    \end{array} \right]
+\end{displaymath}
+
+\begin{displaymath}
+  map_{longitude} = \left[
+    \begin{array}{cccc}
+      x_{1 1} & x_{2 1} & \cdots & x_{m 1} \\
+      x_{1 2} & x_{2 2} & \cdots & x_{m 2} \\
+      x_{1 3} & x_{2 3} & \cdots & x_{m 3} \\
+      \vdots  & \vdots  & \ddots & \vdots  \\
+      x_{1 n} & x_{2 n} & \cdots & x_{m n} 
+    \end{array} \right]
+  map_{latitude} = \left[
+    \begin{array}{cccc}
+      y_{1 1} & y_{2 1} & \cdots & y_{m 1} \\
+      y_{1 2} & y_{2 2} & \cdots & y_{m 2} \\
+      y_{1 3} & y_{2 3} & \cdots & y_{m 3} \\
+      \vdots  & \vdots  & \ddots & \vdots  \\
+      y_{1 n} & y_{2 n} & \cdots & y_{m n} 
+    \end{array} \right]
+  map_{time} = \left[
+    \begin{array}{c}
+      t_1 \\
+      t_2 \\
+      t_3 \\
+      \vdots \\
+      t_n
+    \end{array}\right]
+\end{displaymath}
+
+This \Grid indicates that each $z$ value $z_{i j}$ corresponds to the values
+of the $longitude$ and $latitude$ maps at $(i,j)$. It also indicates that
+each row of $z_i$ (and $longitude_i$ and $latitude_i$) correspond to an
+element of the column vector $time$. Such a data structure might be used to
+hold satellite data before it has been processed into a picture. In that case
+the $z$ target array might be a reflectance value from the satellite's
+sensor, the $longitude$ and $latitude$ maps would provide the latitude and
+longitude for each pixel in $z$ and the $time$ map would hold the time at
+which each scan line was collected.
+
+A \Grid MUST always contain a target array, MUST contain at least one map
+array. The only other requirement is that each dimension of the target array
+MUST correspond to one or more dimensions in the map arrays. The arrays in
+the \Grid---target or map--- MAY be an \Alias to arrays somewhere else in the
+dataset (\Sectionref{sec-Alias}). This can save transmission bandwidth by
+avoiding the repetition of data when maps are common to more than one \Grid.
+
+A special case of \Grid is an association of an $N$ dimensional \Array with
+$N$ vectors (one-dimensional \new{map vectors}), each of which has the same
+number of elements as the corresponding dimension of the \Array. Each vector
+is used to map indexes of one of the \Array's dimensions to a set of values
+which are normally non-integer ({\it e.g.}, floating point values).
+
+Schematically, the special case of the \Grid is like the following:
+\nopagebreak
+\begin{displaymath}
+  \begin{array}{cl}  & \left[
+      \begin{array}{ccccc}
+        x_1~~  & x_2~~    & x_3~~    & \cdots & x_m~~     \\
+      \end{array} \right] \\[2mm] \left[
+      \begin{array}{c}
+        y_1 \\ y_2 \\ y_3 \\ \vdots \\ y_n
+      \end{array} \right] & \left[
+      \begin{array}{ccccc}
+        z_{1 1} & z_{2 1} & z_{3 1} & \cdots & z_{m 1} \\
+        z_{1 2} & z_{2 2} & z_{3 2} & \cdots & z_{m 2} \\
+        z_{1 3} & z_{2 3} & z_{3 3} & \cdots & z_{m 3} \\
+        \vdots  & \vdots  & \vdots  & \ddots & \vdots  \\
+        z_{1 n} & z_{2 n} & z_{3 n} & \cdots & z_{m n} 
+      \end{array} \right]
+  \end{array}
+\end{displaymath}
+
+Each column of the $z$ \Array corresponds to an entry in the $x$ map
+vector, and each row of $z$ corresponds to some $y$ value.  So, for
+example, the data value at $z_{42,33}$ corresponds to the values
+$x_{42}$ and $y_{33}$. 
+
+The \Grid type was created to deal with geo-located data, with
+irregular spacing of the rows and columns, which is useful when
+converting to and from different map projections.  But the \Grid
+structure is more generally useful.  For example, one of the map
+vectors could be an \Array of $(x,y)$ pairs (stored in a \Structure),
+and the other a series of time values, and the \Grid would become a
+record of several synoptic time series.  The maps MUST be \Arrays, but
+the \Arrays MAY be collections of any \DAP data type except \Sequence, 
+\Grid, \Bi, or \Enum.\footnote{This restriction has been put in place to 
+keep writing general clients tractable. If the set of data types in a 
+\Grid's map \Arrays is allowed to be a \Sequence, for example, any general 
+client would have to be capable of processing that data type in a response. 
+Such a client would be very hard to build.}
+
+\subsubsection{\Sequence}
+\label{sec-constructor-sequence}
+
+A \Sequence can best be described as an ordered collection of zero or more
+\Structures. Each instance in the series consists of the same set of
+variables, but contains different values.
+
+\note{Not enough of a description. We need to state that the set of types in
+  the declaration is used to define a set of instances, etc. And we need to
+  clean up the example maybe replacing the $s_{1 1}$-type notation with
+  something a little more verbose so the idea that each column is s different
+  variable and they can be of different type is made explicit.}
+
+The semantics of the \Sequence data type are very close to those of a table
+in a relational database. You can think of the instances in a \Sequence as
+rows in a traditional relational table. \opendap servers that serve data from
+a DBMS like Oracle or mySQL use \Sequences to reflect the structure of their
+data.
+ 
+A \Sequence $S$ can be represented as:
+
+\begin{displaymath}
+  \begin{array}{cccc}
+    s_{1 1} & s_{2 1} & \cdots & s_{n 1} \\
+    s_{1 2} & s_{2 2} & \cdots & s_{n 2} \\
+    \vdots & \vdots  & \ddots & \vdots \\
+    s_{1 i} & s_{2 i} & \cdots & s_{n i} \\
+    \vdots & \vdots  & \vdots & \vdots
+  \end{array}
+\end{displaymath}
+
+Where each $s_1\cdots s_n$ entry represents a set of \DAP variables,
+and the collection of such entries constitutes the \Sequence.  Every
+entry of \Sequence $S$ MUST have the same number, order, and type of
+variables.  If $s_{2 1}$ is a \type{Float64}, then all the $s_{2 i}$ will
+also be \type{Float64} variables.  Similarly, in a \Sequence which contains 
+an \Array or \Structure, each instance of the \Array or \Structure will be
+the same size.  However, a \Sequence MAY contain a \Sequence and each
+instance of the interior \Sequence MAY have a different number of
+entries.  Also, unlike an \Array, a \Sequence has no explicit size.
+
+\note{Though the semantics of \Sequences places limitations on the
+  kinds of requests a client may make of a server, once the \Sequence has
+  been retrieved, a client program may reference it in any way desired.
+  The \DAP defines the persistent representation of data types, and the
+  interaction between client and server (which includes what kinds of
+  requests can be made for what kind of variables), but the \DAP does
+  not specify the internal implementation of the data types for any
+  client or server.}
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{Names}
+\label{sec-names}
+
+A \DAP variable's name MUST contain ONLY UTF-8 characters. However, some
+interfaces may require that any characters not part of US-ASCII be escaped
+so that the names are represented in US-ASCII.\footnote{The HTTP GET
+  interface from \opendap will require this if it's implemented for \DAP 4.}
+
+\subsubsection{Constructor variable names}
+
+The members of a constructor variable can be individually addressed in the
+following fashion:
+
+\begin{description}
+\item[\Array] Individual items MUST be addressed with a subscripted
+  expression. For an \Array named \lit{Temp}, the fourteenth member of the
+  \Array is referenced as \lit{Temp[13]} (all indexes start at zero). A
+  two-dimensional \Array is addressed with two subscripts, contained in
+  separate brackets: \lit{SurfaceTemp[13][3]}. See \Sectionref{sec-ce}.
+\item[\Structure] Members of the \Structure are addressed by appending
+  the member name to the \Structure name, separated by a forward slash
+  (\lit{/}).  If the \Structure \lit{Position} has a member named
+  \lit{Height}, then it is addressed as \lit{Position/Height}.
+  The members of a \Structure MUST have different names from one
+  another. 
+\item[\Grid] The arrays in a \Grid MAY be referenced in the same
+  fashion as the members of a \Structure.  For a two-dimensional \Grid
+  named \lit{Cloud}, with one-dimensional map vectors \lit{Latitude}
+  and \lit{Longitude}, a member of a map vector is be addressed like
+  this: \lit{Cloud/Latitude[36]}.  This refers to a single latitude
+  value.  You can also request part of the target array:
+  \lit{Cloud/Cloud[36][42]}, which will return a single data
+  measurement.  The \Grid itself MAY be addressed like an \Array:
+  \lit{Cloud[36][42]}, which will return the same value as
+  \lit{Cloud/Cloud[36][42]}, but as a \Grid.  See
+  \Sectionref{sec-ce-transform} for an explanation of how data types
+  are transformed by constraints.
+\item[\Sequence] A \Sequence member is addressed in the same fashion as
+  a \Structure.  That is, a time called \lit{Releasedate} of a \Sequence
+  named \lit{Balloons} is addressed as
+  \lit{Balloons/Releasedate}.  But note that unlike a \Structure,
+  this name references as many different values as there are entries
+  in the \lit{Balloons} \Sequence.  A single entry or range of entries in a
+  \Sequence MAY be addressed with a hyperslab operator like the items
+  in an \Array.  The variables in a \Sequence MUST have different
+  names from one another.
+\end{description}
+
+\subsubsection{Fully Qualified Names}
+\label{sec-FQN}
+
+Variables and \Attributes exist in the same name-space. This impacts the way
+that datasets can be organized. A variable and an \Attribute may not have the
+same name at the same lexical level of a dataset. This is primarily of
+concern for constructor variables; if a constructor variable has a member
+variable named \emph{time} then it MAY NOT also have an \Attribute named
+\emph{time}. This rule allows the \FQN of each \Attribute and variable in a
+\Dataset to be unique. Note that variables each hold an anonymous \Attribute
+structure which is accessed using the variable's name.
+
+\note{Glenn has suggested making each variable a structure where attributes
+  are simply variables that carry an `attribute' tag.}
+
+\paragraph{Variable Names}
+
+The \FQN of a variable is composed of the ordered collection of variable
+names, starting at the \Dataset level but not including the \Dataset name,
+that can be followed to the terminal variable name. The names MUST be
+separated by the slash (``/'') character, and the \FQN MUST begin with the
+slash (``/'') character. Said another way, the \FQN of any variable in a
+\Dataset is the concatenation of the variable's name, preceded by the forward
+slash separated list of the names of the Constructor variables that contain
+it. The first name MUST be a variable name at the \Dataset level preceded by
+a forward slash. Thus, if a \Dataset named \lit{test} contains a structure
+named \lit{sst} which contains a variable named \lit{foo}, the \FQN would be
+\lit{/sst/foo}.
+
+\paragraph{Attribute Names}
+
+The \FQN of an \Attribute is composed of the ordered collection of variable
+and \Attribute names, starting at the \Dataset level but not including the
+\Dataset name, that can be followed to the terminal source \Attribute. The
+names MUST be separated by the slash (``/'') character, and the \FQN MUST
+begin with the slash (``/'') character. If a \FQN for an \Attribute terminates
+with a regular variable name, then it will be interpreted to refer to the
+collection of \Attributes associated with said variable. Thus, if a \Dataset
+named \lit{test} contains a structure named \lit{sst} which contains a
+variable named \lit{foo}, the \FQN of the \Attributes of foo would be
+\lit{/sst/foo}. If \lit{foo} possessed an \Attribute named \lit{fruit} then
+the \FQN for \lit{fruit} would be \lit{/sst/foo/fruit}.
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{Variable Aliases}
+\label{sec-Alias}
+
+\note{Suggestion: Since what we're trying to do is set up a scheme whereby a
+  variable with one name can be refereed to using another name, lets do just
+  that. We can get around the problem of things crossing into and out of a
+  Sequence by limiting the scheme to one that operates within a given lexical
+  scope. At the same time we can add a mechanism to Grid that provides a way
+  for it to use a Map defined somewhere else.}
+
+A variable in a \DAP data source might contain no data of its own, but
+simply be a pointer to some other variable in the set.  Such a
+variable is called an \Alias.  An \Alias is useful for achieving
+compatibility with other data sources, for conforming to metadata
+requirements, and for conserving bandwidth in large data transmissions.
+
+A variable \Alias MAY refer only to another variable. It MAY NOT refer to an
+\Attribute. It MAY NOT refer to another variable \Alias.
+ 
+An \Alias MUST be defined using the \FQN (see \Sectionref{sec-FQN}) of the
+variable to which it refers. This means that if a \Dataset called \lit{test}
+contains a \Structure called \lit{S} that contains both a variable called
+\lit{V} and a variable \Alias directed at that variable called \lit{M}, then
+\lit{M} MUST reference \lit{V} as \lit{/test/S/V}.
+
+There are significant restrictions on the use of \Aliases in
+conjunction with the \Sequence data-type. An \Alias member of a
+\Sequence MAY refer to a member variable of the same \Sequence. An
+\Alias member of a \Sequence MAY NOT refer to a variable outside of
+the \Sequence. This may seem a little arbitrary at first, but consider
+that every member variable of a \Sequence is multi-valued. It makes
+little sense to allow an \Alias to refer to such a variable, unless
+the \Alias exists in the same dimensional space.  This can only be
+guaranteed if the \Alias is a member of the same \Sequence as the
+variable to which it refers.
+
+See the discussion of the \element{Alias} element in
+\Sectionref{sec-xml-Alias} for specific information about the syntax
+of an \Alias.
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Attributes %%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Attributes}
+\label{sec-Attributes}
+
+Each variable in a data source MAY have zero or more \Attributes
+associated with it.  The entire dataset (see
+\Sectionref{sec-constructor-structure}) MAY itself have \Attributes,
+too.  These are called \new{global \Attributes}.  All \Attributes are
+held within \new{Attribute structures}, even when there is only one
+\Attribute associated with a variable.  Every variable acts as an
+\Attribute structure.  This includes the \Dataset type, which contains
+the global \Attributes. 
+
+While the \DAP does not require any particular \Attributes, some may be
+required by various \new{metadata conventions}. The \new{semantic metadata}
+for a data source comprises the \Attributes associated with that data source
+and its variables.
+
+The data model for \Attributes is somewhat simpler than that for variables. 
+An \Attribute MAY be a set of 1 or more values of the same 
+\emph{atomic type}, OR it MAY be a \Structure that contains other 
+\Attributes, but not individual values. In other words an \Attribute 
+MAY be a list of values of the same atomic type, or it MAY be a container 
+containing additional \Attributes. An \Attribute MAY NOT contain both values 
+and other \Attributes.
+
+An \Attribute's value MAY be any of the following atomic types:
+
+\begin{itemize}
+\item \lit{Boolean}
+\item \lit{Byte}
+\item \lit{Int16}
+\item \lit{UInt16}
+\item \lit{Int32}
+\item \lit{UInt32}
+\item \lit{Int64}
+\item \lit{UInt64}
+\item \lit{Enumeration}
+\item \lit{Float32}
+\item \lit{Float64}
+\item \lit{String}
+\item \lit{Time}
+\item \lit{URL}
+\end{itemize}
+ 
+An \Attribute that contains other \Attributes MUST be of type \lit{structure}
+or \lit{modifier}.
+
+There are two special types of \Attributes: \lit{modifier} and \lit{alias}.
+\Attributes of type \lit{alias} are discussed in
+\Sectionref{sec-attribute-aliases}. \Attributes of type \lit{modifier} are
+discussed in \Sectionref{sec-attr-processing}.
+
+There are examples of \Attribute definitions in the description of the
+\Attribute element in \Sectionref{sec-xml-Attribute}.
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{Attribute Aliases}
+\label{sec-attribute-aliases}
+ 
+ A special type of \Attribute is \new{alias}. In a manner comparable to a
+variable \Alias (see \Sectionref{sec-Alias}), a variable's \Attributes MAY
+also be aliased, with an \Attribute of one name referring to a different
+\Attribute (possibly with a different name). An \Attribute of one variable
+MAY be an alias that refers to an \Attribute of another variable. \Attribute
+aliases MAY only refer to \Attributes. They MAY NOT refer to variables or
+other \Attribute aliases.
+
+An \Attribute alias MUST be defined using the \FQN of
+the \Attribute to which it refers. See \Sectionref{sec-FQN}
+
+See the discussion of the \Attribute \lit{alias} type in
+\Sectionref{sec-xml-Attribute-Alias} for specific information about the
+syntax of an \Attribute \lit{alias}.
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{Processing Attributes}
+\label{sec-attr-processing}
+
+%%% What if modifications are by hand?  not automated?  Stuff like
+%%% that happens, you know.  ts.
+
+The processing \Attributes are a special set of \Attributes used to record
+modifications to a dataset's \Attributes or its data. After a dataset is
+released, other people may copy the data and make it available in modified
+form, or with secondary data products added, or with \Attribute information
+that may make the data conform to some data standard. However useful these
+modifications might be, it is essential that users of some dataset be able to
+determine which parts of that set are original, and which have been added
+subsequent to the original publication. The processing \Attributes exist to
+provide a way to create an ``audit trail'' that will permit users to
+determine how a dataset has been modified.
+
+The key piece of information is a global \Attribute of type \lit{modifier},
+which is essentially the signature of the organization that has performed the
+modification. A \lit{modifier} \Attribute contains:
+
+\begin{itemize}
+\item A \DAP URL for the original source of data.
+\item The name or description of the organization that is providing
+  the modified data.
+\item The URL of the service which has introduced the changes.
+\end{itemize}
+
+%%% I lightened up this section to reduce duplicated information.  ts.
+The details of the \lit{modifier} attribute's syntax is described in
+\Sectionref{sec-xml-proc-attr}. 
+
+\Attributes of type \lit{modifier} MAY only appear at the top level of a data
+set. They MAY not be used as members of other \Attributes or of other
+variable \Attribute structures. \exampleref{ex-modifier-attr} shows an example 
+of a modifier \Attribute.
+
+
+
+%%%%%%%%%%%%%%%%%%% Constraint Expressions %%%%%%%%%%%%%%%%%%%
+\section{Constraint Expressions}
+\label{sec-ce}
+
+A \new{\CE} provides a way for \DAP client programs to request certain
+variables, or parts of certain variables, from a dataset. Many datasets are
+large and many variables in datasets are also large. Often clients are
+interested in only a small number of values from the entire dataset.
+Constraint expressions provide a way for clients to tell a server which
+variables, and in many cases, which parts of those variables, they would
+like. In addition, the \CE can be used to request that the server to omit the
+\Attribute information from a \DDX.\footnote{\Sectionref{sec-DDX}.}
+
+This section presents the subsampling abilities that MUST be provided by a
+\DAP server. It does so without binding these capabilities to any
+particular syntax; see \Sectionref{sec-xml-ce} for the XML representation of
+a \CE. Some transport protocols may choose to implement additional
+syntaxes but MUST implement the syntax described in Section~\ref{sec-xml-ce}.
+
+Note that an empty \CE implies that the entire data source is to be accessed.
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{Limiting data by type and by value}
+\label{sec-ce-clauses}
+
+A \CE provides two different methods to access the information held by a data
+source. The \CE can be used to limit data using the names of variables or by
+scanning variables and returning only those values that satisfy certain
+relational expressions. The former are referred to as \new{projections} while
+the latter are called \new{selections}.
+
+A \CE MAY combine both projection and selection constraints. For example, a
+projection might specify that temperatures held in a \Sequence are to be
+returned, and a selection would specify that only \Sequence entries with
+dates later than 1999 are to be examined. The result returned from a request
+like this would be a \Sequence of temperature measurements taken after 1999.
+
+\Sectionref{sec-ce-projections} describes the projection operations which any
+\DAP implementation MUST support and, likewise,
+\Sectionref{sec-ce-selections} describes the required selection operations.
+
+To provide implementors with a means to extend the \CE mechanism, it is
+possible to add functions to a server and to call those as part of the \CE.
+Functions are described in \Sectionref{sec-ce-functions}.
+
+\subsubsection{Projections}
+\label{sec-ce-projections}
+
+% Describe the types of projection operations
+% Choosing parts based on field names
+% Choosing parts based on hyperslabs
+
+The \new{projection clause} of a \CE provides a way to choose parts of a data
+set based on the shape of the \Dataset and the variables that it comprises.
+There are two types of projection operations. First, it is possible to choose
+individual fields of the constructor data types. This is called \new{field
+projection} and applies to the \Structure, \Grid and \Sequence data types in
+the following ways:
+\begin{description}
+  \item[\Structure] A field projection which chooses one or more fields from
+  a \Structure variable causes a \DAP server to return only those named
+  fields from the \Structure. Note that the \Dataset itself is a \Structure.
+
+  \item[\Grid] A field projection which chooses one or more fields from
+  a \Grid variable causes a \DAP server to return only those named
+  fields from the \Grid. It is likely that the variable returned will no
+  longer meet the criteria for a correctly formed \Grid data type, so the
+  variable may be returned as a \Structure instead (see 
+  \Sectionref{sec-ce-transform}).
+
+  \item[\Sequence]  A field projection which chooses one or more fields from
+  a \Sequence variable causes a \DAP server to return only those named
+  fields from the \Sequence. For the \Sequence type, this means returning the
+  $N$ instances but limiting the fields those given in the field
+  projection. For example, suppose the \Sequence $S$ has $p$ fields:
+  
+ \begin{displaymath}
+ \begin{array}{ccc}
+   s_{1 1} & s_{2 1} & s_{3 1} \\
+   s_{1 2} & s_{2 2} & s_{3 2} \\
+    \vdots & \vdots  & \vdots  \\
+   s_{1 i} & s_{2 i} & s_{3 i} \\
+    \vdots & \vdots  & \vdots
+ \end{array}
+ \end{displaymath} 
+ 
+If a field projection is used to choose only the second field, the result of
+accessing $S$ would be:
+ \begin{displaymath}
+ \begin{array}{c}
+   s_{2 1}\\
+   s_{2 2}\\
+   s_{2 3}\\
+   s_{2 4}\\
+   \vdots \\
+ \end{array}
+ \end{displaymath}
+\end{description}
+
+The second type of projection is a \new{hyperslab}. A hyperslab is used to
+limit returned data to those elements that fall within a range of index
+values, and MAY also specify that the range be subsampled using a
+\new{stride}. By including a hyperslab projection for one or more dimensions
+of a variable it is implied that any unnamed dimensions are to be returned in
+their entirety.\footnote{For some interfaces, it may be necessary to place more
+restrictions on hyperslab projections.} A hyperslab is applied to the \Array,
+\Grid and \Sequence types in the following way:
+\begin{description}
+  \item[\Array] \Array dimensions are numbered $0, \ldots, N-1$ for an \Array
+  of rank $N$. Within each dimension of size $M$, elements are numbered $0,
+  \ldots, M-1$. A hyperslab projection for dimension $n, 0 \leq n < N$ MUST
+  include the starting index $i_{n_{s}}$ and ending index $i_{n_{e}}$ such
+  that $i_{n_{s}} \leq i_{n_{e}} \forall \{ 0 \leq i_{n} < M \}$. If a stride
+  is included in the hyperslab and is greater than $i_{n_{e}} - i_{n_{s}}$
+  then the hyperslab is equivalent to one where $i_{n_{s}} = i_{n_{e}}$ and
+  the original value of $i_{n_{e}}$ is discarded.
+
+\item[\Grid] \Grid dimensions are numbered as are \Array dimensions; \Grid
+  dimensions MAY have hyperslab projections applied to them in a manner
+  similar to \Arrays except that a hyperslab applied to a \Grid is
+  applied to not only the target array, but also all the corresponding map
+  arrays. For example, given the \Grid:
+\begin{displaymath}
+  target = 
+   \left[
+    \begin{array}{cccc}
+      1 & 2 & 3 & 4 \\
+      5 & 6 & 7 & 8 \\
+      9 & 10 & 11 & 12 \\
+      13 & 14 & 15 & 16
+    \end{array} \right]
+   map_{1} = 
+   \left[
+    \begin{array}{cccc}
+      -53 & -52 & -51 & -50 \\
+      -52 & -51 & -50 & -49 \\
+      -51 & -50 & -49 & -48 \\
+      -50 & -49 & -48 & -47 
+    \end{array} \right]
+   map_{2} = 
+   \left[
+    \begin{array}{cccc}
+      26 & 25 & 24 & 23 \\
+      25 & 24 & 23 & 22 \\
+      24 & 23 & 22 & 21 \\
+      23 & 22 & 21 & 20
+    \end{array} \right]
+\end{displaymath}
+A hyperslab projection which chose row indexes 1 and 2 and column indexes 1
+and 2 would cause a server to return:
+\begin{displaymath}
+  target = 
+   \left[
+    \begin{array}{cc}
+      6 & 7\\
+      10 & 11\\
+    \end{array} \right]
+   map_{1} = 
+   \left[
+    \begin{array}{cc}
+      -51 & -50\\
+      -50 & -49\\
+    \end{array} \right]
+   map_{2} = 
+   \left[
+    \begin{array}{cc}
+      24 & 23\\
+      23 & 22\\
+    \end{array} \right]
+\end{displaymath}
+for the \Grid.
+
+Note that a field and hyperslab projection can be combined for a \Grid to
+choose only part of one of the fields, say just part of the the target
+\Array. In this case, the hyperslab applied to one field of the \Grid is
+equivalent to a hyperslab applied to an \Array. Effectively, the field
+projection yields an \Array and the hyperslab is then applied to that \Array.
+
+\item[\Sequence] A hyperslab can be applied to a \Sequence. A \Sequence with
+  $M$ instances can have a hyperslab projection applied to it as if it is an
+  \Array of rank 1. Since the \Sequence type does not contain an explicit
+  dimension size, the size $M$ is not known until the entire \Sequence is
+  accessed.\footnote{For many \Sequence variables, it may never be the case
+  that the entire \Sequence is accessed since it may contain millons of
+  instances.} A hyperslab projection can be used to ask for the first $m$
+  elements, the next $m$ elements, etc., which may be very useful for clients
+  which need to know the sizes of varaibles before accessing them. A hyperslab
+  projection for a \Sequence $(i_{s}, i_{e})$ will return $m$ instances of
+  the \Sequence such that $m = \lfloor i_{e}, M-1 \rfloor - i_{s}$ depending
+  on whether $i_{e}$ is an index greater than the number of instances in the
+  \Sequence.
+\end{description}
+
+It is possible to ask for values from several variables in a single \CE by
+including several projections in the \CE. Also note that an empty \CE, by
+convention, projects all of every variable in a data source.
+
+\subsubsection{Selections}
+\label{sec-ce-selections}
+
+% Describe the types of selection operations
+% Choosing parts based on relational expresssions
+% binding selections to a selectable data type
+
+A \new{selection} provides a way to limit data accessed based on the value(s)
+of those data. In many ways selections are similar to WHERE claues in
+SQL\cite{date:DBMS}. A selection is composed of one or more relational
+sub-expressions. Each sub-expression MUST be bound to a variable listed in a
+projection clause. When several sub-expressions constitute a selection, the
+boolean value of the selection is the logical \lit{AND} of each of the
+boolean values of each sub-expression. Note that there is no way to perform a
+logical \lit{OR} operation on the sub-expressions but there is a way, within
+a sub-expression, to test several values and return \lit{true} if any satisfy
+the releation.
+
+Each of the relational sub-expressions ({\it i.e.}, relations) is composed of
+two operands and a relational operator. Each operand MUST be an atomic data
+type; it MAY be a \FQN from the data source or a constant. In some cases
+there are further limitations on the allowed types based on the relational
+operator. \Tableref{tab-ce-relations} lists the operators, their meaning and
+the data types on which they may be applied.
+
+\begin{table}[htbp]
+  \begin{center}
+    \caption{\DAP Selection Relational Operators}
+    \label{tab-ce-relations}
+%    \begin{tabular}{p{.75in}p{1.5in}p{2.0in}} \\
+    \begin{tabular}{cp{1.5in}p{2.0in}} \\
+      \tblhd{Operator} & \tblhd{Meaning} & \tblhd{Types} \\ \hline
+
+      $\verb+<+$ & Less than 
+      & Byte, Int16, Int32, Int64, UInt16, UInt32, UInt64, Enumeration, Float32,
+      Float64, Time \\
+
+      $\verb+<=+$ & Less than or equal to 
+      & Byte, Int16, Int32, Int64, UInt16, UInt32, UInt64, Enumeration, Float32,
+      Float64, Time \\
+
+      $\verb+>+$ & Greater than 
+      & Byte, Int16, Int32, Int64, UInt16, UInt32, UInt64, Enumeration, Float32,
+      Float64, Time \\
+
+      $\verb+>=+$ & Greater than or equal to 
+      & Byte, Int16, Int32, Int64, UInt16, UInt32, UInt64, Enumeration, Float32,
+      Float64, Time \\
+
+      $\verb+=+$ & Equal 
+      & Byte, Int16, Int32, Int64, UInt16, UInt32, UInt64, Boolean, Enumeration,
+      Float32, Float64, String, Url, Time \\
+
+      $\verb+!=+$ & Not equal 
+      & Byte, Int16, Int32, Int64, UInt16, UInt32, UInt64, Boolean, Enumeration,
+      Float32, Float64, String, Url, Time \\
+
+      $\verb+=~+$ 
+      & Regular expression match & String, Url, Time \\ 
+
+    \end{tabular}
+  \end{center}
+\end{table}
+
+The operands in a relation MAY be either single or multi-valued. If an
+operand has more than one value, each value is used in succession when
+evaluating the relation. For example, suppose there is a relation: 
+
+\begin{center}
+$site = \{``Diamond\_St'', ``Blacktail\_Loop''\}$
+\end{center}
+
+Then that relation is true for any instance where $site$ is either
+``Diamond\_St'' \lit{OR} ``Blacktail\_Loop''.
+
+Selections MAY be applied to \Sequence and \Grid data types in
+the following ways:
+
+\begin{description}
+  \item[\Sequence] Logically, the relations in a selction bound to a
+    \Sequence are evaluated once for every instance ({\it i.e.}, row) of the
+    \Sequence; the result of applying the selection to the \Sequence is a
+    \Sequence where all of the instances satisfy all of the relations.
+
+    A \Sequence $S$ with three fields and four instances such as:
+    \begin{displaymath}
+      \begin{array}{ccc}
+        index & temperature & site \\
+        10 & 17.2 & Diamond\_St \\
+        11 & 15.1 & Blacktail\_Loop \\
+        12 & 15.3 & Platium\_St \\
+        13 & 15.1 & Kodiak\_Trail \\
+      \end{array}
+    \end{displaymath}
+    A selection such as $index \verb+>=+ 11$ would choose the last three instances:
+    \begin{displaymath}
+      \begin{array}{ccc}
+        index & temperature & site \\
+        11 & 15.1 & Blacktail\_Loop \\
+        12 & 15.3 & Platium\_St \\
+        13 & 15.1 & Kodiak\_Trail \\
+      \end{array}
+    \end{displaymath}
+    The selection $site \verb+=~ ".*\_St"+$ would choose two instances:
+    \begin{displaymath}
+      \begin{array}{ccc}
+        index & temperature & site \\
+        10 & 17.2 & Diamond\_St \\
+        12 & 15.3 & Platium\_St \\
+      \end{array}
+    \end{displaymath}
+    And a selection with the two sub-expressions $index\verb+<=+11$, 
+    $site\verb+=~".*\_St"+$ would return only one instance:
+    \begin{displaymath}
+      \begin{array}{ccc}
+        index & temperature & site \\
+        10 & 17.2 & Diamond\_St \\
+      \end{array}
+    \end{displaymath}
+
+\item[\Grid] When selections are applied to \Grids with multi-dimensional map
+arrays, the returned data MUST be the smallest rectangular (contiguous)
+subset of the \Grid that contains all the data that satisfies the constraint.
+For example, suppose there is a \Grid which has a target array of rank two
+and two map arrays, each of which also have rank two, such as:
+\begin{displaymath}
+  target = 
+   \left[
+    \begin{array}{cccc}
+      1 & 2 & 3 & 4 \\
+      5 & 6 & 7 & 8 \\
+      9 & 10 & 11 & 12 \\
+      13 & 14 & 15 & 16 \\
+    \end{array} \right]
+   lat = 
+   \left[
+    \begin{array}{cccc}
+      -53 & -52 & -51 & -50 \\
+      -52 & -51 & -50 & -49 \\
+      -51 & -50 & -49 & -48 \\
+      -50 & -49 & -48 & -47 \\
+    \end{array} \right]
+   lon = 
+   \left[
+    \begin{array}{cccc}
+      26 & 25 & 24 & 23 \\
+      25 & 24 & 23 & 22 \\
+      24 & 23 & 22 & 21 \\
+      23 & 22 & 21 & 20 \\
+    \end{array} \right]
+\end{displaymath}
+Suppose the \Grid is constrained by a selection clause that limits returned
+values to those where \lit{lat} is greater than 24.5 and \lit{lon} is less
+than -50.5. The \Grid returned by such a constraint would be:
+\begin{displaymath}
+   \left[
+    \begin{array}{cc}
+      1 & 2  \\
+      5 & 6  \\
+    \end{array} \right]
+   \left[
+    \begin{array}{cc}
+      -53 & -52  \\
+      -52 & -51  \\
+    \end{array} \right]
+   \left[
+    \begin{array}{cc}
+      26 & 25  \\
+      25 & 24  \\
+    \end{array} \right]
+\end{displaymath}
+
+Notice that one point is returned that does not satisfy the \element{Select}
+provision. \Grids MUST be rectangular.
+\end{description}
+
+\subsubsection{Server Functions}
+\label{sec-ce-functions}
+
+A \CE MAY also use functions executed by the server. These can appear in a
+selection or in a projection, although there are restrictions about the data
+types functions can return. 
+
+% Functions in projections
+% Functions in selections
+% Functions and errors
+
+A function which appears in the projection clause MAY return any of the \DAP
+data types. In this case the return value of the function is treated as if it
+is a variable present in the top level of the \Dataset.
+
+A function which appears in the selection clause MAY return any atomic type
+if it is used in one of the relational sub-expressions. If a function in the
+selection clause is used as the entire sub-expression, it MUST return a
+\Boolean value.
+
+% I think this should stay here; we need to provide for an unambiguous way to
+% get error information back to clients. I think that has to come from this
+% level and not vary per transport. The transports are free to implement
+% error returns however they can. 10/27/03 jhrg
+When functions encounter an error, a \DAP server MUST signal that condition
+by returning an error response. A server MAY NOT return a partial response;
+any error encountered while evaluating the \CE MUST result in a response that
+contains an unambiguous error message.
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{Data Type Transformation Through Constraints}
+\label{sec-ce-transform}
+
+When a constraint expression has a projection clause that identifies a piece
+of a constructor variable, such as one field of a \Structure or just the
+array part of a \Grid, the \new{lexical scoping} of the variable is not
+abandoned. This is important for avoiding name collisions. For example, if
+you request only one item from a \Structure, you get a \Structure returned
+that has only one member variable.
+
+Here is the behavior for each data type:
+
+\begin{description}
+\item[\Array] An \Array MUST be returned as an \Array of the same rank as
+  the source \Array. A hyperslab request that effectively eliminates a
+  dimension by reducing its size to $1$ does \emph{not} reduce the rank of
+  the returned \Array. For example, suppose a 10 by 10 element \Array was
+  subsampled to a 1 by 2 \Array. The returned variable would still be
+  described as a two dimensional \Array.
+  
+\item[\Structure] A \Structure MUST bereturned as a \Structure. If the
+  projection clause of a \CE selects only one member of the \Structure, then
+  a one-member \Structure MUST be returned. If more than one member of the
+  \Structure are named in the projection clause, they MUST be returned in the
+  same \Structure.
+  
+\item[\Grid] A \Grid modified with a hyperslab operator MUST return
+  another \Grid, following the same rules as an \Array.  But if the
+  projection clause specifies the elements of the \Grid independently
+  of one another---the target array, or one of the maps---then a
+  \Structure is returned containing only the specified variables.  A
+  two-dimensional \Grid named \lit{Cloud} will return a \Grid in
+  response to a request like this: \lit{Cloud[1:10][20:30]}.  But a
+  request for the target array
+  alone---\lit{Cloud/Cloud[1:10][20:30]}--- will return a \Structure
+  called \lit{Cloud} containing an \Array called \lit{Cloud}.  The map
+  arrays will not be returned.
+
+  A \Grid modified with a selection MUST remain a \Grid. The return value of
+  such a constraint MUST be the smallest rectangular \Grid that contains all
+  the data points that satisfy the given constraint. Further, the rank of the
+  \Grid MUST remain the same. A four-dimensional \Grid, when sampled with a
+  selection clause, MUST return a four-dimensional \Grid, even if some
+  of the dimensions are of length one.
+  
+\item[\Sequence] A \Sequence MUST be returned as a \Sequence, even
+  if a selection clause selects only a single entry or no entry at
+  all.  If a projection clause identifies more than one member of the
+  \Sequence, they MUST be returned in the same \Sequence.
+
+\end{description}
+
+
+
+\note{ \\[2mm]
+What about allowing selection based on \Attribute content? 
+Say, all variables with origin=``helena''? All variables with a 
+\Attribute named ``units''? All variables with an \Attribute 
+named ``units'' whose value is ``cm''?\\[2mm]
+This might be difficult, but well worth the effort.
+}
+
+
+%%%%%%%%%%%%%%%%%% Client/Server Interaction %%%%%%%%%%%%%%%%%
+\section{Client/Server Interaction}
+\label{sec-interaction}
+
+The \DAP is based on the request/response paradigm for client-server
+interaction.\footnote{Should we add a reference to Fielding, ``REST''
+  here?}  This section provides an overview of the requests and
+responses ({\it i.e.}, the messages) which \DAP-compliant servers MUST
+support. These messages are used to request information about the
+capabilities of a server, about data made accessible by that server,
+as well as requesting data values themselves.  The latter---the
+messages that access a particular data source---use the previously
+described data model. The other messages use simpler documents with
+contents that do not need a formal abstract definition.
+
+The table below provides a description of the \DAP messages. The precise
+details of the requests and responses are described in
+\Sectionref{sec-dataobject} and \Sectionref{sec-xml-ce}. The mechanism used to
+communicate those requests and responses to/from a client and server depend
+on the transport protocol in use. (Consult \DAPHTTP for an HTTP
+implementation.) But whatever the protocol, a server MUST be able to provide
+the responses outlined in \Tableref{tab-req-and-resp}.
+
+\begin{table}[htbp]
+  \begin{center}
+    \caption{\DAP Requests and Responses}
+    \label{tab-req-and-resp}
+    \begin{tabular}{p{2.5in}p{2.5in}} \\
+      \tblhd{Requests} & \tblhd{Response} \\ \hline
+      Data, MAY include a \CE (\Sectionref{sec-ce})
+      & \DDX (\Sectionref{sec-dataobject})\\ \hline
+
+      Data (binary) 
+      & \Blob (\Sectionref{sec-blob})\\ \hline
+
+      Characteristics of server 
+      & Capabilities document (\Sectionref{sec-ce-functions}) \\ \hline
+
+      & \ErrorX object (\Sectionref{sec-errorx}) \\ \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+For a client to get data from a server takes at minimum two exchanges, first
+to request the \DDX, and second to get the \Blob. The \DAP is at root a
+stateless protocol. The server is not required to remember anything from one
+request to another. A client has the responsibility to make the two requests
+correspond. 
+
+If a \CE is included in a request for a \DDX, the returned \DDX MUST contain
+a \Blob reference that refers to the constrained data. 
+
+In addition to these data objects, a \DAP server MAY provide additional
+``services'' which clients may find useful.  The HTTP implementation
+of the \DAP, for example, provides HTML-formatted representations of
+a dataset's structure and a way to get data represented in CSV-style ASCII
+tables. These additional services are not described in this document; they
+are considered specific to different transport protocols and are
+described by the specifications for those particular protocols (such as the
+\DAPHTTP document).
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{Request and Response Information}
+\label{sec-request-response}
+
+The following information MAY be included in ANY request-response interaction
+between a \DAP client-server pair. Because different transport protocols
+often provide ways to encode this type of information ({\it e.g.}, HTTP
+provides a way to encode the date of the response), a concrete syntax for
+representing this information is not presented here; that syntax MUST be
+included in the transport-specific \DAP specification.
+
+\begin{description}
+\item[Compression] \DAP clients that can process compressed responses MUST be
+  provided a way to indicate this to a server. A server MAY compress a
+  response ONLY if a client has indicated that it can process the compressed
+  response. A server is NEVER under an obligation to compress a response.
+
+  Support for particular compression algorithms is specific to the transport
+  protocol. 
+
+\item[User agent] \DAP clients MAY provide information about the client
+  software to the server. \DAP servers MAY log this information. Note that
+  when requested, \DAP servers MUST provide their version and software
+  information to clients and do so using a special response.
+
+\item[Date] Servers MUST provide a date stamp which conforms to RFC 1033 in
+  their responses, and they SHOULD also provide the last
+  modification date, also conformant to RFC 1033, of the data requested.
+
+\item[Byte Order] \DAP clients MUST be able to indicate their native
+  byte order to a server. A server MAY choose to use little-endian byte order
+  with a client that indicates that is its native byte order. By default the
+  \DAP uses big-endian byte order for all data exchanges. All \DAP clients
+  MUST be able to understand responses in big-endian byte order.
+
+\item[Floating-point Format] Like the byte order, a client and server that
+  agree on a floating-point format different than the IEEE 754 standard used
+  by the \DAP should be able to communicate that fact to each other, and skip
+  converting data only to convert it back. A client MUST be able to indicate
+  its preferred floating-point format; a server MUST be able to respond with
+  floating-point value encoded using IEEE 754 and DOES NOT have to honor a
+  client's request for data to be delivered in a different representation.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% Responses %%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Responses}
+\label{sec-dataobject}
+
+In order to pass data from server to requester, the data needs to be
+transformed into a representation both can understand. In the same way that
+the idea behind a book needs to be written down and printed in order to
+transfer the idea from the writer to the reader, a dataset---an abstract set
+of numbers and the relationships between them---needs to be transformed into
+a more tangible form in order to be communicated.
+
+For the \DAP, this form is called the \new{persistent
+representation}.\footnote{Sometimes the persistent representation is called
+the \new{network representation}.} This is to contrast it with the
+representations used within the memory of some program that can process this
+data, which of course only persist as long as the program is running. The
+persistent representation may also be contrasted with the file format used to
+store some data on a disk somewhere. File formats, though persistent, tend to
+be specific to particular machine architectures. The \DAP needs a data
+representation that can be understood by all the clients and server programs
+likely to be used on it.
+
+Under the \DAP, there are four categories of information that pass
+from the server to the client: information about data, the data
+itself, error messages, and information about the server.  The first
+three of these correspond to the three important \DAP data objects:
+the \DDX, \Blob, and \ErrorX objects.  Information about a \DAP server
+is provided by version messages and the \CapX.  These are described in
+detail in this section.
+
+Some of the details about how \DAP data objects are transmitted from
+server to client are specific to the communication protocol used.  For
+these details relevant to the HTTP version of the \DAP, see \DAPHTTP.
+For a description of the data objects described by the \DDX object,
+see \Sectionref{sec-variables} and \Sectionref{sec-Attributes}.
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{DDX}
+\label{sec-DDX}
+
+The \DDX is an XML representation of the structure of all or part of a data
+set, as well as a description of the variables within that \Dataset. A data
+set's structure is its constituent variables plus its global attributes. Each
+variable, has a name, type, value, zero or more \Attributes and an optional
+origin. The \Dataset itself is modeled as a \Structure variable and so has
+its own set of \Attributes. These attributes are the \Dataset's global
+attributes. The values of variables are encoded in the \Blob object, and are
+only indirectly part of the \DDX object. \Attribute values, however, are
+recorded directly in the \DDX. The \CE mechanism can be used to request a
+\DDX that does not contain any \Attribute information (see
+\Sectionref{sec-xml-ce})
+
+The \DDX is intended to be a way for client programs to both learn about the
+contents of a data source and then to access some or all of the information
+held by that data source. It is possible to ask a \DAP server to send a \DDX
+which describes only a portion of the data source's complete content
+({\it e.g.}, to send only one variable within the data source) and to limit
+that to only the first 100 by 100 elements (see \Sectionref{sec-ce} for
+information about \CEs). In normal operation a client program will ask a
+server for the \DDX for an entire \Dataset, determine the variables in which
+it is interested and then request a second \DDX that contains only those
+variables using a \CE. It will ignore the \Blob reference in the first \DDX
+and use the \Blob in the second to access the values it wants.
+
+When clients access the information held in a data source's variable, they do
+so using the \Blob. It is the \Blob which is used to transfer that
+information from the data source, via a server, to the client. A \DDX
+provides descriptive information about the data source, the names, types and
+\Attributes held by the data source. The \DDX also provides a reference to
+the \Blob that holds that information. When a client requests the \DDX for an
+entire data source, it is sent a \DDX which contains a reference to the \Blob
+which, in turn, will return the values of the all the variables. The client
+is under no obligation to access a \Blob and the server need not `create' it.
+The server's contract is simply that, if asked, it will return the \Blob.
+
+Each \DDX holds not only the name and type of each variable, but also
+its \Attributes. \Attributes do not have their values accessed using a
+separate document/object as variables do; their values are included in
+the \DDX. If a client is to make several requests from a single data
+source, it is important to avoid the needless repetition of the
+\Attribute information.  It is possible, therefore, using the \CE, to
+ask a data source to return a \DDX which contains no \Attribute
+information.
+
+\examplelabel{ex-ddx}
+
+Here is an example \DDX which contains a single two dimensional array. The
+\Dataset also contains a single global \Attribute:
+
+\begin{vcode}{t}
+<Dataset name="fnoc1.nc''
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns="http://www.opendap.org/ns/OPeNDAP"
+ xsi:schemaLocation="http://www.opendap.org/ns/OPeNDAP  
+ http://dods.coas.oregonstate.edu:8080/opendap/opendap.xsd" >
+
+    <Attribute name="Description" type="String">
+        <value>Fleet Numerical Wind Data</value>
+    </Attribute>
+
+    <Array name="u">
+        <Attribute name="long_name" type="String">
+            <value>U_Wind_Vector</value>
+        </Attribute>
+        
+        <Float32/>
+        
+        <dimension size="16" name="latitude"/>
+        <dimension size="17" name="longitude"/>
+        <dimension size="21" name="time"/>
+    </Array>
+
+    <Blob URL="http://dcz.opendap.org/dap/data/nc/fnoc1.nc?u"/>
+</Dataset>
+\end{vcode}
+
+\note { Each of the XML elements used to declare a variable has a
+\texttt{name} attribute. The XML Schema (the rigorous definition) for the
+syntax of the XML document declares that the \texttt{name} attribute is
+optional. In practice this is not the case, with one exception. Consider
+that, without a name, there is no way for a client to ask for a variable. The
+only exception to this is the template variable for an \Array. Each \Array
+has a single child element which declares the type of the \Array.
+Naming the child element is redundant (see \Sectionref{sec-xml-Array}), and
+if named the name will be ignored. }
+
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{XML Schema}
+\label{sec-XML-Schema}
+
+The syntax and rules for the \DDX document are encapsulated (to the extent 
+possible) in an XML schema. The XML schema language is not adequate to 
+completely define and enforce the rules for the \DDX. The description of 
+the \DDX elements in \Sectionref{sec-DDX-XML-Elements} constitutes the 
+complete list of rules and syntax for the \DDX. 
+
+\subsubsection{XML Schema Validation}
+\label{sec-xml-valiadtion}
+
+The XML schema is used to validate \DDX documents as part of parsing them 
+into memory resident software entities. The act of validating an instance 
+of the \DDX against the schema guarantees that the \DDX will fulfill all 
+of the syntax rules encapsulated in the schema, thus allowing subsequent 
+software in the processing chain to take as ``true'' a large number of 
+facts about the content and structure of the instance of the \DDX document.
+
+OPeNDAP servers MUST validate their \DDX documents before sending them in 
+response to a request. OPeNDAP clients MAY validate the returned \DDX 
+document, but this is seen as non-essential as the servers should be 
+providing correct \DDX instances.
+
+
+
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{\DDX XML Elements}
+\label{sec-DDX-XML-Elements}
+
+This section contains the detailed syntax descriptions of all of the 
+component elements of a \DDX.
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Alias}
+
+This element creates a second name for some dataset variable. References to
+the \Alias MUST produce the same results as a reference to the \Alias target
+identified in the {\it source} attribute. See \Sectionref{sec-Alias}.
+
+%\Aliases MUST play specific roles when used as the member variables of a
+%\Grid. See \Sectionref{sec-constructor-grid} and \Sectionref{sec-xml-grid} 
+%for more information.
+
+% If an Alias can contain Attributes we must resolve how to combine those
+% Attributes with the Attributes of the thing being aliased. At this point
+% we are doing something similar to XSLT which, in the grand scheme is the
+% province of the AIS. I think we should hold to the restriction that Aliases
+% do not have attributes themselves. 10/27/03 jhrg
+
+The following \Alias declaration creates a second name for a variable named
+\lit{pepper}, part of a structure named \lit{spice}. With this declaration in
+place, you can refer to the same value with three different names:
+\lit{/spice/pepper}, \lit{/spice/poivre} and \lit{/goeswithsalt}.
+
+\examplelabel{ex-alias}
+\begin{vcode}{it}
+<Dataset name="test">
+    <Structure name="spice">
+        <Float64 name="pepper"/>
+        <Alias name="poivre" source="/spice/pepper"/>
+    </Structure>
+    <Alias name="goeswithsalt" source="/spice/pepper"/>
+    <Blob URL="..."/>
+</Dataset>
+\end{vcode}
+
+\paragraph{Element Attributes}
+\begin{description}
+  \ATTRIBUTE{name} [Required] The name of the \Alias.
+
+  \ATTRIBUTE{source} [Required] The name of the variable to which this 
+  \Alias refers (the {\it target} variable).  The name given here MUST 
+  be a \FQN (See \Sectionref{sec-FQN}) and MAY NOT refer to a member 
+  variable of a \Sequence. Similarly , if the \Alias is member of
+  a \Sequence, then it MAY NOT refer to a variable outside of it's parent
+  \Sequence. See \Sectionref{sec-Alias} for more details.
+
+  \ATTRIBUTE{role} [Conditional] The role that the \Alias will play as
+  a member of a \Grid. The only acceptable values are \lit{array} and
+  \lit{map}. This attribute MUST be used if the \Alias is a member 
+  variable of a \Grid, as either the \Array or the \Map. This attribute 
+  MUST NOT be used if the \Alias is not a member element of a \Grid.
+  See \exampleref{ex-grid-2} and \exampleref{ex-grid-3} for usage examples.
+
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this \Alias 
+  to the document. Used only if this element was added in conjunction
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}
+
+\end{description}
+
+
+\paragraph{Child Elements}  None.
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Array}
+
+Declares an \Array variable.  See \Sectionref{sec-constructor-array}
+for a description of \Arrays.\\[2mm]
+
+\paragraph{Element Attributes}
+\begin{description}
+\ATTRIBUTE{name} [Required] The name of the \Array.
+
+\ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this \Array 
+to the document. Used only if this element was added in conjunction 
+with a \ProcAttribute. See \Sectionref{sec-attr-processing}
+
+\end{description}
+
+\paragraph{Child Elements}
+\begin{description}
+\item \element{dimension} [Required] Each \emph{dimension} element MUST
+correspond to a dimension of the \Array. The order of the \emph{dimension}
+elements MUST indicate the order of the dimensions of the \Array. As is the
+case with ANSI C\cite{ansi:c} and C++\cite{ansi:c++}, the rightmost dimension
+varies fastest. At least one \emph{dimension} element is REQUIRED; there is
+no upper bound on the number of dimensions.
+
+\item \element{Attribute} [Optional] The \Attributes for this \Array.
+
+\item \element{Template variable declaration} [Required] The \emph{template
+  variable} defines the data type of each element of the \Array. An \Array
+  MUST have exactly one \emph{template variable} which MAY be any type with
+  the exception that it MUST NOT be an \Alias or an \Array
+  itself.\footnote{Unlike C, et c., in the \DAP multi-dimensional arrays are
+  not built up using arrays or arrays.} The {\it name} attribute of the
+  \emph{template variable} is OPTIONAL, and MUST be ignored if used. The name
+  of the \Array is defined by the {\it name} attribute of the \Array element.
+  The template variable is not directly accessible through the data model.
+\end{description}
+
+\textbf {Child element syntax:}
+
+\begin{itemize}
+\item Zero or more \Attributes followed by
+\item One template variable element followed by
+\item One or more \element{dimension} elements.
+\end{itemize}
+
+Here is an array of 72 64-bit floating point values:
+\examplelabel{ex-array}
+\begin{vcode}{t}
+<Array name="values">
+  <dimension size="72"/>
+  <Float64/>
+</Array>
+\end{vcode}
+=======
+
+Here is an array of structures:
+
+\examplelabel{ex-array2}
+\begin{vcode}{t}
+<Array name="time_series">
+  <Structure>
+    <Float64 name="X_velocity"/>
+    <Float64 name="Y_velocity"/>
+  </Structure>
+  <dimension size="72"/>
+</Array>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+
+
+\ELEMENT{Attribute}
+
+Use this element to attach \Attribute values to a variable.  Every variable 
+MUST have a name, type, and value.  Beyond that, it MAY have an arbitrary 
+number of \Attributes.  See \Sectionref{sec-Attributes} for more detail 
+about what \Attributes are and how they are used.
+
+If a variable element has \Attribute elements, then the \Attribute elements 
+MUST immediately follow the variable element opening tag.
+
+An \Attribute MAY contain multiple values of the same type (in essence a
+one-dimensional array), or it MAY contain other \Attributes. It MAY NOT
+contain both values and \Attributes.
+
+\exampleref{ex-attribute} contains a syntax example of \Attributes.
+
+\element{\textbf{Attribute Aliases}}
+\label{sec-xml-Attribute-Alias}
+
+\Attribute elements MAY have a type of \lit{alias}. An \lit{alias} typed 
+\Attribute MAY refer to any other \Attribute in the dataset. If an \Attribute 
+is of type \lit{alias} its XML declaration MUST have a \lit{source} attribute 
+whose value is the \FQN in the dataset of the \Attribute to which the 
+\lit{alias} refers. See \Sectionref{sec-FQN}. There are specific rules for 
+encoding the value of the \lit{source} attribute. Rules for encoding the 
+value of the source attribute MUST be applied prior to encoding the content 
+for it's XML representation. See \Sectionref{sec-encoding-rules} for the 
+details of this encoding.
+
+\exampleref{ex-alias-attribute} contains a syntax example for \lit{alias}
+typed \Attributes.
+
+
+\element{\textbf{Processing Attributes}}
+\label{sec-xml-proc-attr}
+
+\Attribute elements MAY have a type of \lit{modifier}. \Attributes of
+type \lit{modifier} MUST be global (exist at the top level of the \Dataset) 
+and MAY not be used as members of other \Attributes or of other
+variable \Attribute structures. See \Sectionref{sec-attr-processing}
+
+\Attributes of type \lit{modifier} MUST contain the following elements:
+
+\begin{description}
+
+  \item [origin\_server] An \Attribute of type \URL whose name MUST be
+   \lit{origin\_server} and whose value is the \URL for the original 
+   data source.
+  
+  \item [organization] An \Attribute of type \String whose name MUST be 
+  \lit{organization} and whose value MUST be the name or the description 
+  of the organization that is providing the modified data.
+  
+  \item [modifying\_service] An \Attribute of type \URL whose name MUST be 
+  \lit{modifying\_service} and whose value MUST be the URL of the service 
+  that introduced the changes.
+\end{description}
+A syntax example of a \lit{modifier} typed \Attribute can be found in 
+\exampleref{ex-modifier-attr}.\\[3mm]
+
+
+ 
+\paragraph{Element Attributes}
+\begin{description}
+
+  \ATTRIBUTE{name} [Required] A string containing the name of the \Attribute.
+  
+  \ATTRIBUTE{type} [Required] The type of this \Attribute's value.  
+  This MUST be one of the following: \\
+
+%%% Enumeration?  Is this duplicating a list elsewhere?  If so, let's
+%%%  refer to that list instead of duplicating it. ts.
+   
+\begin{itemize}
+  \item \lit{Boolean}
+  \item \lit{Byte}
+  \item \lit{Int16}
+  \item \lit{UInt16}
+  \item \lit{Int32}
+  \item \lit{UInt32}
+  \item \lit{Int64}
+  \item \lit{UInt64}
+  \item \lit{Float32}
+  \item \lit{Float64}
+  \item \lit{String}
+  \item \lit{URL}
+  \item \lit{modifier}
+  \item \lit{alias}
+  \item \lit{structure}
+\end{itemize}
+  
+  An \Attribute of type structure has a syntax comparable to that of a 
+  \Structure variable. \Bis and \Enums are not permitted \Attribute types.  
+  
+  \ATTRIBUTE{source} [Conditional] A string containing the name of the source 
+  \Attribute for an \Attribute of type \lit{alias}. Used only of the \Attribute 
+  is of type \lit{alias}.
+  
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this \Attribute 
+  to the document. Used only if this element was added in conjunction with 
+  a \ProcAttribute. See \Sectionref{sec-attr-processing}
+  
+\end{description}
+
+\paragraph{Child Elements} 
+
+\begin{description}
+\item \element{value} [Conditional] One or more child \element{value} elements, 
+allowed ONLY if there are no child \Attribute elements.
+\item \element{Attribute} [Conditional] One or more child \Attribute elements, 
+allowed ONLY if there are no child \element{value} elements.
+\end{description}
+
+\textbf {Child element syntax:}
+
+\begin{itemize}
+\item One or more \Attribute elements OR,
+\item One or more \element{value} elements 
+\end{itemize}
+
+One of the following:
+
+\begin{itemize}
+  \item One or more \Attribute elements\
+  \item One or more \element{value} elements 
+\end{itemize}
+  
+\examplelabel{ex-attribute}
+
+Here are examples of the \Attribute element syntax.
+
+\begin{vcode}{t}
+<Dataset name="test" >
+    <Structure name="measurement">
+        <Attribute name="date" type="String">
+            <value>18 Mar 03</value>
+        </Attribute>
+        <Attribute name="other" type="Structure">
+            <Attribute name="satellite_name" type="String">
+                <value>GOES</value>
+            </Attribute>
+            <Attribute name="experiment number" type="int32">
+                <value>986743</value>
+            </Attribute>
+            <Attribute name="team" type="String">
+                <value>Baker</value>
+                <value>Charlie</value>
+                <value>Dogg</value>
+            </Attribute>
+        </Attribute>
+        <Array name="time_series"
+            <dimension size="32"/>
+            <Float64 name="value"/>
+        </Array>
+    </Structure>
+    <Blob URL="..."/>
+</Dataset>
+\end{vcode}
+\\[4mm]
+
+\examplelabel{ex-alias-attribute}
+
+This example shows the use of \lit{alias} typed \Attributes.
+
+\begin{vcode}{t}
+<Dataset name="test" >
+    <Structure name="measurement">
+        <Attribute name="team" type="structure">
+            <Attribute name="lead engineer" type="String">
+                <value>Chet Baker</value>
+            </Attribute>
+            <Attribute name="software engineer" type="String">
+                <value>Charlie Parker</value>
+            </Attribute>
+            <Attribute name="electrical engineer" type="String">
+                <value>Ozzy Osbourne</value>
+            </Attribute>
+        </Attribute>
+        <Float64 name="value"/>
+        <Array name="time_series">
+            <Attribute name="author" 
+                       type="alias" 
+                       source="/measurement/team/software engineer" />
+            <dimension size="32"/>
+            <FLoat32/>
+        </Array>
+    </Structure>
+    <Blob URL="..."/>
+</Dataset>
+\end{vcode}
+\\[4mm]
+
+\examplelabel{ex-modifier-attr}
+
+In this example of the use of a \lit{modifier} \Attribute, the 
+AIS server at ais.gso.uri.edu added a variable called
+\lit{sst}, and an \Attribute called ``units'' to the variable called
+\lit{Depth}.
+
+\begin{vcode}{it}
+
+<Dataset name="test">
+    <Attribute name="helena" type="modifier">
+        <Attribute name="origin_server" value="http://dods.gso.uri.edu/cgi/nph-nc"/>
+        <Attribute name="modifying_service" value="http://ais.gso.uri.edu"/>
+        <Attribute name="organization" value="URI/GSO"/>
+    </Attribute>  
+      .
+      .
+      .
+    <Float64 name="Depth">
+        <Attribute name="units" type="String" origin="helena">
+            <value>meters</value>
+        </Attribute>
+    </Float64>
+      .
+      .
+      .
+    <Array name="sst" origin="helena">
+      .
+      .
+      .
+    </Array>
+    <Blob URL="..."/>
+</Datset>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Binary}
+
+Declares a \Bi. This is MUST be\footnote{Does this make sense?} an atomic
+type of arbitrary size with an undeclared internal structure. See
+\Sectionref{sec-atomic-binary}.
+
+The size of a binary image MUST be encoded in the \Blob object, so declaring
+it in the \element{Binary} element is optional. For a constructor which holds
+\Bis, declaring the size here is a convenience for clients and is OPTIONAL.
+Doing so can increase the efficiency of clients which have to deal with the
+data after downloading it. If the size of a \Bi is declared in a Constructor
+type such as \Sequence, all instances of the \Bi MUST be the declared size.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the 
+  \new{template variable declaration} for an \Array.
+  \ATTRIBUTE{size}  [Optional] The size of the image, in bytes.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this \Bi to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+  
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+\item \element{Attribute} [Optional] The \Attributes for this \Bi.
+\end{description}
+
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attribute elements
+\end{itemize}
+
+
+\examplelabel{ex-bimage}
+\begin{vcode}{t}
+<Binary name="sound_sample" size="17256"/>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Blob}
+
+\Blob MUST be the URL the reference to the serialized binary data content
+described by this \DDX. See \Sectionref{sec-blob}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{URL} [Required] A string containing the web address of the 
+  \Blob object associated with this \DDX.
+\end{description}
+
+\paragraph{Child Elements} None
+
+See \exampleref{ex-ddx}.
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Boolean}
+
+A variable that MUST be one of two values: \texttt{true} or \texttt{false}.
+See \Sectionref{sec-atomic-boolean}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this \Boolean to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+
+\paragraph{Child Elements} 
+\begin{description}
+\item \element{Attribute} [Optional] The \Attributes for this \emph{Boolean}.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attribute elements
+\end{itemize}
+
+\examplelabel{ex-boolean}
+\begin{vcode}{t}
+<Boolean name="QC">
+  <Attribute name="long_name" type="String">
+    <value>Quality Control Flag</value>
+  </Attribute>
+</Boolean>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Byte}
+
+Declaration of an eight-bit unsigned integer.  See \Sectionref{sec-atomic-int}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this \Byte to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+\item \element{Attribute} [Optional] The \Attributes for this \emph{Byte}.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attribute elements
+\end{itemize}
+
+\examplelabel{ex-byte}
+\begin{vcode}{t}
+<Byte name="Temperature">
+  <Attribtue name="units" type="String">
+    <value>Counts</value>
+  </Attribute>
+</Byte>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Dataset}
+
+A \Dataset element contains all the variables and global attributes for a
+data source. The \DDX MUST contain a \Dataset element as its root. A
+\element{Dataset} element MUST be semantically equivalent to the \Structure
+variable; the rules for encoding the variables in a \Structure apply to the
+variables at the top level of the \element{Dataset} element. See
+\Sectionref{sec-constructor-structure} for information about the semantics of
+a \Structure. See \Sectionref{sec-Attributes} about global and other
+\Attributes.
+
+\paragraph{Element Attributes} 
+\begin{description}
+
+  \ATTRIBUTE{name}  [Required] A string containing the name of the variable.
+  
+  \ATTRIBUTE{xmlns}  [Required] A URI containing the default namespace 
+  declaration for the XML content of the \Dataset document. At the time 
+  of this writing this value should be 
+  {\it http://www.opendap.org/ns/OPeNDAP}
+  
+  \ATTRIBUTE{xmlns:xsi} [Required] Maps the namespace identifier \lit{xsi} 
+  to the URI provided in the value. In this case it should always be set to 
+  {\it http://www.w3.org/2001/XMLSchema-instance}
+  
+  \ATTRIBUTE{xsi:schemaLocation} [Required] Should be set to a pair of
+  values containing the default namespace URI followed by a URL that
+  when dereferenced will provide the schema for the namespace. The
+  schema location URL will typically be set to a location on the
+  server that is providing the \Dataset document.
+  
+%%% What character separates the URI and the URL in the above?  ts.
+
+  \ATTRIBUTE{origin} [Conditional] The ``modifier'' that created this \Dataset.
+  This would be used to indicate that the \Dataset was created by 
+  an Aggregation Server of some sort.
+  Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+  
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this \Dataset.
+  \item \element{Variable Element Declarations} [Required] The collection of
+  variables present in the dataset
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attribute elements; followed by
+\item One or more variable elements; followed by
+\item One \Blob element
+\end{itemize}
+
+See \exampleref{ex-ddx}.
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{dimension}
+
+This element appears within \element{Array} and \element{Map}
+declarations, and declares the length (and possibly the name) of
+a dimension.  For multidimensional \Arrays or \Maps, the first
+\element{dimension} element MUST correspond to the left-most \Array or \Map
+index, {\it et cetera}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name} [Optional] A string containing the name of the dimension.
+  \ATTRIBUTE{size} [Required] The number of elements in the dimension under 
+  consideration.
+\end{description}
+
+\paragraph{Child Elements}  None.
+
+See \exampleref{ex-array} and \exampleref{ex-array2}.
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Enumeration}
+
+An \element{Enumeration} is used to bind symbols to a set of discrete
+integral values. Each element of an \Enum is called an
+\element{enumerator}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name} [Required] A string containing the name of the variable.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this \Bi to the
+  document. Used only if this element was added in conjunction with a 
+  \ProcAttribute. 
+  
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{enumerator} [Required] Used to hold a discrete value of the
+  \Enum. Each \Enum MUST have at least one \element{enumerator} element.
+  \item \element{Attribute} [Optional] The \Attributes for this 
+  \emph{Enumeration}.
+\end{description}
+
+\textbf {Child element syntax:}
+
+\begin{itemize}
+\item Zero or more \Attribute elements; followed by
+\item One or more \element{enum} elements
+\end{itemize}
+
+\begin{itemize}
+\item Zero or more \Attribute elements; followed by
+\item One or more \element{enum} elements
+\end{itemize}
+
+\examplelabel{ex-enum}
+\begin{vcode}{t}
+<Enumeration name="error_codes">
+<enumerator name="no_such_file" value="0"/>
+<enumerator name="insufficient_permissions" value="1"/>
+</Enumeration>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{enum}
+
+This element holds a single enumerator for an \Enum element.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name} [Required] The name of this \element{enum}.
+  \ATTRIBUTE{value} [Required] The integral value of this
+  \element{enum}. Limited to \thirtytwobitlimit{values}.
+\end{description}
+
+\paragraph{Child Elements}  None.
+
+See \exampleref{ex-enum}.
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Float32}
+
+Declares an IEEE 754 conformant data variable to hold a 32-bit
+floating-point value.  See \Sectionref{sec-atomic-float}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this
+  \type{Float32} to the document. Used only if this element was added in
+  conjunction with a \ProcAttribute. See
+  \Sectionref{sec-attr-processing}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this 
+  \element{Float32}.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attribute elements
+\end{itemize}
+
+\examplelabel{ex-float32}
+\begin{vcode}{t}
+<Float32 name="Temperature"/>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Float64}
+
+Declares an IEEE 754 conformant data variable to hold a 64-bit
+floating-point value.  See \Sectionref{sec-atomic-float}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this
+  \type{Float64} to  the document. Used only if this element was added
+  in conjunction  with a \ProcAttribute. See
+  \Sectionref{sec-attr-processing}. 
+\end{description}
+
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this 
+  \element{Float64}. 
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attribute elements
+\end{itemize}
+
+\examplelabel{ex-float64}
+\begin{vcode}{t}
+<Float64 name="Temperature">
+  <Attribtue name="units" type="String">
+    <value>Degrees_Kelvin</value>
+  </Attribute>
+</Float64>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Grid}
+\label{sec-xml-grid}
+
+Declares a \Grid variable (see \Sectionref{sec-constructor-grid}). Unlike an
+\Array, a \Grid can be indexed using types other than integers. The mapping
+between different values and discrete elements of the \Grid is given by the
+\Maps. Within a \Grid the correspondence between any dimension of the \Grid's
+target \Array and a \Map is made by insuring that corresponding target \Array
+dimensions and \Map dimensions have the same name and size. A \Map is a type
+of an \Array and so has its own dimension element, which MUST be named, and
+this name is used to create the binding of the \Map to a dimension with the
+same name in the \Grid's target \Array. While the naming of the dimensions
+establishes the relationship between \Maps and \Array components in a \Grid,
+the dimensions MUST be the same size in order for the mapping to be complete.
+If two dimensions in a \Grid of the same name do not have the same size an
+error will be generated.
+
+In order to accommodate the re-use of the components of a \Dataset and to
+streamline the transmission of data through redundancy reduction, both the
+target \Array and the \Map elements of a \Grid MAY be replaced with an \Alias
+variable. In both cases the \Alias MUST refer to an \Array type (either an
+\Array or a \Map) somewhere else in the \Dataset. The rules about naming and
+size for the constituent dimensions of the \Grid components will be evaluated
+against the source of the \Alias reference as if they where actually
+components of the \Grid. (see the comments in \exampleref{ex-grid-1},
+
+\exampleref{ex-grid-2}, and \exampleref{ex-grid-3}).
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this \Grid to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+
+  \item \element{Attribute} [Optional] The \Attributes for this \Grid.
+
+%  \item \element{Target} [Required] Contains the target \Array or \Alias (to
+%  the target \Array) containing the data held by this variable.
+%  This can often be thought of as a dependent variable. There MUST be 
+%  exactly one \Target element in every \Grid.
+
+  \item \element{Map} [Required] The maps for this \Grid. These can 
+  be thought of as the independent variables for the \Grid's \Array. 
+  There MUST be at least one map and no more than $N$ where $N$ is 
+  the rank of the \Grid's \Array.
+
+\end{description}
+
+\textbf {Child element syntax:}
+
+\begin{itemize}
+\item Zero or more \Attribute elements; followed by
+%\item One \Target element; followed by
+\item Zero or one \Array element; followed by
+\item Zero or more \Map elements; followed by
+\item Zero or more \Alias elements. 
+\end{itemize}
+
+Each dimension of the target \Array MUST have one or more corresponding 
+\Map dimensions of the same name and size. If a \Map has multiple dimensions, 
+then each one MUST be a valid \Map dimension for one of the dimensions in 
+the target \Array. An \Alias that refers to an \Array of the correct size 
+and shape MAY replace any or all of \Map elements and/or the \Array element.
+
+Here's a \Grid containing a two-dimensional target array and two
+one-dimensional map arrays. 
+
+\examplelabel{ex-grid-1}~
+
+This example shows a typical \Grid. All of the \Grid components, 
+the target \Array and the \Maps, are declared as members of the \Grid element.
+
+\begin{vcode}{t}
+
+<Grid name="v">
+    <Array name="temp">
+        <Byte/>
+        <dimension name="lat" size="5"/> <!-- bound to the Map dimension named "lat" -->
+        <dimension name="lon" size="5"/>
+    </Array>
+    <Map name="y">                   <!-- this name does not matter -->
+        <Float64/>
+        <dimension size="5" name="lat"/>  <!-- this name completes the association -->
+    <Map name="x">
+        <Float64/>
+        <dimension size="5" name="lon"/>
+    </Map>
+</Grid>
+\end{vcode}
+\\[4mm]
+
+\examplelabel{ex-grid-2}
+
+This example shows a \Grid where the target \Array element is actually an \Alias 
+to an \Array outside of the \Grid element.
+
+\begin{vcode}{t}
+
+<Array name="temp">
+    <Byte/>
+    <dimension name="lat" size="5"/> <!-- bound to the Map dimension named "lat" -->
+    <dimension name="lon" size="5"/>
+</Array>
+<Grid name="v">
+    <Alias name="sst" source="/temp" role="Array" />
+    <Map name="y">                   <!-- this name does not matter -->
+        <Float64/>
+        <dimension size="5" name="lat"/>  <!-- this name completes the association -->
+    </Map>
+    <Map name="x">                        
+        <Float64/>
+        <dimension size="5" name="lon"/>
+    </Map>
+</Grid>
+\end{vcode}
+\\[4mm]
+
+\examplelabel{ex-grid-3}
+
+This example shows a \Grid where all of the member elements (the target \Array and
+the \Maps) are actually an \Aliases to a \Arrays outside of the \Grid element.
+
+\begin{vcode}{t}
+
+<Array name="temp">
+    <Byte/>
+    <dimension name="lat" size="5"/> <!-- bound to the Map dimension named "lat" -->
+    <dimension name="lon" size="5"/>
+</Array>
+< Array name="y">                   <!-- this name does not matter -->
+    <Float64/>
+    <dimension size="5" name="lat"/>  <!-- this name completes the association -->
+</Array >
+< Array name="x">                        
+    <Float64/>
+    <dimension size="5" name="lon"/>
+</Array >
+<Grid name="v">
+    <Alias name="sst" source="/temp" role="Array" />
+    <Alias name="NS" source="/y" role="Map" />
+    <Alias name="EW" source="/x" role="Map" />
+</Grid>
+
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Int16}
+
+A 16-bit signed (twos-complement) integer.  See \Sectionref{sec-atomic-int}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this 
+  \type{Int16} to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this \emph{Int16}.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attribute elements
+\end{itemize}
+
+\examplelabel{ex-int16}
+\begin{vcode}{t}
+<Int16 name="Temperature"/>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Int32}
+
+A 32-bit signed (twos-complement) integer.  See \Sectionref{sec-atomic-int}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this
+  \type{Int32} to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this \emph{Int32}.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attribute elements
+\end{itemize}
+
+\examplelabel{ex-int32}
+\begin{vcode}{t}
+<Int32 name="Temperature"/>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Int64}
+
+A 64-bit signed (twos-complement) integer.  See \Sectionref{sec-atomic-int}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this 
+  \type{Int64} to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this \emph{Int64}.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attribute elements
+\end{itemize}
+
+\examplelabel{ex-int64}
+\begin{vcode}{t}
+<Int64 name="Temperature"/>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Map}
+
+This declaration creates a \Map used in a \element{Grid}. See
+\Sectionref{sec-constructor-grid} for a description of \Grids. Also see
+
+\exampleref{ex-grid-1}, \exampleref{ex-grid-2}, and \exampleref{ex-grid-3}. A
+\Map is a special case of the \element{\Array} element; it has the same
+\Attributes and child elements but MUST appear inside a \Grid.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Required] A string containing the name of the \Map variable.
+  The relationship between the dimension(s) of the \Map and the target \Array
+  of the \Grid is established through the names of the \Map dimensions. The name 
+  of the \Map is not used to establish the relationship, but should be used
+  in some informative manner for the user. See \exampleref{ex-grid-1}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{dimension} [Required] Each \emph{dimension} element 
+  corresponds to a dimension of the \Map. The order of the \emph{dimension}
+  elements indicates the order of the dimensions of the \Map. As is the case 
+  with ANSI-C\cite{ansi:c} and C++\cite{ansi:c++}, the rightmost/last dimension
+  varies fastest. At least one \emph{dimension} element is REQUIRED; there 
+  is no upper bound on the number of \element{dimension} elements
+  
+  \item \element{Attribute} [Optional] The \Attributes for this \Map.
+  
+  \item \element{Template variable declaration} [Required] A \Map MUST have one
+  \emph{template variable} which MAY be any type except that it MUST NOT be an 
+  \Alias or an  \Array itself. The  {\it name} attribute of the \emph{template 
+  variable} is optional, and MUST be ignored if used. 
+  The name of the \Map is defined by the {\it name} attribute of the \Map element. 
+  The template variable is not directly accessible through the data model.  
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attributes followed by
+\item One template \element{variable} element followed by 
+\item One or more \element{dimension} elements.
+\end{itemize}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Sequence}
+
+A \Sequence is an ordered set of entries. Each instance of an entry is
+comparable to a \Structure variable. Each entry in a \Sequence contains the
+same set of variables. A \Sequence can also be thought of as a relational
+database table, with each entry corresponding to a single row.
+
+See \Sectionref{sec-constructor-sequence} for a description of the
+\Sequence type.
+
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+%%% Can you have an Array of Sequence?  ts.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this \Sequence to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this \Sequence.
+  \item \element{Variable declaration} [Required] A \Sequence MUST have 
+  one or more \emph{Variable declarations}. They MAY be any type of variable.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attributes; followed by
+\item One or more \element{variable} elements
+\end{itemize}
+
+\examplelabel{ex-sequence}
+\begin{vcode}{t}
+<Sequence name="gallimaufry">
+  <Float64 name="measurement"/>
+  <Array name="measurement_collection">
+    <Int16/>  
+    <dimension size="32"/>
+    <dimension size="45"/>
+  </Array>
+</Sequence>
+\end{vcode}
+
+
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{String}
+
+A series of Unicode (UTF-8) characters.  See
+\Sectionref{sec-atomic-string}.
+
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this \String to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this \String.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attributes 
+\end{itemize}
+
+\examplelabel{ex-string}
+\begin{vcode}{t}
+<String name="Name"/>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Structure}
+
+An ordered set of variables.  See
+\Sectionref{sec-constructor-structure} for a description.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this 
+  \Structure to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this \Structure.
+  \item \element{Variable declaration} [Required] A \Structure MUST have 
+  one or more \emph{Variable declarations}. They MAY be any type of variable.
+\end{description}
+
+\textbf {Child element syntax:}
+
+\begin{itemize}
+\item Zero or more \Attributes; followed by
+\item One or more \element{variable declarations}
+\end{itemize}
+
+\examplelabel{ex-structure}
+\begin{vcode}{t}
+<Structure name="person">
+  <String name="name">
+  <Float64 name="height">
+  <Int32 name="age">
+</Structure>
+\end{vcode}
+
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+%\ELEMENT{Target}
+%
+%Use this element tag to identify the target \Array of a \Grid.  See
+%\exampleref{ex-grid-1}. 
+%
+%\paragraph{Element Attributes} None.
+%
+%\paragraph{Child Elements}
+%\begin{description}
+%  \item \element{Array} [Conditional] The target \Array for the parent \Grid.
+%  \item \element{Alias} [Conditional] An \Alias referring to the target \Array
+%  for the parent\Grid.
+%\end{description}
+%
+%\paragraph{Child Element Syntax}
+%
+%$\bullet$ One \Array; \\
+%OR\\
+%$\bullet$ One \Alias that refers to an \Array.
+%
+
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Time}
+
+A variable which contains an ISO 8601 time string\cite{UWV:ISO8601}. A \Time
+can contain only characters that legal for an ISO 8601 time string.
+Currently, this is limited to single-byte US-ASCII (7-bit) characters. See
+\Sectionref{sec-atomic-string}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this \Time to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this 
+  \element{Time}.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attributes.
+\end{itemize}
+
+\examplelabel{ex-time}
+\begin{vcode}{t}
+<Time name="Sample_time"/>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{UInt16}
+
+An unsigned 16-bit integer.  See \Sectionref{sec-atomic-int}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this 
+  \type{UInt16} to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this 
+  \element{UInt16}.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attributes
+\end{itemize}
+
+\examplelabel{ex-uint16}
+\begin{vcode}{t}
+<UInt16 name="Temperature"/>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{UInt32}
+
+An unsigned 32-bit integer.  See \Sectionref{sec-atomic-int}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this
+  \type{UInt32} to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this 
+  \element{UInt32}.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attributes
+\end{itemize}
+
+\examplelabel{ex-uint32}
+\begin{vcode}{t}
+<UInt32 name="Temperature"/>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{UInt64}
+
+An unsigned 64-bit integer.  See \Sectionref{sec-atomic-int}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this 
+  \type{UInt64} to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this 
+  \element{UInt64}.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attributes
+\end{itemize}
+
+\examplelabel{ex-uint64}
+\begin{vcode}{t}
+<UInt64 name="Temperature"/>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{URL}
+
+A  variable which contains a URL.  A \URL MUST only contain characters
+that are legal parts of an internet URL.  Currently, this is limited
+to single-byte US-ASCII (7-bit) characters.  See
+\Sectionref{sec-atomic-string}.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this \URL to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this \element{Url}.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Attributes
+\end{itemize}
+
+\examplelabel{ex-url}
+\begin{vcode}{t}
+<URL name="SST_data_server"/>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Time}
+
+A variable which contains an ISO 8601 time string\cite{UWV:ISO8601}. A \Time
+MUST contain ONLY characters that legal for an ISO 8601 time string.
+Currently, this is limited to single-byte US-ASCII (7-bit) characters. See
+\Sectionref{sec-atomic-string}.
+
+\textbf {Element attributes:} 
+\begin{description}
+  \ATTRIBUTE{name}  [Conditional] A string containing the name of the variable. 
+  May (and should) be omitted if the element is being used as the \new{template 
+  variable declaration} for an \Array.
+  \ATTRIBUTE{origin} [Conditional] The \lit{modifier} that added this \Bi to 
+  the document. Used only if this element was added in conjunction 
+  with a \ProcAttribute. See \Sectionref{sec-attr-processing}.
+\end{description}
+
+\textbf {Child elements:} 
+\begin{description}
+  \item \element{Attribute} [Optional] The \Attributes for this 
+  \element{Time}.
+\end{description}
+
+\textbf {Child element syntax:}
+
+\begin{itemize}
+\item Zero or more \Attributes
+\end{itemize}
+
+\examplelabel{ex-time}
+\begin{vcode}{t}
+<Time name="Sample_time"/>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{value}
+
+Use this tag to identify the value  of an  \Attribute element.  See
+\exampleref{ex-attribute}. 
+
+Variable values are recorded in the \Blob object, while \Attribute values are
+recorded directly in the \DDX. This means that \Attribute values MUST be able
+to be represented in a (UTF-8) text file.\footnote{Are we capable of
+supporting UTF-8 attribute values? jhrg 12/17/03}
+
+\paragraph{Element Attributes} None.
+
+\paragraph{Child Elements} None.
+
+\examplelabel{ex-value}
+\begin{vcode}{t}
+<value>3.1415</value>
+<value>2.718</value>
+\end{vcode}
+
+
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{Encoding Rules}
+\label{sec-encoding-rules}
+
+[ {\it This section is a first stab, we expect that as we implement code
+to support this specification we will have to change (and add to) the
+Encoding Rules. }]\\[5mm]
+
+There are several encoding schemes that need to be applied to 
+various XML components of the DAP. At the end of the list is 
+the encoding for XML. Other encodings MUST be applied to 
+different parts of the \DDX.
+
+\subsubsection{\Attribute and variable \Alias source 
+attribute encoding}
+\label{sec-alias-source-encoding}
+
+The \lit{source} attribute a variable \Alias and the \lit{source} attribute
+of an \Attribute of type \lit{alias} are both \FQNs. Since \FQNs use the
+slash (``/") character as the delimiter between variable (and \Attribute)
+names it is necessary to specially identify this character when it appears as
+part of a legitimate variable (or \Attribute) name in the \DDX document
+(which must eventually be parsed by software). This identification is called
+``escaping the character", and is achieved by using a different character
+that will be interpreted to have the meaning of ``escape". The backslash
+("$\backslash$") is the escape character. The the slash (``/") and backslash
+("$\backslash$") MUST be escaped if they appear as part of a node name in the
+absolute path. This encoding MUST be applied prior to any additional encoding
+needed to make the representation XML compatible, and must persist after XML
+decoding.
+
+\subsubsection{\Project element variable encoding}
+
+This is the same as \Sectionref{sec-alias-source-encoding}.
+
+\subsubsection{\Select element target encoding}
+
+This is the same as \Sectionref{sec-alias-source-encoding}.
+
+\subsubsection{Base 64 \Attribute value encoding}
+
+In order to decrease the total number of bytes in a \DDX response 
+it is possible that we may choose to transmit \Attribute values in 
+their serialized binary form (see \Sectionref{sec-blob}). To do so, 
+and still include them in the DDX, we will have to encode them into 
+a form that allows them to be represented as UTF-8. Most likely 
+this will achieved by using a base-64 encoding. 
+
+\subsubsection{XML document encoding}
+
+After all of the previous encodings have been applied to the 
+appropriate parts for the document the document must be brought 
+into a correct encoding for XML. This means that any content (as
+opposed to XML syntax characters) must be so encoded. This includes
+the values of XML element attributes and the content of XML elements.
+This encoding is minimally:
+
+\begin{itemize}
+\item  The \lit < (less than) character is replaced with \lit{\&lt;}
+\item  The \lit > (greater than) character is replaced with \lit{\&gt;}
+\item  The \& (ampersand) character is replaced with \lit{\&amp;}
+\item  The ' (apostrophe) character is replaced with \lit{\&apos;}
+\item  The " (double quote) character is replaced with \lit{\&quot;}
+\end{itemize}
+
+And may in fact be more extensive. See \cite{w3c:xml} for more
+detailed information.
+
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{Blob}
+\label{sec-blob}
+
+The \Blob contains the serialized data represented by the \DDX. XML documents
+like the \DDX cannot efficiently transmit binary data \cite{w3c:outofband}, so
+a \DAP \DDX simply references an object that contains the data described in
+the \DDX. Every \DDX MUST contain a \Blob reference although a data source is
+under no obligation to create the \Blob until a client requests it (by
+dereferencing the \Blob's URL).\footnote{In many cases no sensible client
+would request the \Blob associated with a \DDX which describes an entire data
+source and it's likely that a sensible server would return an \ErrorX if a
+client did try to request such a \Blob.} The \Blob is a way of accessing the
+data `out-of-band' with respect to the \DDX. In addition to eschewing the
+problems of processing large volumes of binary data with an XML parser,
+out-of-band access enables servers to support streaming in conjunction with
+protocols such as SOAP\cite{SOAP:streaming}.
+
+Data values associated with variables appear in the \Blob in the order in
+which the variables are declared in the associated \DDX. The \DDX always
+contains a \element{Dataset} element as its root. A \element{Dataset} element
+is semantically equivalent to the \Structure variable; the rules for encoding
+the variables in a \Structure apply to the variables at the top level of the
+\element{Dataset} element.
+
+The \Blob is \emph{not} self-documenting. A client program will be
+unable to make sense of it without the declarations in the accompanying \DDX,
+since the variable types, sizes, and ordering determined from the 
+structure/organization of the associated \DDX.
+
+\note{The \DDX may be used to define a C++, Java, {\it etc.}, object which
+may then be used by a \DAP client to allocate memory for the variables it
+declares. A \DDX which has been created, but before the \Blob object has been
+received is said to be an ``empty'' \DDX. After the \Blob arrives and its
+data has been decoded and parceled out to the memory in the \DDX, the \DDX is
+said to be ``full.''}
+
+\subsubsection{Length Specification: Representing lengths of encoded data 
+elements}
+\label{sec-length-spec}
+
+When values are encoded for transmission, they are often preceded by length
+information. For example, an \Array is prefixed by the number of elements in
+the \Array. Instead of representing this information in a fixed-size integer
+data type, the \DAP encodes length information in a way that allows any
+length to be represented. These are called \DAP \emph{Length Specifications}
+and are defined as follows:
+
+\begin{quote}
+Each byte of the length specification MUST be divided into two parts: the
+high-order bit MUST indicate whether another byte follows, and the low-order
+seven bits MUST provide the length. Higher-order bytes MUST preceed
+lower-order bytes (i.e., the representation MUST be bigendian).\footnote{What
+if the client and server negotiate byte order and decide to use little-endian
+notation? jhrg 12/17/03}. A two-byte specification of a 500-byte image
+would be 10000011 01110100 (0x83 0x74), for example, while a 20-byte image
+would only need one byte of length information: 00010100 (0x14). Length
+specifications can use any number of bytes.
+\end{quote}
+
+\emph{Length Specifications} MUST be used to specify the size of variable
+length entities throughout the \Blob encoding.
+
+\subsubsection{\Blob framework and reliable error delivery}
+\label{sec-blob-framework}
+
+The \Blob response is a multi-part MIME document\cite{rfc2046}. The \Blob
+MUST contain the \texttt{Content-Type} MIME header and MUST give the content
+type as \texttt{multipart/mixed}. Each part of the multi-part document MUST
+have a \texttt{Content-Length} header which indicates the total number of
+bytes in this part and MUST have a \texttt{Content-Type} MIME header and the
+type of that header MUST be \texttt{application/octet-stream} or it MUST
+\texttt{text/plain}. The \texttt{application/octet-stream} indicates that
+binary data are contained in this part of the document and MUST be
+interpreted as described in \Sectionref{sec-blob-atomic} and
+\Sectionref{sec-blob-constructor}. If the type is \texttt{text/plain}, then
+the content MUST be an \ErrorX document.
+
+The \Blob response is encoded using a multi-part MIME document to ensure
+reliable delivery of error messages if servers stream responses to clients. A
+server can iteratively build chunks of the total response and include that in
+the \Blob as the next part. If an error is discovered, that can be sent
+instead. A server is free to choose the size for each part and is free to
+build \Blob responses with only one part.
+
+\subsubsection{Atomic Types}
+\label{sec-blob-atomic}
+
+The \DAP atomic data types are encoded as follows. All data MUST be
+encoded using big-endian byte order UNLESS that is modified using the
+client-server negotiation options described in
+\Sectionref{sec-request-response}.
+
+\begin{description}
+\item[Integer types] Signed integers: Twos-complement; unsigned integers:
+  straight binary. The \Boolean and \Enum types MUST be sent as unsigned
+  32-bit integers.\footnote{The \Boolean type could
+  conceivably be sent in a single bit, but decoding that may be inefficient
+  for some architectures.  A transport protocol that supports compression
+  may achieve the same reduction in size.}
+
+\item[Floating-Point types] IEEE 754
+
+\item[String types] \Strings: Unicode, UTF-8, prefixed by a \emph{Length
+  Specification} indicating the length \emph{in bytes} of the string. The
+  \URL and \Time types MUST be limited to US-ASCII characters, prefixed by a
+  \emph{Length Specification} indicating the length \emph{in bytes}.
+  
+\item[Binary images] A \Bi MUST be sent as a sequence of bytes, prefixed by a
+  \emph{Length Specification} indicating the length \emph{in bytes} of the
+  \Bi.
+\end{description}
+
+\subsubsection{Constructor Types}
+\label{sec-blob-constructor}
+
+The constructor types are encoded as follows.  See above for
+instructions about how to encode the atomic types.  Note that  \Alias
+variables are omitted from the \Blob.  They are reconstructed using
+the \DDX. 
+
+\begin{description}
+\item[\Array]
+  
+  \Array members MUST be encoded in row-major order (rightmost subscript
+  varies fastest). The \Array MUST be preceded \emph{Length Specification}
+  indicating the the number of \emph{elements} (not the number of bytes) in
+  the \Array. The size of each element MUST be derived from the declaration
+  in the \DDX. \Arrays of \String, \URL or \Time values MUST include the
+  \emph{Length Specification}.
+  
+\item[\Structure] 
+  
+  Members MUST be placed in order of declaration, with no boundary values.
+  \Alias variables MUST be omitted. (There is no place holder for them in the
+  \Blob. They are reconstructed using the \DDX.)
+
+\item[\Grid] 
+  
+  \Grids, which are essentially special cases of the \Structure type,
+  MUST be recorded in the same fashion as \Structures.
+
+\item[\Sequence] 
+  
+  Each entry in a \Sequence is recorded like a \Structure, EXCEPT that each
+  entry MUST be preceded by a single ``Start-of-Instance'' flag byte (value
+  \lit{0x5a}), and the entire \Sequence MUST be end with an
+  ``End-of-Sequence'' flag byte (same value: \lit{0x5}).
+
+  For example, a schematic view of the data and flags for the three element
+  sequence: \\ [2mm]
+\begin{vcode}{SOB}
+<Sequence>
+  <Int32 name="Var1">
+  <Int32 name="Var2">
+  <Int32 name="Var3">
+</Sequence>
+\end{vcode}
+
+looks like:\\ [2mm]
+\begin{vcode}{SOB}
+<SOI><Var1><Var2><Var3>
+<SOI><Var1><Var2><Var3>
+<SOI><Var1><Var2><Var3>
+<EOS>
+\end{vcode}
+
+For a nested Sequence (a Sequence which contains a Sequence as a child
+element) such as:\\ [2mm]
+\begin{vcode}{SOB}
+<Sequence>
+  <Int32 name="Var1">
+  <Int32 name="Var2">
+  <Sequence>
+    <Int32 name="Var3">
+    <Int32 name="Var4">
+  </Sequence>
+</Sequence>
+\end{vcode}
+
+the schematic representation looks like:\\ [2mm]
+\begin{vcode}{SOB}
+<SOI><Var1><Var2>
+
+<SOI><Var3><Var4>
+<SOI><Var3><Var4>
+<EOS>
+
+<SOI><Var1><Var2>
+
+<SOI><Var3><Var4>
+<SOI><Var3><Var4>
+<EOS>
+
+<SOI><Var1><Var2>
+
+<SOI><Var3><Var4>
+<SOI><Var3><Var4>
+<EOS>
+<EOS>
+\end{vcode}
+
+Note that the outer sequence has three instances and each of those includes
+the inner Sequence. 
+
+\end{description}
+
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
+\subsection{ErrorX}
+\label{sec-errorx}
+
+The \ErrorX object is an XML document containing information about any
+errors that may have been encountered by the server while processing a
+request. For any request, a server MAY return an ErrorX response in place of
+the normal response ({\it e.g.}, instead of the \DDX).
+
+The \ErrorX object MUST contain:
+
+\begin{description}
+\item[Offending request information] This is the complete URL, including
+  payload (\CE), or the POST data in effect at the time. The intent is that
+  there should be enough information to reproduce the error.
+\item[Text message] A description of the problem.
+\end{description}
+
+The \ErrorX object is an XML document used to signal a \DAP client that
+the server has encountered an error of some kind.  
+
+\subsection{\ErrorX XML Elements}
+
+An \ErrorX object can contain the following XML elements.
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Error}
+
+Describes the type of error encountered.  The element MUST contain a
+short text description with the \attribute{description} attribute, OR
+a longer description enclosed.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{code} A number, from a set of well know error
+  numbers, associated with this error. See
+  Appendix~\Sectionref{sec-error-codes} for a list error numbers and their
+  meanings. [required]
+\end{description}
+
+\paragraph{Child Elements}
+\begin{description}
+  \item \element{request} [Required] Contains the Base URL given that
+  triggered the error.
+  
+  \item \element{description} [Optional] Contains a short description of the
+  error condition.
+  
+  \item \element{constraint} [Required if a constraint expression is presnet]
+  Contains the constraint condition of the request that triggered the error.
+  This is a string containing an index value corresponding to the index value
+  of the \element{Constraint} element.\footnote{What is the `index value'
+  here? jhrg 12/17/03}
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item One \element{request} element; followed by
+\item Zero or One \element{description} element; followed by
+\item Zero or One \element{constraint} element
+\end{itemize}
+
+
+\examplelabel{ex-errorx}
+\begin{vcode}{t}
+<Error code="404"> 
+  <description>Not found</description>
+  <request>http://dods.org/data.nc</request>
+  <constraint>\emph{huh? What is the index element stuff?}</constraint>
+</Error>
+\end{vcode}
+
+\subsection{\CapX}
+\label{sec-capx}
+
+\note{We're going to be careful about the name `Capabilities' since OpenGIS
+  may have trademarked that. 10/21/03 jhrg}
+
+A \DAP server MUST be equipped to respond to a client request for an XML
+document describing the characteristics and capabilities of that server.
+
+The \CapX MUST contain information about the \DAP version. It MAY contain
+software implementation version information. The \CapX MUST contain a
+description of ANY \CE function which is intended to be publically accessible
+(servers are free to include \CE functions for internal/experimental use and
+not document them in the Server Capabilities Document).
+
+\subsection{\CapX\ XML Elements}
+
+The XML syntax of the returned capabilities document is as follows:
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Description}
+
+This element MUST include documentation too long to include as an
+attribute to the \element{Function} element.
+
+\paragraph{Element Attributes} None.
+
+\paragraph{Child Elements} None.
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Function}
+
+The \element{Function} declaration MUST identify a function a client program
+can use in a \CE. The server MUST identify any part of the \CE that looks
+like \lit{function(arg1,arg2,arg3)} as a function. If a function has no
+parameters, an empty set of parentheses MUST be included.
+
+If the \element{Function} element has parameters, their declarations
+MUST be contained in its declaration.  There SHOULD also be a text
+description of the Function.  Short descriptions MAY be included as a
+Function attribute, while longer ones MAY be included in a
+\element{Description} element in the \element{Function} body.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{name} [Required] A string identifying the name of the function.
+  You should try to pick a name unlikely to cause confusion. The best idea is
+  to pick a brief acronym with which to identify your server or project, and
+  prefix all function names with those letters. That is, don't call your new
+  function \lit{exp()}. Instead call it something like \lit{GDSexp()}.
+
+  \ATTRIBUTE{type} [Required] The type of data returned by the function. This
+  MUST be one of the \DAP data types (\Sectionref{sec-variables}) or one of
+  the special words `AtomicType' or `AnyType'. Functions
+  to be used in the selection clause of a \CE should return \type{Boolean}.
+\end{description}
+
+\paragraph{Child Elements}
+\begin{description}
+  \item \element{Description} [Optional] Used to provide a detailed 
+  description of the function.
+  \item \element{Parameter} [Optional] Used to describe an input parameter for
+  the function.
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or one \Description; followed by
+\item Zero or more \Parameters
+\end{itemize}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Parameter}
+
+Use the \element{Parameter} element to list the formal parameters (in order)
+needed by this function.
+
+\paragraph{Element Attributes} 
+\begin{description}
+\ATTRIBUTE{name} [Optional] A name by which to refer to a formal parameter.
+This is a documentation convenience, and there is no default value.
+
+\ATTRIBUTE{type} [Required] The type of the parameter. This type MUST be one
+of the \DAP data type names (\Sectionref{sec-variables}). Note that the value
+of the \lit{type} attribute is just the name of the type ({\it e.g.},
+\lit{Grid}, \lit{Array}, {\it et c.}) and does not include information about
+the size of an Array or the names of the fileds in a Structure. Because it
+simplies the interface to a function, it is possible to use the special words
+\lit{SimpleType} and \lit{AnyType} in place of one of the \DAP type names.
+The word \lit{SimpleType} means that the actual parameter MAY be of any of
+the atomic types. The word \lit{AnyType} means that the actual parameter MAY
+be of any of the \DAP data types.
+
+\ATTRIBUTE{repeats} [Optional] If present and assign the value \lit{true},
+this attribute indicates that the parameter MAY appear once or any number of
+times greater than once. If not present the parameter MUST appear once.
+
+\ATTRIBUTE{description} [Optional] A brief text description of this parameter.
+This is a documentation convenience, and there is no default value.
+\end{description}
+
+\paragraph{Child Elements} None.
+
+
+\examplelabel{ex-function1}
+\begin{vcode}{it}
+<Function name="average" type="Float64">
+  <description>This function averages a group of Float64
+  values.</descritpion>
+  <parameter type="Float64" repeats="true"/>
+</Function> 
+\end{vcode}
+
+\examplelabel{ex-function2}
+\begin{vcode}{it}
+<Function name="mean" type="Float64"> <description>This function averages a
+  group of values; it is more liberal about its parameter types than average.
+  It will return an ErrorX if called with non-numeric actual
+  parameters.</descritpion> <parameter type="SimpleType" repeats="true"/>
+  </Function>
+\end{vcode}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Version}
+
+The \element{Version} element indicates the version of some entity
+associated with the server in question. The \CapX response MUST contain the
+version of the \DAP; other version elements MAY be used to include the
+versions of other things (such as implementation software). Note that the
+versions of specific data sources SHOULD be included in the \Attributes for
+those data sources, not in the version information returned here.
+
+\paragraph{Element Attributes} 
+\begin{description}
+  \ATTRIBUTE{value} [Required] A string containing the version number
+  or name. 
+  
+  \ATTRIBUTE{entity} [Required] A string containing the name of the
+  specification/standard, software or data source to which this
+  \element{Version} element refers. The string \lit{DAP} is reserved to refer
+  to the \DAP and indicates the version of the protocol, not the
+  implementation. Any other value is at the discretion of the software
+  implementor (for software version) or server administrator. 
+\end{description}
+
+\paragraph{Child Elements} None.
+
+\examplelabel{ex-version}
+\begin{vcode}{it}
+<Version entity="DAP" value="4.0"/>
+<Version entity="OPeNDAP_netCDF_server" value="6.4"/>
+\end{vcode}
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Constraint %%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Constraint}
+\label{sec-xml-ce}
+
+The \DAP uses a single \new{request document} to supply information to a
+server about a request for data. Recall in \Sectionref{sec-ce} that the \DAP
+uses \CEs to limit data accessed to specific variables, or parts of
+variables, in a \Dataset. 
+
+Each constraint is broken into two clauses, the \new{projection clause} and
+the \new{selection clause}. Each of the clauses is further broken down into
+sub-clauses. A projection clause is simply a collection of one or more
+\Project elements, and a selection clause consists of one or more \Select
+elements. If no \Project elements are present (the projection clause is
+omitted), the server MUST return all the variables in the data source. If the
+selection clause is omitted, all instances (values) of the variables
+specified in the projection are returned.
+
+It is reasonable for the \Constraint element to be empty, as this will cause
+the server to return the complete description (\DDX) for the \Dataset. From
+this the user would typically form the \new{projection clauses} and
+\new{selection clauses} to constrain the information. A second request would
+then follow, this time with a more complex \Constraint.
+
+A client can ask the 
+server to omit the \Attribute information from a \DDX by adding a 
+\NoAttributes element to the \Constraint. See \Sectionref{sec-ce-examples} 
+for examples.
+
+\subsection{Constraint XML Elements}
+\label{sec-xml-ce-elements}
+
+Following is a description of each element used in a \CE.
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Constraint}
+
+This element contains the two component clauses of the \CE: the
+projection and the selection.  The projection clause specifies which
+variables are to be returned, and the selection clause helps select
+among the variable values.  See page~\pageref{sec-ce-clauses}.\\[2mm]
+
+\paragraph{Element Attributes} 
+\begin{description}
+\ATTRIBUTE{name}  [Required] An identifying string for the constraint expression.
+\end{description}
+
+\paragraph{Child Elements} 
+\begin{description}
+
+  \item \element{NoAttributes} [Optional] Informs server to strip all
+  \Attribute information from the returned \DDX.
+  
+  \item \element{Project} [Optional] Identifies a variable to be returned the
+  client. See \Sectionref{sec-xml-project}
+  
+  \item \element{Select} [Optional] Specifies what conditions need to be met
+  for an instance of the set of projected variables to be returned to the
+  client. See \Sectionref{sec-xml-select}
+  
+\end{description}
+
+\textbf {Child element syntax:} 
+
+\begin{itemize}
+\item Zero or one \NoAttributes element; followed by
+\item Zero or more \Project elements; followed by
+\item Zero or more \Select elements
+\end{itemize}
+
+See \Sectionref{sec-ce-examples} for examples of complete \CEs.
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Hyperslab}
+\label{sec-xml-hyperslab}
+
+Use this element to measure off a rectangular subsection (sometimes called a
+\new{hyperslab}) of a \Grid, \Array, or \Sequence variable. See
+\Sectionref{sec-ce}. There MUST be only one \element{Hyperslab} element for
+each dimension of the \Grid. If a \element{Hyperslab} element is missing,
+that dimension will be returned whole. See \exampleref{ce-2}.
+
+A single \element{Hyperslab} element MAY also be used to subsample a
+\Sequence.
+
+\paragraph{Element Attributes} 
+\begin{description}
+\ATTRIBUTE{dimension} [Optional] The name of the dimension to sample with the
+parameters given in this \element{Hyperslab} element. This name MUST only
+apply to \Grid variables or \Arrays with named dimensions. If the name is
+omitted, the order of the \element{Hyperslab} elements MUST be the same as
+the order of the variable dimension declarations.
+
+\ATTRIBUTE{start} [Optional] The first index to return. If omitted, zero MUST
+be assumed.
+
+\ATTRIBUTE{stop} [Optional] The last index to return. If omitted, the
+dimension maximum MUST be assumed.
+
+\ATTRIBUTE{stride} [Optional] Use the \attribute{stride} to skip \Grid rows
+(or columns or hyperslabs). If omitted, a value of one MUST be assumed. If
+present, \attribute{stride} causes sampling to begin at \attribute{start} (or
+zero if there is no \attribute{start} present) and then skip to $start +
+stride$, $start + 2*stride$, et cetera.
+\end{description}
+
+\paragraph{Child Elements} None.
+
+\examplelabel{ce-hyperslab}
+\begin{vcode}{it}
+<Constraint>
+    <Project variable="/temp">
+        <Hyperslab dimension="time" start="1" stop="100" stride="5"/>
+        <Hyperslab dimension="depth" start="20" stop="40"/>
+    </Project>
+</Constraint>
+\end{vcode}
+
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{NoAttributes}
+\label{sec-xml-no-attr}
+
+This element is used to eliminate the \Attribute content from the returned 
+DDX. This is intended to be used by clients making multiple requests of the
+same \Dataset and thus do not need to have the \Attribute elements sent 
+multiple times.
+
+\paragraph{Element Attributes} None.
+\paragraph{Child Elements} None.
+
+\examplelabel{ce-no-attrs}
+
+This \CE will return a \DDX of the entire \Dataset minus any \Attribute information.
+
+\begin{vcode}{it}
+<Constraint>
+    < NoAttributes />
+</Constraint>
+\end{vcode}
+
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Project}
+\label{sec-xml-project}
+
+This element identifies a variable to be returned to the client. This element
+MUST be EITHER a variable in the \Dataset, OR a function, which, when
+evaluated, returns a value which is then returned by the server as if it were
+data. Projection functions MUST be identified in the server's \CapX.
+
+Contains: Zero or more \element{Hyperslab} elements.
+
+A \element{Project} element MUST have AT LEAST one of either a
+\attribute{variable} OR a \attribute{function} BUT NOT BOTH.
+
+\paragraph{Element Attributes}
+\begin{description}
+  \ATTRIBUTE{function} [Optional] A function invocation. The function's
+  return value (which can take any \DAP\ data type) is returned to the
+  client. \textbf{Note:} When variables are passed to a function, the
+  variables MUST be passed using their \FQN. See \Sectionref{sec-FQN} for
+  more on \FQNs.
+  
+  \ATTRIBUTE{variable} [Required] The \FQN of the variable to be returned. See
+  \Sectionref{sec-FQN} for more on \FQNs.
+  
+\end{description}
+
+\paragraph{Child Elements}
+\begin{description}
+  \item \element{Hyperslab}  [Optional] Describes a sub-sample of a \Grid, \Array, 
+  or \Sequence variable. 
+  See \Sectionref{sec-xml-hyperslab}
+  
+\end{description}
+
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Hyperslab elements
+\end{itemize}
+
+% - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+\ELEMENT{Select}
+\label{sec-xml-select}
+Use this element to define the condition under which a \Sequence instance or
+a \Grid element is to be returned. A \element{Select} element specifies a
+relational operation and two operands to compare with it. See
+\exampleref{ce-1} and \exampleref{ce-3} to see how to select from a \Sequence
+and a \Grid, respectively. Note that the \element{Select} MUST explicitly
+state to which projected variable it applies (using the \lit{target}
+attribute).
+
+%% To accomplish a comparison between two variables, or between two
+%% functions, a server should provide another function to do the
+%% comparison internally.
+
+%% A \element{Select} element that references a \Dataset variable may
+%% contain a set of \element{Hyperslab} elements with the limitation that
+%% the \element{Hyperslab} elements MUST select a single scalar value
+%% from the variable.  That is, a selection clause like the following is
+%% permissible only if \lit{sst} is a \Sequence or a one-dimensional
+%% \Array or \Grid.
+
+%% \begin{vcode}{it}
+%% <Select condition="sst>25.0">
+%%    <Hyperslab start="3" stop="3">
+%% </Select>
+%% \end{vcode}
+
+Contains: Zero or more
+\element{Hyperslab} elements.
+
+\paragraph{Element Attributes}
+\begin{description}
+  \ATTRIBUTE{condition} [Required] A relational expression or a function call.
+  In the case of a function call, the function MUST return a \Boolean type.
+  In the case of a relational expression, the syntax MUST be: $operand_{1}
+  operator operand_{2}$ where $operator$ is one of: 
+  $\verb+=, !=, <, <=, >, >=, =~+$
+  and are defined in \Tableref{tab-ce-relations}. The operands $operand_{1}$
+  and $operand_{2}$ maybe variables of any of the atomic types, including
+  fields, constants, or function calls which return atomic types. \textbf{Note:}
+  When variables are passed to a function it MUST be done so using their \FQN.
+  See \Sectionref{sec-FQN} for more on \FQNs.
+  
+  \ATTRIBUTE{target} [Required] The \FQN of the variable with which this 
+  selection criterion is to be evaluated. See \Sectionref{sec-FQN} 
+  for more on \FQNs.
+  
+\end{description}
+
+\paragraph{Child Elements}
+\begin{description}
+  \item \element{Hyperslab}  [Optional] Describes a sub-sample of a \Grid, 
+  \Array, or \Sequence variable. 
+  See \Sectionref{sec-xml-hyperslab}
+  
+\end{description}
+  
+\paragraph{Child Element Syntax}
+
+\begin{itemize}
+\item Zero or more \Hyperslab elements
+\end{itemize}
+
+\subsection{Constraint examples}
+\label{sec-ce-examples}
+
+\examplelabel{ce-1}
+
+This \CE is a simple request for temperature and
+salinity from a \Sequence \Dataset.  This will return a \Sequence
+containing temperature and salinity pairs where all the salinity
+values are above 34.0.
+
+\begin{vcode}{it}
+<Constraint>
+    <Project variable="/sample/temp"/>
+    <Project variable="/sample/salt"/>
+    <Select condition="/sample/salt>34.0" target="sample"/>
+</Constraint>
+\end{vcode}
+
+\examplelabel{ce-2}
+
+For sub-sampling gridded data, use the \element{Project} element to
+elaborate a projection clause.  This \CE 
+subsamples a \Grid, and returns a smaller \Grid, where the \lit{lat}
+dimension has rows 1,3,5,7 and 9 of the original \Grid, and the
+\lit{lon} dimension has all the columns from 20 to 40 from the
+original.
+
+\begin{vcode}{it}
+<Constraint>
+    <Project variable="/sst">
+        <Hyperslab dimension="lat" start="1" stop="10" stride="2"/>
+        <Hyperslab dimension="lon" start="20" stop="40"/>
+    </Project>
+</Constraint>
+\end{vcode}
+
+
+\examplelabel{ce-3}
+
+It is also possible to select from a \Grid, based on the values of the
+map arrays.  This \CE shows the selection of a
+\Grid called \lit{sst}.  Assuming \lit{sst} is a two-dimensional array
+with two one-dimensional maps, this constraint will return a \Grid
+where all the \lit{lat} values are above 24.0 and all the \lit{lon}
+values are below -50.0. In addition this \CE requests that no \Attribute
+information be sent in the returned \DDX.
+
+\begin{vcode}{it}
+<Constraint>
+    <NoAttributes />
+    <Project variable="/sst"/>
+    <Select condition="/sst/lat>24.5" target="sst"/>
+    <Select condition="/sst/lon<-50.5" target="sst"/>
+</Constraint>
+\end{vcode}
+
+\examplelabel{ce-4}
+
+This \CE exercises the \Project \Function \lit{make-sst}.
+
+\begin{vcode}{it}
+<Constraint>
+  <Project function="make-sst(/raw-count, 223)"/>
+</Constraint>
+\end{vcode}
+
+%    <Argument variable="raw-count"/>
+%    <Argument constant="223"/>
+%  </Project>
+%%   <Select condition="make-sst(raw-count, 223)>25.0">
+%% %  <Select function="make-sst" condition="make-sst(raw-count, 223)>25.0">
+%% %    <Argument variable="raw-count"/>
+%% %    <Argument constant="223"/>
+%%   </Select>
+
+%\printgloss{dods-glossary}
+
+\bibliographystyle{plain}
+\T\addcontentsline{toc}{section}{References}
+\T\raggedright
+\bibliography{../../../boiler/dods}
+
+
+%<<<<<<<<<<<<<<<<<<<<<<<< APPENDIX >>>>>>>>>>>>>>>>>>>>>>>>>>
+\appendix
+
+%%%%%%%%%%%%%%%%%%%%%%%% XML Schema %%%%%%%%%%%%%%%%%%%%%%%%%
+\section{XML Schema}
+\label{sec-xml-schema}
+
+
+The XML schema has not been fully formalized and will appear 
+here (in this section) at later point in this document's development.
+
+
+%This is the PROTOTYPE XML schema for the \DDX object.
+
+%\begin{verbatim}
+%<?xml version="1.0" encoding="UTF-8"?>
+%<xs:schema targetNamespace="http://www.dods.org/ns/DODS" 
+%           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+%           xmlns:dods="http://www.dods.org/ns/DODS" 
+%           xmlns="http://www.dods.org/ns/DODS" 
+%           elementFormDefault="qualified" 
+%           attributeFormDefault="unqualified">
+
+% <xs:element name="Dataset" type="DODS_Dataset"/>
+% <xs:element name="Map" type="Array"/>
+% <xs:element name="Attribute" type="DASAttribute"/>
+% <xs:element name="Alias" type="DASAlias"/>
+% <xs:element name="Byte" type="BaseType"/>
+% <xs:element name="Int16" type="BaseType"/>
+% <xs:element name="UInt16" type="BaseType"/>
+% <xs:element name="Int32" type="BaseType"/>
+% <xs:element name="UInt32" type="BaseType"/>
+% <xs:element name="Float32" type="BaseType"/>
+% <xs:element name="Float64" type="BaseType"/>
+% <xs:element name="String" type="BaseType"/>
+% <xs:element name="Url" type="BaseType"/>
+% <xs:element name="Array" type="Array"/>
+% <xs:element name="Grid" type="Grid"/>
+% <xs:element name="Structure" type="Structure"/>
+% <xs:element name="Sequence" type="Sequence"/>
+
+% <xs:element name="dodsBLOB" type="BLOB"/>
+
+% <xs:group name="allDodsTypes">
+%  <xs:annotation>
+%   <xs:documentation>Reusable Content Model for 
+%                     Complex DODS types</xs:documentation>
+%  </xs:annotation>
+%  <xs:choice>
+%   <xs:element ref="Byte" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="Int16" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="UInt16" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="Int32" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="UInt32" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="Float32" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="Float64" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="String" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="Url" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="Array" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="Grid" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="Structure" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="Sequence" minOccurs="0" maxOccurs="unbounded"/>
+%  </xs:choice>
+% </xs:group>
+
+% <xs:complexType name="DODS_Dataset">
+%  <xs:annotation>
+%   <xs:documentation>This is the XML representation of a DODS DDS object.</xs:documentation>
+%  </xs:annotation>
+%  <xs:sequence>
+%   <xs:element ref="Attribute" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="Alias" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:group ref="allDodsTypes" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="dodsBLOB" minOccurs="0"/>
+%  </xs:sequence>
+%  <xs:attribute name="name" type="xs:string" use="required"/>
+% </xs:complexType>
+
+% <xs:complexType name="DASAttribute">
+%  <xs:annotation>
+%   <xs:documentation>DAS Attribute Type</xs:documentation>
+%  </xs:annotation>
+%  <xs:choice>
+%   <xs:sequence>
+%    <xs:element name="value" type="xs:string" maxOccurs="unbounded"/>
+%   </xs:sequence>
+%   <xs:sequence>
+%    <xs:element ref="Attribute" minOccurs="0" maxOccurs="unbounded"/>
+%    <xs:element ref="Alias" minOccurs="0" maxOccurs="unbounded"/>
+%   </xs:sequence>
+%  </xs:choice>
+%  <xs:attribute name="name" type="xs:string" use="required"/>
+%  <xs:attribute name="type" type="dods:DataType" use="required"/>
+% </xs:complexType>
+
+% <xs:complexType name="DASAlias">
+%  <xs:attribute name="name" type="xs:string" use="required"/>
+%  <xs:attribute name="Attribute" type="xs:string" use="required"/>
+% </xs:complexType>
+
+% <!-- possible data types for Variable, Attribute objects -->
+% <xs:simpleType name="DataType">
+%  <xs:restriction base="xs:string">
+%   <xs:enumeration value="Byte"/>
+%   <xs:enumeration value="Int16"/>
+%   <xs:enumeration value="UInt16"/>
+%   <xs:enumeration value="Int32"/>
+%   <xs:enumeration value="UInt32"/>
+%   <xs:enumeration value="Float32"/>
+%   <xs:enumeration value="Float64"/>
+%   <xs:enumeration value="String"/>
+%   <xs:enumeration value="URL"/>
+%   <xs:enumeration value="Container"/>
+%  </xs:restriction>
+% </xs:simpleType>
+
+% <xs:complexType name="BaseType">
+%  <xs:annotation>
+%   <xs:documentation>DODS Base Type</xs:documentation>
+%  </xs:annotation>
+%  <xs:sequence>
+%   <xs:element ref="Attribute" minOccurs="0" maxOccurs="unbounded"/>
+%   <xs:element ref="Alias" minOccurs="0" maxOccurs="unbounded"/>
+%  </xs:sequence>
+%  <xs:attribute name="name" type="xs:string"/>
+% </xs:complexType>
+
+% <xs:complexType name="Array">
+%  <xs:complexContent>
+%   <xs:extension base="BaseType">
+%    <xs:sequence>
+%     <xs:choice minOccurs="1" maxOccurs="1">
+%      <xs:element ref="Byte"/>
+%      <xs:element ref="Int16"/>
+%      <xs:element ref="UInt16"/>
+%      <xs:element ref="Int32"/>
+%      <xs:element ref="UInt32"/>
+%      <xs:element ref="Float32"/>
+%      <xs:element ref="Float64"/>
+%      <xs:element ref="String"/>
+%      <xs:element ref="Url"/>
+%      <xs:element ref="Grid"/>
+%      <xs:element ref="Structure"/>
+%      <xs:element ref="Sequence"/>
+%     </xs:choice>
+%     <xs:element name="dimension" type="dods:ArrayDimension" minOccurs="1" maxOccurs="unbounded"/>
+%    </xs:sequence>
+%   </xs:extension>
+%  </xs:complexContent>
+% </xs:complexType>
+
+% <xs:complexType name="ArrayDimension">
+%  <xs:attribute name="name" type="xs:string"/>
+%  <xs:attribute name="size" type="xs:integer" use="required"/>
+% </xs:complexType>
+
+% <xs:complexType name="Grid">
+%  <xs:complexContent>
+%   <xs:extension base="dods:BaseType">
+%    <xs:sequence>
+%     <xs:element ref="Array" minOccurs="1" maxOccurs="1"/>
+%     <xs:element ref="Map" minOccurs="1" maxOccurs="unbounded"/>
+%    </xs:sequence>
+%   </xs:extension>
+%  </xs:complexContent>
+% </xs:complexType>
+
+% <xs:complexType name="Structure">
+%  <xs:complexContent>
+%   <xs:extension base="BaseType">
+%    <xs:group ref="allDodsTypes" minOccurs="1" maxOccurs="unbounded"/>
+%   </xs:extension>
+%  </xs:complexContent>
+% </xs:complexType>
+
+% <xs:complexType name="Sequence">
+%  <xs:complexContent>
+%   <xs:extension base="BaseType">
+%    <xs:group ref="allDodsTypes" minOccurs="1" maxOccurs="unbounded"/>
+%   </xs:extension>
+%  </xs:complexContent>
+% </xs:complexType>
+
+% <xs:complexType name="BLOB">
+%  <xs:attribute name="URL" type="xs:string" use="required"/>
+% </xs:complexType>
+
+%</xs:schema>
+%\end{verbatim}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%% Error Codes %%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Error Codes}
+\label{sec-error-codes}
+
+The error messages and codes issued by a \DAP server are shown in
+\Tableref{tab-error-codes}.  They are largely taken from the HTTP
+error codes outlined in the HTTP standard.  % Different implementations
+%of the \DAP may deliver the messages in different fashions, but the
+The code and the title MUST be delivered as shown here. The \emph
+{description} MAY be altered if you want to translate it into another
+language.
+
+\begin{longtable}{p{0.5in}p{1in}p{3in}}
+\caption{Error Codes\label{tab-error-codes}} 
+\\ 
+\textbf{Code} & \textbf{Title} & \textbf{Description} \\ \hline
+\endfirsthead
+\caption[]{\DAP Error Codes} 
+\\ 
+\textbf{Code} & \textbf{Title} & \textbf{Description} \\ \hline
+\endhead
+\hline
+\endfoot
+400 & Bad Request &
+The URL could not be resolved.  The host name is probably incorrect. 
+\\ \hline
+401 & Unauthorized &
+The resource requested is not available without authentication, and
+yours has failed.
+\\ \hline
+402 & Payment Required &
+\\ \hline
+403 &
+Forbidden & 
+\\ \hline
+404 &
+Not Found &
+The data file specified in the request is not on the
+specified server.
+\\ \hline
+% 407 &
+% Proxy Authentication Required &
+% \\ \hline
+408 &
+Request Timeout &
+\\ \hline
+409 &
+Conflict &
+ \\ \hline
+410 &
+Gone &
+ \\ \hline
+411 &
+Length Required &
+ \\ \hline
+412 &
+Precondition Failed &
+ \\ \hline
+413 &
+Request Entity Too Large &
+ \\ \hline
+414 &
+Request-URI Too Long &
+ \\ \hline
+%% 415 &
+%% Unsupported Media Type &
+%%  \\ \hline
+%% 416 &
+%% Requested Range Not Satisfiable &
+%%  \\ \hline
+%% 417 &
+%% Expectation Failed &
+%%  \\ \hline
+500  &
+Internal Server Error &
+ \\ \hline
+501  &
+Not Implemented &
+ \\ \hline
+502  &
+Bad Gateway &
+ \\ \hline
+503  &
+Service Unavailable &
+ \\ \hline
+504  &
+Gateway Timeout &
+ \\ \hline
+\end{longtable}
+
+
+
+%%%%%%%%%%%%%%%%%%% Notational Conventions %%%%%%%%%%%%%%%%%%%
+%\section{Notational Conventions and Generic Grammar}
+%\label{app-grammar}
+%\input{../../../boiler/bnf-grammar.tex}
+
+
+
+
+%%%%%%%%%%%%%%%%% Acronyms and Abbreviations %%%%%%%%%%%%%%%%%
+%\section{Acronyms and Abbreviations}
+%\begin{acronym}
+%\input{../../../boiler/acronyms.tex}
+%\end{acronym}
+
+\end{document}
+
+% \begin{comment}
+% \subsection{Text Data}
+
+
+% \begin{description}
+% \item[\Array]
+  
+%   \Array members are stored in row-major order (rightmost subscript
+%   varies fastest).  The items in a row are separated by commas.  Rows
+%   are separated from one another by end-of-line characters
+%   (\lit{0x0a}) with no comma.  For \Arrays with three dimensions, the
+%   two-dimensional \Arrays that make up the third dimension are
+%   separated by two EOL characters.  \Arrays with four dimensions
+%   separate their three-dimensional components with three EOL
+%   characters, and so on.
+
+% \item[\Structure] 
+  
+%   Members are placed in order of declaration, separated by commas, and
+%   enclosed with curly brackets ($\{\}$).
+
+% \item[\Grid] 
+  
+%   \Grids, which are essentially special cases of the \Structure type,
+%   are recorded in the same fashion as \Structures.
+
+% \item[\Sequence] 
+  
+%   \Sequence data are returned as a series of comma-separated rows, with
+%   each \Sequence terminated by an EOL character, and the members
+%   separated by commas.  \Sequences must be returned flattened into a
+%   single \Sequence.  This means that \Sequences contained within
+%   \Sequences lose their definition as \Sequences.  For a \Sequence $S$
+%   with member variables $s_0\cdots s_n$, that contains another
+%   \Sequence $s_i$, with members $s_{i a}$ and $s_{i b}$the returned
+%   format looks like this:
+
+%   \begin{displaymath}
+%     \begin{array}{ccccccc}
+%       s_{1 1}, & s_{2 1}, & \cdots & s_{i 1 a 1}, s_{i 1 b 1}, & \cdots & s_{n 1} \\
+%       s_{1 1}, & s_{2 1}, & \cdots & s_{i 1 a 2}, s_{i 1 b 2}, & \cdots & s_{n 1} \\
+%       s_{1 1}, & s_{2 1}, & \cdots & s_{i 1 a 3}, s_{i 1 b 3}, & \cdots & s_{n 1} \\
+%       s_{1 1}, & s_{2 1}, & \cdots & s_{i 1 a 4}, s_{i 1 b 4}, & \cdots & s_{n 1} \\
+%       \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+%       s_{1 2}, & s_{2 2}, & \cdots & s_{i 2 a 1}, s_{i 2 b 1}, & \cdots & s_{n 2} \\
+%       s_{1 2}, & s_{2 2}, & \cdots & s_{i 2 a 2}, s_{i 2 b 2}, & \cdots & s_{n 2} \\
+%       s_{1 2}, & s_{2 2}, & \cdots & s_{i 2 a 3}, s_{i 2 b 3}, & \cdots & s_{n 2} \\
+%       s_{1 2}, & s_{2 2}, & \cdots & s_{i 2 a 4}, s_{i 2 b 4}, & \cdots & s_{n 2} \\
+%       s_{1 2}, & s_{2 2}, & \cdots & s_{i 2 a 5}, s_{i 2 b 5}, & \cdots & s_{n 2} \\
+%       \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+%     \end{array}
+%   \end{displaymath}
+
+%   \Sequences that contain more complex data types may return their data
+%   as a series of \Structures, with each \Sequence entry enclosed by
+%   curly braces ($\{\}$), and \Sequence members separated by commas.
+%   An entry in the above \Sequence would be rendered as follows:
+
+%   \begin{displaymath}
+%     \begin{array}{l}
+%       \{ s_{1 1}, s_{2 1}, \cdots 
+%       \{ s_{i 1 a 1}, s_{i 1 b 1} \} 
+%       \{ s_{i 1 a 2}, s_{i 1 b 2} \} 
+%       \{ s_{i 1 a 3}, s_{i 1 b 3} \} 
+%       \{ s_{i 1 a 4}, s_{i 1 b 4} \}, 
+%       \cdots s_{n 1} \}   \\
+%       \{ s_{1 2}, s_{2 2}, \cdots 
+%       \{ s_{i 2 a 1}, s_{i 2 b 1} \} 
+%       \{ s_{i 2 a 2}, s_{i 2 b 2} \} 
+%       \{ s_{i 2 a 3}, s_{i 2 b 3}, \} 
+%       \cdots s_{n 2} \}   \\
+%       \vdots \\
+%     \end{array}
+%   \end{displaymath}
+
+%   Using this format, EOL characters do not retain their meaning,
+%   except to indicate the end of \Array dimensions that may be contained
+%   in the \Sequence.
+
+% \end{description}
+% \end{comment}

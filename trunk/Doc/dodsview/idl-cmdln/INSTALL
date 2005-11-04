@@ -1,0 +1,94 @@
+
+	$Id$
+
+BUILDING the DODS IDL COMMAND LINE CLIENT
+
+---------------------------------------------------------------------------
+
+BUILDING THE SOFTWARE
+REQUIREMENTS
+NOTES
+
+---------------------------------------------------------------------------
+
+BUILDING THE SOFTWARE
+
+The DODS IDL command line client is built as a shared object which is read
+into IDL once IDL is started. The program is called idl_dods.so and is called
+by several IDL program files. To get data with the client, use the IDL
+program files. 
+
+** Here's how build the client:
+
+Run configure,
+
+	> ./configure
+
+On some systems, you may have explicitly use the shell,
+
+	> /bin/sh configure
+
+Whichever way you run configure, it should print a number of informational
+messages about your system followed by an message indicating that the
+Makefile has been created.
+
+To build the program run make,
+
+	> make all
+
+If this fails try rebuilding the dependencies,
+
+	> make depend
+
+and follow that by `make all' as above.
+
+To install the software, 
+
+	> make install
+
+REQUIREMENTS
+
+  o The DODS core (DAP) library, plus the five package libraries libwww,
+    libtcl, libtk, librx and libz.
+
+  o IDL 5.3 or greater.
+
+NOTES
+
+  o On some versions of IDL (this has been reported for version 5.5 but we
+  cannot confirm this) there is a line in the IDL header file export.h (which
+  can be found in IDL/external/) that contains the word `template.' This is a
+  reserved word in C++ and gcc-2.95.3 (and possibly others) reports its
+  presence there as an error. To work around this problem, change the word
+  from `template' to `template_param.'
+
+  o DEBUGGING AIDS
+
+    - The DODS API includes the following debugging aids that may be of help
+      to you in developing new DODS applications.
+
+    - DBG: simple program instrumentation -- see the file debug.h in
+      $DODS_ROOT/include for more information
+
+    - DBG2: more elaborate program instrumentation -- by convention this is
+      used for output that is half a page or more, while DEBUG is used for
+      single line output.
+
+    - dbnew: include -ldbnew and -lefence when linking. libdbnew.a contains
+      overloaded versions of new, new[] delete and delete[]. It also contains
+      code to `walk the malloc chain' and simple checks for out-of-bounds
+      errors.
+
+    - efence: a freely available bounds checker for dynamically allocated
+      memory. When used with dbnew, efence must be set to 8-byte alignment.
+      efence will find all over- or under-writes of dynamically allocated
+      memory, but only works on some machines.
+
+    - To build with program instrumentation use `--enable-debug=<level>'
+      where <level> is 1 or 2.
+
+    - By default, both debug and dbnew are *not* enabled. Thus, if you want
+      to build a straight version of the libraries and test code, use
+      `./configure'. If you want the extra features, use:
+
+      ./configure --enable-dbnew --enable-debug=2

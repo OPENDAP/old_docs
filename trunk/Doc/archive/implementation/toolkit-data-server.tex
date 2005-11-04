@@ -1,0 +1,82 @@
+\section{Building DODS Data Servers}
+\label{toolkits:servers}
+
+A DODS data server is really made of five executable programs; httpd, a CGI
+program (usually implemented as a UNIX shell script) and three filter
+programs (made using \Cpp\ and possibly C software) used to read various
+types of information from the dataset. Figure~\ref{toolkits:server-design}
+shows the data server design. 
+
+When httpd recieves a URL which references one of the programs in its
+ScriptAlias directories it executes that program with information taken from
+the URL as arguments\cite{httpd:cgi}. The program, know as a CGI program, is
+started such that its standard input and standard output descriptors are the
+same at those belonging to httpd. Thus, the CGI can send information to the
+httpd's client (the program that is fetching the URL from the httpd) by
+writing to its standard output. 
+
+The three filter programs are started by the CGI depending on the extension
+given with the URL. If the URL ends with `.das' then the DAS filter program is
+started. Similarly, the extension `.dds' will cause the DDS filter to run and
+the extension `.dods' will cause the DODS filter to run. The CGI program,
+which serves to dispatch the request to one of the three filter programs, can
+be very simple. In both of the sample servers distributed with DODS version
+1.x, the CGI takes its name and catenates `_das', `_dds' or `_dods' depending
+on the URL extension.
+
+Each of the three filter prgrams returns one of the three DAP responses
+descriped in \DAP. The DAS filter program returns the DAS, the DDS filter
+returns the DDS and the DODS filter returns the data cooresponding to a
+particular variable. 
+
+URLs that access DODS data (i.e., that access a DODS data server and request
+iformation) differ from those typed in by users in that users never supply
+the extensions `.das', etc. Instead those extensions are added by the
+client-library (see Section~\ref{toolkits:clients} for more information about
+where this takes place). A URL supplied by a user accesses data from the
+user's perspective. However, the client library must access the three
+different servers to satisfy any given dat arequest from the user. Thus, URLs
+which access one of the three filter programs has the extension added to it.
+
+A utility called `geturl' is supplied with the DAP core software (in the
+version 1.x software distribution it is in the \dollar(DODS_ROOT)/etc
+directory). Ths utility can be used to test each of the three filter programs
+by supplying it with a URL that will access that filter program (i.e., a URL
+with the extension allready appended). For example, to access the netCDF DDS
+filter included in the DODS version 1.x netCDF software geturl would be
+invoked as {\tt geturl -s http://dods.gso.uri.edu/cgi-bin/nc/test.dds}. In
+this example the {\tt -s} option causes geturl to access the server
+synchronously, {\tt dods.gso.uri.edu} is the name of the machine on which the
+server is running, {\tt cgi-bin} is the httpd's ScriptAlias directory, {\tt
+nc} is the DODS dispatch CGI script (whcih users think of as ``the server'')
+and {\tt test} is the data set. If a user were to access this same data set
+with a program they would use the same URL {\em excpet\/} for the `{\tt
+.dds}' extension.
+
+\begin{figure}
+\label{toolkits:server-design}
+\caption{The Architecture of a DODS Data Server.}
+\end{figure}
+
+\subsection{Writting the dispatch CGI}
+
+The dispatch CGI must take a URL intended for a DODS data server filter
+program and invoke the correct filter program based on the URL extesion. The
+CGI should be written so that it can invoke not only the three standard DODS
+filter programs (DAS, DDS and DODS) but also additional filter programs so
+that sites can customize their server to retrun other types of data (e.g., a
+fourth filter program might return a GIF rpresenation of the data).
+
+\begin{figure}
+\label{toolkits:cgi}
+\begin{verbatim}
+
+\end{verbatim}
+\caption{The CGI distributed with the version 1.x DODS-netCDF software
+(editted).}
+\end{figure}
+
+\subsection{The DAS filter program}  
+
+\section{Building Client Libraries}
+\label{toolkits:clients}

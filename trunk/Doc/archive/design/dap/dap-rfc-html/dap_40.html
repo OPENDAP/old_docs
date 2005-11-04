@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:12 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- Help</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_41.html"><img alt="Directory" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_39.html"><img alt="INFO" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Help</b></td></tr></table>
+<h3>Help</h3>
+
+The <tt>help</tt> response MUST be returned when either the server receives a
+URL with no extension (i.e., a URL which asks for no object) or
+when the <tt>dataset&#95;id</tt> portion of the URL is <tt>help</tt>.
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+abs&#95;path </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> server&#95;path dataset&#95;id "." ext [ "?" query ] </td></tr>
+<tr><td colspan="1" align="LEFT">
+server&#95;path </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> &lt;name of DAP server&gt; </td></tr>
+<tr><td colspan="1" align="LEFT">
+dataset&#95;id </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "help" </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<p>The second way of requesting the <tt>help</tt> response is analogous to one
+of the ways of requesting the <tt>version</tt> response.
+<p>The <tt>help</tt> response MUST return an HTML document which lists
+the extensions recognized by the server. The response MAY return other
+information as well.
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_41.html"><img alt="Directory" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_39.html"><img alt="INFO" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Help</b></td></tr></table></body></html>

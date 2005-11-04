@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Conclusion</TITLE>
+<META NAME="description" CONTENT="Conclusion">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="next" HREF="node21.html">
+<LINK REL="previous" HREF="node13.html">
+<LINK REL="up" HREF="data-delivery-design.html">
+<LINK REL="next" HREF="node21.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html356"
+  HREF="node21.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html352"
+  HREF="data-delivery-design.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html346"
+  HREF="node19.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html354"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html357"
+  HREF="node21.html">About this document ...</A>
+<B> Up:</B> <A NAME="tex2html353"
+  HREF="data-delivery-design.html">DODS Data Delivery Design</A>
+<B> Previous:</B> <A NAME="tex2html347"
+  HREF="node19.html">Adding Local Access to</A>
+ &nbsp; <B>  <A NAME="tex2html355"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00050000000000000000">
+Conclusion</A>
+</H1>
+
+<P>
+This paper describes the design of the data delivery components of the <A NAME="tex2html69"
+  HREF="http://www.unidata.ucar.edu/packages/dods/">Distributed Oceanographic Data System</A>.
+This design uses HTTPD and the CGI interface to provide access to remotely
+stored data. User programs, which were never intentionally written with
+access to remote data in mind, can be re-linked with DODS client libraries
+and access data using HTTP. The DODS client libraries are direct
+call-for-call replacements for existing APIs, thus any user program written
+to make use of an API for which a DODS client library exists can be re-linked
+and can access data via the DODS HTTP-base data servers. Because the data
+servers and client libraries use a single protocol to provide access to the
+data regardless of the data's storage format, user programs written to read
+data using one API can actually access data through DODS data servers in
+several APIs.
+
+<P>
+The current design of the DODS data delivery mechanism as described here and
+in ``<A NAME="tex2html70"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-arch/data-delivery-arch.html">DODS--Data Delivery Architecture</A>'' and ``<A NAME="tex2html71"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">DODS--Data Access Protocol</A>'' is the result of our previous experience building a
+similar system using Sun Microsystem's Remote Procedure Call (RPC)
+technology. That system demonstrated the feasibility of re-linking user
+programs with re-implemented API libraries and using those re-linked programs
+to access remotely stored data. That design, however, did not use a single
+transmission protocol for all servers and libraries. Thus it was not able to
+provide interoperability between APIs. This design reflects our desire to
+achieve that goal. 
+
+<P>
+The decision to abandon the RPC-based transfer technology in favor of
+HTTP-based communications rests on the growing prominence of that technology,
+the convenience that its supporting software provides and the likelihood
+that a variety of interfaces can be constructed to access the HTTP-based data
+servers. Because HTTP is receiving widespread use, there are many active
+efforts to refine its weak points. By adopting HTTP, DODS stands to benefit
+from these refinements. In addition, using text MIME documents to transmit
+two of the three responses from the data servers makes interfacing our data
+servers with many different programs, in addition to programs re-linked with
+DODS client libraries, possible. For example, it is possible to use popular
+WWW browsers to read information about the contents of DODS data servers.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html356"
+  HREF="node21.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html352"
+  HREF="data-delivery-design.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html346"
+  HREF="node19.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html354"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html357"
+  HREF="node21.html">About this document ...</A>
+<B> Up:</B> <A NAME="tex2html353"
+  HREF="data-delivery-design.html">DODS Data Delivery Design</A>
+<B> Previous:</B> <A NAME="tex2html347"
+  HREF="node19.html">Adding Local Access to</A>
+ &nbsp; <B>  <A NAME="tex2html355"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

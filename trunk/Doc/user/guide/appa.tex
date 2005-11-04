@@ -1,0 +1,404 @@
+%
+%  $Id$
+%
+
+\chapter{Installing the \opendap Software}
+\label{install}
+
+The current version of the Distributed Oceanographic Data System core
+software is \OPDversion .  Note that this number applies only to the
+core software.  The individual servers, clients, and client libraries
+have their own version numbers.
+
+Full information about the latest versions of the \opendap software is
+available from the \opendap web site: \OPDhome .
+
+This version of \opendap uses CGI standard 1.1.1.
+
+\section{Acquiring the \opendap Software}
+
+
+
+\subsubsection{The \opendap Web Site}
+
+We recommend that you use the \OPDhome\ to obtain the most current
+version of the software.  The ``Software'' page includes a form for
+selecting \opendap components.  Completing the form automatically creates
+a custom compressed archive of all the software components you
+selected, which you can then download to your own machine.
+
+Whenever possible, you should use the provided binary software rather
+than trying to compile and link \opendap yourself.  Compiling will work,
+but the \opendap software is large, and it takes a long time to compile.
+
+Don't forget to select the core software as well as the specific data
+access API or server you need.  For an \opendap client, you will also need
+\lit{Tcl/Tk} and \lit{gzip}.
+
+
+\subsubsection{By Anonymous FTP}
+
+The \opendap software may be down-loaded by anonymous \lit{\ind{ftp}} from
+the \OPDftp .
+
+Don't forget to down-load the core software \lit{tar} file as well as
+the \lit{tar} file corresponding to whatever data access API you need.
+
+The \opendap project provides a small number of archive files containing
+linked libraries and executables for some computing platforms.  You
+should use these files whenever possible, to avoid the hassle of
+compiling the software yourself.  The \opendap software is a substantial
+chunk of code, and it takes a long time to compile and link.
+
+
+\section{Installing the Software}
+\label{sec,installing}
+
+To install the \opendap software, choose a directory to be the \opendap root
+directory.  This directory must be identified with the
+\lit{\ind{DODS\_ROOT}} environment variable for the \opendap software to
+run.  
+
+First, set the working directory to the \lit{DODS\_ROOT} directory.For
+example,
+
+\begin{vcode}{ib}
+export DODS_ROOT=/usr/local/DODS
+cd $DODS_ROOT
+\end{vcode}
+%$
+
+Next, expand the archives with \lit{gzip} and unpack the expanded
+files with \lit{tar}:
+
+\begin{vcode}{ib}
+gzip -d DODS-88772.tar.gz
+tar -xvf DODS-88772.tar
+\end{vcode}
+
+If you got the files via anonymous ftp, you would have to repeat the
+process for each down-loaded archive file, specifying the name of each
+component file.  For example:
+
+\begin{vcode}{ib}
+gzip -d DODS-core-2.19.tar.gz
+tar -xvf DODS-core-2.19.tar
+\end{vcode}
+
+\subsubsection{Building the \opendap Core}
+
+Unpacking the core software archive will create a configure script in
+the \lit{DODS\_ROOT} directory.  The core software may then be built
+with:
+
+\begin{vcode}{ib}
+cd $DODS_ROOT
+./configure
+make
+\end{vcode}
+%$
+
+\noindent
+If you downloaded binary files, you can skip the ``building'' steps.
+
+\subsubsection{Building an \opendap Client or Server}
+
+Unpacking the client library archives in the \lit{DODS\_ROOT}
+directory will produce directories such as \lit{jg-dods} for the JGOFS
+software and \lit{nc-dods} for the netCDF software.  These will appear
+in the \lit{src} subdirectory under \lit{DODS\_ROOT}.  Each of these
+directories will also be equipped with a configure script to create a
+makefile, so the build procedure for them is the same as for the core
+software, for example:
+
+\begin{vcode}{ib}
+cd $DODS_ROOT/src/nc-dods
+./configure
+make
+\end{vcode}
+%$
+
+\subsubsection{Getting the Software Used by DODS}
+
+Several pieces of software are required to run \opendap.  These are all
+free software, and are descibed in \appref{req-software}.
+
+\subsection{Installing the \opendap Libraries}
+\label{install,lib-install}
+
+In order to link and run client programs, the only \opendap software that
+must be installed are the \opendap libraries. The following libraries,
+described in \sectionref{opd-client,link} must be installed in the
+\lit{/usr/lib} directory, or somewhere else where the linker will find
+them. Simply copy them into that directory from the \opendap distribution.
+
+\begin{itemize}
+
+\item \lit{libdap++.a}
+
+\item The \opendap version of the API your software uses.
+
+\end{itemize}
+
+In addition to the \opendap libraries, the following software is also
+required to link an \opendap client.  You can obtain them from the
+\OPDhome\ or \OPDftp .  (Look under your machine
+type, then under \lit{DODS/packages/lib}.)  The first two libraries
+should be part of the Tcl/Tk distribution.  The other three libraries
+are GNU software.
+
+\begin{itemize}
+
+\item \lit{libtcl.a}
+
+\item \lit{libexpect.a}
+
+\item \lit{libstdc++.a}
+  
+\item \lit{librx.a} (Regular expression software.  Part of the
+  \lit{regex} package.)
+
+\item \lit{libz.a} (Compression software.  Part of the \lit{gzip}
+  distribution.)
+
+\end{itemize}
+
+To run an \opendap client, you should have the \lit{wish} and \lit{gzip}
+programs in the \lit{PATH}, and the following Tcl programs must be
+either in the \lit{DODS\_ROOT/etc} directory:
+
+\begin{itemize}
+
+\item \lit{dod\_gui.tcl}
+
+\item \lit{progress.tcl}
+
+\item \lit{error.tcl}
+
+\end{itemize}
+
+An \opendap client will still execute without these programs, but important
+functionality, including the GUI manager and the data compression will
+be absent.  Refer to the \lit{INSTALL} file included in each
+distribution for specific information about setting up the client.
+
+
+\section{The \opendap Client Initialization File (\lit{.dodsrc})}
+
+The following section refers only to \opendap clients from release 3.2 and
+after. 
+
+\indc{initialization file}\indc{client initialization}
+\indc{client!initialization}\indc{initialization!client} \indc{dodsrc file@\lit{.dodsrc} file}\indc{startup file} 
+When an \opendap client starts up, it checks to
+see whether the user has an initialization file available to control
+the setting of a number of parameters having to do with caching, proxy
+servers, and other http issues.  If this file is not found, one is
+created in the user's home directory, using default
+values.\footnote{The default values enable a maximum cache size of 20
+  megabytes, a cache expiration time of 24 hours, and no proxy servers.}
+
+The client initialization file is usually called \lit{.dodsrc}, and is
+usually located in the user's home directory.  You can change this by
+creating an environment variable called \lit{DODS\_CACHE\_INIT} and
+setting it to the full pathname of the configuration file.  As of \opendap
+version 3.4, you should use \lit{DODS\_CONF} instead.
+\lit{DODS\_CACHE\_INIT} is deprecated, and will disappear in future
+releases.
+
+Here is a sample configuration file:
+%  (the line numbers are not part of the
+%file; they've been added to make the description clearer):
+
+\begin{vcode}{inb}
+# Sample configuration file
+USE_CACHE=1
+MAX_CACHE_SIZE=20
+MAX_CACHED_OBJ=5
+IGNORE_EXPIRES=0
+CACHE_ROOT=/home/user/.dods_cache/
+DEFAULT_EXPIRES=86400
+PROXY_SERVER=http,http://dcz.dods.org/
+PROXY_FOR=http://dax.dods.org/.*,http://dods.org/
+NO_PROXY_FOR=http://dcz.dods.org
+DEFLATE=1
+ALWAYS_VALIDATE=0
+\end{vcode}    
+
+\subsubsection{Comments}
+
+Starting a line with a \lit{\#} makes that line a comment. 
+
+\subsubsection{Caching}
+\indc{caching!client}\indc{client!caching}\indc{data requests!caching}
+
+The parameters on lines 2 through 7 control caching.  The \opendap client
+can store data you've requested on your local computer.  If you repeat
+a request, the data can be retrieved from this local cache, saving the
+expense of a network connection.  Most web browsers operate the same
+way.  You can control the caching behavior with the following
+configuration file parameters.
+
+\begin{description}
+\item[\lit{CACHE\_ROOT}] This parameter contains the pathname to the
+  cache's top directory.  If two or more users want to share a cache,
+  then they must both have read and write permissions to the cache
+  root.
+
+\item[\lit{MAX\_CACHE\_SIZE}] The value of \lit{MAX\_CACHE\_SIZE} sets
+  the maximum size of the cache in megabytes.  Once the cache reaches
+  this size, caching more objects will cause cache garbage collection.
+  \opendap will first purge the cache of any stale entries and then remove
+  remaining entries starting with those that have the lowest hit
+  count. Garbage collection stops when 90\% of the cache has been
+  purged.
+  
+\item[\lit{MAX\_CACHED\_OBJ}] This parameter sets the maximum size of
+  any individual object in the cache in megabytes. Objects received
+  from a server larger than this value will not be cached even if
+  there's room for them without purging other objects.
+  
+\end{description}
+
+\indc{expiration date}\indc{date!expiration}
+Many web documents, and \opendap data, are delivered with an expiration
+date in their header information.  Generally, this is done for
+time-sensitive information that may not be valid after the expiration
+date.  You can control the behavior of the \opendap client with respect to
+expiration dates with two configuration file parameters.
+
+\begin{description}
+\item[\lit{IGNORE\_EXPIRES}] If the value of this parameter is 1
+  (one), then expiration dates will be ignored, and the caching
+  behavior will be ruled by the \lit{DEFAULT\_EXPIRES} parameter.
+
+\item[\lit{DEFAULT\_EXPIRES}] Any data received without an expiration
+  time will expire in the number of seconds given by this parameter.
+  If \lit{IGNORE\_EXPIRES} is zero, this will apply to all data,
+  whether or not it comes with an expiration date.  The value is given
+  in seconds.  The configuration in the example is set for 24 hours.
+
+\end{description}
+
+\subsubsection{Proxy Servers}
+
+\indc{proxy server}\indc{server!proxy}\indc{configuration!proxy server}
+An \opendap client can negotiate proxy servers, with help from directions
+derived from its configuration file.  There are three parameters that
+control proxy behavior.  There can be more than one of each of these
+declarations.
+
+\begin{description}
+\item[\lit{PROXY\_SERVER}] This identifies a proxy server to use for
+  all \opendap requests, except for requests specifically modified by the
+  other two proxy behavior directives.  The format is:
+
+  \begin{example}
+PROXY_SERVER=\var{protocol},\var{proxy_URL}
+  \end{example}
+  
+  Where \var{protocol} is the name of an internet protocol, and
+  \var{proxy\_URL} must be a full URL to the host running the proxy
+  server.  HTTP is the only internet protocol supported by DODS, so
+  \var{protocol} will always read \lit{http}.  There can be more than
+  one proxy declaration, in which case, the \opendap client will use the
+  first proxy server on the list that responds.
+  
+\item[\lit{PROXY\_FOR}] The \lit{PROXY\_FOR} parameter provides a way
+  to specify that URLs which match a regular expression should be
+  accessed using a particular proxy server. The syntax for PROXY_FOR
+  is:
+
+  \begin{example}
+PROXY_FOR=\var{regular expression},\var{proxy_URL}[,\var{flags}]
+  \end{example}
+
+  Where \var{regular expression} is an expression which matches the
+  URL or group of URLs. For example `http://dax.dods.org/.*\.hdf'
+  would match a URL ending in `.hdf' at dax.dods.org. The regular
+  expression uses the POSIX basic syntax.\var{proxy\_URL} is the
+  same as above.
+
+  The \var{flags} parameter is an optional integer that configures the
+  regular expression matcher. A value of zero sets the default. The
+  four flag values and their meanings are:
+
+  \begin{description}
+  \item[\lit{REG\_EXTENDED}] If set, use the POSIX extended syntax
+    regular expressions.  To set this, add 1 to the value of \var{flags}.
+  \item[\lit{REG\_NEWLINE}] If set, then \lit{.} and \lit{[\^{ }...]}
+    don't match newline.  Also, the regular expression matcher will
+    try a match beginning after every newline. Set this by adding 2 to
+    \var{flags}.
+  \item[\lit{REG\_ICASE}] If set, then we consider upper- and
+    lowercase versions of letters to be equivalent when matching. Set
+    by adding 4 to \var{flags}.
+  \item[\lit{REG\_NOSUB}] If set, then when \lit{PREG} is passed to regexec, that
+     routine will report only success or failure, and nothing about the
+     registers. Add 8 to \var{flags} to set this.
+  \end{description}
+
+  You can find a brief tutorial to regular expressions in the \opendap
+  bookshelf\texorhtml{. See the \opendap documentation page at 
+  \OPDhome}{at \OPDregex}.
+  
+\item[\lit{NO\_PROXY}] Use this parameter to say that access to a
+  certain host should never go through a proxy without using the more
+  complicated regular expression syntax. The syntax of \lit{NO\_PROXY}
+  is:
+
+  \begin{example}
+NO_PROXY=\var{protocol},\var{hostname}
+  \end{example}
+  
+  Where \var{protocol} is as for \lit{PROXY\_SERVER}, \var{hostname}
+  is the name of the host, not a url.  
+
+\subsubsection{Compression}
+
+Many \opendap servers support compression of the returned data.  This can
+save network bandwidth, and transmission time.  You can tell your
+client to ask the server for compressed data by including a line in
+your \lit{.dodsrc} file like this:
+
+\begin{example}
+DEFLATE=1
+\end{example}
+
+Using a value of zero will make the client request only uncompressed
+data.  If the directive is omitted, the default value is zero.
+
+\subsubsection{Validation}
+
+Caching data locally can be risky if the data in question change
+often.  The \lit{ALWAYS\_VALIDATE} option controls whether the \opendap
+client checks the validity of the cached data.  The validity check in
+this case is simply a comparison of the date the data was cached with
+the ``Last-modified'' date of the remote data.  If the configuration
+value is set to 1, the client will always validate the cached data.
+If set to 0, the data will not be validated (but may expire, according
+to the cache policy set by the \lit{DEFAULT\_EXPIRES} configuration
+directive).
+
+If the directive is omitted, the default value is zero.  That is, the
+default behavior is not to validate the data.
+
+\end{description}
+
+%
+%  $Log: appa.tex,v $
+%  Revision 1.12  2004/08/24 22:51:32  jimg
+%  Fixed broken label/refs.
+%
+%  Revision 1.11  2003/12/28 20:00:20  tom
+%  accepted conflicts
+%
+%  Revision 1.10  2003/09/04 19:42:06  tom
+%  DODS->OPeNDAP
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

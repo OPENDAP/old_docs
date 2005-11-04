@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:09 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- Overall Operation</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_5.html"><img alt="Characterization of a Dataset" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_1.html"><img alt="Introduction" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_3.html"><img alt="Requirements" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Overall Operation</b></td></tr></table>
+<h2>Overall Operation</h2>
+<p>The DAP uses the request-response
+paradigm. A client program issues a request and a named server returns a
+response.  Once the server has returned a response, the interaction ends
+until a new request is made. The DAP uses the HyperText Transfer Protocol (HTTP) to frame the
+request-response pair. 
+<p>The DAP contains elements of both a presentation- and an
+application-level protocol. The DAP defines ten different responses,
+four of which are at the presentation-level; the remaining responses are
+application-level.
+<p>To represent a dataset the DAP uses three responses.
+Two of these responses, the Dataset Descriptor Structure (DDS) and Dataset Attribute Structure (DAS), characterize the
+variables, their datatypes, names and attributes. The
+third response, the Data Dataset Descriptor Structure (DataDDS), holds data values along with name and
+datatype information.  The three responses are complete in and of themselves
+so that, for example, the data response can be used by a client without ever
+requesting either of the two other responses.
+<p>The DAP sends error information using an Error object. If a request for
+any of the three basic responses cannot be returned, an Error response is
+returned in its place.
+<p>In addition to the three basic responses and the error response, the DAP
+also defines several other responses which tie DAP servers closely to
+the WWW. These additional responses build Hypertext Markup Language (HTML) or text documents
+that can be interpreted by WWW browsers, HTML-aware spreadsheets,
+<em>et cetera</em>. In most cases these documents are are created by first
+accessing one or more of the three basic responses and interpreting their
+contents.  Section&nbsp;<a HREF="dap_21.html">*</a> describes the different types of
+responses.
+<div class="quote" align="center">
+  <b>Note:</b> The first implementation of the DAP was written in C++and the three basic responses correspond with objects in that
+  implementation. For this reason these responses are referred to as
+  `objects' in some of the DODS documentation. In some cases it is
+  easier to think of these responses as objects and, in those cases, we will
+  use that term in this paper, too. See Section&nbsp;<a HREF="dap_21.html">*</a> for a
+  discussion of the object/response duality.
+</div>
+<p>Operationally, a DAP client sends a request to a server using HTTP.
+The request consists of a HTTP GET request method, a
+Uniform Resource Identifiers (URI)&nbsp;<a HREF="dap_43.html#rfc2396">[1]</a> that encodes information specific to DODS (see
+Section&nbsp;<a HREF="dap_14.html">*</a>) and an HTTP protocol version number
+followed by a MIME-like message containing various headers that further
+describe the request. In practice, DAP clients use a third-party library
+implementation of HTTP/1.1 so the GET request, URI and HTTP
+version information are hidden from the client; it sees only the DAP
+Uniform Resource Locator (URL) and some of the request headers. The DAP server responds with a
+status line that includes the HTTP protocol version and an error or
+success code, followed by a MIME-like message containing information about
+the response and the response itself. The DAP response is the payload of
+the MIME-like HTTP response.
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_5.html"><img alt="Characterization of a Dataset" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_1.html"><img alt="Introduction" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_3.html"><img alt="Requirements" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Overall Operation</b></td></tr></table></body></html>

@@ -1,0 +1,50 @@
+% A (very) brief intro to installing DODS catalog servers.
+%
+
+\documentclass{dods-book2}
+
+\rcsInfo $Id$
+\newcommand{\DOCversion}{Version \rcsInfoRevision}
+
+\include{../boiler/layout}
+\include{../boiler/dods-def}
+\include{install/cat-def}
+
+
+\figpath{install/figs}
+
+\begin{document}
+%------------------------------------front matter
+\title{DODS Catalog Server Installation Quickie Guide\\\DOCversion}
+\author{Tom Sgouros}
+\pagenumbering{arabic}
+\maketitle
+
+\copyrightmatter
+
+\tableofcontents
+\clearemptydoublepage
+
+% This is really just a chapter of the DODS server installation guide.
+
+
+\begin{ifhtml}
+  
+  The DODS Catalog Server (also called the file server) is a way to
+  organize large archives of DODS data.  The data may be local or
+  remote to the server.  This guide explains how to install a catalog
+  server.  Installing a catalog server will require you to know how to
+  install a DODS server.  See \DODSinstall\ for instructions about how
+  to do that.
+
+\htmlmenu{4}
+\end{ifhtml}
+
+
+\include{install/cat-chap}
+\end{document}
+
+% $Log: catalog.tex,v $
+% Revision 1.1  2000/11/30 15:25:12  tom
+% added the catalog server chapter as a separate document
+%

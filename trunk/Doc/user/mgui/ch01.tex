@@ -1,0 +1,705 @@
+% Chapter to the Matlab GUI User Guide
+%
+% $Id$
+%
+
+\chapter{The OPeNDAP Matlab Graphical User Interface}
+\label{gui,intro}
+
+The \GUI\ combines OPeNDAP, a powerful data access protocol, with a
+convenient set of display functions, and the flexibility and power of
+the Matlab mathematics programming environment.  The effect of the
+\GUI\ is to turn Matlab into a powerful network browser, capable of
+reading specialized data messages from the Internet. For this reason,
+we often refer to it as an \OPD\ ``browser.''
+
+This chapter contains an overview of the browser, which will be useful
+for most browser users. It starts in \sectionref{gui,intro,intro}.
+
+\section{Quick Start}
+\label{gui,quickstart}
+
+If you are already somewhat familiar with Matlab and OPeNDAP, you may
+find it simplest to jump right in.  (You might want to consult 
+\OPDquick\ before this book, for a brief description of how OPeNDAP
+works.)  After the \GUI\ has been installed, \subj{Some find it
+  easiest to jump right in.}  and the necessary environment variables
+set (See \appref{gui,install}), run Matlab.  
+
+\begin{vcode}{ib}
+$ matlab
+\end{vcode}
+%$
+
+When Matlab has started up, start the browser  by typing:
+
+\begin{vcode}{ib}
+>> browse
+\end{vcode}
+
+Three windows will pop up.  One big one, for selecting geographic
+regions in which to search for data, and for displaying it, and two
+smaller ones.  One of these is for selecting datasets to browe or
+display, and one for selecting the variables you want to display.
+
+Use the mouse to select a dataset to look at.  (Click once to selet a
+dataset.  Click twice to open a dataset folder.)  You'll see that the
+lists of available variables changes to list only those variables in
+that dataset.  Move to the Variable window, and choose a variable from
+the list presented.  Now, switch to the big main window and use the
+\but{Set Data Range} button to outline a geographic rectangle and a
+time and depth range to look at.  Click \but{Get Details} to get an
+indication about where the data is, and some information you can use
+to estimate the size of the dataset you're requesting.  Click \but{Get
+  Data}, and follow the directions, and you should soon see a map of
+your data in the display window.  The browser imports data in a
+consistent set of units, so that data from any source in the list will
+appear in the same units.
+
+Subsequent requests for data will not overwrite the original ones.
+Each set of downloaded data is stored with a unique \matlab variable
+name, so that many requests can be made in each \matlab session.
+
+You can also begin by setting a data range to specify a time period or
+geographic area of interest, and then selecting a dataset and
+variable, or the other way around.  All of these parameters must be
+set before making a data request, but they can be set in any order.
+
+You will find a useful reference to the \GUI\ buttons and menus in
+\chapterref{gui,ref}.
+
+\section{What is the \GUI ?}
+\label{gui,intro,intro}
+
+The \GUI\ display consists of a map, a timeline, a depth
+range, a small array of pushbuttons, and several drop-down menus
+(\Figureref{gui,intro,mainwin}).
+
+You can use the \GUI\ for four distinct operations:
+setting the parameters of a request for data, querying a dataset about
+its contents, issuing a request for data, and displaying the results
+of a request.
+
+\figureplace{The \GUI\ Main Window}{htb!}{gui,intro,mainwin}
+{screen.ps}{screen.gif}{}
+
+You can also see a text version of the window, by clicking on the
+\but{View Text} button.  Return to the graphical view by clicking
+\but{View Plots}.
+
+\figureplace{The \GUI\ Main Window}{htb!}{gui,intro,mainwin-text}
+{screen-text.ps}{screen-text.gif}{}
+
+\subsection{Setting up a data request}
+
+To set up a data request, you must select the variable and dataset you
+wish to examine.  Select these from the variable and dataset lists
+that appear when you start the browser.  If you've closed those
+windows, you can recall them with the \but{Data,Show Data Bookmarks}
+button. 
+
+\subj{Choose the dataset and variable you want to see.}  The
+\pdmenu{Variable} and \pdmenu{Dataset} menus depend on each other.
+Once you've selected something from one menu, the other menu changes
+to display the corresponding entries. For example, if you are
+interested in temperatures, you can select it in the
+\pdmenu{Variables} menu.  After this, the datasets that contain
+temperature data will be highlighted (displayed with bold font) in the
+\pdmenu{Bookmarks} menu. Once these have been selected, the spatial
+and time ranges of the selected dataset are indicated on the display
+map. You can use the \but{Zoom} button to examine any of the data
+displays more closely.
+
+You can also begin your data selection by selecting the region, time,
+or depth you wish to examine. The \pdmenu{Datasets} and \pdmenu{Variable}
+menus will be updated to show only datasets that contain data in those
+regions.
+
+The \GUI\ uses locally-cached archives of ``metadata'' to
+describe datasets which may be stored on any machine connected to the
+Internet. This allows the \GUI\ to download its data in a consistent
+set of units, allowing comparisons among datasets.
+You can use the \but{Data,Update Bookmarks} button to
+update the local archives with any new datasets or changes in existing
+datasets.
+
+\subsection{Querying a Dataset}
+
+After a dataset, variable, and region (space and time) are chosen, you
+can find out roughly how much data (and what kind) you have selected with the
+\but{Get Details} button. Clicking this will send a query to the
+dataset to find out how much of it fits your chosen ranges; for
+example, how many images fall within your time range, or how many XBT
+casts fall within your geographic selection box.
+
+For gridded data, the \but{Get Details} button will display a star in
+the Time window for each grid available.  That is, if you are looking
+at a dataset consisting of a series of complete grids, one per day,
+you will see a star drawn for each day in the requested time range.
+If you're looking at a dataset containing non-gridded data, you'll see
+stars in the geographic and depth windows, too.
+
+\subsection{Issuing a Data Request}
+
+Once the parameters of a data request have been specified, you can
+issue the request by clicking the \but{Get Data} button.  
+
+Sometimes, inadvertently or not, you ask for a lot of data.  The
+browser has a data size threshold you can set to notify you when you
+make a request like this.  The data source you've selected may give 
+the browser an estimate of how much data is on the way, and the
+browser will ask you for confirmation in the event that the estimated
+size of the data requested takes up more memory than the data size
+threshold specified in the \but{Preferences,Get Data Threshold} popup
+menu. 
+
+%\pagebreak
+
+If you approve the request (or if you weren't asked), the requested
+data are retrieved, loaded into Matlab, and displayed according to the
+directions (you will be asked for these directions, see
+section~\ref{mgui,data-disp}).  The browser displays a message telling
+you what has been loaded into Matlab (\figureref{gui,intro,urlmsg}).
+
+\figureplace{Data returned to Matlab}{htb}
+{gui,intro,urlmsg}{urlmsg.ps}{urlmsg.gif}{}
+
+Note that along with the data you requested, the URL that pointed to
+that data, as well as the text of any credits that apply to \subj{The
+  request returns the URL, which you can use later.}  the data are
+also returned.  To duplicate the request just made, say in some later
+session, you could issue the following command:
+
+\begin{vcode}{xib}
+>> loaddods(R1_URL)
+\end{vcode}
+
+(This assumes that \lit{R1\_URL} has not changed.  Since the browser
+is likely to re-use that name in future sessions, it is good practice
+to save it in a different name if you think you might request that
+data again.)
+
+Of course, once the data are incorporated into Matlab variables, the
+entire power of the Matlab analysis package is available.  For many
+users, this is the real goal.  Other users may find the data display
+functions of the \GUI\ valuable.
+
+
+\subsection{Displaying the Data}
+\label{mgui,data-disp}
+
+Each time you use the browser to request data, it will ask how the
+data are to be displayed.  The first thing that happens is that the
+browser makes a guess as the X, Y, and Z coordinates you want to
+display.  It confirms the guess by presenting a dialog to you
+\subj{Choose the display axes.}  like the one in
+\figureref{gui,intro,dispdlg}.  Using this dialog, you can select the
+three coordinates to be displayed from among all the variables
+returned by the data request.
+
+Using this Display dialog, you can modify your earlier choices, and
+you can also select the type of display you want (color image, contour
+plot, quiver plot, and so on), and further select the returned data.
+
+You can call this dialog up with the \but{Data, Plot acquired Rxx}
+button. 
+
+\figureplace{The Display Dialog}{htb!}{gui,intro,dispdlg}%
+{dispdlg.ps}{dispdlg.gif}
+
+In some circumstances, the Z data might be returned as a
+three-dimensional array.  To display it, the array must be subsampled.
+You can do this by typing a Matlab expression right into the Z-data
+text box.  For some datasets, the Matlab matrix transposition operator
+(\lit{'}) is important to use here.  Others might require a matrix
+sampling. \subj{You can use the Display Dialog to subsample or modify
+  data arrays.}
+
+The dialog contains the following fields to modify:
+
+\begin{description}
+\item[Plot Number] This is the number of the plot, assigned and
+  incremented by the browser.
+\item[Acquisition Number] Requests for OPeNDAP data are numbered within a
+  \matlab\ session.  Names of data variables from the first request
+  are prefixed with \lit{R1\_}.  The second request makes variables
+  with \lit{R2\_}, and so on.  This keeps data from being overwritten
+  as requests are made after other requests.
+\item[Plot Type] A list of available plot types.  These are standard
+  \matlab\ types.
+\item[Plot Data] Depending on the plot type selected, the display
+  dialog will present an assortment of selection lists to set plot
+  parameters. 
+\item[Display Window] A selection list is presented to allow you to
+  specify whether the plotting should be done in a new window, in the
+  existing browser window, or in a window to be specified.
+\item[X-data, Y-data, Z-data, V-data] The data to be plotted must be
+  specified in these fields.  If any of these arrays must be trimmed,
+  processed, transposed, or sampled, you can enter valid \matlab\ 
+  expressions to do so in the text boxes.  For example, if you have an
+  array that needs transposing, you can type the \matlab\ array
+  inversion operator (\lit{'}) after the array name.
+\end{description}
+
+
+
+At the bottom of the display dialog, there are four buttons.  Use the
+\but{Cancel} button if you've thought better of the whole thing, and
+wish to make another data request.  The data will still be available
+inside Matlab, but the browser will skip plotting it.  The \but{Plot
+  Selected} button will plot the data selected in the dialog.  If you
+want to plot several layers at once, use \but{Plot All}, and all the
+data will be plotted at once.  A \but{Next Plot} button will appear on
+the browser window to allow you to flip through the plots.
+
+The \but{Overplot} button is a toggle button.  When it's activated,
+the browser will not clear the previous plot when drawing a new one.
+Click it to activate, and click it again to de-activate this mode.
+
+\figureplace{The Display Dialog, Contour
+  plotting}{htb!}{gui,intro,dispcontur}{dispdlg-part.ps}{dispdlg-part.gif}
+
+Several of the plotting modes require different settings.  When you
+select the plot mode, drop-down lists and dialogs will appear to allow
+these settings.  See \figureref{gui,intro,dispcontur} for an example.
+
+
+\section{Example Sessions}
+\label{gui,intro,examples}
+
+The simplest way to begin to use the \GUI\ is to follow along with a
+simple session. Two examples follow: the first uses the \GUI\ window
+to display data, and the second uses the browser only as a mechanism
+to retrieve data, which is then examined with some other Matlab
+functions.
+
+%If you have any trouble following the directions in this section, you
+%may find it useful to consult the troubleshooting hints in
+%\appref{gui,trouble}.
+
+
+\subsection{Drawing a Simple Picture}
+
+\subj{Select the dataset and the variable.}  
+Start Matlab, and start up the browser. (See 
+\pagexref{gui,quickstart}).
+
+\begin{enumerate}
+
+\item The \pdmenu{Bookmarks} and \pdmenu{Variables} menus should
+already be visible.  If not, use the \but{Data,Show Data Bookmarks}
+button. The \pdmenu{Bookmarks} menu will look roughly like
+\figureref{gui,intro,datamenu}.  Look under ``SST,'' then click on the entry
+marked ``Reynolds Daily Long Term Mean SST.''
+
+\note{When you click on this dataset, you'll see a little message come
+  up labeled ``Policy.''  This describe where you can download this
+  data yourself.  Data providers often require messages like this when
+  programs like the \GUI\ incorporate their data.}
+
+\figureplace{The Bookmarks Menu}{htb!}
+{gui,intro,datamenu}{dsetmenu.ps}{dsetmenu.gif}{}
+  
+  This dataset contains sea surface temperatures for the entire globe,
+  in one degree squares, for each day since about 1800. You will see a
+  rectangle in the main window outlining the entire globe.  The time
+  window contains a small line starting around 1800, and moving
+  forward.
+
+\subj{Zoom in to select the time.}
+\item Click the \but{Zoom} button, and click the left mouse button
+  near the Reynolds time line a few times, until the time is measured
+  in days or months. (If you find the default colors hard to see,
+  click on the \but{Preferences,Colors} button to adjust them to your
+  liking. Use the \but{Preferences,Save Preferences} button to save
+  your colors for the next time.)  The left mouse button zooms in, and
+  the right button zooms out.  You can also select a small range by
+  clicking and dragging, and that range will be mapped over the
+  timeline.\indc{zoom!usage}
+  
+\item Click on \but{Set Data Range}, and select a time range by
+  clicking and dragging in the time window (be patient). Remember that
+  this dataset has a global grid recorded every day.  Be careful not
+  to select more than you'r willing to wait for.
+  
+  While you are selecting the range, you might notice the
+  \pdmenu{Datasets} or \pdmenu{Variables} menus changing.  These menus
+  are dynamically loaded with all the datasets and variables that
+  might overlap the data range you select.  However, the changes will
+  not affect your selection.
+
+\note{If you select a date or geographic range not covered by the
+  dataset you've selected, the browser will unselect it.  Messages for
+  such events are printed in the main Matlab window.}
+  
+\subj{Select the geographic range.}
+\item Now select a geographic range by clicking and dragging in the
+  main window. By default, the whole world is selected, so if you skip
+  this step, you will still get data.  When selecting a time range,
+  remember that this dataset is made up of weekly means, so be careful
+  you don't ask for too much.
+  
+\item Click the \but{Get Details} button.  This will put a star at
+  each point on the time line where data is available.  You may see
+  that you've selected 29 points, which could bring a lot of data
+  back.  You can refine your selection at this point to select the few
+  data points of interest.
+  
+\item Click the \but{Get Data} button. You will see a dialog box that
+  says: ``Hang on, transferring data,'' and some other stuff, like a
+  dialog announcing what number this request is.
+  Eventually, the browser will pop up the \pdmenu{Data Display} dialog
+  (\figureref{gui,intro,dispmenu}), asking how you wish to display the
+  \subj{Get the data.}
+  data returned.  Unless you've been careful in
+  selecting your time range, it's likely that the temperature array
+  returned will have three dimensions.  The browser is designed to
+  allow this, so it's not a problem.  If you want to see a plot of
+  something besides the first time array, you may have to
+  click on the text box for the Z values, and add a Matlab indexing
+  expression.  That is, if the box reads \lit{SST}, and you want to
+  see the twelfth array in the series, you should change
+  the Z value text box to something like \lit{SST(:,:,12)} to get it.
+
+\figureplace{The ``Display Data'' menu}{htb!}
+{gui,intro,dispmenu}{dispdlg.ps}{dispdlg.gif}{}
+  
+\item Watch the data display. A message will announce when the data
+  have been returned to the Matlab workspace, and what the new
+  variable names are. You can examine and display these variables like
+  any other Matlab variable.
+
+\end{enumerate}
+
+\subsubsection{A Short But Edifying Digression About the Internet}
+\label{gui,intro,loaddods}
+
+\subj{The GUI is just a specialized form of a web browser like Netscape.}
+The \GUI gets its data over the internet, and the way it specifies the
+location of the data it wants is with a URL very similar to the URL
+you might use in a web browser, such as \lit{Netscape}.  In fact, the
+\GUI\ can be thought of as a very specialized web browser, that can
+only look at a very particular kind of web page.  When you type a URL
+into a web browser, the browser ``de-references'' the URL to produce
+the page you can read.  When you enter a URL into an OPeNDAP Matlab
+program called \lit{loaddods}, that program de-references the URL to
+produce data in the Matlab workspace.
+\indc{loaddods@\lit{loaddods}}
+
+It's a lot to type, but try typing the following at the Matlab prompt
+(all one line):
+
+\begin{vcode}{xib}
+>> loaddods('http://ferret.wrc.noaa.gov/cgi-bin/nph-nc/data/
+          COADS_climatology.nc?SST[7:7][0:1:89][0:1:179]') 
+\end{vcode}
+
+When \lit{loaddods} dereferences this long URL, it prints something
+like this in the terminal window (not in the Matlab window, but in the
+terminal you were using when you started Matlab):
+
+\begin{vcode}{xib}
+Reading: http://ferret.wrc.noaa.gov/cgi-bin/nph-nc/data/COADS_climatology.nc
+  Constraint: SST[7:7][0:1:89][0:1:179]
+Server version: dods/2.15
+Creating matrix SST (90 by 180) with 16200 elements.
+Creating scalar TIME.
+Creating vector COADSY with 90 elements.
+Creating vector COADSX with 180 elements.
+\end{vcode}
+
+and it puts the four arrays (\lit{SST}, \lit{TIME}, \lit{COADSX}, and
+\lit{COADSY}) into your Matlab workspace.
+
+\begin{vcode}{ib}
+>> whos
+  Name               Size         Bytes  Class
+
+  COADSX           180x1           1440  double array
+  COADSY            90x1            720  double array
+  SST               90x180       129600  double array
+  TIME               1x1              8  double array
+\end{vcode}
+
+The \lit{loaddods} program is the heart of the \GUI .  The rest of the
+\GUI\ is simply a ``front-end'' to the \lit{loaddods} program that you
+use to construct URLs and make some housekeeping chores somewhat
+easier.
+
+You can use this to your advantage, as is shown in the next example.
+
+Incidentally, when the \GUI\ returns data, one of the returned
+variables is the exact URL that was used to issue the request for that
+data.  This provides a unique identifier should you want to recreate a
+request or expand on it, perhaps in your own Matlab script.
+
+%% loaddap fun facts.
+%%
+%% loaddap also includes the real name of the variable in a ``real
+%% name'' field.
+
+\subsection{Creating a Time Series}
+\label{gui,intro,example-time}
+
+It is often the case that the data you wish to see cannot be easily
+displayed in the \GUI\ window. \opendap allows much richer access to the
+data than the browser can accommodate. This means that you can often
+use the \GUI\ to help construct a URL, even though you may not use it
+to submit the data request.
+
+\subj{You can also use OPeNDAP from the Matlab command line.}
+The following example shows how you might go about constructing and
+displaying a time series from the \GUI\ datasets, even though there is
+limited browser capacity for displaying this kind of data.  The \GUI\
+actually is flexible enough to plot this example, but there are others
+for which this technique is useful.  It's also useful to become
+familiar with \lit{loaddods} in case you want to include access to
+\opendap datasets in your own scripts.
+
+\begin{enumerate}
+  
+\item Start up the browser and select the ``Surface - COADS Monthly
+  Datasets - PMEL'' dataset.
+
+\item Select ``Air Temperature'' from the \pdmenu{Variables} menu. (See
+  \figureref{gui,intro,varmenu}.)  If it's not there, you haven't
+  selected a dataset containing that variable. 
+
+\figureplace{The Variables Menu}{htb!}{gui,intro,varmenu}
+{var-menu.ps}{var-menu.gif}{}
+\tbd{This figure does not (now) have ``AIR_TEMP'' highlighted.}  
+
+\item Using the \but{Zoom} and \but{Select Data Range} buttons, select
+  a very small geographic range. This dataset is arranged in
+  two-degree squares, so pick a two-degree square somewhere. Pick a
+  wide time range.
+  
+\item Click on \but{Get Details}. Select a time at the beginning
+  of the range. Click on \but{Get Data}.
+  
+\item Repeat the process for a time at the end of the time range.
+  Click on \but{Get Data}.
+  
+\item Look at the Matlab session. You will see two messages like this:
+
+\begin{vcode}{xib}
+Reading: http://ferret.wrc.noaa.gov/cgi-bin/nph-nc/data/coads_air.nc
+  Constraint: AIR[1316:1316][57:1:57][140:1:140]
+Server version: dods/2.15
+Creating matrix AIR (2 by 2) with 4 elements.
+Creating scalar TIME.
+Creating vector LAT with 2 elements.
+Creating vector LON with 2 elements.
+                                  
+          ..... data transfer complete
+   
+This request generated 1 separate URLs,
+which are stored in the sets:  R3_   
+   
+Each individual argument is stored like so:
+   
+R3_Time R3_Longitude R3_Latitude R3_Air_Temp 
+\end{vcode}
+
+The above URL indicates that your request asked for time index 1316 in
+the dataset, latitude index 57, and longitude index 140. (This
+corresponds to September, 1963, at about 24\degree N and 78\degree W.)
+
+\item Type the following at the Matlab prompt (all on one line):
+
+\begin{vcode}{xib}
+>> loaddods('http://ferret.wrc.noaa.gov/cgi-bin/nph-nc/data/
+coads_air.nc?AIR[1316:1500][57:57][140:140]')
+\end{vcode}
+
+You will see a message like this:
+
+\begin{vcode}{xib}
+Reading: http://ferret.wrc.noaa.gov/cgi-bin/nph-nc/data/coads_air.nc
+  Constraint: AIR[1316:1500][57:57][140:140]
+Server version: dods/2.15
+Creating vector AIR with 185 elements.
+Creating vector TIME with 185 elements.
+Creating scalar LAT.
+Creating scalar LON.
+\end{vcode}
+
+\item You now have, in the Matlab workspace, a vector of temperatures,
+  \lit{AIR}, whose entries correspond to a vector of times,
+  \lit{TIME}. The scalars \lit{LAT} and \lit{LON} give the location of
+  the data. You can display the data with Matlab functions. Type the
+  following at the Matlab prompt:
+
+\begin{vcode}{ib}
+>> figure
+>> plot(TIME,AIR)
+\end{vcode}
+
+\end{enumerate}
+
+\note[Caution]{There are some pitfalls to using \lit{loaddods}
+  directly. The \GUI\ does quite a bit of housekeeping for you,
+  including some unit conversions.  When you use the browser, you get your
+  data back in consistent units, whatever dataset you are looking at.
+  When you use \lit{loaddods}, you get the data are returned in the units
+  they are stored in.  The COADS time data, used in the above example,
+  comes in units of days since 1700.\indc{loaddods!pitfalls}
+  \notebreak
+  Similarly, different data providers use different values within
+  their datasets to indicate ``bad'' or ``missing'' data points.
+  Through the browser, these data flags are transformed into Matlab
+  \lit{NaN}s. (See Matlab `help nan' if you are not familiar with the
+  \lit{NaN} symbol.)  Again, downloading the data directly with
+  \lit{loaddods} skips this transformation.}
+
+If you like, you can save your data with the Matlab \lit{save} command
+and restore it with the \lit{load} command. See the Matlab
+documentation for more information about these commands.  \indc{saving
+  your data}\indc{data!saving}
+
+\section{Updating the Dataset List}
+\label{gui,intro,update}
+
+\subj{Maintaining your set of dataset bookmarks.}
+\indc{updating!dataset list}\indc{dataset list!updating}
+The \GUI\ consists of two sets of files: the M-files and associated
+data used to run the display and user interface, and a second
+collection of Matlab M-files used to describe the datasets available
+through the \GUI.  These ``metadata''\indc{metadata} files (also
+called the ``\indn{archive M-files}'') contain descriptions of the
+datasets, and retrieval and catalog functions tailored
+specifically for them.
+
+The metadata files are stored in a sub-directory of the main \GUI\ 
+directory, called \lit{DATASETS}. Generally speaking, most users will
+be quite unlikely to want to edit the \GUI\ M-files. However, there
+are several reasons why you might have to edit the archive M-files:
+adding a dataset, adding comments to a dataset, or otherwise editing
+the metadata.  \chapterref{gui,adding} contains information about the
+structure of the archive M-files and their associated functions.
+
+For example, the archive M-file for the declouded Hatteras to Nova
+Scotia 1.1km resolution AVHRR dataset is called \lit{htn\_decld.m}.
+You will find this script in the browser subdirectory \lit{DATASETS}.
+
+The dataset descriptions are stored in Matlab M-files, but the way a
+browser user selects these M-files is through a ``bookmark'' file,
+comparable to the bookmarks used in a web browser like
+\lit{Netscape}.  You can edit and rearrange these bookmarks into
+folders like in \lit{Netscape}, too.
+\indc{bookmarks}
+If you want to add your own M-file dataset descriptions to the
+bookmark file, you can just add it with the bookmark editor.
+
+\figureplace{GUI Server Dialog}{htb!}{gui,intro,guiserver}
+{guiserver.ps}{guiserver.gif}{}
+
+The collection of datasets the browser can access is continually
+updated at the \GUI\ central archive.  You can update your browser
+with the contents of that archive by clicking the \but{Data,Update
+  Datasets} button.  If you know of another archive of GUI dataset
+descriptions, you can use the \but{Preferences,Change GUI Server}
+option to point the browser at that server instead.
+
+\figureplace{Update Datasets Dialog}{htb!}{gui,intro,updatefig}
+{update.ps}{update.gif}{}
+
+When you want to update the dataset descriptions in your copy of the
+\GUI, click on \but{Data,Update Datasets}, and the dialog in
+\figureref{gui,intro,updatefig} will appear.  If you want to continue,
+simply click the \but{Update} button.
+
+The update function downloads a new \lit{MANIFEST} file, and then
+retrieves all the new files mentioned in that file, as well as new
+versions of already-existing M-files in your DATASETS directory.  The
+update process also updates any bookmarks you might have that point to
+datasets in the \lit{MANIFEST}.  If there are bookmarks that you've
+added (that match no entry in the \lit{MANIFEST}), they are left
+untouched.  If there are datasets in the \lit{MANIFEST} that are not
+in your bookmarks file, they are added to your bookmarks, in a folder
+called ``New Datasets.''
+
+\section{Editing Bookmarks}
+\label{gui,intro,editbook}
+
+\indc{bookmarks!editing}\indc{editing!bookmarks}
+The \opendap datasets presented to the user in the \GUI\ are described by
+a list of ``bookmarks.'' These bookmarks are comparable to the
+bookmarks in the \lit{Netscape} WWW browser.
+
+You can edit and augment the bookmark list with the bookmark editor.
+Invoke the editor with the \but{Data,Edit Bookmarks} button.
+
+The editor window is shown in \figureref{gui,intro,bookedit}.  It looks
+a great deal like the bookmark window (see
+\pagexref{gui,intro,datamenu}), but the menu along its top is
+different.
+
+\figureplace{Bookmark Editor Window}{htb!}{gui,intro,bookedit}%
+{edit-book.ps}{edit-book.gif}{}
+
+To see a bookmark entry, highlight the bookmark entry, and click on
+\but{Edit,Properties}.   You'll see an entry like the one in
+\figureref{gui,intro,bookprop}. 
+
+\figureplace{Bookmark Properties Window}{htb!}{gui,intro,bookprop}%
+{edit-pmenu.ps}{edit-pmenu.gif}{}
+
+The ``Dataname'' at the top of the window is the name given to the
+data by the M-file describing that dataset.  The ``Name'' field is the
+name that appears in the bookmark window, and the ``Color'' is the
+color in which that name is displayer.  The ``Archive'' field names
+the M-file that described the dataset in question.  You can edit fields
+here and save the changes with the \but{Ok} or \but{Apply} buttons.
+
+If you want to add a dataset, and have the M-file ready (see
+\chapterref{gui,adding}), select \but{Edit,Insert New}, and you'll get
+a dialog like the properties dialog, but empty.
+(\Figureref{gui,intro,booknew}) 
+
+\figureplace{Adding Bookmarks}{htb!}{gui,intro,booknew}%
+{edit-newb.ps}{edit-newb.gif}{}
+
+To add the dataset, make sure the M-file is in place in the
+\lit{DATASETS} directory, fill out this dialog, and click \but{Apply},
+then \but{Reload/Clear}.  When the correct Dataname appears in the top
+window, you'll know your dataset has been registered.
+
+
+% $Log: ch01.tex,v $
+% Revision 1.10  2004/12/16 06:52:34  tomfool
+% edits from Peter
+%
+% Revision 1.9  2004/12/09 15:00:45  tomfool
+% touch-up
+%
+% Revision 1.8  2004/12/09 03:04:14  tomfool
+% updated for GUI 6
+%
+% Revision 1.7  2002/02/10 02:59:47  tom
+% updated for GUI version 5 and dods-book2 templates
+%
+% Revision 1.6  2000/10/04 15:01:37  tom
+% changed \figureplace definition
+%
+% Revision 1.5  1999/05/25 20:47:46  tom
+% modifications for DODS release 3.0
+%
+% Revision 1.4  1999/02/04 17:42:13  tom
+% modified to use dods-book.cls and Hyperlatex
+%
+% Revision 1.3  1999/01/20 15:18:38  tom
+% updated, and changed for dods-book.cls and hyperlatex
+%
+% Revision 1.2  1998/12/07 15:41:15  tom
+% updated for DODS v2.19 and GUIv0.7
+%
+% Revision 1.1  1998/02/12 18:10:41  tom
+% added to CVS archive
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

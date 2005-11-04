@@ -1,0 +1,470 @@
+
+\documentclass[justify]{dods-paper}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{acronym}
+\usepackage{xspace}
+
+\rcsInfo $Id: dap-webservices.tex 12461 2005-11-02 00:46:13Z jimg $
+\T\lstset{numbers=left, numberstyle=\tiny, stepnumber=2, numbersep=5pt} 
+\T\lstset{language=C++}
+\T\lstset{escapeinside={(*@}{@*)}}
+
+% \input{boiler}
+
+% Note: to get the glossary to work, run bibtex on the *.gls.aux file,
+% then latex the file, then bibtex *.gls, then latex again. Also, make
+% sure to set your BST and BIBINPUTS environment variables so that the
+% BST and BIB files will be found.
+% \makegloss
+
+\title{Porting Your Software to libdap 3.5}
+\htmltitle{Porting Your Software to libdap 3.5}
+\author{James Gallagher\thanks{OPeNDAP, Inc. jgallagher@opendap.org}}
+\date{\rcsInfoDate \\ Revision: \rcsInfoRevision}
+\htmladdress{James Gallagher <jgallagher@opendap.org>, \rcsInfoDate, 
+  Revision: \rcsInfoRevision}
+\htmldirectory{porting-libdap-3.5}
+\htmlname{porting-libdap-3.5}
+
+\begin{document}
+
+\maketitle
+\T\tableofcontents
+
+\section{Use \lit{BaseTypeFactory} instead of Virtual Constructors}
+
+In older versions of \lit{libdap} (3.2 and earlier), the variables
+defined by your subclasses of \lit{Byte}, \ldots, \lit{Grid} were
+created using `virtual constructors'\cite{meyers:ecpp}. The code
+looked like:
+
+% \begin{vcode}{t}
+\begin{lstlisting}[caption={Old Style Virtual Constructor}]
+    Byte *
+    NewByte(const string &n)
+    {
+        return new NCByte(n);
+    }
+\end{lstlisting}
+% \end{vcode}
+
+In this example, the virtual constructor returns an instance of the
+\lit{NCByte} class, which is apparently a subclass of \lit{Byte}
+(although I don't show that explicitly, it's implied since the
+\lit{NCByte} pointer is returned via a \lit{Byte} pointer).
+
+The DDS parser knew to use those virtual constructors to make new
+instances of those types so that the instances would include the
+specializations you added.
+
+This worked fine, why change it? Using the functions, only one set of
+specializations could be created per process. The virtual constructors
+have been replaced with a factory class. This enables one process to
+create many different set of specializations by making several
+different subclasses of the factory.
+
+How it works in practice: The class \lit{BaseTypeFactory} defines a factory
+class for the \lit{Byte}, \ldots, \lit{Grid} classes and provides a
+default implementation. To make a factory for your specializations,
+create a subclass of \lit{BaseTypeFactory}. Here's an example:
+
+%\begin{vcode}{t}
+\begin{lstlisting}[caption={New Factory Declaration}]
+    class NCTypeFactory: public BaseTypeFactory {
+    public:
+        NCTypeFactory() {} 
+        virtual ~NCTypeFactory() {}
+
+        virtual Byte *NewByte(const string &n = "") const;
+        // more 'New' methods
+    };
+\end{lstlisting}
+%\end{vcode}
+
+And the implementation:
+
+%\begin{vcode}{t}
+\begin{lstlisting}[caption={The Factory Implementation for NCByte}]
+    Byte *
+    NCTypeFactory::NewByte(const string &n ) const 
+    { 
+        return new NCByte(n);
+    }
+\end{lstlisting}
+%\end{vcode}
+
+\subsection{Using the factory}
+
+It's great to have the factories, but how does the DDS class know to
+use it? It now has a constructor that takes a pointer to a
+\lit{BaseTypeFactory} as a formal parameter. This determines which
+factory will be used to instantiate variables by \lit{DDS::parse()}.
+It's the caller's responsibility to free the factory once the DDS
+instance is deleted. See the documentation for those classes for more
+information about the new constructors.
+
+%\begin{vcode}{t}
+\begin{lstlisting}[caption={DDS Constructor}]
+    DDS(BaseTypeFactory *factory, const string &n = "");
+\end{lstlisting}
+%\end{vcode}
+
+See Appendix~\ref{type-decl} for the complete declaration and
+definition files.
+
+\section{STL Iterators Versus \lit{Pix}}
+
+Thanks to the work of Patrick West, \lit{libdap} now has a complete
+set of STL iterators that act as replacements for the aging \lit{Pix}
+iterators. There are new methods and types for all the classes that
+act as containers (DDS, DAS, Constructor, AttrTable). Here's an
+example of the old Pix code used to access things in an Structure
+variable:\footnote{Example code from the gadods library written by Joe
+  Wielgosz at COLA.}
+
+%\begin{vcode}{t}
+\begin{lstlisting}[caption={Pix iterators}]
+    Structure *structure;
+    BaseType *var;
+    Pix p = structure->first_var();
+    while (p) {
+      var = structure->var(p);      
+      // do stuff
+      structure->next_var(p);
+    }
+\end{lstlisting}
+%\end{vcode}
+
+Here's the code rewritten using the STL iterators:
+
+%\begin{vcode}{t}
+\begin{lstlisting}[caption={STL iterators}]
+    BaseType *var;
+    Constructor::Vars_iter p = structure->var_begin();
+    while (p != structure->var_end()) {
+      var = *p;      
+      // do stuff
+      ++p;
+    }
+\end{lstlisting}
+%\end{vcode}
+
+Some things to note:
+\begin{itemize}
+\item Each of the container types has a method similar to STL's
+  \lit{begin()} method which returns an iterator that references the
+  start of the contained items.
+\item Each of iterators 'points to a pointer.' To get the
+  \lit{BaseType} pointer that the iterator \lit{p} references, use the
+  dereferencing operator \lit{*} ({\it i.e.} \lit{var = *p}; note that
+  \lit{var} is a pointer to a \lit{BaseType}).
+\item To advance to the next item, increment the iterator.
+\item To test for the end of the container, use the \lit{var\_end()}
+  method. You can assign the value of \lit{var\_end()} to a variable
+  and test against that if you think the cost of calling the method
+  in a loop is too high.
+\end{itemize}
+
+Note that the iterators used for Structure and Sequence are defined in
+their parent class \lit{Constructor} while \lit{Grid}, \lit{DDS},
+\lit{DAS} and \lit{AttrTable} contain their own type definitions. Look
+at the class' documentation to see which new methods replace the
+`\lit{Pix} methods.'
+
+Note that Patrick also created a set of \lit{Pix} adapters that enable
+the old Pix types to work by adapting them to STL iterators. It's best
+to treat all the \lit{Pix} code as deprecated, but the adapters ease
+the work by enabling you to break it up over several releases.
+
+\section{New Methods in Connect}
+
+Connect no longer contains instances\footnote{Well, they are actually
+  still there, but the methods that access them are deprecated and
+  will be removed in 3.6.} of DAS, DDS, {\it et c.}, that can hold
+values returned from the server. Instead it has methods which return
+the objects using value-result parameters. Here are the new methods:
+
+%\begin{vcode}{t}
+\begin{lstlisting}[caption={Methods from Connect}]
+    virtual void request_das(DAS &das) throw(Error, InternalErr);
+    virtual void request_das_url(DAS &das) throw(Error, InternalErr);
+
+    virtual void request_dds(DDS &dds, string expr = "") throw(Error, InternalErr);
+    virtual void request_dds_url(DDS &dds) throw(Error, InternalErr);
+
+    virtual void request_data(DataDDS &data, string expr = "") throw(Error, InternalErr);
+    virtual void request_data_url(DataDDS &data) throw(Error, InternalErr);
+\end{lstlisting}
+%\end{vcode}
+
+Note:
+\begin{itemize}
+\item The methods now take a reference to the object being requested;
+  the return is via this parameter.
+\item The methods signal errors using exceptions.
+\item Patrick has added versions that do not modify the URL at all (the
+  ones with the \lit{\_url} suffix).
+\end{itemize}
+
+Other changes: Be sure to scan the \lit{Connect} documentation for
+other things that have been deprecated. The Connect class was one of
+the poorest in \lit{libdap}. I have reduced it considerably and
+factored many of the HTTP-specific methods into \lit{HTTPConnect} and
+all of the caching into \lit{HTTPCache}. Also note that cache resource
+management is not controlled by the \lit{Response}, \lit{HTTPResponse}
+and \lit{HTTPCacheResponse} classes. Particularly, the release of
+cache resources is now managed by the \lit{Response} class and its children.
+
+\subsection{Connections removed}
+
+In the past \lit{libdap} included a class that could be used to make a
+collection of \lit{Connect} instances. This was used in code like the
+NetCDF Client Library to store one instance of \lit{Connect} for each
+`open file.' That class was called \lit{Connections}. It has been
+removed from the library since it makes most sense to just put a copy
+of it in your project. If you need it, download the NetCDF client
+library source code (or use subversion) and put copies of
+\lit{Connections.cc} and \lit{Connections.h} in your source.
+
+\section{Automake support}
+
+All of OPeNDAP's projects will use autoconf, automake and libtool to
+build on Unix platforms. To make it easier to write configure.ac
+scripts which detect libdap, we include an autoconf m4 macro. Look in
+the \lit{m4} directory of libdap for the file \lit{libdap.m4}. Copy
+this into your source. Here's an example of the macro's
+use:\footnote{Thanks to Patrice Dumas for contributing the macro and
+  many patches for our builds.}
+
+%\begin{vcode}{t}
+\begin{lstlisting}[caption={libdap.m4}]
+    AC_CHECK_LIBDAP([3.5.0],
+     [
+      LIBS="$LIBS $DAP_LIBS"
+      CPPFLAGS="$CPPFLAGS $DAP_CFLAGS"
+     ],
+     [ AC_MSG_ERROR([Cannot find libdap])
+    ])
+\end{lstlisting}
+%\end{vcode}
+
+\appendix
+
+\section{NCTypeFactory}
+\label{type-decl}
+
+\W\textbf{NCTypeFactory.cc}
+\begin{lstlisting}[caption={NCTypeFactory.h}]
+
+// -*- mode: c++; c-basic-offset:4 -*-
+
+// This file is part of libdap, A C++ implementation of the OPeNDAP Data
+// Access Protocol.
+
+// Copyright (c) 2005 OPeNDAP, Inc.
+// Author: James Gallagher <jgallagher@opendap.org>
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
+
+#ifndef nc_type_factory_h
+#define nc_type_factory_h
+
+#include <string>
+
+// Class declarations; Make sure to include the corresponding headers in the
+// implementation file.
+
+class NCByte;
+class NCInt16;
+class NCUInt16;
+class NCInt32;
+class NCUInt32;
+class NCFloat32;
+class NCFloat64;
+class NCStr;
+class NCUrl;
+class NCArray;
+class NCStructure;
+class NCSequence;
+class NCGrid;
+
+/** A factory for the NetCDF client library types.
+
+    @author James Gallagher
+    @see DDS */
+class NCTypeFactory: public BaseTypeFactory {
+public:
+    NCTypeFactory() {} 
+    virtual ~NCTypeFactory() {}
+
+    virtual Byte *NewByte(const string &n = "") const;
+    virtual Int16 *NewInt16(const string &n = "") const;
+    virtual UInt16 *NewUInt16(const string &n = "") const;
+    virtual Int32 *NewInt32(const string &n = "") const;
+    virtual UInt32 *NewUInt32(const string &n = "") const;
+    virtual Float32 *NewFloat32(const string &n = "") const;
+    virtual Float64 *NewFloat64(const string &n = "") const;
+
+    virtual Str *NewStr(const string &n = "") const;
+    virtual Url *NewUrl(const string &n = "") const;
+
+    virtual Array *NewArray(const string &n = "", BaseType *v = 0) const;
+    virtual Structure *NewStructure(const string &n = "") const;
+    virtual Sequence *NewSequence(const string &n = "") const;
+    virtual Grid *NewGrid(const string &n = "") const;
+};
+
+#endif // nc_type_factory_h
+\end{lstlisting}
+%\end{verbatim}
+
+\W\textbf{NCTypeFactory.cc}
+\begin{lstlisting}[caption={NCTypefactory.cc}]
+
+// -*- mode: c++; c-basic-offset:4 -*-
+
+// This file is part of libdap, A C++ implementation of the OPeNDAP Data
+// Access Protocol.
+
+// Copyright (c) 2005 OPeNDAP, Inc.
+// Author: James Gallagher <jgallagher@opendap.org>
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
+
+
+#include <string>
+
+#include "NCByte.h"
+#include "NCInt16.h"
+#include "NCUInt16.h"
+#include "NCInt32.h"
+#include "NCUInt32.h"
+#include "NCFloat32.h"
+#include "NCFloat64.h"
+#include "NCStr.h"
+#include "NCUrl.h"
+#include "NCArray.h"
+#include "NCStructure.h"
+#include "NCSequence.h"
+#include "NCGrid.h"
+
+#include "NCTypeFactory.h"
+#include "debug.h"
+
+Byte *
+NCTypeFactory::NewByte(const string &n ) const 
+{ 
+    return new NCByte(n);
+}
+
+Int16 *
+NCTypeFactory::NewInt16(const string &n ) const 
+{ 
+    return new NCInt16(n); 
+}
+
+UInt16 *
+NCTypeFactory::NewUInt16(const string &n ) const 
+{ 
+    return new NCUInt16(n);
+}
+
+Int32 *
+NCTypeFactory::NewInt32(const string &n ) const 
+{ 
+    return new NCInt32(n);
+}
+
+UInt32 *
+NCTypeFactory::NewUInt32(const string &n ) const 
+{ 
+    return new NCUInt32(n);
+}
+
+Float32 *
+NCTypeFactory::NewFloat32(const string &n ) const 
+{ 
+    return new NCFloat32(n);
+}
+
+Float64 *
+NCTypeFactory::NewFloat64(const string &n ) const 
+{ 
+    return new NCFloat64(n);
+}
+
+Str *
+NCTypeFactory::NewStr(const string &n ) const 
+{ 
+    return new NCStr(n);
+}
+
+Url *
+NCTypeFactory::NewUrl(const string &n ) const 
+{ 
+    return new NCUrl(n);
+}
+
+Array *
+NCTypeFactory::NewArray(const string &n , BaseType *v) const 
+{ 
+    return new NCArray(n, v);
+}
+
+Structure *
+NCTypeFactory::NewStructure(const string &n ) const 
+{ 
+    return new NCStructure(n);
+}
+
+Sequence *
+NCTypeFactory::NewSequence(const string &n ) const 
+{ 
+    return new NCSequence(n);
+}
+
+Grid *
+NCTypeFactory::NewGrid(const string &n ) const 
+{ 
+    return new NCGrid(n);
+}
+\end{lstlisting}
+%\end{verbatim}
+
+\bigskip
+
+\bibliographystyle{plain}
+\T\addcontentsline{toc}{section}{References}
+\T\raggedright
+\bibliography{../../../boiler/dods}
+
+\end{document}

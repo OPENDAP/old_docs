@@ -1,0 +1,273 @@
+
+	$Id$
+PREFACE
+
+This is a general guide to installing DODS data servers. Some servers may
+have specific requirements beyond these; look for an INSTALL-<server>
+document in this directory or in the source code directory if you down-loaded
+the source code.
+
+-----------------------------------------------------------------------------
+
+CONTENTS
+
+ABOUT WWW SERVERS
+
+SETTING UP A DATA SERVER
+ ** QUICK INSTRUCTIONS **
+ ** SPECIAL NOTE FOR THE HDF SERVER **
+ ** NOTE FOR LINUX **
+ ** SIMPLE INSTALLATION (but _do_ read at least the next section too!) **
+ ** (JUST A TINY BIT MORE) SOPHISTICATED INSTALLATION **
+    *** Compression
+    *** ASCII
+
+TIPS 
+ ** How to write a DODS URL for your data **
+ ** How can I add additional descriptive information about your dataset **
+ ** How do I set up a server that limit access to only a few people? **
+ ** Is there a registry of DODS datasets? **
+ ** I have a question **
+
+-----------------------------------------------------------------------------
+
+ABOUT WWW SERVERS
+
+Note: We have tested DODS servers with the NCSA and Apache http daemons
+(httpd). Other servers will work as along as they support CGI 1.1 standard.
+However, the installation instructions will be slightly different. Don't let
+this dissuade you installing DODS servers with another httpd - the process is
+very simple.
+
+If you do not have a World Wide Web server running on the machine you want to
+use as your data server machine, you can get NCSA's daemon from
+http://hoohoo.ncsa.uiuc.edu/. The Apache daemon can be found at
+http://www.apache.org/.
+
+-----------------------------------------------------------------------------
+
+SETTING UP A DATA SERVER
+
+ ** QUICK INSTRUCTIONS **
+
+Copy the programs nph-<root>, <root>_{das,dds,dods}, usage, deflate,
+asciival, DODS_Dispatch.pm, DODS_Cache.pm, FilterDirHTML.pm and the
+directories HTML, LWP and MIME into one of your WWW server's script alias
+directories. Data should be located within your WWW server's document root
+directory or be (symbolicly) linked to DocumentRoot. You must turn on
+FollowSymLinks in your access.conf file. Use one of the DODS client programs
+to test your installation.
+
+ ** SPECIAL NOTE FOR THE HDF SERVER **
+
+The HDF server caches some of its responses to requests. In the past this
+cache was stored in the same directory as the data files being served.
+However, that caused problems with read-only datasets. In the current version
+of the HDF server the cache directory is /usr/tmp and can be configured by
+changing the value of the variable $cache_dir in the file nph-hdf.
+
+
+ ** NOTE FOR LINUX **
+
+The linux shell gags on the syntax we use in the Perl scripts to locate the
+perl interpreter on your system. Look at the nph-jg script. The top two lines
+look like:
+
+    #!/bin/sh -- # -*- perl -*-
+    eval "exec perl -T -S $0 $*" if 0;	# Trick to find perl. Must be on PATH.
+
+On Linux you should replace these lines with:
+
+    #!/path/to/your/perl -T
+
+Where /path/to/your/perl is the full pathname of the perl interpreter you
+want the servers to use. You can find the path to perl on your computer by
+typing:
+
+    which perl
+
+You can check the version of perl by typing:
+
+    perl -v
+
+You need Perl version 5.001 or greater.
+
+ ** SIMPLE INSTALLATION (but *do* read at least the next section too!) **
+
+To install a DODS server you copy four programs into the cgi-bin directory of
+your WWW daemon. For each server we use a root name; for NetCDF is is `nc',
+for HDF it is `hdf'. In general the root name for a server is a two or three
+character mnemonic for the API or system with which the server works. The six
+programs you must copy to cgi-bin are nph-<root>, <root>_das, <root>_dds,
+<root>_dods, asciival, FilterDirHTML.pm, DODS_Dispatch.pm and DODS_Cache.pm.
+Also copy the HTML, LWP and MIME directories. For example, to install the
+NetCDF server copy nph-nc, nc_das, nc_dds and nc_dods to your WWW server's
+cgi-bin directory. It is also a good idea to copy the deflate and usage
+programs as well. The usage program provides inforamtion about your data set
+in an HTML document and the deflate program adds compression capabilities to
+the server.
+
+Tip: How to find which directory is the cgi-bin directory: Look in the
+server's srm.conf file for a line like:
+
+	 ScriptAlias /cgi-bin/ /usr/local/etc/httpd/cgi-bin/
+
+For both the NCSA and Apache servers, the option ScriptAlias defines where
+CGI (Common Interface Gateway) programs may reside. In this case they are in
+the directory /usr/local/etc/httpd/cgi-bin. Note that URLs with `cgi-bin' in
+their path will automatically refer to programs in this directory.
+
+Once you have copied the programs into your www server's cgi-bin directory,
+you're technically done installing the server.
+
+To make data accessible via the server, The files containing the data must be
+accessible from some directory within your WWW server's document root
+directory. This can be done two ways: 1) you can copy the data files into
+that directory or 2) you can create links (normally you'd use soft links)
+from the WWW server's document root to the data directories. If you're going
+to use (soft) links, be sure to look at tip number two below.
+
+Tip 1: To find out which directory is used by your WWW server as the document
+root, look in the srm.conf file for a line like:
+
+      DocumentRoot /usr/local/spool/http
+
+This says that the document root directory is /usr/local/spool/http. 
+
+Tip 2: By default many servers disable softlinks that point out of the
+directories that fall under the WWW server's document root. To enable this
+feature you'll have to edit access.conf and add the option `FollowSymLinks'
+to the directory trees which will contain the links to data. This sounds more
+complex than it is. 
+
+For example, suppose that you have a large dataset stored in a directory
+named `/archive1'. Under that directory are many files and taken together
+they are far too large to copy into the WWW server's document root. First
+look in access.conf and see that FollowSymLinks is set for the WWW server's
+document root. It will look like:
+
+    <Directory /usr/local/spool/http>
+
+    # This may also be "None", "All", or any combination of "Indexes",
+    # "Includes", or "FollowSymLinks"
+
+    Options Indexes FollowSymLinks
+
+followed by some other stuff. If `FollowSymLinks' is not on the Options line,
+add it. Once that is done, create a symbolic link from within your WWW server's
+document root to `/archive1'. You're done.
+
+ ** (JUST A TINY BIT MORE) SOPHISTICATED INSTALLATION **
+
+To improve you your DODS server(s) a bit you can also copy the program
+`usage' into the cgi-bin directory where the nph-<root> and other programs
+were copied. The usage program provides a way for you to supply additional
+information about your dataset that other can browse - it generates HTML
+output. 
+
+    *** Compression
+
+   DODS versions 2.15 and higher support server-side data compression.
+   This means that data sent to a client can be compressed, if the
+   client requests it that way.  To use compression, you must put the
+   `deflate' program (found in the DODS /etc directory) in the same
+   directory with the server filter programs.
+
+   *** ASCII 
+
+   The program asciival enables your server to send data as ascii. Users
+   request ASCII data values using the URL externsion .asc or .ascii. Values
+   are returned in a text/plain MIME document that can be saved to a file,
+   imported by a spreadsheet, etc.
+
+-----------------------------------------------------------------------------
+
+TIPS 
+
+ ** How to write a DODS URL for your data **
+
+One question about your DODS server you will likely be asked is "How do I
+write one of those DODS URLs for your data?". Here's how to answer that
+question. A DODS URL has the form:
+
+	  http://<machine name>/<cgi dir name>/<pathname>
+
+Suppose that you have copied the HDF server to /usr/local/etc/httpd/cgi-bin
+and soft linked a set of files in /usr/local/spool/http/data on the machine
+`dods.gso.uri.edu'. A partial directory listing of that is:
+
+    S2000414.HDF   S2000436.HDF   S2000458.HDF   S2000480.HDF   S2000502.HDF
+    S2000415.HDF   S2000437.HDF   S2000459.HDF   S2000481.HDF   S2000503.HDF
+    S2000416.HDF   S2000438.HDF   S2000460.HDF   S2000482.HDF   S2000504.HDF
+    .
+    .
+    .
+
+A URL that references the first file would be:
+  
+    http://dods.gso.uri.edu/cgi-bin/nph-hdf/data/S2000414.HDF
+
+The machine name is substituted directory. Part of the URL that reads
+`cgi-bin/nph-hdf' selects the DODS HDF server and the section
+`data/S2000414.HDF' chooses the file. Note that the WWW server's document
+root is /usr/local/spool/httpd and the files are stored in a subdirectory
+within that named `data' (not to imaginative a name...). On the Web URLs are
+rooted at the DocumentRoot directory so the `/usr/local/spool/http' part of
+the pathname is implicit and should not be part of the URL. Since the
+directory `data' is under the document root directory it *is* included in the
+URL.
+
+ ** How to add additional descriptive information about your dataset **
+
+The best way is to use the usage server. For each data server and for each
+file of class* of files in you dataset, you can write a HTML document which
+the usage server will return when requested by users. You can write a HTML
+document that describes any special features of a particular data server and
+save that document in a file named <root>.html in the cgi-bin directory that
+holds the server programs. The only special thing about this file is that you
+should include only those HTML tags that would fall between the <body> and
+</body> tags. Thus it should not contain the <html> <head> <body> or their
+matching counterparts. 
+
+To provide HTML for each class of files you'd create a file whose name is
+based on the names of the data files you want to describe. For example, a
+file that would be used for all the NSCAT data file used in the previous
+section's example would be S.html. This file should be located in the
+directory where the data is located.
+
+Users access this information by appending `.html' to a DODS URL. For example
+to get the HTML page for the URL used in the previous section, you'd type:
+
+   http://dods.gso.uri.edu/cgi-bin/nph-hdf/data/S2000414.HDF.html
+
+Note: the Usage server will return important information about your data set
+even if you do write custom HTML files for it. IF you do write those files
+they will be concatenated with the default information returned by the usage
+server. 
+
+ ** How do I set up a server that limit access to only a few people? **
+
+Briefly, it is easy in practice to set up DODS servers so that only a
+particular group can access data using them. The specific mechanisms you have
+at your disposal will depend on the WWW server you use. See the file SECURITY
+for information ion installing `secure' DODS servers with NCSA httpd (these
+instructions also apply to Apache).
+
+ ** Is there a registry of DODS datasets? **
+
+No, not at the present (April 1998). However, we are working on a combined
+data set registry and search tool. Check the DODS home page
+(http://unidata.ucar.edu/packages/dods/) for up-to-date information.
+
+ ** Questions? **
+
+There are several sources of information about DODS:
+
+The DODS home page: http://unidata.ucar.edu/packages/dods/
+The DODS users manual (html and Postscript): Available on the home page
+User support: email: support@dods.gso.uri.edu
+
+-----------------------------------------------------------------------------
+
+James Gallagher
+jgallagher@gso.uri.edu

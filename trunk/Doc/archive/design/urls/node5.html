@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Characteristics of DODS and WWW URLs</TITLE>
+<META NAME="description" CONTENT="Characteristics of DODS and WWW URLs">
+<META NAME="keywords" CONTENT="urls">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="urls.css">
+
+<LINK REL="previous" HREF="node4.html">
+<LINK REL="up" HREF="node3.html">
+<LINK REL="next" HREF="node6.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html111"
+  HREF="node6.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html107"
+  HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html103"
+  HREF="node4.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html109"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html112"
+  HREF="node6.html">Uses of URLs by</A>
+<B> Up:</B> <A NAME="tex2html108"
+  HREF="node3.html">Structure and Interpretation of</A>
+<B> Previous:</B> <A NAME="tex2html104"
+  HREF="node4.html">Syntax of the DODS</A>
+ &nbsp; <B>  <A NAME="tex2html110"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00032000000000000000"></A>
+<A NAME="url:differences"></A>
+<BR>
+Characteristics of DODS and WWW URLs
+</H2>
+
+<P>
+DODS URLs are a proper subset of WWW URLs. URLs defined by the WWW project
+cover a wide variety of client-server systems while parts of DODS URLs are
+interpreted only to be DODS CGIs. WWW URLs include special cases for servers
+which support protocols such as <TT>ftp</TT>, <TT>wais</TT> and <TT>gopher</TT>. In
+these cases, the <EM>Access</EM> component of a WWW URL is used to indicate
+which protocol to use. When <EM>clients</EM> receive URLs, they use this
+information to select which protocol should be used to access the data
+referenced by the URL (i.e., the <EM>Access</EM> information is used to select
+the type of server with which the client will communicate). DODS URLs are
+only meaningful to CGI modules accessible over the network via HTTP servers.
+Thus, there will never be any variation in the <EM>Access</EM> component of a
+DODS URL. It will always be <TT>http</TT>.
+
+<P>
+In addition to a protocol restriction, DODS URLs always reference a CGI
+module on the server. This is necessary because all DODS data access takes
+place via one or more CGI modules. The CGI specification must follow the <EM>Host</EM> component of the URL.
+
+<P>
+While WWW URLs are the input to WWW browsers written with knowledge of URLs,
+and in many cases, the ability to parse parts of URLs, DODS URLs are passed to
+programs which nominally have no knowledge of URL notation. In <A NAME="tex2html18"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-arch/data-delivery-arch.html">DODS--Data Delivery Architecture</A> a data
+system architecture is presented in which user programs are re-linked with
+new implementations of data-access APIs. These <EM>client libraries</EM>
+understand and can manipulate URLs (and in particular, understand the
+particular restrictions DODS places on URLs) but the user programs do
+not. Some of the user programs were written before any of the URL software
+even existed. 
+
+<P>
+A DODS URL references a data set, or portion of a data set. Accessing a DODS
+URL returns an experimental-type binary <A NAME="tex2html19"
+  HREF="http://www.cis.ohio-state.edu/htbin/rfc/rfc1590.html">Multipurpose Internet Mail Extensions</A> document. Such a document
+cannot be displayed by browsers nor does it contain URLs which link the
+document to other documents on the Internet. URLs that are part of the WWW
+system of HTTP servers reference documents which can be displayed by a large
+number of difference browsers. DODS URLs are not browsable at all, that is,
+they cannot meaningfully serve as input to one of the standard WWW
+browsers<A NAME="tex2html17"
+
+HREF="footnode.html#foot577"><SUP>1</SUP></A>. DODS uses URLs
+simply to reference data sets on the Internet and not for the more general
+purpose of linking a document within the larger context of all documents
+publicly accessible on the Internet.
+
+<P>
+There are two ways DODS CGI modules can interpret the part of the URL which
+the HTTP server passes to it; as a constraint expression or as an access to a
+virtual file system. This second method of interpretation is a specialization
+of the general behavior of HTTPD where the text following the CGI name is
+passed to the CGI module unprocessed. Accessing a data set as if it were a
+virtual file system means specifying variables within the data set as if they
+were files or files within directories subordinate to the CGI. For example in
+Table&nbsp;<A HREF="node4.html#url:tab:examples"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> the file name separator (<TT>/</TT>) is used to
+indicate that the within the named data set (the netCDF data set called <EM>  CDT</EM>) only the variable <TT>u1</TT> is to be accessed. If the data set
+contained several levels of variables, as in the examples for the three level
+JGOFS data set, then a specific level or variable within a level may be
+specified.  However, the virtual file system syntax is not capable of
+specifying arbitrary set of variables from a data set unless those variables
+happen to be the sole members of a structure of sequence (See <A NAME="tex2html20"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">DODS--Data Access Protocol</A> for more
+information on data types DODS supports). The VFS syntax is a special case of
+constraint expressions. It is included in DODS because file systems are
+familiar tools to many users, much more so than boolean expressions, and
+because they are flexible enough for many user's demands.
+
+<P>
+The second syntax DODS supports for the portion of the URL past the CGI name
+is the constraint expression syntax. Constraint expressions are a way of
+passing, along with the URL, a set of restrictions to be applied to the data
+set when the client software (i.e., the surrogate library) accesses the data
+set. These constraints will be used during access to the data set to limit
+the variables and variable values extracted from it. The constraint
+expression, or portions of the constraint expression, will be evaluated <EM>  by the server</EM> at the time of the data access. The syntax of the
+expression itself is dependent on the types of variables within the data set
+(See <A NAME="tex2html21"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">DODS--Data Access Protocol</A>).
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html111"
+  HREF="node6.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html107"
+  HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html103"
+  HREF="node4.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html109"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html112"
+  HREF="node6.html">Uses of URLs by</A>
+<B> Up:</B> <A NAME="tex2html108"
+  HREF="node3.html">Structure and Interpretation of</A>
+<B> Previous:</B> <A NAME="tex2html104"
+  HREF="node4.html">Syntax of the DODS</A>
+ &nbsp; <B>  <A NAME="tex2html110"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

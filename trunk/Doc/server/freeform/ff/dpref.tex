@@ -1,0 +1,156 @@
+% Preface to the DODS FF Server Manual
+%
+% $Id$
+%
+
+\T\chapter*{Preface}
+\T\addcontentsline{toc}{chapter}{Preface}
+
+This document describes the DODS FreeForm ND Server.  It is not a
+complete description of the \ffnd\ software.  For that, please refer
+to the \ffnd\ manual.
+
+This document contains much material originally written at the
+National Oceanic and Atmospheric Administration's National
+Environmental Satellite, Data, and Information Service, which is part
+of the National Geophysical Data Center in Boulder, Colorado.
+
+This document has been updated to include information on FreeForm ND,
+the last release of FreeForm. FreeForm is now supported only for use
+with the Distributed Oceanographic Data System; see the 
+\DODShome\ for more information.
+
+We are interested in your comments about the DODS software, and the
+FreeForm ND software and this document.  Send them to:
+\xlink{support@unidata.ucar.edu}{mailto:support@unidata.ucar.edu}.
+
+\begin{ifhtml}
+  \htmlmenu{4}
+  \chapter*{Preface}
+\end{ifhtml}
+
+Using \ffnd\ with DODS, a researcher can easily make his or her data
+available to the wider community of DODS users without having to
+convert that data into another data file format.  This document
+presents the \ffnd software, and shows how to use it with DODS.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Tasks Illustrated in this Guide}
+\label{pref,tasks}
+
+For a quick start to getting, installing, and using the \ffnd\
+software, see the list below of tasks described in this document.
+
+\begin{itemize}
+
+\item Quick start. (\pagexref{a})
+
+\item Getting and installing the \ffnd\ software. 
+(\pagexref{a})
+
+\item Installing the rest of the DODS software. 
+(\pagexref{a})
+
+\item Troubleshooting. (\pagexref{a})
+
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Who is this Guide for?}
+\label{pref,who}
+
+This guide is for people who wish to use \ffnd\ to serve scientific
+datasets using the DODS software.  Scientists who wish to share their
+data with colleagues may also find this a useful system, since it is a
+relatively simple matter to set up a server that can allow remote
+access to your data.
+
+This documentation assumes that the readers are familiar with
+computers and the internet, but are not necessarily programmers. More
+than a passing familiarity with different data file formats will be
+useful, as will an understanding of elementary internet concepts, such
+as URLs and http.
+
+This manual also assumes some familiarity with the DODS software.  If
+you are starting from scratch, knowing nothing at all about DODS, we
+strongly encourage you to browse the \DODSuser\ before reading too far
+here.  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Organization of this Document}
+
+This book contains both introductory and reference material. There is
+also a description of the installation procedure.
+
+\begin{description}
+
+\item[\chapterref{ff,dintro}] contains an overview of the \ffs\
+  software, including how to get it and install it.
+
+\item[\chapterref{ff,dquick}] provides a brief introduction to writing
+  format descriptions and using the \ffs .
+  
+\item[\chapterref{ff,tblfmt}]provides detailed information about
+  writing format descriptions to facilitate access to data in tabular
+  formats.
+  
+\item[\chapterref{ff,arrayfmt}] provides detailed information about
+  writing format descriptions to facilitate access to data in
+  non-tabular (array) formats.
+  
+\item[\chapterref{ff,hdrfmt}] tells you how to work with header
+  formats.
+
+\item[\chapterref{ff,ff-server}] describes the operation of the \ffs ,
+  with tips for writing format files.
+  
+\item[\chapterref{ff,convs}] presents FreeForm ND file name
+  conventions, the search rules for locating format files, and
+  standard command line arguments for FreeForm ND programs.
+  
+\item[\chapterref{ff,fmtconv}] shows you how to use the FreeForm ND
+  program \lit{newform} to convert data from one format to another and
+  also how to read the data in a binary file.
+ 
+\item[\chapterref{ff,datachk}] discusses the FreeForm ND program
+  \lit{checkvar}, which you can use to check data distribution and
+  quality.
+
+\item[\appref{ff,hdf}] provides explanations for a small selection
+  of tools that will be useful for programmers working with the HDF
+  file format.
+  
+\item[\appref{ff,errors}] presents a list of common FreeForm ND error
+  messages.  These are the error messages that may be issued by the
+  \ffnd\ utilities, such as \lit{newform}, not the \ffs .
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\newcommand{\DODSNoButtons}{1}
+\listconventions
+
+A position box is often used in this book to indicate column position
+of field values in data files. It is shown at the beginning of a data
+list in the documentation, but does not appear in the data file
+itself.  It looks something like this:
+
+\begin{vcode}{sib}
+1         2         3         4         5         6
+012345678901234567890123456789012345678901234567890
+\end{vcode}
+
+
+\W\section{Notices}
+
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% TeX-master: t
+%%% End: 

@@ -1,0 +1,186 @@
+%
+%    begun in earnest 2/20/96, tom sgouros
+%
+\documentclass{dods-book}
+\usepackage{longtable}
+\usepackage{acronym}
+
+\rcsInfo $Id$
+\newcommand{\DOCversion}{Version \rcsInfoRevision}
+
+\include{../boiler/layout}
+\include{../boiler/dods-def}
+%\include{guide/guide-def}
+
+\htmldirectory{guide-html}
+\htmlname{guide}
+\htmltitle{\opendap User Guide}
+\htmladdress{Tom Sgouros, \today}
+\newcommand{\OPDPrevUrl}{\OPDapiUrl}
+\newcommand{\OPDNextUrl}{\OPDmguiUrl}
+\newcommand{\OPDPrev}{\OPDapi}
+\newcommand{\OPDNext}{\OPDmgui}
+% These are for documents with \part's
+\W\setcounter{HlxSecNumBase}{-2}
+\W\setcounter{htmldepth}{5}
+
+\figpath{guide}
+
+\makeindex
+
+\begin{document}
+%------------------------------------front matter
+\title{\opendap User Guide\\\DOCversion}
+\author{Tom Sgouros}
+\date{\rcsInfoDate}
+\pagenumbering{roman}
+\maketitle
+
+\copyrightmatter
+
+\W\pslink{http://www.opendap.org/pdf/guide.pdf}
+
+\include{guide/preface}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\clearemptydoublepage
+%------------------------------------book body
+
+\pagenumbering{arabic}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PART 1 provides an introduction to both sides of OPeNDAP
+
+\part{Overview}
+
+% Chapter 1 is an overview of the entire OPeNDAP system, from soup to nuts.
+\include{guide/ch01}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PART 2 shows OPeNDAP from the point of view of someone who wants to
+% look at data
+
+\part{Using \opendap to Read Data}
+
+% Chapter 2 provides a closer look at using an OPeNDAP client to look at
+% (and for) data. Includes a section about the theoretical and
+% practical problems of data model translation. Explains how to build
+% an OPeNDAP client, and includes a couple of examples worked through.
+\include{guide/ch02}
+\include{guide/ch02a}
+\include{guide/ch02b}
+
+
+% Chapter 3 introduces and explains the data locator, used to hunt for
+% appropriate data sets to use with OPeNDAP. Includes information about
+% the server catalog and the boolean services.
+
+% Un-comment this when the CS works, or something.
+%*\include{guide/ch03}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PART 3 looks at OPeNDAP from the point of view of someone who wants
+% their data to be accessible to OPeNDAP users.
+
+\part{Providing Data with DODS}
+
+% Chapter 4 is about Data and Data Models. It covers the DAS and DDS,
+% and also contains a section outlining the problems associated with
+% Data Model translation.
+\include{guide/ch04}
+
+% Chapter 5 explains how to set up an \opendap server to provide OPeNDAP data
+% to OPeNDAP clients.
+%*\include{guide/ch05}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PART 4 provides (at a minimum) the information needed by someone who
+% is trying to implement another OPeNDAP API.
+
+\part{Technical Documentation}
+
+% Chapter 6 contains a sort of subject index to the remaining
+% chapters. This part of the guide/crash is mainly provided for people who
+% are implementing another DODS-compliant API, so the information
+% pointers should be provided with that in mind.
+\include{guide/ch06}
+
+%------------------------------------back matter
+\part{Appendices}
+\appendix
+
+% Appendix A contains the instructions for installing the OPeNDAP
+% libraries, and software that requires the OPeNDAP libraries.
+\include{guide/appa}
+
+% Appendix B contains a list of the software required to compile and
+% run OPeNDAP.
+\include{guide/appb}
+
+% Appendix B contains a list of the error messages that may be
+% reported by the error facility.
+%\include{guide/crash/appb}
+
+\include{guide/glossary}
+\begin{acronym}
+\include{../boiler/acronyms}
+\end{acronym}
+
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{plain}
+\bibliography{../boiler/dods}
+
+\printindex
+
+\end{document}
+
+
+% $Log: guide.tex,v $
+% Revision 1.14  2004/07/07 21:54:37  jimg
+% Added rcsInfoDate and fixed the acronym appendix (added \begin{acronym} and
+% \end{...}).
+%
+% Revision 1.13  2003/12/08 18:52:47  tom
+% moved pointer to OPeNDAP-wide acronym file
+%
+% Revision 1.12  2003/09/04 19:42:06  tom
+% DODS->OPeNDAP
+%
+% Revision 1.11  2002/03/14 12:51:53  tom
+% various bugs, including bugzilla number 374
+%
+% Revision 1.10  2001/05/04 14:54:37  tom
+% fixed the use of \pslink
+%
+% Revision 1.9  1999/10/18 21:39:43  tom
+% updated for new services, fixed server test section, add ifh intro.
+%
+% Revision 1.8  1999/08/30 21:01:39  tom
+% incorporated rcsInfo stuff.
+%
+% Revision 1.7  1999/08/30 14:09:42  tom
+% updated for dods-book.dtx, added appendix B.
+%
+% Revision 1.6  1999/02/04 17:42:12  tom
+% modified to use dods-book.cls and Hyperlatex
+%
+% Revision 1.5  1998/12/07 15:41:14  tom
+% updated for DODS v2.19 and GUIv0.7
+%
+% Revision 1.4  1998/11/13 16:16:31  edavis
+% Change ftp site for PostScript files to Unidata.
+%
+% Revision 1.3  1997/01/27 18:35:16  jimg
+% *** empty log message ***
+%
+% Revision 1.2  1996/08/22 18:41:11  jimg
+% Removed relative paths in \usepackage{} command since the TEXINPUTS variable
+% is now set to read the DODS/doc/latex directory for style files.
+%
+% Revision 1.1  1996/08/21 18:12:31  jimg
+% Added.
+%
+
+

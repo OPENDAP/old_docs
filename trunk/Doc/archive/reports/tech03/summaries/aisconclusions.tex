@@ -1,0 +1,68 @@
+The \ac{AIS} is an element of \ac{OPeNDAP} that is critical for making
+varied and disparate datasets conform to community and individual
+standards and conventions as required by specific applications, and
+to insure machine-to-machine interoperability in some cases.  An example 
+is the ingestion of observational data from satellite and in-situ instruments 
+into climatological models, where the models require \ac{COARDS} units
+and structure for the input data.  The current prototype adresses
+only the addition and/or modification of attributes.  The full
+\ac{AIS} must address the addition and/or modification of
+variables as well.
+
+From the Breakout: Conclusions and Directions
+
+There is a parallel effort underway at Unidata connected with the development
+of NCML (NetCDF Markup Language). John Caron et al. have built tools which
+provide a way to edit the contents of a NetCDF file by editing the NCML that
+describes that file. It is a system that is very similar to the AIS. The main
+difference is that NCML is limited to NetCDF files. We decided that both
+efforts should stay in touch so that if we can merge them at some future
+time, we do. For the time being, these ideas are new enough that keeping two
+separate efforts is probably a good idea.
+
+An integral part of a system like the AIS is documentation about data source
+conventions (e.g. COARDS) and how to make a data source fit within a
+particular convention. We should plan on supporting people who write AIS
+resources by, for example, providing validators so they can see if the
+information they have added is at least \emph{structurally} correct WRT some
+convention. Also, we should add Convention and Version information
+[Attributes? jhrg] so that ambiguity is reduced; most conventions were not
+developed with the idea that one data source (aka data set, aka file) might
+support more than just one! While DTDs or Schemas are an obvious way to
+validate the syntax of an XML document (and we should probably use than in
+any validation tool we provide) we should \emph{not} require each XML document be
+validated by client-side XML parsers.
+
+There are existing sources of information about data sets such as the GCMD,
+FGDC clearing houses, etc., that the AIS should be able to draw from. It
+seems that the best strategy for using information from these sources is to
+build gateways between them and the AIS.
+
+Another key feature of the AIS is a way for users to upload AIS resources
+once they have developed them. This point has come up ever since we started
+talking about the AIS.
+
+Other comments:
+
+\begin{itemize}
+\item Add an audit trail so that documents that are the result of the merge
+  operations will say so (and so that the exact source of merged
+  information can be determined).
+\end{itemize}
+  
+
+% $Id$
+%
+% $Log: aisconclusions.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

@@ -1,0 +1,169 @@
+
+	$Id$
+
+I. About Releases
+
+II. Targets in the Makefiles
+
+III. Check List for Making a Release
+
+-----------------------------------------------------------------------------
+
+I. About Releases
+
+The current distribution mechanism is really a new way of controlling how we
+make our software available. In the past, once a significant number of
+software upgrades were made within the source tree a new version of DODS -
+all the source code - was made. This meant that parts of DODS which changed
+quickly were held back by parts that changed more slowly and parts that
+changed slowly were released several times (each time with an incremented
+version number) without there having been any actual changes in the software.
+This situation was both frustrating and confusing. Furthermore, because the
+software was released en masse, I was the only person doing the actual
+release work. Releases would be `blocked' while I worked on other tasks.
+
+The current distribution mechanism separates each component of DODS so that
+they can be released individually. Each component (the DAP, netCDF package,
+...) has its own version number which will only be incremented when a change
+to that software actually takes place.
+
+Splitting the version numbers up so that each component has its own does not,
+per se, make separate distribution possible, but it facilitates tracking the
+different versions so that we can trace bugs, incompatibilities, et cetera. 
+
+The different source components are still held in a single CVS source code
+repository. Software is released as source code by first checking all changed
+files into the CVS repository and then exporting the directory of
+directories. Once exported, tar is used to package the source code for
+distribution. Binaries can be built using the source code from either the
+exported directories or the tar files. Each directories Makefile contains
+special targets which partially automate building the tar files.
+
+II. Targets in the Makefiles
+
+There are three targets in the Makefiles that are used to make releases.
+There are some other targets that are useful. I'll list both here.
+
+    Makefile: If the Makefile.in has changed, rebuild the Makefile either by
+    running config.status or configure.
+
+    all: Build all the main programs in the directory. 
+
+    binary-tar: Build a tarball that contains the binaries built by `all' and
+    installed by `install'. The binaries are tarred in the directories where
+    they are installed, not where they are built.
+
+    check: Run the tests for this this software.
+
+    check-version: Check that the version number in the Makefile matches the
+    version number in the version.h file.
+
+    clean: Remove most generated files (i.e., executables, object files, core
+    files, emacs backup files, ...).
+
+    distclean: Remove all generated files except grammar files, the
+    Makefile and configure. 
+
+    collect-coverage-data: Run gcov, collect data on the most recent run of
+    the software and dump it into a special coverage-data subdirectory.
+
+    depend: (Re)build the dependencies.
+
+    install: Copy the binaries from this directory into the bin, lib, etc
+    and include directories.
+
+    tags: Create a TAGS file for emacs.
+
+    tar: Make a source code tarball. 
+
+    test-coverage: Build the binaries so that when run they write
+    data which can be analyzed by gcov.
+
+    update-version: Read the current version from the version.h file, set it
+    in the Makefile and append it to the CWD's name (i.e., jg-dods becomes
+    jg-dods-3.1.2). Don't run this in the directories under CVS control
+    (those that have the `CVS' subdirs in them). Only run this in an exported
+    directory. 
+
+III. Check List for Making a Release
+
+Check out the release_worksheet.gnumeric spreadsheet. Use this to track the
+release steps.
+
+i.) Prepare the code in the CVS-controlled working directory/ies.
+
+    * For the dap software, some of these steps must be done in the
+    DODS_ROOT and DODS_ROOT/etc directories in addition to DODS_ROOT/src/dap.
+
+    Check that the configure script is up-to-date WRT etc/aclocal.m4. Use
+    `make configure.'
+
+    Rebuild the dependencies using `make depend.'
+
+    Examine the directory for files that should have been removed or are
+    leftover from development/testing and remove those by hand. In some cases
+    the files will need to be removed from cvs also (cvs rm -f <files>).
+
+    Run the tests. Do this starting from a clean set of sources. (make clean;
+    make check)
+
+    Update release number in version.h. Use the three part version numbers.
+    Check this file in and add today's date as the log entry. This makes
+    figuring out when a particular version was made simpler (although there
+    are other ways).
+
+    Update the ChangeLog. Scan changed log files using `cvsdate ">{date of
+    last version}".'
+
+    Make sure that all files in the directory are checked into CVS. Use `cvs
+    ci.' Make sure to use the -l flag in DODS_ROOT.
+
+ii.) Export the code to build the tar files.
+
+    * Make sure that the top-level configure script is run.
+    * Make sure that the top-level bin, lib and include directories exist.
+
+    Export the code from CVS using `cvs export -r rev -d DODS-<rev> DODS.'
+    Make *sure* to set CVSROOT!. Also check GCC, CXX, CFLAGS and CXXFLAGS
+    environment variables; they should probably be gcc, g++ and -gstabs -O2.
+
+    Softlink DODS-<rev> to DODS so that the targets that build tar files will
+    work. 
+
+    Run configure
+
+    Run make World.
+
+    Make the tar files (make tar).
+
+iii.) Tag and merge the branch.
+
+    At this point go back to the CVS directory and tag it with the same
+    numbers as is in the version.h file. Waiting until this point ensures
+    that all the files that need to be checked in are.
+
+    Merge back into the trunk.
+
+    In the ChangeLog file in the trunk software, record the cvs command used
+    to do the merge and the arguments to -j that should be used for the next
+    merge.
+
+    Save and check in the changes that result from the merge.
+
+    To test for conflicts use: 
+    alias conflict='grep -l "<<<<<<" `find ! -type d ! -name \*.cft`' and run
+    the results through the resolve_conflicts.pl script. Some files get
+    munged by this so check them out. 
+
+    After merging each directory, add a not in ChangeLog and checkin the code
+    using `Merged with release-<rev>' as the log enty.
+
+    Try to compile the newly merged code.
+
+iv.) Web site updates.
+
+    Update the What's New part of the web page so that people will see that:
+    1) something's been changed/added/improved, 2) what those changes, etc.,
+    are and 3) what particular package(s) and version number(s) is/are
+    associated with the change.
+

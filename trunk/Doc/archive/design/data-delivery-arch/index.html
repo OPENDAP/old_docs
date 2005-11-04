@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>DODS--Data Delivery Architecture</TITLE>
+<META NAME="description" CONTENT="DODS--Data Delivery Architecture">
+<META NAME="keywords" CONTENT="data-delivery-arch">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-arch.css">
+
+<LINK REL="next" HREF="node1.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html39"
+  HREF="node1.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up_g.png"> 
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev_g.png"> 
+<A NAME="tex2html37"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html40"
+  HREF="node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html38"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<P>
+
+ 
+<P>
+<H1 ALIGN="CENTER">DODS--Data Delivery Architecture</H1>
+<DIV>
+
+<P ALIGN="CENTER"><STRONG>23 August 1996</STRONG></P>
+</DIV>
+
+<P>
+
+<H3>Abstract:</H3>
+<DIV>
+
+<P>
+This paper describes the architecture of the DODS data delivery mechanism.
+  This mechanism is one of two components that make up the DODS system
+  design, the other being the data locator. In this paper it is assumed that
+  every data set is accessible using an application programmer interface
+  (API). In addition to local data set access, the DODS data delivery
+  architecture provides remote access by replacing existing API
+  implementations (which provide only local access) with new implementations
+  which access data through servers located on the Internet. For each API
+  DODS supports, a client library and data server are created. The client
+  library supports the same functions as the original implementation of the
+  API, but uses a DODS data server to satisfy each function call rather than
+  reading data from a file. The client library and data server communicate
+  using an application level transmission protocol that facilitates
+  translation between the supported APIs.  While the data delivery
+  architecture of DODS is not inherently limited to the UNIX operating
+  system, the DODS project has no plan to support other operating systems. It
+  is also important to note that this architecture describes a method for
+  direct access to scientific data.
+
+<P>
+</DIV>
+<P>
+
+<P>
+
+<P>
+
+<P>
+<DIV ALIGN="CENTER"><FONT SIZE="-1"><B>Note</B></FONT></DIV>
+<FONT SIZE="-1"> 
+</FONT>
+<P>
+
+<BLOCKQUOTE></BLOCKQUOTE>
+<P>
+<BLOCKQUOTE><FONT SIZE="-1">This is a working document made available to solicit comments. To receive
+  e-mail notice of new or significantly changed documents, send e-mail
+  to <A NAME="tex2html1"
+  HREF="mailto:majordomo@unidata.ucar.edu">majordomo@unidata.ucar.edu</A>
+with 'subscribe dods' in the
+  body of the message.
+</FONT></BLOCKQUOTE>
+<P>
+
+<P>
+
+<P>
+
+<BLOCKQUOTE><FONT SIZE="-1">This document is written for people interested in implementing software
+  that will be part of, or work in parallel with, the Distributed
+  Oceanographic Data System. 
+</FONT></BLOCKQUOTE>
+<P>
+
+<BLOCKQUOTE><FONT SIZE="-1">A <A NAME="tex2html2"
+  HREF="ftp://ftp.unidata.ucar.edu/pub/dods/ps-docs/data-delivery-arch.ps">postscript</A>
+version of this document is
+  available.  You may also use <A NAME="tex2html3"
+  HREF="ftp://ftp.unidata.ucar.edu/pub/dods/ps-docs/">anonymous
+  ftp</A>
+to access postscript files
+  of all of the DODS documentation.
+</FONT></BLOCKQUOTE>
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"></A>
+
+<UL>
+<LI><A NAME="tex2html41"
+  HREF="node1.html">Contents</A>
+<LI><A NAME="tex2html42"
+  HREF="node2.html">Introduction</A>
+<LI><A NAME="tex2html43"
+  HREF="node3.html">Important Terms and Technologies</A>
+<UL>
+<LI><A NAME="tex2html44"
+  HREF="node4.html">Application Programming Interface--API</A>
+<LI><A NAME="tex2html45"
+  HREF="node5.html">Remote Procedure Call--RPC</A>
+<LI><A NAME="tex2html46"
+  HREF="node6.html">HyperText Transfer Protocol--HTTP</A>
+<LI><A NAME="tex2html47"
+  HREF="node7.html">Data Model</A>
+<LI><A NAME="tex2html48"
+  HREF="node8.html">Data Format</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html49"
+  HREF="node9.html">Data Delivery Architecture</A>
+<UL>
+<LI><A NAME="tex2html50"
+  HREF="node10.html">Two Prospective Models for Data Servers</A>
+<LI><A NAME="tex2html51"
+  HREF="node11.html">The Role of Ancillary Data in Translation</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html52"
+  HREF="node12.html">Conclusion</A>
+<LI><A NAME="tex2html53"
+  HREF="node13.html">About this document ...</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html39"
+  HREF="node1.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up_g.png"> 
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev_g.png"> 
+<A NAME="tex2html37"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html40"
+  HREF="node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html38"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

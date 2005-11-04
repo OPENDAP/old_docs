@@ -1,0 +1,108 @@
+
+These are brief notes of the DAP-URL syntax/semantics discussion held in
+Boulder between Jose Garcia, Benno Blumenthal and myself.
+
+- Catalogs are important. A site should be able to list all the datasets it
+  makes accessible.
+  [jhrg: Ted Haberman commented later that there are lots of cataloging
+  systems; we could adopt one. John Caron has developed a simple XML catalog
+  scheme (although I think Ted was talking about using an open standard).]
+
+  [jhrg: Benno added the following two points.]
+
+  * One problem with 'Catalogs' is that it is not clear that we are talking
+    about the same thing. So, in the spirit of concreteness, let me add that
+    we want to transmit the structure of a dataset or collection of datasets,
+    along with any attributes (For me a dataset is a collection of datasets
+    and/or variables, so there is no difference between a catalog and a
+    dataset) This can be done with the .das and .dds combined, because DODS
+    allows a nested structure (though I think only the IRI server uses that
+    structuring). The problem with that is two-fold:
+
+    1) you have to request the entire structure at once, e.g. you cannot just
+       ask for the top level and get in return names, attributes, and
+       pointers to the lower levels (i.e. a more catalog-like response)
+
+    2) there is an implicit flattening (i.e. figuring out the set of common
+       independent variables) which we do not want servers to do with their
+       entire collections. Or, at least, my server is not up to it.
+
+  * Any system that solves these two problems would be great for me -- I too
+    have a fledgling xml rendition of attributes and dataset structure.
+
+    [jhrg: From Jose]
+
+  * I think the catalog of John Caron is a nice work over how to transmit
+    catalog information, however it does not address data discovery (to my
+    knowledge). How long can you keep an approach for catalogs where entries
+    are static elements when you database can grow to be gigabytes of data
+    and thousands of files (containers)? I agree with Benno that there is not
+    yet a good definition of what a catalog is and what is not...at this
+    time, I prefer not try to define the catalog concept.
+
+- DAP URLs are interfaces with two black boxes.
+
+  * http://machine.org/<server>/<black box 1>.<extension>?<ce>
+  * The first black box is often used as the `file name' for the dataset, but
+    that's just a quirk of many of our servers. It can be anything. Benno's
+    server uses it to hold multiple dataset identifiers and operators.
+  * The ce is the second black box. 
+  * We all seem to have decided that it would be best to move the two black
+    boxes so that they are both on the same side of the question mark. 
+    [jhrg: I'm not sure I agree, now that I've thought about it, but I hope
+    that will sort itself out later]  
+
+    [jhrg: Benno adds the following two points]
+
+  * I can see reasons for change, but I too am not totally convinced. I think
+    the situation is more client dependent, i.e. different clients have
+    different black boxes. I include a table with a few of the clients I am
+    familar with.
+
+    http:/machine.org/<server>/<datasetID>.<extension>?<ce> 
+
+    client        <datasetID>   <extension>     <ce>
+
+    netscape        blackbox    blackbox        blackbox
+
+    loaddods        blackbox    generated       blackbox
+
+    ferrett        blackbox     generated       generated
+
+    ingrid         blackbox     generated       generated
+
+  * Note that on top of this, many clients are currently expecting the
+    <datasetID> to be filename-like in that it has no spaces, though this is
+    not a major issue. While we could move everything to after the question
+    mark, we still are going to have to distinguish the different parts of
+    the request -- the datasetID which only the server understands, the ce
+    which many clients can generate, the extension which more clients can
+    generate. One could envision layers, where there are standards for more
+    sophisticated requests (i.e. currently the ce just selects data, but we
+    could have a standard set of dataset operators which some clients could
+    generate requests for, other clients would just keep that part as another
+    black box).
+
+- The current URI-GSO C++ server toolkit has some shortfalls
+
+  * The dispatch script is parsing the URL to extract the <extension>. That's
+    a mistake.
+  * It seems like both Benno's and Jose's servers are dealing with several
+    datasets in a single request.
+  * It is impossible (or is it just hard?) to build servers which read from
+    different types of data sources from one server. 
+
+    [jhrg: Benno adds the following point]
+
+  * My server (ingrid) serves many different types of data from a single
+    server -- when the data is read in, it is mapped to a standard structure,
+    which has a clean mapping to DODS. I suspect the GRADs server does
+    something similar.
+
+    [jhrg: This might have more to do with confusing the notion of a site
+    with that of a server and/or because we don't have (even) a simple
+    aggregation server which build Structures. I think a simple AS could fit
+    in nicely with our existing software.]
+
+$Id$
+

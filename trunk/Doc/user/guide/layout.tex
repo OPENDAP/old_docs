@@ -1,0 +1,98 @@
+%%% Tex customizations and command definitions for the DODS user
+%%% guide, 15 March 1996 - tomfool
+%%%
+%%% $Id$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% The following are commands for the draft version. They should be
+%%% changed or expunged (or disabled) from the book before the final
+%%% version. 
+
+\newcommand{\version}{Version 1.0}
+\newcommand{\showtime}{\the\time}
+
+\ifthenelse{\value{draft-document}=1}{%
+  \newcommand{\tbd}[1]{\marginpar{\scriptsize{{\bf TBD}: #1}}}
+  %% The \ind command puts an index token in the line and a margin
+  %% note, and prints the argument where it lies. It is meant to save
+  %% the retyping, as in complicated concept\index{complicated concept}.
+  %% The \indc command does not print the argument in the line. When
+  %% implemented, the optional argument to \ind will be used to control
+  %% the index token type, and possibly to indicate the concept should
+  %% be permuted.
+  \newcommand{\ind}[2][0]{#2\index{#2}%
+    \marginpar{\scriptsize{\ensuremath{\cal\ I}}: #2}}
+  \newcommand{\indc}[1]{\index{#1}%
+    \marginpar{\scriptsize{\ensuremath{\cal\ I}}: #1}}
+  \newcommand{\labl}[1]{\label{#1}%
+    \marginpar{\scriptsize{\ensuremath{\cal\ L}}: #1}}
+  \newcommand{\refl}[1]{\ref{#1}%
+    \marginpar{\scriptsize{\ensuremath{\cal\ R}}: #1}}
+  \newcommand{\refb}[1]{\marginpar{\scriptsize{\ensuremath{\cal\ R}}: #1}}
+  \newcommand{\citel}[1]{\cite{#1}%
+    \marginpar{\scriptsize{\ensuremath{\cal\ C}}: #1}}%
+}{%
+  \newcommand{\tbd}[1]{ }
+  \newcommand{\ind}[2][0]{#2\index{#2}}
+  \newcommand{\indc}[1]{\index{#1}}
+  \newcommand{\labl}[1]{\label{#1}}
+  \newcommand{\refl}[1]{\ref{#1}}
+  \newcommand{\refb}[1]{ }
+  \newcommand{\citel}[1]{\cite{#1}}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% The following commands are for the real version of the book.
+%%%
+%%% Makes a ``note'' or ``warning'' or ``caution.'' This needs a
+%%% little help to keep the ``note'' from hanging into the text of the
+%%% note. Good enough for now.
+\newcommand{\note}[1]{%
+  \begin{list}{\bfseries\ NOTE:}{\rightmargin\leftmargin}%
+  \item #1%
+  \end{list}}
+
+%%% These commands are for modifying the headers and footers (with
+%%% the fancyheadings package)
+\setlength\headheight{15pt}
+\addtolength{\headwidth}{\marginparsep}
+\addtolength{\headwidth}{\marginparwidth}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\lhead[\fancyplain{}{\bfseries\thepage}]
+   {\fancyplain{}{\bfseries\rightmark}}
+\rhead[\fancyplain{}{\bfseries\leftmark}]
+   {\fancyplain{}{\bfseries\thepage}}
+%%%                  center footer should be empty for the final draft
+\ifthenelse{\value{draft-document}=1}{\cfoot{\today---\version---\showtime}}
+{\cfoot{}}
+
+%%% miscellaneous
+\newcommand{\clearemptydoublepage}%
+   {\newpage{\pagestyle{empty}\cleardoublepage}}
+%\renewcommand{\thepart}         {\arabic{part}}
+
+%%% Font change commands:
+\newcommand{\new}[1]{{\em \ind{#1}}} % Marks the first occurrence of a term
+\newcommand{\var}[1]{{\em #1}}     % Font for variables
+\newcommand{\lit}[1]{{\tt #1}}     % Font for literals
+\newcommand{\inp}[1]{{\tt #1}}  % Font for user typed stuff
+
+%%% Rearrange paragraph look.
+\setlength\parskip{0.7em}
+\setlength\parindent{0.0em}
+
+%%% Allow page lengths to vary slightly
+\raggedbottom
+
+%%% There should be a set of commands for the list environments and
+%%% any others that need to use the paranormal environment. 
+
+%%% Compress table of contents...
+\newenvironment{paranormal}{%
+  \setlength\parskip{0.0em}%
+  \setlength\parindent{0.0em}}%
+ {\setlength\parskip{0.7em}%
+  \setlength\parindent{0.0em}}
+ 
+  

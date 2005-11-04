@@ -1,0 +1,3383 @@
+% This is the NASA CAN proposal.
+%
+% $Id$
+%
+% See the hack at acronymn section. acronymn style hoses latex2html.
+
+\documentclass[12pt]{article}
+\usepackage{html}               % Added to smooth html conversion 10/21/98 jhrg
+\usepackage{acronym}
+\textwidth 6.5in
+\voffset=0pt
+\topmargin=0pt
+\headheight=0pt
+\headsep=0pt
+\textheight=8.6in
+\hoffset=0pt
+\oddsidemargin=0pt
+\begin{document}
+
+\pagestyle{empty}
+
+\baselineskip 20pt
+\begin{center}
+{\large\bf The Distributed Oceanographic Data System: A Framework\\ 
+ for Access to Scientific Data in the EOS Federation}\\
+\ \\
+by \\
+\ \\
+\end{center}
+\vskip .2in
+\begin{tabbing}
+\hskip 1in \= {\bf Peter Cornillon} \hskip .2in \= --- \= \acl{URI} \\
+\> {\bf Mark Abbott} \> --- \> \acl{OSU}\\
+\> {\bf Elaine Dobinson} \> --- \> \acl{JPL}\\
+\> {\bf Robert Evans} \> --- \> \acl{UMiami}\\
+\> {\bf Glenn Flierl} \> --- \> \acl{MIT}\\
+\> {\bf Michael Folk} \> --- \> University of Illinois\\
+\> {\bf Peter Fox} \> --- \> \acl{NCAR}\\
+\> {\bf David Fulker} \> --- \> \acl{UCAR}\\
+\> {\bf Steven Hankin} \> --- \> \acl{PMEL} of NOAA\\
+\> {\bf Judy Holoviak} \> --- \> \acl{AGU}\\
+\> {\bf Lola Olsen} \> --- \> \acl{GSFC} of NASA\\
+\end{tabbing}
+\vskip .2in
+\begin{center}
+Submitted to\\
+\ \\
+Creative and Innovative Working Prototype Earth Science Information\\
+partnerships in Support of Earth System Science\\
+CAN-97-MTPE-01\\
+National Aeronautics and Space Administration\\
+400 Virginia Ave. SW\\
+Suite 700 Washington D.C. 20024\\
+\ \\
+\today
+
+\end{center}
+
+\vfill\eject
+
+\pagestyle{plain}
+\pagenumbering{roman}
+
+\baselineskip 12pt
+%\baselineskip 18pt
+
+\def\today{\ifcase\month\or January\or February\or March\or April\or 
+  May\or June\or July\or August\or September\or October\or November\or 
+  December\fi \space\number\day, \number\year}
+
+\tableofcontents
+\clearpage
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\begin{abstract}
+In response to concern in the scientific community about the potential
+shortcomings of the \acs{EOSDIS} data distribution system, a 
+``distributed'' data system using Internet servers is proposed. Under 
+this model, a scientist is as likely to be contributing data as using 
+it. Not only could such a system reduce the costs of the \acs{EOS} 
+data distribution, but it would allow scientists to retrieve data 
+from each other in much the same manner as data would be retrieved 
+from the central \acs{EOS} archives. For a user whose software requires 
+a specific data format, the system would automatically translate data 
+formats from the archive to suit those requirements. In addition to 
+making the \acs{EOS} data itself more easily accessible, the 
+combination of the translation facility with the distributed nature 
+of the data system will facilitate the sharing of data among earth 
+scientists. The basic framework of this system is already implemented 
+as the \acl{DODS}.
+\end{abstract}
+
+\section{Introduction}\label{introduction}
+
+MTPE-97-CAN-01 and -02 are part of \acs{NASA}'s\footnote{See 
+Section~\ref{acronyms} for a list of acronyms.} response to concern 
+within the scientific community about \acs{EOSDIS}. This concern is 
+based on two quite different issues: (1) the lack of a sense of 
+``ownership'' within the scientific community of the production of 
+\acs{EOS} data sets and of the whole data distribution portion of 
+\acs{EOSDIS}, and (2) what most scientists perceive as the high cost 
+of \acs{EOSDIS}---especially given its apparent functionality.
+
+Our collaboration (Section~\ref{vitae}) of 11 non-profit institutions
+proposes to address these issues by integrating the \ac{DODS} into
+the \acs{EOS} data distribution framework. This will provide for
+significant enhancements to data delivery over what is currently
+planned for \acs{EOSDIS}. In addition, \ac{DODS} will accommodate the
+seamless addition of earth science data sets not currently in the
+\acs{EOSDIS} repertoire.
+
+The proposed effort will explore how the availability and distribution
+of data affect each stage of the research process.  The specific tasks
+proposed may be divided into three groups: (1) the addition of data 
+sets to the proposed data system, (2) improving and enhancing the
+software of the system itself, and (3) developing community interactions.  
+These tasks are discussed in detail in
+Section~\ref{approach}.  Although the focus of this work will be on
+the oceanographic and meteorological communities, we also intend to
+explore \ac{DODS} as a mechanism to achieve the same ends for other
+earth science disciplines.  
+
+\ac{DODS} is a broad-based effort, now three and a half years old, to
+develop a distributed data system for earth science data. One of the
+fundamental design criteria of this system is that each research
+scientist be viewed as a potential data provider as well as a data
+user. Partly because of this central tenet, and partly because this
+development effort has been initiated and carried out within the
+oceanographic community itself, \ac{DODS} by its very nature,
+addresses the first of the issues raised above.
+
+In addition, we expect that moving to a distributed
+data system such as \ac{DODS} will result in a long term cost savings 
+for \acs{EOSDIS} because it makes use of distributed resources 
+within the scientific community both to produce and distribute data,
+reducing the need for large personnel, networking and \acs{CPU} resources at 
+the relatively small number of centralized sites in \acs{EOSDIS}.
+
+\subsection{The Problem}\label{problem}
+
+Although national archives are important sources of research data,
+they are not the only sources: a large fraction of data used in 
+research is obtained by scientists
+directly from their colleagues.  These data might be reprocessed
+versions of data held in federal archives, such as a climatology
+generated from data archived at the National Climate Data Center, or
+field samples measured on an oceanographic cruise. Both of these data
+sets might eventually make their way into a federal archive, but the
+lag time can be long and a significant number of data sets are never
+archived.  This is especially true of data sets produced from data
+that already reside in a federal archive, such as the climatology
+mentioned above. However, it is often these data that are of the
+most interest to others in the scientific community, there being
+significant value added to the original data set in such cases.
+
+Since the initiation of the \acs{EOS} effort, it has become clear that
+there will be a number of data products generated by independent
+researchers that will not be part of the official \acs{EOS} suite of
+products, but will be of interest to a broader audience than the
+researchers who create them. Unfortunately, \acs{EOSDIS} will not 
+provide access to these ``orphaned'' data sets. 
+
+Concern about the cost of \acs{EOSDIS} has arisen in part
+because all that most scientists see is the data delivery
+portion of the system, the part that will deliver data to them. In fact,
+this is less than a third of the project's total cost. The rest
+is associated with the acquisition and preliminary processing of the
+primary---and admittedly very substantial---data stream. The
+difficulty is that the data delivery portion of the system has been
+intimately coupled with the data acquisition, making it conceptually
+difficult to separate the two. Part of the purpose of MTPE-97-CAN-01
+is in fact to achieve this separation.\footnote{Of course, it is
+important that the link between the two not be completely severed or
+moving data from the front end of the system to its data distribution
+portion will become difficult or impossible.}
+
+\subsection{The Genesis and Current Status of \ac{DODS}}\label{dods-overview}
+
+Three and a half years ago, a workshop\footnote{
+http://dods.gso.uri.edu/DODS/reports/workshop1/workshop1.html}
+consisting of oceanographers, computer scientists and oceanographic
+data archivists met to discuss and design a data system that would
+facilitate the exchange of data over the Internet between research
+scientists, federal archives, and private organizations. This group in
+effect was addressing many of the issues that MTPE-97-CAN-01 has been
+created to study, specifically the data distribution issue raised in
+the previous section. The workshop and the resulting development
+effort produced an architectural framework for a distributed data
+system designed with two primary criteria:
+
+\begin{itemize}
+\item The scientist is a data provider as well as a data producer, and
+
+\item The scientist should be able to use the software package with
+which he or she is the most familiar to analyze data available via the
+system.
+\end{itemize}
+
+The first of these criteria requires that serving data must be
+easy. That is, installation and
+maintenance must be straightforward, and the overall impact on the
+scientist must be low. The second point requires both that the system
+be easily interfaced to {\em existing} application software, either
+commercially produced, free-ware or the researcher's own programs, and
+that data be provided in the form required by that analysis software.
+
+\ac{DODS} is the system that was designed to satisfy these criteria.
+Implementation of a basic working version of this system has been
+completed with Version 2.13 of the \ac{DODS} software now available 
+(ftp://dods.gso.uri.edu/pub/DODS/) to the community. The system is 
+described in detail in a number of documents on the \ac{DODS} Web 
+site,\footnote{http://dods.gso.uri.edu/DODS/} and is summarized in 
+the following section.
+
+The Application Program Interfaces (\acs{API}s) for the \ac{NetCDF} and 
+the \ac{JGOFS} are fully supported in \ac{DODS} on both the
+client and server side of the system and data servers are supported for
+\acl{MATLAB}, DSP, \acs{HDF} and FreeForm\footnote{The FreeForm Data
+Access System, developed at NGDC, implements a unique and powerful method 
+for translating data from one format to another. It is based on simple 
+data descriptions.}.
+
+We have just been notified by \acs{NSF} that our proposal\footnote{See
+http://dods.gso.uri.edu/DODS/proposals/NSF/NSF.html for the text of 
+the \acs{NSF} proposal.}: (1) to populate
+\ac{DODS} with data from oceanographic archives at Scripps (\ac{WOCE}
+hydrographic data), \ac{OSU} (the west coast time series) and U. Hawaii
+(\ac{ADCP} data); (2) for a modest level of user support, and; (3) for some
+feature augmentation, will be funded.
+
+A proposal for additional enhancements to \ac{DODS} is pending with 
+\ac{NOAA}\footnote{See http://dods.gso.uri.edu/proposals/NOAA/NOAA-prop.html
+for the text of the \ac{NOAA} proposal}. 
+This proposal focuses on: (1) locating coastal data sets along the 
+eastern seaboard of the US; (2) writing \ac{DODS} servers for these 
+data sets, and; (3) porting the \ac{DODS} core software to Windows NT. 
+
+It is important at the outset to note that although \ac{DODS} has been
+developed with oceanographic applications and data in mind, there is
+nothing about the design and implementation of the system that
+constrains its use to oceanography alone.
+
+\subsection{\ac{DODS} Overview}\label{dods-details}
+
+\ac{DODS} provides a way for researchers to access scientific data
+anywhere on the Internet using the analysis software of their choice.
+This is accomplished by re-linking the software packages with
+\ac{DODS}-provided versions of the packages' data access subroutine
+libraries. (In many cases, to re-link an analysis package is a matter
+of a few minutes and requires no modification to the researcher's
+application source code.)  The relinked program is then able to
+read data from any \ac{DODS}-compliant server on the Internet in
+addition to being able to read files from a local disk. Data are read
+into these programs by issuing ``load'' or ``read'' commands similar
+to those issued in the original program but with the data set name
+replaced by an Internet-standard \ac{URL}, such as {\bf
+http://dods.gso.uri.edu/cgi-bin/nph-nc/data/fnoc1.nc}.  The result is
+that the researcher has effectively converted his or her analysis
+package into a powerful network client. The analysis programs can be
+commercially available analysis tools such as \ac{IDL}, \acl{MATLAB} 
+or PV-Wave, free-ware such as Ferret\footnote{Ferret is a 
+visualization and analysis application designed by oceanographers 
+at \acs{PMEL} to meet the needs of oceanographers and climate 
+researchers analyzing large and complex gridded data sets.} 
+or the \ac{GMT}, or an analysis program developed by the user.
+
+The process of analyzing data may be split into two phases: acquisition 
+and visualization. A scientist first retrieves some data set and 
+then uses whatever programs are needed to put the data into a form 
+that will illustrate the question at issue. The visualization phase 
+is often a highly idiosyncratic process---as it should be. \ac{DODS} 
+only addresses the data acquisition phase of the process, leaving 
+scientists free to use the analysis programs and methods that best 
+fit their needs. The steps (which can often be quite tedious) required 
+to acquire the data and prepare it for the analysis program are 
+avoided; the \ac{DODS} core software does this work automatically.
+
+In addition to providing remote access, \ac{DODS} offers other important
+features such as subsetting, format translation and data location:
+
+\begin{description}
+
+\item{\bf Subsetting ---} \ac{DODS} possesses a sophisticated
+subsetting mechanism that reduces network traffic as well as the load
+on a user's system. It accomplishes this with a rich ``constraint
+expression'' syntax that allows a user to select virtually any subset
+from a remote (or local) data set. A user can even specify a subset
+with a conditional data access expression dependent on an entirely
+distinct data set, stored at another site.
+  
+\item{\bf Translation ---} \ac{DODS} incorporates a powerful data
+translation facility, so that data may be stored in a format defined
+by the provider, but may be accessed by the user in a manner identical
+to the access of local data files on his or her own system.
+Furthermore, the translation facility can be extended to data types.
+If, for example, a user program cannot accommodate a certain data type
+(a \ac{JGOFS} program, set up to display sequences, may not be able to 
+read directly an array from a \ac{NetCDF} archive), it still may be 
+possible to read and display those data by converting (``translating'') 
+them to a data type more familiar to the program.
+
+\item{\bf Data Location ---} To help users find data on the network, a
+data locator service is currently being implemented for \ac{DODS}
+compliant data sets. Data providers may register their data sets with
+this service, allowing a remote user to query the data locator for the
+\ac{URL}s of any data set satisfying given criteria. With a set of
+returned \ac{URL}s, the user can then refine the search by querying
+the given \ac{DODS} servers directly.
+
+\end{description}
+
+\ac{DODS} also contains provisions to increase the amount of data
+available across the network, since the \ac{DODS} architecture is
+designed to make it easy for scientists to become their own data
+providers. Data need not be sent to a central authority nor converted
+to a standard format in order to make it available to others. Any
+machine connected to the Internet can host a \ac{DODS} server, which
+can make data available to any \ac{DODS} client.
+
+A small part of the functionality provided by \ac{DODS} is already 
+available on the Internet. Tools that exist now, such as Netscape and 
+Java, are being used to implement data browsers and catalogs.  
+Netscape, however, is not a data system, and Java is no more than a 
+portable programming language. These tools do not inherently prevent 
+two different developers from creating two completely incompatible 
+data services. The \ac{DODS} system, on the other hand, is built on 
+a sophisticated and versatile protocol---and the functions to implement 
+it---for data transmission and representation. This ensures that data 
+from any \ac{DODS} server can be correctly read by any \ac{DODS} 
+client. 
+
+\ac{DODS} also provides an open-ended environment to scientific data
+users.  Without \ac{DODS}, for example, a data provider could include
+a sophisticated Java applet on their site, allowing a user to examine
+data. Prototypical sites like this already exist. However, the
+scientist looking at those data with such tools is constrained to look
+at the data in ways anticipated by the applet
+designer. If he or she wants to see the data in ways not accommodated
+by the site designer, with a contour map, for example, or wants to use
+some sophisticated curve-fitting algorithm to extrapolate data, there
+is no recourse. By providing \emph{only} the data access tools and
+protocol, \ac{DODS} allows scientists to use whatever tools they feel
+are appropriate to the situation, instead of being forced to adapt to
+the tools provided by others.
+
+Another very significant difference between \ac{DODS} and all of the
+other existing systems serving earth science data with which we are
+aware is that network accessible data may be acquired under program
+control. This means that a researcher interested in a given phenomena
+can write a program or a script in his or her analysis package that
+will acquire data from a \ac{DODS} compliant data server, operate on
+these data and, depending on the result of the operation, request more
+data from the same site or from another \ac{DODS} compliant site. To
+conjure an elaborate---but not at all extraordinary---example, a script
+could be written that first determines how many in situ measurements
+of sea surface temperature were made in a given space-time window by
+querying the National Ocean Data Center's \ac{DODS} \ac{XBT} server. If
+more than 10 are available, the script could query the \ac{JPL}
+\ac{PO-DAAC} \ac{DODS} server to determine if the wind speed exceeded
+10 m/s in the vicinity of any of these measurements. If so it could
+then acquire the corresponding sea surface temperature image(s) from
+the \ac{URI}'s \ac{DODS} server.  The resulting data triplet could be
+stored, the space-time window incremented and the process repeated
+until a space-time range initially specified by the user has been
+exhausted. In this example, many requests to the three different
+archives may be made, but only the data of interest are acquired, and
+the whole process can be initiated with only one command by the
+user.
+
+\section{Approach}\label{approach}
+
+The tasks presented here are aimed at developing a distributed 
+data system that will adequately serve the needs of \acs{EOS} 
+scientists. Motivation for undertaking these tasks can be partitioned
+into four groups: basic system enhancements; general support;
+experimental efforts, and; research efforts. Note that some tasks 
+come under more than one category.
+
+\begin{enumerate}
+\item \emph{Basic System Enhancements}. These tasks are based on
+current technology and are extensions of tasks already accomplished
+in the current \ac{DODS} architecture. They are doable and the 
+rationale for undertaking them should be clear. Additional rationale
+is presented in the description of the task where deemed appropriate. 
+The tasks, all of which relate to \ac{DODS} are: development of a 
+catalog server (\ref{catalog-server}); providing Java clients 
+and servers (\ref{java-clients-servers}); enhancing format, 
+structure, and unit translation (\ref{translation}); adding support 
+for new \acs{API}s (\ref{new-apis}); establishing virtual data sets 
+(\ref{virtual-data-sets}); providing efficient access to very large 
+data sets (\ref{chunking}); the incorporation of \ac{DAAC} data into 
+\ac{DODS} (\ref{daac-data}); development of an \ac{AI} metadata 
+generator for \ac{DODS} data sets (\ref{locator}), and; development of
+a push-pull interface (\ref{push-pull}).
+
+\item \emph{General Support}. These tasks are designed to facilitate
+the use of the system (\ref{user-support}) and to increase awareness 
+within the earth science community of its existence and utility
+(\ref{stimulating-community}). Again the rationale for the tasks 
+should be clear. 
+
+\item \emph{Experimental Efforts}. These are tasks designed to
+explore either new uses that might be made of \ac{DODS} or how 
+well \ac{DODS} transfers to other earth science research
+communities. We propose three experiments all of which involve
+integrating \ac{DODS} with other systems. In the first we will
+investigate how to scale \ac{DODS} access in a high volume data
+system. This will be done by combining \ac{DODS} with the Unidata
+``broadcast'' system (\ref{push-pull}) and new ``virtual'' servers
+(\ref{virtual-data-sets}) to provide access to experimental \acs{MODIS}
+data sets (\ref{modis-data}). In the second experiment we will 
+investigate data fusion through the combination of \ac{DODS} access 
+with Ferret visualization/manipulation (\ref{data-fusion}). This
+experiment will also rely on unit translation (\ref{translation}).
+In the third experiment we will investigate how well \ac{DODS}
+works in a very different earth science community, those interested
+in the upper atmosphere (\ref{hao-data}). The rationale for these
+experiments is presented in the discussion of the primary task 
+associated with each.
+
+\item \emph{Research Efforts}. These tasks address the speculative,
+but possibly very significant, contributions that may be made with
+distributed systems such as \ac{DODS}. They are tasks that we would
+not have thought of prior to our development of \ac{DODS} because of the
+difficulty in accessing information needed to carry them out. 
+They include: the use of \acl{AI} to characterize users' needs based on 
+their past usage of data in the system and then, using this
+characterization, to make recommendations about other data sets that 
+may meet their needs (\ref{helpers}); providing mechanisms for user 
+feedback related to data quality (\ref{data-quality}) with the objective
+of increasing the overall quality of data in the system, and; 
+evaluating the potential use of distributed data systems in the 
+peer-reviewed publication process (\ref{publication-process}).
+\end{enumerate}
+
+Because the categories presented above overlap, we have decided to
+organize our presentation of the details of each task differently in
+the following. They are divided into three subsections: (1) new 
+data sets for \ac{DODS}, (2) system enhancements, and (3) community 
+interaction. The tasks are also summarized by performing group in 
+Appendix B.1.
+
+\subsection{New earth science data sets to be added to \ac{DODS}}
+\label{new-data}
+
+Over 300 oceanographic data sets are already accessible to 
+\ac{DODS}\footnote{
+http://dods.gso.uri.edu/DODS/home/dods-list.html}.
+Additional oceanographic data sets will be added with recently 
+obtained \ac{NSF} funding. In this section we propose adding to 
+this suite of \ac{DODS}-compliant data sets: (a) \acs{MODIS} ocean 
+data products to be developed at the \ac{UMiami}, (b) standard 
+\acs{EOSDIS} ocean data products to be archived at the \ac{JPL} 
+and the Goddard \ac{DAAC}s, and (c) solar/terrestrial upper atmosphere 
+data sets held by the \ac{HAO} of the \ac{NCAR}. 
+
+The \ac{UMiami} \acs{MODIS} research data sets were chosen because they
+are expected to be of importance to the oceanographic community and because 
+they represent \ac{PI} produced \acs{EOS} data sets. These \ac{UMiami}
+data sets also provide test sets with which we can address the push-pull
+distribution mechanism proposed in Section~\ref{push-pull}. Data sets from 
+the two \ac{DAAC}s were chosen again because of their general 
+importance to the oceanographic community and because they will allow 
+us to experiment with interoperability issues associated with serving 
+large \acs{EOS} data sets. The upper atmosphere 
+data were chosen for three reasons. (1) These data are of prime 
+importance to the global change problem and there are no plans to 
+integrate them into the \acs{EOSDIS} framework. (2) They represent 
+a very different data type from those included in the \ac{DODS} 
+repertoire, hence they offer a good opportunity to learn 
+about extending the \ac{DODS} model to other earth science data
+types. (3) \ac{UCAR}/\ac{NCAR} is currently putting together a 
+strategic plan for the handling of its vast data archives in the 
+future. The \ac{DODS}-\ac{HAO} collaboration, in addition to addressing 
+a critical data delivery problem in \ac{HAO}, would allow 
+\ac{UCAR}/\ac{NCAR} to evaluate the performance of a truly 
+distributed data system first hand. 
+
+\subsubsection{\acs{MODIS}-derived ocean parameters produced at 
+\ac{UMiami}}\label{modis-data}
+
+The \acs{MODIS} Oceans Team is developing the ``community consensus''
+algorithm for the \acs{MODIS} ocean data products. This algorithm
+will be implemented at the Goddard \ac{DAAC} which will serve the
+\acs{EOSDIS} sanctioned \acs{MODIS} data. The Oceans Team will 
+continue to tune the algorithm after launch, processing
+the \acs{MODIS} data stream in a research mode as the data are received.
+We propose making a subset of the research data stream available to 
+the community shortly after it is produced. The research community 
+will then be free to choose the \acs{EOS} sanctioned product or the 
+data processed with the most recent innovations: research products 
+without the level of scrutiny of the officially sanctioned 
+version, but possibly of a higher quality.
+
+These data sets will be ``broadcast''\footnote{We use the term 
+broadcast here to mean automatically sent to a subscriber list as 
+they are produced.} to \ac{OSU} and a subset will be ``broadcast'' 
+to \ac{URI}. \ac{DODS} servers will be installed at all three 
+institutions for these data and a ``virtual'' \ac{DODS} server 
+pointing to the holdings of the three sites will be installed at 
+\ac{URI}. User requests for \acs{MODIS} research ocean data will 
+be made to the virtual server. This will decrease the load on any 
+one site and allow us to experiment with the ``push-pull'' technology 
+discussed in Section~\ref{push-pull} with conditions under our
+control.
+
+\subsubsection{\ac{JPL} \ac{PO-DAAC} and \ac{GSFC} \ac{DAAC} Ocean 
+Data Sets}\label{daac-data}
+
+\ac{JPL} \ac{PO-DAAC} and \ac{\ac{GSFC}} \ac{GCMD} staff will work 
+with the \ac{DODS} core group\footnote{The \ac{DODS} core group refers 
+to the \ac{URI}/\ac{MIT} collaboration that designed and implemented 
+the \ac{DODS} core software.} to install \ac{DODS} 
+\acs{HDF-EOS}\footnote{\acs{HDF-EOS} servers will be developed by
+\ac{JPL} as part of this effort --- Section~\ref{new-apis}.}
+servers at the \ac{JPL} and \ac{GSFC} \ac{DAAC}s for all \acs{EOS} 
+sanctioned ocean data sets\footnote{\ac{JPL} is the designated archive 
+for all physical oceanographic \acs{EOS} data while the \ac{GSFC} is 
+the designated archive for ocean color data} they plan to keep on 
+line\footnote{Over the past year, the \ac{JPL} \ac{PO-DAAC} has, in 
+an experimental mode, been serving \ac{NSCAT} data via the \ac{DODS} 
+\acs{HDF} server (http://dods.gso.uri.edu/DODS/). As part of
+this experiment we have found that once a \ac{DODS} server is constructed
+installing and maintaining it requires very little additional effort.}. 
+Currently there are in 
+excess of 3~TB of level 2 and higher data on line at the \ac{PO-DAAC} 
+and this will increase by approximately 2~TB per year between 1998 
+and 2000. Additionally, standard \ac{DODS} \acs{HDF} servers will be 
+maintained at \ac{JPL} for the Pathfinder and early \acs{EOS} data 
+sets that are not in \acs{HDF-EOS}. Also, \ac{JPL} \ac{PO-DAAC} 
+and \ac{GSFC} \ac{DAAC} staff and the \ac{DODS} core group will 
+investigate enhancements in the efficiency of serving the large image 
+data sets via \ac{DODS} in the context of the data compression work 
+being done with \ac{NCSA} (section \ref{chunking}).
+
+\subsubsection{Upper atmosphere and solar data set}\label{hao-data} 
+
+The \acl{HAO} division of \ac{NCAR} investigates the sun and the earth's
+space environment, focusing on the physical processes that govern the
+sun, the interplanetary environment, and the earth's upper atmosphere. 
+As part of its mission, \ac{HAO} is a focal point for two important 
+programs: (1) the \ac{CEDAR} program designed to enhance the 
+capability of ground-based instruments to measure the upper atmosphere 
+and to coordinate instrument and model data for the benefit of the 
+scientific community
+\footnote{http://www.hao.ucar.edu/public/research/tiso/cedar/cedar.html}
+with the goal of better understanding various forcings of the earth's 
+climate, and (2) the \ac{RISE} program designed to address causes of 
+variations in the Sun's radiation as a star as well as the source of 
+radiant energy impinging on Earth. The overall aim is for an improved 
+physical understanding of present, past, and future radiative output 
+variations in the extreme ultraviolet, ultraviolet, visible and 
+infrared. 
+
+Additionally, \ac{HAO}'s observatory monitors the sun with a number 
+of different instruments (the Digital Prominence Monitor, the Coronal 
+Helium Imaging Photometer, the White Light Coronameter, the PSPT, and 
+the Low-L helioseismology experiment). All data obtained from these
+instruments are returned 
+to \ac{HAO} and made available to the community for use in 
+understanding solar and space weather, in support of space based 
+observatories (Yohkoh, UARS and SOHO) as well as in support of basic 
+solar-terrestrial research efforts.
+
+The volume of the \ac{CEDAR} data holdings\footnote{
+http://www.hao.ucar.edu/public/research/tiso/cedar/cedar.html\#CDB.}, are
+significant and are expected to grow rapidly over the next 10 years 
+(to $\sim$ 100GB or more). Unfortunately, however, these data are 
+difficult to access and expensive to maintain. \ac{HAO} has 
+therefore begun (with expected completion later this year) the 
+process of migrating the data out of the 
+current \ac{DBMS} with the hope of providing access to them via 
+a distributed system. 
+
+\ac{HAO} believes that \ac{DODS} meets most of its data distribution 
+requirements and intends to make its \ac{CEDAR} holding accessible 
+to the community via \ac{DODS}. Specifically, \ac{HAO}, with \ac{DODS} 
+core group help, will build (where necessary) and install \ac{DODS} 
+servers for all of their \ac{CEDAR} data holdings. Additionally, they 
+will build a \acl{MATLAB} \ac{GUI}, similar to the one already 
+constructed by the \ac{DODS} core group, and participate in testing of 
+the \ac{IDL} \ac{GUI} being developed, to facilitate location and 
+access of these data. (These data will also be registered with the 
+\ac{GCMD} (Section~\ref{locator}).) This will provide high 
+functionality access to the 800$+$ member \ac{CEDAR}
+community and to the broader community which we expect will find a 
+number of the data sets (for example, measurements from Incoherent 
+Scatter Radar, Lidar, and All Sky cameras, and synthetic data from 
+Large Model output) to be of significant interest. 
+
+\subsection{Enhancements to the \ac{DODS} core system}
+\label{enhancements}
+
+Although \ac{DODS} is a functioning system, we have learned a great 
+deal about issues associated with networked data systems over the past
+year and we feel that there are significant enhancements that can
+be made to the system which will improve its usefulness by increasing: 
+its functionality; the data classes that it handles; the user community 
+that has access to it, and; the efficiency of its operation. 
+
+This section details these enhancements.
+
+\subsubsection{The Catalog Server}\label{catalog-server}
+
+Current \ac{DODS} data servers provide access to data at a fairly 
+low level. In essence these servers are a generalization of the 
+file-level organization of data sets. At present, access to \ac{DODS}
+data sets is performed at this level, hence the user requires
+knowledge of the file structure associated with the data set to 
+efficiently extract data from it. We propose the addition of catalog 
+servers to the \ac{DODS} system\footnote{A prototype catalog server 
+for DODS have been developed at JPL (Dobinson, E.\ and R.G.\ Raskin,
+Earth Science Remote Access Tool, Proceedings of the Ninth International
+Conference on Scientific and Statistical Database Management (SSDBM),
+August, 1997).}. These servers will provide a higher 
+level of access such as that needed for data discovery. By clustering 
+multiple files into a single homogeneous data set, adding extra 
+information to the data set and supporting a search mechanism tied 
+to standardized parameters, the catalog server will provide a second, 
+more sophisticated, access point for a given data set. \ac{DODS} 
+catalog servers will be built using existing lower level servers.
+
+Once the basic server has been built, we will extend the server 
+design so that the separation between the higher level catalog 
+server access and data access is eliminated. Thus, a user may choose 
+to access data using either the high-level catalog server or the 
+lower-level server.
+
+The addition of the catalog server will not sacrifice the basic tenets 
+of \ac{DODS}; that providers not be required to reformat their data for 
+inclusion in the system and that they be free to make data available 
+without being forced to participate in every aspect of the system. 
+Thus, the old style \ac{DODS} servers will be completely supported and 
+the new intelligent servers will function by merging ancillary 
+information with the information contained in the data set.
+
+\subsubsection{Java class clients and servers}
+\label{java-clients-servers}
+
+Porting the C++ ``native'' \ac{DODS} core library to Java is 
+expected to be a straight-forward task. Both are object-oriented 
+environments. Using the new Java \ac{DODS} core library we will 
+create both client 
+applications and data servers which users will be able to run on 
+a wide variety of hardware platforms. 
+
+\ac{DODS} will provide a Java class library for development of 
+\ac{DODS} clients in Java. This library will enable the development 
+of \ac{DODS} clients which run in \ac{WWW} browsers as well as 
+stand-alone clients. Because Java byte code software is not tied to 
+a particular hardware platform, the number and type of \ac{DODS} 
+users will be greatly expanded.
+
+Also, the Java library will provide a platform on which to experiment 
+with other modes of access within \ac{DODS}, including  Java-\acs{CORBA}
+and Java-RMI. Thus, the Java library will pave the way for 
+integration with other systems (e.g., those using \ac{CORBA}).
+
+\subsubsection{Translation}\label{translation}
+
+The success of any system which hopes to achieve interoperability 
+among many data sets rests on the ability to translate between many 
+different data representations. \ac{DODS} implements data 
+interoperability by breaking the translation problem into three parts: 
+format translation, structure translation, and unit translation. While 
+the \ac{DODS} 2.x design completely realizes our goals for format 
+translation, we will continue to pursue both structure and unit 
+translation as part of the \acs{EOS} Federation.
+
+{\it Data Structure Translation} --- 
+The \ac{DODS} data model supports a group of basic data types for
+representing scientific information, in order to meet the 
+expectations of users and their analysis software. Data types
+differ in the relative ease with which different operations can 
+be performed, and often differ considerably in the kind of information
+they represent. To achieve data structure translation the software
+must be able to translate information stored in one data type
+into information stored in another with minimal information loss or
+corruption.
+
+We will generalize and unify type translation in \ac{DODS} by adding 
+it as a module to the \ac{DODS} core software. The translation module 
+will use metadata available from each \ac{DODS} server and the 
+\ac{DODS} \ac{CDR} object. The \ac{CDR} is an overarching schema 
+serving as an intermediate representation for each of the 
+supported data types. The \ac{CDR}, when compared to a simpler 
+pair-wise approach, reduces the number of translation modules 
+required for $n$ data types from $n(n-1)$ to $n$. In addition, the 
+\ac{CDR} simplifies long-term maintenance of the translation software 
+by reducing the effort needed to add support for new data types.
+
+{\it Data Unit Translation} --- 
+Because \ac{DODS} servers support uniform access paths to many data 
+sets, it is an ideal base on which to build data fusion applications
+(Section~\ref{data-fusion}). But, data fusion requires that users be 
+able to translate not only data types but also the units in which 
+data values are expressed, for example, all ocean currents might be 
+expressed in meters per second.
+
+\ac{DODS} currently does not support unit information. We will add
+units to the data transfer software. Thus, data types and their units
+will be translated. Unidata has addressed this complex (and probably
+unsolvable in a general sense) problem with considerable success in its 
+UDUnits (http://www.unidata.\ac{UCAR}.edu/packages/udunits/index.html)
+software package. We propose using UDUnits as the basis for the 
+\ac{DODS} units translation software.
+
+\subsubsection{Mining \ac{DODS} compliant data sets for directory 
+information}\label{locator}
+
+We propose to document all \ac{DODS}-compliant data sets registered 
+at the \ac{GCMD} to the \ac{DIF} standard\footnote{A DIF to FGDC 
+translator has been written by GCMD staff, hence DIF-compliant data 
+will also be rendered
+FGDC-compliant by the GCMD.}. This effort will consist 
+of two parts: manual documentation and the development of an automated 
+population mechanism. The first objective will be met with a full 
+time ``\ac{DIF} coordinator'' who will work at the \ac{GCMD}. 
+Documentation of \ac{DODS}-compliant data sets will begin with
+registration by the data provider via a Web-based registration
+form. The registration process will obtain some information from
+the provider and some from the data set. The ``\ac{DIF} coordinator''
+will then supply missing information either by querying the data
+set via \ac{DODS} or, if need be, asking the data provider.
+
+After the development of a serviceable directory at the \ac{GCMD}
+we will investigate techniques for using the metadata 
+available with each data set in the \ac{DDS} or the
+\ac{DAS} to automatically generate the \ac{DIF}.
+
+Particularly difficult in most metadata integration strategies is 
+attribute/entity matching. To accomplish this we will 
+develop an \ac{AI} system that will operate as part of the 
+registration process. Programs at the \ac{GCMD} will automatically 
+interact with the data provider during this 
+process to validate the results of the \ac{AI} system and will 
+request additional information of the data provider if 
+the \ac{AI} system needs help.
+
+When this system has been successfully installed we will 
+extend the process to a technique that does not assume particular
+access patterns, thus permitting later data mining through unexpected 
+paths and/or views of the data. For example, it might be determined 
+that spatial and temporal data density are important search parameters
+not originally included in the metadata population effort. The extension 
+of the \ac{AI} system would provide for a means of obtaining this
+information for all, or a subset of, \ac{DODS} data sets registered
+at the \ac{GCMD}.
+
+\subsubsection{Addition of New \acs{API}'s and Continued Support for 
+Existing \acs{API}'s}\label{new-apis}
+
+One of the design tenants of \ac{DODS} has been to approach data
+formats from the \acs{API}s used to access them. With this approach,
+all data sets using a particular format become \ac{DODS}-compliant 
+by simply writing the \ac{DODS} servers for the
+associated \acs{API}. At present, we support: \acl{MATLAB}-4, 
+\ac{NetCDF}, \acs{HDF}, FreeForm, DSP and \ac{JGOFS}\footnote{FreeForm
+and \acs{JGOFS} are ideally suited as mechanisms to serve simple 
+\acs{PI}-held flat file data sets via \acs{DODS}.}. To this suite we
+propose adding \ac{GRIB} and \ac{BUFR}. This will provide 
+\ac{DODS}-compliant capability for a very large number of meteorological
+data sets. In addition we propose upgrading our \acl{MATLAB}, 
+\ac{NetCDF}, and \acs{HDF} to include enhanced versions of these 
+\acs{API}s.
+
+\ac{DODS} currently provides a high level of support for \acl{MATLAB}-4;
+both a data server and a graphical interface client. \acl{MATLAB}-5 
+provides a much improved base for processing and storing earth-science 
+data. Among other enhancements, \acl{MATLAB}-5 provides for 
+multi-dimensional arrays; critical to meteorological and oceanographic
+research. We therefore propose extending our \acl{MATLAB}-4 support to
+\acl{MATLAB}-5.
+
+\ac{NetCDF} and \acs{HDF} are also very important software systems for 
+the earth-sciences. These systems are used to store self-describing data, 
+which greatly facilitates serving data via \ac{DODS}. We will add 
+support for \ac{NetCDF}~3.x and \ac{NetCDF}~4.x to the 
+existing \ac{NetCDF} client and server libraries. We also propose to 
+add support for \acs{HDF-EOS} and the emerging \acs{HDF}-5 system to
+the existing \acs{HDF} server. The \ac{DODS}-\acs{HDF} server 
+currently supports translation of \acs{HDF}'s SDS, Vdata, and raster 
+data types. We will add server translation for the point, swath, and 
+grid data types, using the \acs{HDF-EOS} \acs{API}. An \acs{HDF-EOS} 
+client-library will also be built. 
+
+\subsubsection{Virtual data sets}\label{virtual-data-sets}
+
+\ac{DODS} makes use of \ac{http} to move data from the provider to 
+the user. 
+Data are requested from a \ac{DODS} server via a \ac{URL} which is used 
+to characterize the subset of data desired. In \ac{DODS}, a synthesized 
+data set could be a collection of \ac{URL}s, the actual collection of 
+data spanning a number of data archives. We anticipate that such 
+virtual data sets will assume an increasingly important role as data 
+are gathered from open ended data sets such as those associated with 
+\acs{EOS}. \ac{DODS} access to \acs{MODIS} research data products 
+(Section~\ref{new-data}) is one example of a virtual data set. We
+propose adding to \ac{DODS} the capability to construct ``virtual'' 
+data servers. This will initially be done in the context of \acs{MODIS} 
+ocean data research products (Section~\ref{modis-data}). 
+
+\subsubsection{Data fusion of \ac{DODS} compliant data sets with Ferret}
+\label{data-fusion}
+
+\ac{DODS} is uniquely well suited to data fusion -- the joining of 
+data from distributed locations into merged visualization and analysis 
+(V\&A) products. With \ac{DODS} an existing desktop V\&A 
+application can become a data fusion environment simply by relinking 
+the application with the \ac{DODS} software.
+
+The \ac{WWW} and \ac{DODS} acting in concert have the potential to
+break through the barriers that have traditionally been associated
+with distributed data location and diverse file formats. A Web site
+that can provide ``live'' V\&A can be extended to provide live 
+comparisons (over-plotting and differencing) between distributed 
+data sets. We propose developing such a Web server with a focus on 
+the needs of gridded data sets (especially for modelers and 
+climatologists).
+
+The system we propose uses the Ferret\footnote{Ferret has been 
+successfully relinked and tested with \ac{DODS}}-based \ac{LAS}. 
+\ac{LAS} provides the user with on-the-fly visualizations, subsetting, 
+and delivery of data files in a user-selectable choice of file formats.
+Ferret is tailored for data fusion providing for over-plotting, 
+rescaling, and the types of regridding needed to take differences 
+of data sets with differing spatial and temporal resolutions. The 
+\ac{LAS} Web server, accessible at http://www.ferret.noaa.gov, 
+is widely used within \ac{NOAA} and elsewhere, hence clearly provides 
+a strong foundation upon which to build the proposed Web data fusion 
+server. 
+
+The \ac{DODS}-\ac{WWW}-Ferret system will tie a community of closely 
+affiliated data suppliers into a single virtual data base with a Web 
+server interface offering visualization, subsetting, downloading 
+and fusing. This system will be ideally suited to collaborative 
+efforts in which the members are both suppliers and users of data, 
+making it an ideal tool for scientific research. Additionally, it
+provides us with another platform on which to experiment with \ac{DODS}
+extensibility.
+
+\subsubsection{Storing and Accessing Long Time Series of Large Data 
+Arrays}\label{chunking}
+
+\ac{DODS} allows access down to the single datum. This provides the 
+user with enormous flexibility in requesting data, but for some of 
+the larger data sets to be served, efficient access can become a 
+significant problem because of the number and size of the data files. 
+We discuss some of the issues involved as well as the approach that 
+we plan to take to address these issues in the context of a problem 
+that we currently face.
+
+With \acs{NASA} funds we (\ac{URI}) are applying the community 
+consensus \ac{NOAA}/\acs{NASA} Pathfinder \ac{SST} Algorithm to 
+all of the full resolution \ac{AVHRR}/2 data 
+in the \ac{URI}/\ac{UMiami} archive (June 1981 to present).  The 
+resulting data set will consist of more than 15,000 \ac{SST} fields, 
+one per satellite pass, with each field comprising approximately 8 
+million pixels.  The data are processed and saved in satellite 
+coordinates.  However, most users either want images in some standard 
+earth projection or they want a long time series of sea surface 
+temperature values at a given location.
+
+The problem that arises is that the processed data set is too large
+for us to maintain on-line uncompressed, $\approx 256$~GB. However,
+once cloud covered pixels have been set to zero, the data set will
+compress to $\approx 60$~GB and we can provide access to this data
+set on-line via \ac{DODS}. But this means that for each request of
+data from a particular satellite pass we must decompress a file. If we have
+stored the data as compressed images, it is straightforward to meet
+such a request.  For those requesting a time series, this quickly 
+becomes impractical.  For example, to provide a 15 year time series 
+of \ac{SST} values at one location would require decompressing 
+60 GB to 256 GB to deliver 30 KB of data.
+
+To address this problem we propose to examine the use of the \acs{HDF} 
+format for storing the data.  \acs{HDF} already supports compressed 
+data, and the University of Illinois' \acs{HDF} project has recently 
+added support in \acs{HDF} for array ``chunking'', whereby large arrays 
+are split into smaller chunks, which can then be individually 
+compressed and stored in \acs{HDF} files.  A request to retrieve data 
+results in some subset of the smaller fields being decompressed and 
+reassembled into a sub-image containing the area (or point) of interest.
+
+Additionally, we will examine the use of \acs{HDF-EOS} for storing the 
+data.  \acs{HDF-EOS} is a data model that has been developed for 
+\acs{EOSDIS} to support storage of earth-science data types in 
+\acs{HDF}.  One such data type is a ``grid'' structure. There is an 
+\acs{HDF-EOS} \acs{API} and associated library that supports compression 
+and chunking.  The combination of projection information and compressed 
+chunks might provide a very effective data storage scheme for \ac{DODS}.
+
+Testing of the efficiency achieved by ``chunking'' will be performed
+on storage and retrieval of data from the very large image archives 
+at \ac{URI}, \ac{UMiami} and \ac{OSU}. Projections related to demand 
+will be made and then the \acs{CPU} time and disk storage requirements
+will be estimated as well as the resulting savings that might be
+obtained by adopting this method across the \acs{EOSDIS} data
+product line.
+
+\subsubsection{Data Redundancy and Overlap}\label{redundancy}
+
+When combining data sets, the \ac{DODS} catalog servers may encounter 
+the problem of data redundancy. The problem is not that data redundancy 
+is bad, but that when two or more servers return overlapping values 
+the catalog server must arbitrate between them. This problem is a 
+complex one; it will not be limited to simple cases where values are 
+all identical, but rather will include situations where values for 
+the same ``range'' are slightly different. We believe that a solution 
+to this problem goes beyond the current effort, hence all that we
+propose here is to quantify the problem in the context of the 
+``virtual'' servers introduced in sections~\ref{modis-data} and
+\ref{data-fusion}.
+
+\subsubsection{Coupling \ac{DODS} Access to a Broadcast Based Data 
+Delivery System}\label{push-pull}
+
+When the demand for data sets is great, the servers and networks that
+access these data, are likely to become congested. Such congestion will 
+be greatly exacerbated if users' requests tend to cluster, such as
+immediately following the first availability of the data set. 
+Server-side congestion is further increased with the enhanced
+functionality of \ac{DODS} compared with the simpler ``order'' based 
+mode of \acs{EOSDIS}. This is likely to be a significant problem for 
+some of the expected high use \acs{EOS} data sets such as those derived 
+from \acs{MODIS}. 
+
+The meteorological community, through Unidata, has already dealt with
+this problem as it relates to accessing near-real-time weather data, 
+where the clustering of requests is particularly severe, via a 
+broadcast system known as \ac{IDD}. \ac{IDD} employs a subscription 
+mechanism by which users express their interest in receiving classes 
+of products as soon as they are available. A few users, following 
+Unidata criteria for ``top-level relays'', subscribe at the source, 
+other users register their subscriptions with these relays, and so 
+forth, until all subscriptions are satisfied.
+
+The Unidata \ac{IDD} represents true distributed computing, in 
+which a large number of data deliveries occur without imposing an 
+extraordinary load on any single server or link in the system.  
+\ac{IDD} applied to \acs{EOS} data will foster a federation-oriented 
+esprit de corp, because data users and providers cooperate as a 
+community to achieve prompt and reliable delivery, as has been shown 
+in Unidata.
+
+We propose linking \ac{IDD} (push) with \ac{DODS} (pull) to 
+substantially increase the capability of the system to satisfy
+user requests for data. Our demonstration will entail the definition 
+of one or more regularly generated ``data streams'' that are of wide 
+interest\footnote{We anticipate beginning with the research ocean 
+product data sets to be developed at the \ac{UMiami} from the 
+\acs{MODIS} data stream, with \ac{OSU} acting as the mirror site, 
+but do not want to constrain ourselves to these data sets only.}. 
+Following the Unidata model, we will engage a set of users (who 
+desire immediate data access) in a push-based system of data relays. 
+Each participant will embed the pushed data into a \ac{DODS}-compliant 
+server. These ``mirror'' servers are updated automatically whenever 
+new products become available via \ac{IDD}. They will be augmented 
+to notify a \ac{DODS} ``virtual'' server for the data set. 
+The virtual server will keep track of data set status at each of
+the ``mirror'' sites. Users' data requests are made to the ``virtual'' 
+site. The request triggers an analysis to determine which sites hold 
+the data requested and the current burden (both communication and 
+\acs{CPU}) of each these sites. The request is then passed on to the 
+least burdened site which returns the requested data to the user. 
+Thus, we will be combining two operational systems 
+to efficiently meet the needs of the primary users of either system.
+As an aside we note that this system also provides for some redundancy 
+in the overall system.
+
+We will evaluate the performance of this system in the context of
+general access to \acs{EOS} data. Specifically, what cost savings
+might be possible to \acs{EOSDIS} or to the WP-Federation by adopting
+this approach with a large fraction of the standard \acs{EOSDIS}
+products? This addresses the question of the scalability of the
+system.
+
+\subsubsection{Data Location and Usage Helpers}\label{helpers}
+
+Finding and using data in a large distributed system is complicated 
+because users have a difficult time obtaining adequate results from
+conventional search tools; important data often remain undiscovered 
+and superfluous data are often returned. We will build an \ac{AI} 
+system to address this problem.
+
+Each data request made of a \ac{DODS} server contains 
+information about data usage. It identifies the target data set, 
+the desired subset of this data set and the data requester. We 
+propose capturing this information and making use of it to design 
+the \ac{AI} based system which will inform users of other data sets 
+that might meet their needs. This determination will be made based on 
+the requests that they are currently making. To capture the requests, 
+\ac{DODS} servers will be augmented with software that will echo 
+the request to a computer at \ac{URI}. Initially this data stream 
+will be used to design the \ac{AI} system. Once built, the same 
+data stream will be used to determine a given user's interests, to 
+extrapolate them to other data sets and ultimately to inform the 
+user of these other options. The \ac{AI} system that we propose will 
+be based on data warehousing/mining techniques\footnote{Data Mining,
+Communications of the ACM, 39 (11), 1996.}
+
+Additionally, the request data stream will be used in evaluating
+system performance (Section~\ref{metrics}).
+
+\subsection{Community interaction}\label{community-interaction}
+
+In this section we address issues related to the interaction between 
+\ac{DODS} and the scientific community.
+
+\subsubsection{User Support}\label{user-support}
+
+Essential to the success of \ac{DODS} is adequate support for the 
+installation of clients and servers and for use of the system. User 
+support will be addressed as part of the \acs{NSF} funding recently 
+received by the \ac{DODS} core group (section \ref{dods-overview}).
+However, the support services funded by \acs{NSF} will cover neither
+the additional functionality proposed for \ac{DODS} here nor the new 
+user communities to be added. 
+
+Additional funding is requested in this proposal to cover the 
+integration of \ac{DODS} into the WP-Federation framework. The 
+support services requested will be provided by Unidata using a user 
+support model that they have developed for the meteorological 
+community over the past decade. In this model one member of the 
+support team acts as the principal point of contact for a given 
+software package or system. This individual acts as 
+a filter to the user community, answering the obvious questions 
+immediately or passing the question to the individual in the group 
+with the most familiarity with the associated software. Rapid 
+feedback (same-day turnaround) to users is a cornerstone of this 
+user support model.
+ 
+To maximize their familiarity with the software employed in \ac{DODS}, 
+the user support staff will work with \ac{DODS} core group programmers
+to enhance or correct the software. To minimize their need to 
+write new responses to every question received, the user support staff 
+will also create a searchable record of their transactions with users.  
+Most of this record will be externally accessible through the Web, 
+augmenting \ac{DODS} documentation.
+
+\ac{DODS} user support functions will also encompass user feedback 
+mechanisms. A \ac{DODS} Users Committee will be appointed by the 
+\ac{DODS}-\acs{MTPE} Steering Committee (section 
+\ref{management-approach}) and will meet twice per year. Finally, a 
+list server will be maintained to support conversation among \ac{DODS} 
+users and, as appropriate, subgroups thereof having special interests.
+
+\subsubsection{User Feedback as Relates to Data Quality}
+\label{data-quality}
+
+The increased use associated with facilitated access to scientific 
+data results in de facto quality control of the data. Each user of 
+the data will, in their own way, evaluate its quality (this is the 
+scientific way) and these user evaluations are often the most probing 
+that the data sets will see. This is one of the primary arguments 
+offered by the Committee on Geophysical and Environmental Data of 
+the National Research Council against the commercialization of data. 
+They argued that commercialization of data would reduce access them, 
+hence their use and as a result their quality.
+To render this level of quality control effective however requires 
+mechanisms to record the findings of users and to make this 
+information available to future users. We propose to investigate 
+such mechanisms as part of the user services development by Unidata.
+Specifically, a Web-based input mechanism will be developed, 
+maintained and moderated by \ac{DODS} user services allowing \ac{DODS} 
+data users to comment on the quality or other characteristics of 
+the data they use.  These comments will become part of the ``metadata'' 
+associated with data sets and they will be linked to the data sets 
+via the associated \ac{DODS} server.
+
+\subsubsection{Stimulating community use of \ac{DODS}}
+\label{stimulating-community}
+
+The primary objective of scientific organizations such as the \ac{AGU} 
+is to facilitate communication between its members. Such communication 
+includes publications, meetings and the one-on-one exchanges of data 
+and text. Communication is being improved by better access to the 
+internet, although primarily as improved exchange of text. However, 
+improvements in network based \emph{access to data} can play an even 
+more significant role in scientific communication. The \ac{AGU} is 
+therefore extremely interested in investigating the implications of 
+network based data exchange in geophysical research as well as 
+facilitating its use. To this end the \ac{AGU} proposes to work as part 
+of this collaboration. Specifically, the \ac{AGU} can reach a very 
+broad scientific community to discuss the merits of 
+\ac{DODS}\footnote{The \ac{AGU} membership exceeds 35,000 
+earth scientists in 115$+$ countries, with 10,000$+$ ocean 
+affiliates.}, it can work with the \ac{DODS} core group to obtain 
+feedback on design and use of \ac{DODS}, and it can help to educate 
+users. The \ac{AGU} will contribute toward these goals through
+its scientific meetings and its publications. The \ac{AGU} will 
+provide one free standard booth at the Spring, Fall, and Ocean 
+Sciences meetings for the 3 years of collaboration. These booths will 
+provide \ac{DODS} with direct contact with scientists at the meetings. 
+The \ac{AGU} is also willing to provide news coverage in \acs{EOS}, 
+the \ac{AGU} Transactions, subject to their standard editorial policies.
+(See the \ac{AGU} letter in Appendix A.)
+
+\subsubsection{\ac{DODS} and the Publication Process}
+\label{publication-process}
+
+We anticipate that network-based 
+distributed data systems will play a role in the actual publication 
+process in the future. The \ac{AGU}'s Publications Committee has 
+already developed some general polices concerning the publication of 
+data and the necessity of long-term availability. The \ac{AGU} 
+currently provides an electronic data depository for small data sets 
+related to published articles and it anticipates an expanding interest 
+in augmenting the formal literature with citable data in multiple 
+formats. Simply put, the \ac{AGU} would like to explore how data 
+accessibility of this kind fits into the evolution of electronic 
+publications. To address these issues we propose the following three tasks:
+
+\begin{enumerate}
+\item \emph{Exploring \ac{DODS} access to the \ac{AGU} electronic data 
+depository} --- In this task we will investigate the installation
+of a \ac{DODS} server at the depository. Not only would this put these 
+``published'' data sets into the \ac{DODS} repertoire but it would
+also allow the \ac{AGU} to gauge interest in such on-line data sets.
+
+\item \emph{Investigating the use of \ac{DODS} for format conversion} 
+--- One of the issues to which the \ac{AGU} must be sensitive is long 
+term maintenance of its data depository. The \ac{AGU} would like to 
+explore the use of a system like \ac{DODS} to perform the appropriate 
+format translations required when migrating data to new storage systems.
+
+\item \emph{Linking \ac{DODS} delivery of data to on-line delivery of 
+electronic journals} --- At present, \ac{AGU}'s on-line journals provide
+figures as gif images. The \ac{AGU} is considering an alternative to
+provide the data in place of the figure. A Java-applet that comes 
+with the on-line manuscript could then generate the plot when
+requested by the user. With additional software in the applet the 
+reader could actually manipulate the data while reading the article;
+\ac{DODS} Java clients could be enhanced to work with the \ac{AGU} 
+on-line manuscripts achieving the functionality introduced above. 
+\end{enumerate}
+
+Although, the \ac{AGU} is interested in these issues for all of its
+members, in this effort the focus will be its ocean affiliates.
+
+\section{The WP-Federation}\label{wp-federation}
+
+The \ac{DODS} collaboration believes that the WP-Federation is an 
+appropriate way to address what we perceive to be the scientific 
+community's concerns with regard to \acs{EOSDIS}. Furthermore, we 
+believe that the underlying notion of the 
+federation will benefit the \ac{DODS} constituency. As should be
+apparent by now, the fundamental design criteria of \ac{DODS} are 
+based on a view of the scientific community as a federation: from 
+the \ac{DODS} perspective each research scientist is a potential 
+provider of data as well as a potential user. Through our collaboration 
+with other WP-Federation members we will substantially increase the 
+data available via \ac{DODS}. By providing bridges to other 
+systems we will substantially increase the number of earth scientists 
+who have access to \ac{DODS} data. We see the earth sciences community 
+benefiting in both cases.
+
+We believe that a good starting point for the development of the
+federation will be to carefully examine large scientific collaborations 
+that work. To this end we believe that we have a lot to offer:
+
+\begin{enumerate}
+
+\item Run by \ac{UCAR}, the Unidata effort now helps 120$+$ 
+universities to acquire and analyze atmospheric data.
+Unidata is managed by the Unidata Program Center which obtains ``its 
+direction from the common needs and interests of its users via a 
+users committee, and occasional surveys of the community''. 
+
+\item The \ac{AGU}, a 75$+$ year old scientific society with more 
+than 35,000 members in over 115 countries, lists among its objectives: 
+to promote cooperation among scientific organizations involved in 
+geophysics and related disciplines, and to advance the various 
+geophysical disciplines through scientific discussion, publication, 
+and  dissemination of information; objectives that in many ways are
+synonymous with those that we envision for the WP-Federation. 
+
+\item \ac{HAO}/\ac{NCAR} with its 800$+$ member \ac{CEDAR} community
+interested in earth's upper atmosphere and $\sim$100 member \ac{RISE}
+community interested in solar variability are examples of demanding 
+users with a broad range of computer expertise and patience with 
+accessing remote datasets. These users continue to help shape the 
+direction of data needs through steering committees and working 
+groups dedicated to the data products.
+\end{enumerate}
+
+\subsection{WP-Federation Interoperability}
+\label{wp-federation-interoperability}
+
+We define `interoperability' to be the capability of systems to
+exchange information without human intervention. We address the 
+issue of interoperability between \ac{DODS} and the systems listed 
+in the CAN in the context of this definition.
+
+\subsubsection{ESIP Interoperability}\label{esip-interoperability}
+
+The \ac{DODS} project addressed interoperability at its outset by
+specifying a flexible transaction-oriented client-server system based
+on an extensible set of data objects. The \ac{DODS} \ac{DAP} defines a
+simple system that is used to move information from \ac{DODS} servers
+to \ac{DODS} client programs. The \ac{DAP} uses \ac{http} to move the
+information on the network, and so builds on the extant Web. \ac{DODS}
+can achieve interoperability with other \acs{ESIP}s through its use of
+\ac{http}.
+
+However, planning for interoperability using Z39.50 and \ac{CORBA} 
+is also important given the current state of software. \ac{DODS} can 
+use commercially available gateways to achieve interoperability with 
+both \ac{CORBA}- and Z39.50-based systems.  Alternatively, \ac{DODS} 
+servers can support other protocols (e.g., \ac{CORBA}) in parallel 
+with the \ac{DAP}. Both of these solutions are greatly facilitated 
+by the modular, transaction- and object-oriented design of \ac{DODS}.
+
+Because the \ac{DODS} data transfer protocol is very simple, and does
+not rely on shared state between the client and server, it is
+straightforward to build proxies and/or gateways between \ac{DODS}
+servers and other systems. This is true regardless of whether the
+target systems also use a stateless or stateful transaction protocol.
+
+\subsubsection{EOSDIS and CEOS/CIP Interoperability}
+\label{eosdis-interoperability}
+
+We do not propose full interoperability between \ac{DODS} and \acs{EOSDIS};
+we will not provide access through \acs{EOSDIS} for \ac{DODS} users because
+\acs{EOSDIS} does not provide the full data retrieval and subsetting
+capabilities of \ac{DODS}.  However, we will work with \acs{EOSDIS} to
+provide access to \ac{DODS} data via \acs{EOSDIS}.  There are two
+requirements that must be met to achieve this: the data must be found using
+\acs{EOSDIS} (JEST) and it must be delivered in a form compliant with
+\acs{EOSDIS}.  The data location requirement is readily met using the
+\ac{DODS} \ac{DIF}-based metadata (Section~\ref{locator}). If the
+\acs{EOSDIS} client requires full \acs{HDF-EOS} we may not be able to meet
+the data delivery requirement in all cases since it is unlikely that we will
+be able to provide the full suite of metadata implied by \acs{HDF-EOS} for all
+\ac{DODS}-compliant data sets. We
+will however meet this requirement in some cases and we can meet a
+requirement for \acs{HDF} in all cases with the \acs{HDF-EOS} \ac{DODS}
+client-library (Section~\ref{new-apis}).
+
+\ac{DODS} will be interoperable with the \ac{CEOS} \ac{CIP} as viewed
+from the \ac{CEOS} side to the extent that \ac{DODS} is interoperable 
+with \acs{EOSDIS} from the \acs{EOSDIS} side, since \ac{CEOS} \ac{CIP}
+and \acs{EOSDIS} will to be interoperable.
+
+\subsubsection{FGDC Compliance}\label{fgdc-compliance}
+
+The \ac{DODS} \ac{DAP} contains provisions (currently implemented, 
+but not necessarily used, by all \ac{DODS} servers) for augmenting 
+datasets accessible by \ac{DODS} servers with metadata without actually 
+modifying the data themselves.  This mechanism is powerful enough to 
+maintain several parallel sets of metadata so that \ac{DODS} datasets 
+can be mapped to more than one metadata standard. We will, using our 
+data set registration system currently under development with the
+\ac{GCMD}, use the \ac{DODS} ancillary \ac{DAS} object to add 
+\ac{FGDC}-compliant metadata to all registered \ac{DODS} datasets. 
+(Section~\ref{locator}).
+
+\section{Metrics}\label{metrics}
+
+The first order metrics that measure the \ac{DODS} contribution to the
+WP-Federation must address the degree to which \ac{DODS} is used by the 
+community for which it was designed and the degree to which it is
+used for the tasks for which it was designed. Therefore, these metrics
+must address the fact: (1) that \ac{DODS} has \emph{not} been designed to 
+acquire very large volume, gigabyte$+$, data sets over the network, but rather
+to obtain subsets of these and smaller data sets, and; (2) that \ac{DODS} has 
+been/will be populated with oceanographic and high altitude atmospheric data 
+sets; i.e., the target user communities are the oceanographic researcher and
+the high altitude atmospheric scientist. Clearly others will access
+data via \ac{DODS}, but for the work proposed herein, the primary
+effort to advertise the existence and utility of the system will target 
+the oceanographic and, to a lesser extent, the \ac{HAO} communities.
+
+To address these two issues we propose the following first order metrics:
+\bigskip
+
+\noindent {\bf Metric 1}: \emph{The fraction of the oceanographic community
+desiring subsets of ocean data sets at the PO- and Goddard \ac{DAAC}s
+that make use of \ac{DODS} to obtain these subsets.}
+\medskip
+
+\noindent {\bf Metric 2:} \emph{The fraction of the \ac{HAO} community 
+acquiring \ac{CEDAR} data that make use of \ac{DODS} to do so.}
+\medskip
+
+These are easily obtained statistics and measure in some ways the 
+perceived value of \ac{DODS}. We are however concerned that easily 
+determined quantities such as these or others of a similar nature
+(volume of data delivered, degree of documentation or number of 
+directory entries in a high level directory) may not necessarily be 
+the appropriate parameters with which to measure the effectiveness of a
+system.  By defining such measures we may in fact be contributing to
+inefficiencies in the system. It might help to present a simple example.
+
+\begin{quote}
+  Recently, the PL, pursuing a research effort related to wind forcing
+  of first mode baroclinic Rossby waves, required 3 years of numerically
+  generated wind data of the North Atlantic.  He quickly located these data
+  on the Web and initiated an ftp session to acquire them. In the middle of
+  the first file he ran out of disk space. (Yes, he should have probably
+  checked the size before ftping the files, but he didn't and this is the
+  sort of frustration faced by users all the time.) This particular data set
+  is stored in 100$+$~MB files each containing one year of global data. The
+  story continues... the files were not in a format with which he was
+  familiar... In the end he spent a couple of days to obtain the 18~MB of
+  data that he needed, from the three 100~MB files available from the data 
+  archive.
+\end{quote}
+
+In terms of volume delivered this was a success. In terms of expenditure of
+time, use of CPU, disk and network resources this was a failure. Far from 
+being atypical, such scenarios are common. Metrics devised to
+evaluate system performance must address these issues.
+
+The above is an example of problems that we encounter in defining metrics in
+the system as it is today. Our work with \ac{DODS} over the past several years
+suggests that the difficulty of defining metrics to evaluate system
+performance will be further exacerbated as we increase our use of highly
+functional distributed systems. For example, a user might make a data
+request to the \ac{DODS} server at the Goddard \ac{DAAC} for \acs{MODIS} data
+covering the Gulf of Mexico on 1 July 1999. One of the constraints on this
+request might be that the wind speed, available via a \ac{DODS} server
+at \acs{NDBC}, at any given mooring in the Gulf
+exceeded 10~m/s.  If this constraint is not met, no data are returned. In
+this example the \ac{DODS} server at the Goddard \ac{DAAC} would use
+information, embedded in the request, to access the \acs{NDBC}. The data
+server at \acs{NDBC} evaluates the request and returns a yes or no answer
+regarding wind speed at the moorings. \emph{No data were delivered to the
+user from \acs{NDBC}, and yet data were used.}; i.e., the system performed
+very efficiently.
+
+The conclusion that we reach from these examples is that to properly evaluate 
+system performance will require a significant amount of personnel time. The 
+metrics will have to be based on quantities
+that can, for the most part, only be determined by careful interaction with
+the user communities. We base the following set of metrics on the 
+assumption that: optimal system performance from the user's perspective
+requires that the system delivers \emph{only the data needed} in a
+\emph{timely fashion}, in the \emph{format required} by the user's analysis
+package, all with a \emph{minimal expenditure of the user's time}. We further
+constrain these metrics to apply only to the research scientist's perspective.
+
+In the following sections (\ref{federation-metrics},
+\ref{earth-system-science}, \ref{technology-metrics}) we include as a quote
+the description of the metrics presented in the CAN before each set of 
+proposed measures. In Section~\ref{data-standards} we introduce a new 
+category of metrics.
+
+\subsection{WP-Federation Metrics}\label{federation-metrics}
+
+\begin{quote}
+  Identify and enumerate existing obstacles to making data easier to find,
+  access and use and develop metrics to measure removal of obstacles.
+  \emph{Goal: to measure success of the Federation in improving data access
+    and use.}
+\end{quote}
+
+\begin{quote}
+Identify user community types; identify services required by community, 
+enumerate those services and develop metrics to measure total services 
+provided to the community. \emph{Goal: to measure success of Federation 
+in providing services required by a large diverse user community.}
+\end{quote}
+
+The community types associated with DODS are: research user;
+data provider and; ESIP-3 users. Metrics 3--7 focus on the needs of the
+research scientist and metric 8 measures the system's usefulness from the
+perspective of the data provider.  To gather information for metrics 3 and
+5 to 8 our ``DIF-coordinator'' working at the GCMD will survey a
+group of randomly selected users. To gather the data needed for metric 4, we
+will use tracking software to provide a quantitative measure of access times
+and delays (see Section~\ref{locator}).  Additionally we will couple these
+requests to data discovery statistics at the GCMD. 
+
+Each of these metrics can be used to measure the performance of \ac{DODS}
+as well as other WP-Federation contributors and \acs{EOSDIS}. We will
+determine them for \ac{DODS}.
+
+We do not feel comfortable describing the needs of ESIP-3 users; therefore we
+do not define metrics for measuring them. However, we will work with other
+WP-ESIPs to discover these needs and implement ways to measure the
+system's impact on those requirements.
+
+\bigskip
+\noindent {\bf Metric 3:} \emph{The fraction of users who obtained 
+data they sought.} (Goal: To determine if the users are finding the 
+data they want, and once found obtaining it.)
+
+\medskip
+\noindent {\bf Metric 4:} \emph{Elapsed times from the initial search 
+the formal data request to receipt of data.} (Goal: To determine if the
+user obtained data in a timely fashion.)
+
+\medskip
+\noindent {\bf Metric 5:} \emph{The fraction of data delivered that is 
+used.} (Goal: To determine if the user is able to determine what s/he wants
+from a data set at the time that it is requested and, if so, can s/he
+request the desired subset?)
+
+\medskip
+\noindent {\bf Metric 6:} \emph{The fraction of the data acquired that 
+were used in the format in which they were delivered.} (Goal: To determine
+how efficient the data system is at format translation.)
+
+\medskip
+\noindent {\bf Metric 7:} \emph{The amount of time required to 
+determine how to use the data beyond that associated with format
+conversion.} (Goal: To determine if sufficient metadata accompanied
+the data for them to be used ``out of the box''.)
+
+\medskip
+\noindent {\bf Metric 8:} \emph{Does the system adequately support 
+data provider's needs; different versions of data sets, updates to metadata,
+etc.} (Goal: To determine how easy it is to install and maintain \ac{DODS}
+servers.)
+
+\subsection{Earth System Science}\label{earth-system-science}
+
+\begin{quote}
+Develop metrics for usefulness of new products to specific user
+community, and speed of responsiveness to user community needs for
+introduction or improvement to new products. Develop metrics for 
+usability of new products, including documentation and metadata. 
+\emph{Goal: To offer improved products and services to Earth 
+Science User community.}
+\end{quote}
+
+As part of this proposal (Section~\ref{user-support}) we propose a tracking
+system for user feedback related to the products as well as the use of the
+system. This feedback will be analyzed by the user support group to determine
+which data sets are of value and to whom. Also, as part of the research to
+enhance data location in the system (Section\ref{locator}), we will track
+every access to the system.  This data base will provide additional
+information with regard to use.
+
+\bigskip
+\noindent {\bf Metric 9} \emph{Quantify usage statistics to determine
+  usefulness of data provided via DODS.} 
+
+\subsection{Technology Development Metrics}\label{technology-metrics}
+
+\begin{quote}
+Develop metrics to measure use of \emph{existing} systems by end-users
+(i.e., science user, programmer, operations staff). Same metrics 
+will be used to compare with new implementation approach of service 
+and existing EOSDIS services. \emph{Goal: To prove equal or 
+better functionality.}
+\end{quote}
+
+This has been addressed above.
+
+\begin{quote}
+Define metrics showing scalability of WP-ESIP's solution to the 
+size and scale of EOSDIS in terms of function and cost. 
+\emph{Goal: To assess WP-ESIP technology prototype approach 
+relevance and applicability to a full scale Environmental Information 
+Economy.}
+\end{quote}
+\bigskip
+
+\noindent {\bf Metric 10:} \emph{User services full time equivalents (FTEs) 
+per data request to the system as a function of the number of requests.}
+(Goal: To determine the scalability of user services.)
+\medskip
+
+\noindent {\bf Metric 11:} \emph{Access time (request to delivery) as a 
+function of the number of requests made. These statistics will be stratified
+by server, data type, degree of subsetting, volume of data returned, etc.
+This metric will also be addressed in the context of the push-pull experiment
+(Section~\ref{push-pull}) since it may be possible to accommodate an
+increase in load via the \ac{IDD}-\ac{DODS} coupling.} (Goal: To determine 
+how well the data delivery portion of the system scales.)
+
+\subsection{Data Standards}\label{data-standards}
+
+We propose an additional category of metrics:
+
+\begin{quote}
+Define metrics for analysis of data standards. \emph{Goal: To determine
+how effective data standards are in the context of the WP-Federation.}
+\end{quote}
+
+\noindent {\bf Metric 12:} \emph{Rate data standards supported by the
+  federated system for their overall effectiveness 
+in achieving interoperability and for their cost of 
+implementation and maintenance.}
+
+We will make these estimate for \ac{DODS}. The question of effectiveness
+will be determined subjectively; the questions of cost will be 
+determined objectively.
+
+\section{Management Approach}\label{management-approach}
+
+This proposal involves a collaboration between 11 non-profit
+institutions lead by the \acl{URI}. The management structure
+at \ac{URI} will consist of Peter Cornillon, the Project
+Leader, providing the overall direction on a day-to-day basis.
+Working with Cornillon will be a Project Manager, hired to 
+maintain communication between the various elements of this 
+project as well as with other \ac{DODS} funded work, and James 
+Gallagher, the primary architect of the system, who will continue 
+in his role as Technical Lead for \ac{DODS}. Cornillon, with 
+Glenn Flierl of \ac{MIT} will also provide day-to-day scientific 
+input to the development effort. 
+
+One or more systems or scientific programmers from each participating
+institution will form the \ac{DODS} Development Group. This group will
+meet a minimum of 3 times per year and will be lead by Gallagher.
+The purpose of these meetings will be to synchronize new releases
+of \ac{DODS} as well as the general development effort. Such meetings 
+have been found to work well in the past. Gallagher will also continue 
+to maintain the \ac{DODS} Developer's Bulletin Board. 
+
+Management and scientific input from a broader perspective will be 
+obtained from the \ac{DODS}-\acs{MTPE} Steering Committee which will 
+consist of the proposal's Project Members (\acs{PM}s) and will be chaired by 
+Cornillon. This group will meet annually at a minimum, but may 
+also be called to a special meetings prior to and/or following the 
+establishment of the WP-Federation if deemed appropriate. 
+
+\ac{PM}'s associated with this effort will be encouraged to attend the
+convention in which the WP-Federation is formed. The effort will be 
+represented on the WP-Federation by Cornillon, if limited to one
+representative. If more are permitted, additional members will be
+chosen from the \ac{PM}'s by a vote of the \ac{DODS}-\acs{MTPE} 
+Steering Committee. 
+
+Articles of Collaboration will be drafted prior to award if we are
+selected. These articles will be based on the management plan outlined
+above and the milestone schedule presented in Section~\ref{milestones}.
+
+%\addcontentsline{toc}{section}{Bibliography}
+%\bibliographystyle{plain}
+%\bibliography{./dodscan}
+
+\section{Project Leader's and Project Members' Vitae}\label{vitae}
+\bigskip
+
+{\parindent=0pt\parskip=0pt
+\def\Hpar{\goodbreak\par\hangindent .3in\hangafter=1}
+\begin{center}
+{\large {\bf Peter Cornillon  --- \acl{URI}}}
+\end{center}
+\noindent \underbar{\it Education:}
+\mbox{}\hskip .1in Cornell University, Ph.D., 1973, Experimental High 
+Energy Physics\\ 
+\mbox{}\hskip .25in  Cornell University, B.S., 1969, Engineering 
+Physics\\
+\noindent \underbar{\it Employment:}
+\mbox{}\hskip .1in 1990--Present:  Professor of Oceanography, 
+University of Rhode Island.\\ 
+\noindent \underbar{\it Inter/National Committees:}
+TOPEX Science Team; NSCAT Science Definition Team; GCMD Advisory Panel;
+GCOS Data Management Panel\\
+\noindent \underbar{\it Professional Community Service:}
+ \mbox{}\hskip .1in Editor Journal Geophysical Research - Oceans  
+1994-present\\
+\def\Hpar{\par\hangindent .2in\hangafter=1}
+\noindent \underbar{\it Publications:} Dr.~Cornillon has 50$+$ refereed
+publications. Recent ones include:
+
+\Hpar Polito, P. and P. Cornillon. ``Long Baroclinic Rossby Waves 
+Detected by the Topex/Poseidon Altimeter.'' J. Geophys. Res., 102, 
+3215-3235, 1997. 
+
+\Hpar Everson, R., P. Cornillon, et al. ``An Empirical Eigenfunction 
+Analysis of Sea Surface Temperatures in the Western North Atlantic.'' 
+J. Phys. Oceangr., 27, No. 3, 468-479, 1997.
+
+\Hpar Cayula, J.F. and P. Cornillon.  ``Cloud Detection from a 
+Sequence of SST Images.'' Remote  Sens. Environ.,  55, 80-88, 1996.
+
+\Hpar Lee, T. and P. Cornillon.  ``Propagation and Growth of Gulf 
+Stream Meanders between 75W and 45W.''  J. Phys. Oceanogr., 26, 
+225-241, 1996.
+
+\Hpar Lee, T. and P. Cornillon.  ``Temporal Variation of Meandering 
+Intensity and Domain-Wide Lateral Oscillations of the Gulf Stream.'' 
+J. Geophys. Res., 100, 13,603-13,613, 1995.
+
+\Hpar Cayula, J.F. and P. Cornillon.  ``Multi-Image Edge Detection 
+for SST Images.'' J. of Atmos. and Oceanic Tech., 12, 821-829, 1995.
+
+\def\Hpar{\goodbreak\par\hangindent .3in\hangafter=1}
+\begin{center}
+{\large {\bf Mark R. Abbott --- \acl{OSU}}}
+\end{center}
+\noindent \underbar{\it Education:}
+\mbox{}\hskip .1in PhD, 1978,   University of California Davis, 
+Ecology\\
+\mbox{}\hskip .1in B.S. 1974, University of California Berkeley, 
+Conservation of Natural Resources\\
+\noindent \underbar{\it Employment:}
+\mbox{}\hskip .1in 1993-present Professor of Oceanography, 
+Oregon State University\\
+\noindent \underbar{\it Inter/National Committees:} National Academy of 
+Sciences Committee on Earth Studies, Chair; EOS Payload Panel, Chair;
+EOS/MODIS Science team; EOS Science Executive Committee\\
+\def\Hpar{\par\hangindent .2in\hangafter=1}
+\noindent \underbar{\it Publications:} Dr.~Abbott has 40$+$ refereed
+publications. Recent ones include:
+ 
+\Hpar Abbott, M.R., and B. Barksdale, Wind forcing and phytoplankton 
+pigment patterns off central California.  J. Geophys. Res. 96: 
+14,649-14,667, 1991.
+
+\Hpar Denman, K.L., and M.R. Abbott, Time scales of pattern evolution 
+from cross-spectrum analysis of advanced very high resolution 
+radiometer and coastal zone color scanner imagery.  J. Geophys. Res., 
+99, 7433-7442, 1994.
+
+\Hpar C.P. Summerhayes et al., eds.,  Variability in upwelling systems 
+as observed by satellite remote sensing, Abbott, M. R., and B. 
+Barksdale, In: Dahlem Workshop on Upwelling in the Ocean: Modern 
+Processes and Ancient Records, John Wiley, New York. pp. 221-238, 1995.
+
+\Hpar Letelier, R.M., and M.R. Abbott, An analysis of chlorophyll 
+fluorescence algorithms for the Moderate Resolution Imaging 
+Spectrometer (MODIS).  Remote Sens. Environ., 58, 215-223, 1996.
+
+\Hpar Letelier, R.M., and M.R. Abbott, Chlorophyll natural fluorescence 
+response to upwelling events in the Southern Ocean. Geophys. Res. 
+Letters, 24, 409-412, 1997.
+
+\def\Hpar{\goodbreak\par\hangindent .3in\hangafter=1}
+\begin{center}
+{\large {\bf Elaine Dobinson --- \acl{JPL}}}
+\end{center}
+\noindent \underbar{\it Education:}
+University of Southern California, M.A., Computer Science\\
+University of Chicago, B.A., MAT Mathematics\\
+\noindent \underbar{\it Employment:}
+\mbox{}\hskip .1in Technical Group Supervisor and Deputy
+Task Manager for the JPL PO-DAAC.\\
+\mbox{}\hskip .1in \ac{PI} on an ESDIS prototype Earth Science Remote 
+Access Tool using \ac{DODS}.\\
+\mbox{}\hskip .1in IMS Technical Lead for the Version 0 EOSDIS/IMS at 
+JPL.\\
+\mbox{}\hskip .1in Data Dictionary co-lead at the IMS system level.\\
+\mbox{}\hskip .1in Planetary Data System Lead Database Designer.\\
+
+\Hpar Dobinson, E. and R. G. Raskin, Earth Science Remote Access Tool,
+Proceedings of the Ninth International Conference on Scientific and
+Statistical Database Management (SSDBM), Olympia, WA, August, 1997.
+
+\def\Hpar{\goodbreak\par\hangindent .3in\hangafter=1}
+ \begin{center}
+{\large {\bf Robert H. Evans --- \acl{UMiami}}}
+\end{center}
+\noindent \underbar{\it Education:}
+\mbox{}\hskip .1in North Carolina State University, Ph.D. 1973, 
+Electrical Engineering\\ 
+\mbox{}\hskip .1in North Carolina State University, M.S., 1970, 
+Electrical Engineering\\ 
+\noindent \underbar{\it Employment:}
+\mbox{}\hskip .1in 1987--Present: Research Professor of Oceanography, 
+University of Miami.
+\noindent\underbar{\it Professional Activities:} JPL DAAC User Working Group;
+SeaWIFS Science Working Group; NOAA/NASA Ocean Color Science Working Group;
+NOAA/NASA Calibration Science Working Group; EOS V0 Steering Group;
+NASA Earth Science and Applications Data Systems Committee; 
+JOI Committee for Satellite Ocean Data System Science Working Group; 
+AMS/NCAR Committee for Standards in Satellite Data Systems\\
+\def\Hpar{\par\hangindent .2in\hangafter=1}
+\noindent \underbar{\it Recent Publications:}
+
+%\Hpar Halliwell, G.R., Jr., D. B. Olson and R. Evans.  A Global ENSO 
+%Cycle Diagnosed Using Atmospheric Reanalysis Fields and Pathfinder 
+%Data sets.  (in preparation).
+
+\Hpar Evans, Robert H. and Howard R. Gordon, 1994. CZCS ``System
+Calibration'': A retrospective examination.  J. Geophys. Res.  99(C4), 
+1994: 7293-7307.
+
+\Hpar Brown, J., O.Brown and R. Evans.  Calibration of Advanced Very 
+High Resolution Radiometer Infrared Channels: A New Approach to 
+Nonlinear Correction. J. Geophys. Res. Oceans 98(C10), 1993, 
+18,157-18,269.
+
+\Hpar Gordon, H.R. and R.H. Evans.  Comment on ``Aerosol and Rayleigh 
+radiance contributions to coastal zone color scanner images'' by 
+Eckstein and Simpson. International Journal of Remote Sensing, 14, 
+1993, 537-540.
+
+\Hpar Weatherly, G.L., R.H. Evans, O.B. Brown.  A comparison of GEOSAT
+altimeter inferred currents and measured flow at 5400m depth in the 
+Argentine Basin.  Deep Sea Res.  II, 40(4/5), 1993: 989-999.
+
+%\Hpar Podesta, G. P., O.B. Brown and R. H. Evans.  The Annual Cyale of
+%Satellite-derived Sea Surfce Temperature in the Southwestern Atlantic 
+%Ocean. J. Climate 4(4), 1991: 457-467.
+
+%\Hpar Balch, W., R. Evans, J. Brown, G. Feldman, C. McClain and W. 
+%Esaias. The Remote Sensing of Ocean Primary Productivity: Use of a 
+%New Data Compilation to Test Satellite Algorithms.  J. Geophys. Res. 
+%97(C2), 1992: 2279-2293.
+
+\parindent=0pt\parskip=0pt
+\def\Hpar{\goodbreak\par\hangindent .3in\hangafter=1}
+\begin{center}
+{\large {\bf Glenn R. Flierl --- \acl{MIT}}}
+\end{center}
+\noindent \underbar{\it Education:}
+\mbox{}\hskip .1in Harvard University, Ph.D., 1975, Physics\\
+\mbox{}\hskip .1in Oberlin College, B.A. with highest honors, 1970, 
+Physics\\ 
+\noindent \underbar{\it Employment:}
+\mbox{}\hskip .1in 1988--Present: Professor, \acl{MIT}\\
+\def\Hpar{\par\hangindent .2in\hangafter=1}
+\noindent \underbar{\it Publications:} Dr.~Flierl has 60$+$ refereed
+publications. Recent ones include:
+
+\Hpar Yano, J--I. and G.R. Flierl (1994) Jupiter's Great Red Spot: 
+compactness conditions and stability. Ann. Geophysicae 12, 1--18.
+
+\Hpar Flierl, G.R. (1994) Rings: Semicoherent oceanic features.
+Chaos 4, 355--67.
+
+\Hpar Flierl, G. R., and K. Haines. The decay of modons due to Rossby 
+wave radiation. Phys. Fluids 6(10), 3487--97.
+
+\Hpar Yasuda, I. and G.R. Flierl (1995) Two dimensional asymmetric 
+vortex merger: contour dynamics experiment. J. Oceanogr. 51, 145--70.
+
+%\Hpar Dadou, I., V. Garcon, V. Andersen, G.R. Flierl, C.S.Davis
+%(1996). Impact of the North Equatorial current meandering on a pelagic
+%ecosystem: a modelling approach. J. Marine Res. 54, 311--342.
+
+%\Hpar Flierl, G.R. and C.S. Davis. Reduction of complexity in
+%biological/physical models. J. Marine Res. (in press)
+
+%\Hpar daSilveira, I. G.R. Flierl. W.S. Brown Nonlinear dynamics of
+%separating jets. J. Phys. Oceanogr. (in press)
+
+%\Hpar Flierl, G.R., J.K.B. Bishop, D.M. Glover, S. Paranjpe, A Data
+%and Information System for JGOFS (submitted)
+
+\def\Hpar{\goodbreak\par\hangindent .3in\hangafter=1}
+\begin{center}
+{\large {\bf Michael J. Folk --- 
+University of Illinois}}
+\end{center}
+\noindent \underbar{\it Education:}
+\mbox{}\hskip .1in Syracuse University, Ph.D. Systems and Information
+Science\\
+\mbox{}\hskip .1in University of Chicago, MAT Mathematics\\ 
+\mbox{}\hskip .1in University of North Carolina at Chapel Hill, BS
+Mathematics\\ 
+\noindent \underbar{\it Employment:}
+\mbox{}\hskip .1in 1988-Present: Technical Project Manager of HDF, 
+Software Development Division, National Center for Supercomputing 
+Applications, University of Illinois at Urbana-Champaign.\\
+\mbox{}\hskip .1in 1979 - 1988: Professor, Oklahoma State University.  
+Professor of mathematics and computer science. Primary research area: 
+computer file structures.\\
+\noindent \underbar{\it Inter/National Committees:}
+\mbox{}\hskip .1in National Academy of Sciences Mapping Science 
+Committee\\
+\def\Hpar{\par\hangindent .2in\hangafter=1}
+\noindent \underbar{\it Recent Publications:} 
+
+\Hpar Folk, M, ``HDF: the Next Generation,'' Proceedings of Scientific
+Information Management and Data Compression Workshop, Oct. 96.
+
+\Hpar Folk, M, ``Data Models for Scientific Data,'' Proceedings for
+Visualization '93, Oct. 93.
+
+\def\Hpar{\goodbreak\par\hangindent .3in\hangafter=1}
+\begin{center}
+{\large {\bf Peter A. Fox --- \acl{NCAR}}}
+\end{center}
+\noindent \underbar{\it Education:}
+\mbox{}\hskip .1in Monash University, Ph.D., 1985, Mathmatics\\
+\mbox{}\hskip .1in Monash University, B.Sc. (Hons), 1980, Mathmatics\\
+\noindent \underbar{\it Employment:}
+\mbox{}\hskip .1in 1995--Present: Chief Computing Scientist, High 
+Altitude Observatory at \acs{NCAR}\\
+\mbox{}\hskip .1in 1991--1995: Staff Scientist, High Altitude
+Observatory at the National Center for Atmospheric Research\\
+\noindent \underbar{\it Inter/National Committees:}
+SOLERS22 Working Group 1 U.S. Solar Terrestrial Energy Program; NSF 
+RISE Steering Committee\\
+\noindent \underbar{\it Professional Community Service:}
+Associate Editor of Fundamentals of Cosmic Physics\\
+\def\Hpar{\par\hangindent .2in\hangafter=1}
+\noindent \underbar{\it Publications:} Dr.~Fox has 40$+$ refereed 
+publications. Recent ones include:
+
+\Hpar Fox, P., P. R. Wilson and P. McIntosh, ``Coronal Holes and the 
+Polar Field Reversals'', {\it Solar Physics}, (in press), 1997. 
+
+\Hpar Fox, P. and P. A. Gilman, ``Joint Instability of Latitudinal
+Differential Rotation and Toroidal Magnetic Fields below the Solar 
+Convection Zone'', {\it Ap. J.}, (in press), 1997. 
+
+\Hpar Fox, P., J. Fontenla, O. R. White, E. H. Avrett, and R. L. Kurucz,
+``Calculation of Solar Irradiances I: Synthesis of the Solar Spectrum'',
+submitted to {\it Solar Physics}, 1997. 
+
+\Hpar Fox, P., J. Fontenla, O. R. White, K. L. Harvey and E. H. Avrett,
+``Calculation of Solar Irradiances II: Synthesis of Solar Images'', 
+submitted to {\it Solar Physics}, 1997.
+
+%\Hpar Fox, P., Y.-C. Kim, P. Demarque and S. Sofia, ``Validity Tests 
+%of the Mixing Length Theory in the Outer Layers of the Sun'', 
+%{\it Ap. J.}, {\bf 461}, 499, 1996.
+
+%\Hpar Fox, P., Y.-C. Kim, P. Demarque and S. Sofia, ``Modelling of 
+%Shallow and Inefficient Convection in the Outer Layers  of the Sun 
+%using Realistic Physics'', {\it Ap. J.}, {\bf 442}, 422 (1995).
+
+%\Hpar Fox, P. and S. Sofia, ``Joint Discussion 13: Recent Advances in
+%Convection Theory and Modeling'' , {\it Comments on Astrophysics}, 
+%{\bf 18}, 11, 1995.
+\Hpar Dr. Fox has over 40 publications in peer refereed journals.
+
+\def\Hpar{\goodbreak\par\hangindent .3in\hangafter=1}
+\begin{center}
+{\large {\bf Dave Fulker --- \acl{UCAR}}}
+\end{center}
+\noindent \underbar{\it Education:}
+\mbox{}\hskip .1in University of Colorado, MA 1970, Mathmetics\\  
+\mbox{}\hskip .1in University of Colorado, BA  1966, Mathmatics\\ 
+\noindent \underbar{\it Employment:}
+\mbox{}\hskip .1in 1984-Present:  Unidata Program Director, UCAR\\
+\def\Hpar{\par\hangindent .2in\hangafter=1}
+\noindent \underbar{\it Recent Publications:}
+\Hpar Fulker, D, S Bates, and C Jacobs: ``Unidata: A Virtual Community 
+Sharing Resources via Technological Infrastructure'', BAMS Vol 78 \#3, 
+March 1997, Pp 457-468.
+
+\Hpar Ramamurthy, M K, C Murphy, J Moore, M Wetzel, D Knight, P 
+Ruscher, S Mullen, R DeSouze, D Hawk, and D Fulker: ``Teaching 
+Mesoscale Meteorology in the Age of the Modernized Weather Service: 
+A Report on the Unidata/COMET Workshop'', BAMS, Vol 76 \#12, December 
+1995, Pp 2463-2473.
+
+\Hpar Domenico, B, S Bates, and D Fulker: ``Unidata Internet Data 
+Distribution (IDD)'', Preprints, Tenth International Conference on 
+Interactive Information Processing Systems for Meteorology, 
+Oceanography, and Hydrology, in Nashville, Tennessee, published 
+by the AMS, January 1994, Pp J15-J20.
+
+\Hpar Sherretz, L A, and D Fulker:  ``Unidata: Enabling Universities 
+to Acquire and Analyze Scientific Data'', BAMS, Vol 69 \#4, April 1988, 
+Pp 373-376.
+
+\def\Hpar{\goodbreak\par\hangindent .3in\hangafter=1}
+\begin{center}
+{\large {\bf Steven C. Hankin --- \acl{PMEL}}}
+\end{center}
+\noindent \underbar{\it Education:}
+\mbox{}\hskip .1in University of Washington, Seattle, M.S., 1984 
+Applied  Mathematics\\
+\mbox{}\hskip .1in Reed College, Portland, 1975 B.A., Physics\\
+\noindent \underbar{\it Professional Experience:}
+\mbox{}\hskip .1in 1984-Present: Computer Scientist, NOAA 
+Pacific Marine Environmental Laboratory\\
+\noindent \underbar{\it Professional Awards:}
+\mbox{}\hskip .1in NOAA Performance Awards (7 awards: 1986-97)\\
+\noindent \underbar{\it Inter/National Committees:}
+NOAA High Performance Computing and Communications computing committee;
+American National Standards Institute, Computer Graphics Committee, X3H3;
+Association for Computing Machinery, SIGGRAPH\\
+\def\Hpar{\par\hangindent .2in\hangafter=1}
+\noindent \underbar{\it Recent Publications:}
+
+\Hpar Callahan, J. and S.C. Hankin, ``Improving Web access to gridded
+data: Java tools for climate data servers'', 13th International 
+Conference on Interactive Information and Processing Systems for 
+Meteorology, Oceanography, and Hydrology, 1997.
+
+\Hpar Hankin, S.C., ``A portable Web server for gridded data: creating a
+culture of data interchange'', 13th International Conference on 
+Interactive Information and Processing Systems for Meteorology, 
+Oceanography, and Hydrology, 1997. 
+
+\Hpar Hankin, S., D.E. Harrison, J. Osborne, J. Davison, and K. 
+O'Brien, ``A strategy and a tool, Ferret, for closely integrated 
+visualization and analysis'', Journal of Visualization and Computer 
+Animation, 7 , pp149-157, 1996. 
+
+\Hpar Hankin, S., D.E. Harrison, J. Osborne, J. Davison, and K. O'Brien,
+``Remote and local visualization and analysis with the Ferret 
+program'', 12th International Conference on Interactive Information 
+and Processing Systems (IIPS) for Meteorology, Oceanography, and 
+Hydrology, Jan. 28-Feb. 2, 1996, Atlanta, GA, AGU, 139-144.
+
+%\Hpar Hankin, S.C, and D.E. Harrison,  ``FERRET: A Mathematica style
+%visualization and analysis tool for gridded
+%oceanographic and meteorological data'', Ninth International Conference 
+%on Interactive Information and Processing Systems for Meteorology,
+%Oceanography, and Hydrology, 1993. 
+
+%\Hpar Hankin, S.C., D.E.Harrison, and J. Davison, ``FERRET, an
+%interactive data visualization, analysis and management system for 
+%gridded data sets'',  NOAA Technical Memorandum ERL PMEL-38, 1991.
+
+%{\parindent=0pt\parskip=0pt
+\def\Hpar{\goodbreak\par\hangindent .3in\hangafter=1}
+\begin{center}
+{\large {\bf Judy C. Holoviak --- \acl{AGU}}}
+\end{center}
+\noindent \underbar{\it Education:}
+\mbox{}\hskip .1in Westminster College, B.A. Magna Cum Laude, 1963, 
+English with Chemistry minor.\\
+\noindent \underbar{\it Employment:}
+\mbox{}\hskip .1in 1980--Present, Director of Publications; Deputy for 
+Executive Director; Director for International Activities, American 
+Geophysical Union.\\      
+\noindent \underbar{\it Professional Activities:}
+\mbox{}\hskip .1in Association of Earth Science Editors: Vice-President 
+(1984), President (1985)\\
+\mbox{}\hskip .1in Society for Scholarly Publishing: Secretary-Treasurer
+(1980-1986); Vice-President (1988-1990); President (1990-1992)\\
+\mbox{}\hskip .1in American Institute of Physics:  Member of Governing 
+Board (1997-2000)\\
+\def\Hpar{\par\hangindent .2in\hangafter=1}
+\noindent \underbar{\it Recent Publications:}
+
+\Hpar Seitter, K.L., and J.C. Holoviak, Earth Interactions: An 
+Electronic Journal Serving the Earth System Science Community, Bulletin 
+of the American Meteorological Society, pp. 2095-2100, September 1996.
+     
+\Hpar Holoviak, J.C., ``The mixed blessings of society publishing'', 
+LOGOS, vol. 7, no. 1, pp. 106-112, 1996.
+     
+\Hpar Holoviak, J.C., ``Pricing--A Scientific Society's Perspective'', 
+GSA Today, p. 93, April 1993.
+     
+\Hpar Holoviak, J.C., ``Scholarly Communications: New Realities: The 
+Risks and Rewards'', Library Hi Tech, vol.10, no. 3, pp.73-75, 1992. 
+     
+\Hpar Holoviak, J.C., ``Working to Improve the Entire System'', The 
+Journal of Academic Librarianship, vol. 15 no. 2, pp. 77-78, May 1989.
+
+%{\parindent=0pt\parskip=0pt
+\def\Hpar{\goodbreak\par\hangindent .3in\hangafter=1}
+\begin{center}
+{\large {\bf Lola M. Olsen --- \acl{GSFC}}}
+\end{center}
+\noindent \underbar{\it Education:}
+\mbox{}\hskip .1in M.A., University of North Carolina, Geography/Earth 
+Science\\
+\mbox{}\hskip .1in B.S., Michigan State University, Biological Science\\
+\noindent \underbar{\it Professional Experience:}
+\mbox{}\hskip .1in 1994-present: Project Manager, Global Change Master
+Directory, NASA, Goddard Space Flight Center\\
+%\mbox{}\hskip .1in 1992-1994: Remote Sensing Instructor, University of 
+%Maryland\\
+%\mbox{}\hskip .1in 1990-1994: Project Manager, Climate Data System, 
+%NASA, Goddard Space Flight Center\\
+\noindent \underbar{\it Professional Awards:}
+\mbox{}\hskip .1in Five NASA/GSFC Certificates for Outstanding Achievement 
+Award since 1991; NASA/GSFC Special Act Group Award, 1995; NASA Merit 
+Increase Award, 1991, 1992; GSFC Group Achievement Award, 1992\\
+\noindent \underbar{\it Inter/National Committees:}
+\mbox{}\hskip .1in Committee on Earth Observing Satellites, Working 
+Group on Information Systems and Services Access Subgroup, Task Team 
+Leader\\
+\def\Hpar{\par\hangindent .2in\hangafter=1}
+\noindent \underbar{\it Recent Publications:}
+\Hpar Olsen, Lola, Global Change Master Directory Enhances Search for 
+Earth Science Data, Eos, Transactions, American Geophysical Union, 
+Vol. 77, Number 18, April 30, 1996.
+
+\Hpar Scialdone, J. and L. Olsen, The Global Change Master Directory,
+Library Hi Tech, Volume 13, Number 1-2, pp 44-46, 1995.
+
+\Hpar Olsen, Lola,  and NCDS staff, Greenhouse Effect Detection 
+Experiment (GEDEX) CD-ROMS, 1992.
+
+\Hpar Olsen, Lola, and NCDS staff, International Satellite Cloud 
+Climatology Project (ISCCP) CD-ROMS, 1992.
+
+\Hpar Olsen, Lola M. and Charles McClain, Cooperative Efforts in 
+Support of Ocean Research Through NASA's Climate Data System, Eighth 
+International Conference on Interactive Information and Processing 
+Systems, American Meteorological Society, January 1992.
+
+%\Hpar Olsen, Lola M., Progress in Data Management through NASA's 
+%Climate Data System, Seventh International Conference on Interactive 
+%Information and Processing Systems, American Meteorology Society, 
+%January 1991.
+
+%\Hpar Rogers, David and Lola M. Olsen, The Diurnal Variability of 
+%Marine Stratocumulus Clouds, 1990 Conference on Cloud Physics, July 
+%1990.
+}
+
+\section{Other Participants}\label{other-participants}
+
+In addition to the Project Members listed in the previous section
+systems programmers and faculty involved on this effort are:
+\bigskip
+
+\noindent {\bf James Gallagher} - \ac{URI} - Technical lead for \ac{DODS}
+- M.S. Computer Science, \ac{URI}, 1990.
+
+\noindent {\bf Dan Holloway} - \ac{URI} - Systems programmer/manager - 
+M.S. Computer Science, \ac{URI}, 1993.
+
+\noindent {\bf James Kowalski} - \ac{URI} - Associate Professor of 
+Philosophy and Computer Science - Ph.D. Purdue University, 1975 
+
+\noindent {\bf Reza Nekovei} - \ac{URI}  - Systems programmer - 
+Ph.D. Electrical Engineering, \ac{URI}, 1995.
+
+\noindent {\bf Joan Peckman} - \ac{URI} - Associate Professor of Computer 
+Science - Ph.D. Computer Science, University of Connecticut 1990.
+
+\noindent {\bf Rob Raskin} - \ac{JPL} - Systems programmer - 
+Ph.D. in Atmospheric Science 1992 University of Michigan.
+
+
+\section{Proposed Costs}\label{budget}
+
+The following pages present the unified budget for the proposed effort.
+Aside from computer programmers we are requesting salary support for
+a Project Manager and for a technical writer. The duties of the project
+manager are described in Section~\ref{management-approach} and \ac{URI}
+will match part of this individual's salary. The technical
+writer, Tom Sgorous, will continue to work part time as a consultant to 
+document all aspects of the system. Sgorous wrote the first version
+of the User's Guide. One staff member will work at the \ac{GCMD}. This
+person will be responsible for \ac{DIF} generation and for maintaining
+the \ac{DODS} server at the Goddard \ac{DAAC}.
+
+Travel will be used by computer staff to attend the quarterly 
+developers meetings and the annual Steering Committee meetings 
+as well as WP-Federation meetings.
+
+Two computers will be purchased to absorb the \ac{CPU} load associated 
+\ac{DODS} servers at the Goddard and \ac{JPL} \ac{DAAC}s. There will
+be very little need for additional disc space at the \ac{DAAC}s to
+accommodate the \ac{DODS} servers. Three smaller computers will be 
+purchased with \ac{URI} match. These will be used by staff to 
+develop software and to manage the overall effort.
+
+An un-named subcontract has been included in the budget. This 
+subcontract is for straightforward programming tasks such as the
+development of Java clients and servers. The level of effort for
+these tasks is estimated to be $1\frac{1}{2}$ full time programmers.
+We could hire these programmers at the university but would prefer
+not to have the long term commitment that full time employees 
+entail. If however, through the bid process we can not find a
+vendor to provide these services at the estimated level we will
+hire programmers and perform them in-house.
+
+All of the other subcontracts are for the Project Members. We have
+included them in the budget as subcontractors, but if we are selected,
+\acs{NASA} may elect to fund them directly thus saving the overhead
+on these subcontracts. This overhead comes to \$47,500.
+
+\vfill\eject
+\addtocounter{page}{2}
+\section{Cooperative Agreement Payment Schedule}\label{milestones} 
+\def\Hpar{\goodbreak\hangindent .4in\hangafter=1} 
+Below we summarize, by group, payment milestones. A detailed breakdown
+of the \ac{URI} milestones is presented in Appendix B.2.
+\bigskip
+
+\noindent {\large \bf Year 1}
+
+  \centerline{\it Qtr 1 }
+
+\Hpar{\bf URI:}  URI 1 Qtr milestones. {\it Total: \$166,469}
+\Hpar{\bf NCAR/HAO:} Install DODS servers for CEDAR data holdings {\it
+  Total: \$42,235}
+\Hpar{\bf UNIDATA/PUSH:} Define a suitable datastream through IDD {\it
+  Total: \$33,632}
+\Hpar{\bf UNIDATA/US:} Set up a list server and Web pages {\it Total: 
+\$33,632}
+\Hpar{\bf JPL/HDF-EOS:} HDF-EOS to DODS GRID type conversion  {\it Total: 
+\$53,800}
+
+  \centerline{\it Qtr 2 }
+
+\Hpar{\bf URI:} URI 2 Qtr milestones.  {\it Total: 
+\$166,469}
+\Hpar{\bf NCAR/HAO:} Build a Matlab GUI for access to the CEDAR data {\it
+  Total: \$30,360}
+\Hpar{ \bf UNIDATA/PUSH:} Implement a single-sender/single-receiver {\it
+  Total: \$27,694}
+\Hpar{ \bf UNIDATA/US:} Begin fielding questions {\it Total: \$27,694}
+\Hpar{ \bf PMEL/DF:} Demonstrate a virtual data base with LAS {\it Total: \$45,207}
+\Hpar{ \bf JPL/HDF-EOS:} HDF-EOS to DODS point type conversion {\it Total: \$41,925}
+\Hpar{ \bf NCSA/HDF--EOS:}Report on study  HDF-based storage formats {\it
+  Total: \$44,228}
+ 
+  \centerline{\it Qtr 3 }
+
+\Hpar{ \bf URI:} URI 3 Qtr milestones.  {\it Total: \$166,469}
+\Hpar{ \bf NCAR/HAO:} Add user login, password verification, etc. {\it
+  Total: \$30,360}
+\Hpar{ \bf UNIDATA/PUSH:} Design a DODS server configuration {\it Total: \$27,694}
+\Hpar{ \bf UNIDATA/US:} Create Web pages for searching support archive {\it
+  Total: \$27,694}
+\Hpar{ \bf PMEL/DF:} Install an operational LAS at PMEL {\it Total: \$33,332}
+\Hpar{ \bf JPL/HDF-EOS:} HDF-EOS to DODS Metadata conversion; HDF Server
+  Maint. {\it Total: \$41,925}
+
+  \centerline{\it Qtr 4}
+
+\Hpar{ \bf URI:} URI 4 Qtr milestones.  {\it Total: \$166,469}
+\Hpar{ \bf NCAR/HAO:} Develop netCDF or HDF form of MLSO data {\it Total: \$30,360}
+\Hpar{ \bf UNIDATA/PUSH:} Implement the DODS server at IDD rec. node {\it
+  Total: \$27,694}
+\Hpar{ \bf UNIDATA/US:} Operational User Support {\it Total: \$27,694}
+\Hpar{ \bf PMEL/DF:} Demonstrate operational LAS systems with DODS {\it
+  Total: \$33,332}
+\Hpar{ \bf JPL/HDF-EOS:} Conversion of SDS {\it Total: \$41,925}
+\Hpar{\bf  URI/CS/DMM:} Development of Directory Mining Tool {\it Total: \$147,648}
+\Hpar{\bf NCSA/HDF-EOS:} Report on mapping between HDF--EOS and DODS data
+types {\it Total: \$56,103}
+
+\vspace{.2in}
+\noindent {\large \bf Year 2}\\
+  \centerline{\it Qtr 1}
+
+\Hpar{ \bf URI:} URI 1 Qtr milestones.  {\it Total: \$166,469}
+\Hpar{ \bf UNIDATA/PUSH:} Test IDD/DODS system {\it Total: \$27,694}
+\Hpar{ \bf UNIDATA/US:} Operational User Support {\it Total: \$27,694}
+\Hpar{ \bf JPL/HDF-EOS:} Conversion of VData {\it Total: \$41,925}
+
+  \centerline{\it Qtr 2}
+
+\Hpar{ \bf URI:} URI 2 Qtr milestones.  {\it Total: \$166,469}
+\Hpar{ \bf NCAR/HAO:} Access to all HAO data with WWW base browser {\it
+  Total: \$60,720}
+\Hpar{ \bf UNIDATA/PUSH:} Test IDD/DODS system {\it Total: \$27,694}
+\Hpar{ \bf UNIDATA/US:} Operational User Support {\it Total: \$27,694}
+\Hpar{ \bf PMEL/DF:} Install all JAVA interface at 3 sites {\it Total: \$33,332}
+\Hpar{ \bf JPL/HDF-EOS:} Conversion of raster {\it Total: \$41,925}
+
+  \centerline{\it Qtr 3 }
+
+\Hpar{ \bf URI:} URI 3 Qtr milestones.  {\it Total: \$166,469}
+\Hpar{ \bf UNIDATA/PUSH:}  Replicate the IDD receiver/DODS server {\it
+  Total: \$27,694}
+\Hpar{ \bf UNIDATA/US:} Operational User Support {\it Total: \$27,694}
+\Hpar{ \bf PMEL/DF:} Install shopping basket functionality {\it Total: \$33,332}
+\Hpar{ \bf JPL/HDF-EOS:} Conversion of Metadata; HDF Server Maint. {\it Total: \$41,925}
+
+  \centerline{\it Qtr 4}
+
+\Hpar{ \bf URI:} URI 4 Qtr milestones.  {\it Total: \$166,469}
+\Hpar{ \bf NCAR/HAO:} Implement registration of datasets {\it Total: \$60,720}
+\Hpar{ \bf UNIDATA/PUSH:}  Extend the system by replicating {\it Total: \$27,694}
+\Hpar{ \bf UNIDATA/US:} Operational User Support {\it Total: \$27,694}
+\Hpar{ \bf PMEL/DF:} Demonstrate a data-fusing virtual data base {\it
+  Total: \$33,332}
+\Hpar{ \bf JPL/HDF-EOS:} Conversion of GRID {\it Total: \$41,925}
+\Hpar{ \bf URI/CS/DMM:} Specification of Expert System for DMM {\it Total: \$147,649}
+\Hpar{\bf NCSA/HDF 5:} Implementation of HDF 5 API with DODS protocol {\it Total: \$117,936}
+
+\vspace{.2in}
+\noindent {\large \bf Year 3}\\
+  \centerline{\it Qtr 1}
+
+\Hpar{ \bf URI:} URI 1 Qtr milestones.  {\it Total: \$166,469}
+\Hpar{ \bf NCAR/HAO:} Install DODS servers at remote CEDAR sites {\it
+  Total: \$30,360}
+\Hpar{ \bf UNIDATA/PUSH:} D\&I IDD->GCMD update {\it Total: \$27,694}
+\Hpar{ \bf UNIDATA/US:} Operational User Support {\it Total: \$27,694}
+\Hpar{ \bf JPL/HDF-EOS:} Conversion of point {\it Total: \$41,925}
+
+  \centerline{\it Qtr 2}
+
+\Hpar{ \bf URI:} URI 2 Qtr milestones.  {\it   Total: \$166,469}
+\Hpar{ \bf UNIDATA/PUSH:} D\&I a prototype "virtual DODS server" {\it Total:
+  \$27,694}
+\Hpar{ \bf UNIDATA/US:} Operational User Support {\it Total: \$27,694}
+\Hpar{ \bf PMEL/DF:} Demonstrate operational servers {\it Total: \$33,332}
+\Hpar{ \bf JPL/HDF-EOS:} Conversion of swath {\it Total: \$41,925}
+
+  \centerline{\it Qtr 3}
+
+\Hpar{ \bf URI:} URI 3 Qtr milestones.  {\it Total: \$166,469}
+\Hpar{ \bf NCAR/HAO:} Search and Query procedure for all HAO data {\it
+  Total: \$60,720}
+\Hpar{ \bf UNIDATA/PUSH:} Test and refine the above two prototypes {\it
+  Total: \$27,694}
+\Hpar{ \bf UNIDATA/US:} Operational User Support {\it Total: \$27,694}
+\Hpar{ \bf PMEL/DF:} Demonstrate fusing gridded data with Sat data {\it
+  Total: \$33,332}
+\Hpar{ \bf JPL/HDF-EOS:} HDF Server maintenance {\it Total: \$41,925}
+
+  \centerline{\it Qtr 4 }
+
+\Hpar{ \bf URI:} URI 4 Qtr milestones.  {\it Total: \$166,469}
+\Hpar{ \bf NCAR/HAO:} Measures total quantitatively usage and satisfaction
+{\it Total: \$30,360}
+\Hpar{ \bf UNIDATA/PUSH:} Create a design document{\it Total: \$27,694}
+\Hpar{ \bf UNIDATA/US:} Operational User Support {\it Total: \$27,694}
+\Hpar{ \bf PMEL/DF:} Demonstrate an server with extensions {\it Total: \$33,332}
+\Hpar{ \bf JPL/HDF-EOS:} Conversion to HDF-EOS Metadata {\it Total: \$41,925}
+\Hpar{ \bf NCSA/HDF 5:} Report on DODS/HDF 5 {\it Total: \$58,968}
+\vfill\eject
+
+\section{Current and Pending}\label{current-and-pending}
+\def\Hpar{\goodbreak\par\hangindent .5in\hangafter=1}
+
+This proposal is clearly pending with all \ac{PM}s listed below. It will
+be presented only for the \ac{PL}. Hey, why killl another tree? Also
+``current and pending'' are only presented for those requesting funds
+from this proposal.
+
+\begin{center}
+{\large  {\bf Peter Cornillon} --- Project Lead --- \acs{URI}\\
+\ \\
+\vspace{.08in} \underline {\it Current Support}}\\
+\vspace{.08in} {\small {\it Note:  Location of all Research is the
+    Graduate School of Oceanography\\University of Rhode Island}}
+\end{center}
+
+\Hpar ``Biological and Physical Responses of the Upper Ocean to Wind Stress" 
+(with J. Yoder) 17\% {\em JPL/NASA 957627} \$941,942  10/1/88--12/31/97
+
+\Hpar ``The Oleander Project: Continued Monitoring of Annual and Subannual Mass
+and Heat Fluxes in the Northwest Atlantic Across the Sargasso Sea, the 
+Gulf Stream, and the Shelf Between Bermuda and New Jersey" 8\% (with T. Rossby 
+and E. Gottlieb) {\em NOAA NA56GP0220} \$733,642 4/1/95--3/31/98
+
+\Hpar ``Production of Western North Atlantic Full Resolution SST Fields from 
+the AVHRR Sensor" 8\% {\em NASA NAGW4764} \$175,319  7/1/95--6/30/97
+
+\Hpar ``Support for CEOS Working Group on Data Catalog Subgroup Activities 
+as a NASA Representative" 0\% {\em NASA NCC5123} \$60,000   9/15/95--9/14/97
+(3rd Yr \$30,000)
+
+\Hpar ``Wind Forcing of Physical and Biological Processes in the Upper Ocean"
+8\% {\em NS033A06  Oregon State University} \$159,954  9/15/95--12/31/00
+
+\Hpar ``An Analysis of Persistent Ocean Fronts on the Continental Shelf Between
+Cape Hatteras and Cape Cod 8\%  (with S. Nixon) {\em NOAA NA66RG0303} \$187,101   
+10/01/96-2/28/98
+
+\Hpar ``Support for the Oceanographic Remote Sensing Lab" 2\% {\em NOAA NA57FE0542}
+\$49,451 9/1/96--8/31/97
+
+\Hpar ``US Globec: Spatial and Temporal Variability in the Occurence
+Distribution and Structure of SST Fronts in the Georges
+Bank Region'' 8\% {\em NOAA NA57FE0542} \$130,450  10/1/96--9/30/98
+
+\Hpar ``Development of DODS Compliant Client and Server Libraries to Support
+Internet Access to NODC Oceanographic Datasets'' 4\% {\em DOC NA57FE0448}
+7/1/95--6/30/97 (3rd Yr \$30,000)
+
+\Hpar ``Survey of Ocean Fronts with SST, Altimeter and In Situ Data'' 8\% 
+(with I. Belkin) {\em NASA NAG53736} \$126,000 3/1/97--2/28/98
+
+\Hpar ``The Impact of First Mode Planetary Waves on Western Boundary Currents"
+8\% {\em Fed Sub/NASA 960913} \$84,083  3/1/97--12/31/97 (2nd Yr  \$79,899, 3rd Yr \$83,556)
+
+\Hpar ``Population and Support of the Distributed Oceanographic Data Systems" 
+8\% {\em NSF OCE9617804} \$186,000 6/1/97--5/31/98  (2nd Yr  \$168,817, 3rd Yr \$142,548)
+
+\begin{center}
+\underline {\large \em Pending Support}
+\end{center}
+
+\Hpar This proposal, ``The Distributed Oceanographic Data System (DODS): A
+Framework for Access to Scientific Data in the EOS Federation'', 8\% NASA/MTPE,
+\$4,000,000 1/1/98--12/31/00
+
+\Hpar ``Production of Western North Atlantic Full Resolution SST 
+Fields from the AVHRR Sensor" 4\% NASA \$171,489  10/1/97--9/30/99  
+
+\Hpar ``Preparing Students, Practitioners and Researchers for Ocean Remote
+Sensing in the Twenty-First Century" 6\% NASA \$284,571  10/1/97-09/30/98
+\bigskip
+
+\begin{center}
+{\large {\bf Elaine Dobinson} --- Project Member --- \acs{JPL}\\
+\ \\
+\vspace{.08in} \underline {\it Current Support}}\\
+ \end{center}
+
+ \Hpar ``NASA/JPL PODAAC Deputy Task Manager'', 100\%, Location of Research:
+ JPL, NASA UPN 428-33, \$165,000  1/1/97--12/3098, (2nd Year \$170,000) 
+
+\begin{center}
+{\large \underline{\it No Pending Support}}\\
+\end{center}
+
+\bigskip
+
+\begin{center}
+{\large {\bf Mike Folk} --- Project Member --- U. Illinois \\
+\ \\
+\vspace{.08in} \underline {\it Current Support}}\\
+\vspace{.08in} {\small \it Note: All Research conducted at NCSA/University of
+  Illinois }\\ 
+\end{center}
+\Hpar ``HDF Support for the ASCI Program'', 0\%, {\em ASCI/Livermore Labs},
+\$140,447  8/1/97 -- 7/31/98
+
+\Hpar ``HDF Support for ASCI w/Special Tasks'', 0\%,{\em ASCI/Los Alamos}, \$57,500 6/1/97--5/31/98
+
+\Hpar ``DAAC-in-the-box'', 0\%, {\em NASA 505/Hughes STX} \$120,000
+1/1/97--12/31/97
+
+\Hpar ``HDF Configuration Records \& QA'' 50\% {\em NASA  Hughes ITS} \$134,342
+\$537,366  3/11/96--12/31/99
+
+Support for EOSDIS'', 0\%, {\em ESDIS Coop. Agreement} \$992,246
+8/1/95--7/31/01
+
+\Hpar ``Support for Large Datasets in EOSDIS'', 25\%, {\em MTPE/NRA}
+\$538,332 12/1/94 - 12/31/97       
+
+\Hpar ``Project Horizon'',  25\%, {\em NASA} \$2,146,342 9/30/94--10/1/97
+
+\begin{center}
+{\large \underline{\it Pending Support}}\\
+\end{center}
+\Hpar ``The Distributed Oceanographic Data System: A Framework for Access to
+Scientific Data in the EOS Federation'' 0\%, {\em NASA/MTPE} \$203,928
+1/1/98--12/31/00
+
+\Hpar ``Earth Imagery Coalition '' 0\%, {\em NASA/MTPE} \$295,150
+1/1/98--12/31/00 
+
+\Hpar ``BOREAS Data and its Access'' 0\%, {\em NASA/MTPE} \$353,048
+1/1/98--12/31/00
+
+\bigskip
+
+\begin{center}
+{\large {\bf Peter Fox} --- Project Member --- NCAR \\
+\ \\
+\vspace{.08in} \underline {\it Current Support}}\\
+\vspace{.08in} {\small {\it Note:  Location of all Research is at \ac{NCAR}}}
+\end{center}
+
+\Hpar ``Convective Turbulence and Mixing in Astrophysics", 5\%,
+{\em  NASA/HPCC}, \$325,000 (FY93). 
+
+\Hpar ``SunRISE - Application of Spectral Synthesis to the Study and
+Improvement of Surrogates for Solar Radiation in the Visible, UV, and EUV.'',
+20\%, {\em NSF-Special}, \$298,972, 1993/12/01-1997/10/31. 
+
+\Hpar ``SunRISE - Solar Variability in the Minimum and Rise of Cycle 23.'',
+5\%, {\em NSF-Special}, \$139,353, 1997/07/01-2000/06/30.
+
+\Hpar ``SunRISE operational budget'', 15\%, {\em NSF-Special}, \$212,225,
+1997/07/01-1998/06/30 (with  Kn\"olker, HAO/NCAR)
+
+\begin{center}
+\underline {\large \em Pending Support}
+\end{center}
+
+\Hpar ``SunRISE - Application of Spectral Synthesis to the Study of 
+Solar Visible, UV, EUV and Infrared Variability'', 20\%, 
+{\em NSF-Special}, \$350,000, 1997/11/01-2000/11/01
+
+\bigskip
+
+\begin{center}
+{\large {\bf Dave Fulker} --- Project Member --- UCAR \\
+\ \\
+\vspace{.08in} \underline {\it Current Support}}\\
+\vspace{.08in} {\small {\it Note:  Location of all Research is at
+    UNIDATA\\University Corporation for Atmosheric Research}}
+\end{center}
+
+\Hpar ``Unidata: 1993-1998", {\em NSF ATM--9218790}, \$10,799,404 5/93--4/98 
+
+\Hpar ``NIDS Data Products", {\em NOAA 57GP0576}, \$174,375 1994--1999
+
+\Hpar ``SOO and University Access to COMET Case-Study Data", {\em NOAA
+NA67WD0097}, \$170,498 5/96--5/99 (FY 1999 \$100,000)
+
+\begin{center}
+{\large \underline {\it Pending Support}}
+\end{center}
+
+\Hpar ``Using Instructional Technologies and Satellite Data for
+College-level Education in the Atmospheric and Earth Sciences", {\em NSF
+Lower Atmosphere Research Section}, \$45,411, FY97
+
+\Hpar ``Unidata 2003", {\em NSF Lower Atmosphere Research Section}, 
+\$18,124,644 May 1998 thru April 30, 2003
+
+\bigskip
+
+\begin{center}
+{\large {\bf Steve Hankin} --- Project Member --- PMEL\\
+\ \\
+\vspace{.08in} \underline {\it Current Support}}\\
+\vspace{.08in} {\small \it Note: All Research conducted at NOAA's Pacific Marine Environmental Laboratory}\\
+\end{center}
+\Hpar ``From the Web to the Desktop: Unified Access to Gridded Data with Java
+and the Ferret Program", a Java-enhanced interface to the Ferret-based "Live
+Access to Climate Data" server -- {\em NOAA/ESDIM}, \$100K
+
+\Hpar ``Data Fusion of Point and Gridded Data from Remote and Local Sources", a
+collaborative effort with NOAA/NCDC to merge point data from NCDC with
+gridded data from PMEL -- {\em NOAA/ESDIM}, \$80K
+
+\Hpar ``Server-in-a-box", Packaging the "Live Access to Climate Data" server for
+easy configurability and installation.  -- {\em NOAA/HPCC}, \$70K
+
+\begin{center}
+{\large \underline{\it Pending Support}}\\
+\end{center}
+
+\Hpar ``Web Access to Archived and Near-Real Time Oceanographic Data at Pacific
+Fisheries Environmental Laboratory", a joint National Marine Fisheries
+Service/PMEL proposal -- {\em NOAA/OGP}, \$20K (PMEL portion)
+
+\Hpar ``Seasonal-to-interannual variability of the global ocean circulation
+based on altimetry, hydrography, and the Princeton Ocean Model", a joint NationalMarine Fisheries Service/PMEL proposal -- {\em NOAA/OGP}, \$25K (PMEL portion)
+
+\Hpar ``"A Collaborative Environment for OACES Model Sharing (Using the World Wide
+Web)", building a Web-based system to assist with collaborative modeling of
+the global carbon cycle -- {\em NOAA/OGPP}, \$40K
+
+\Hpar ``A Web Bathymetry Visualizer", a joint National Geophysical Data
+Center/PMEL proposal -- {\em NOAA/ESDIMP}, \$40K (PMEL portion)
+
+\Hpar ``A Research-Quality Regional Weather Perspectives Browser", a joint
+National Weather Service/PMEL proposal -- {\em NOAA/ESDIMP}, \$30K (PMEL portion)
+
+\Hpar ``Live Access to Global Atmospheric/Oceanic/Biological Indicators Derived
+from the Climatic and Synoptic Observed Data", a joint National Marine
+Fisheries Service/PMEL proposal -- {\em NOAA/ESDIMP}, \$20K (PMEL portion)
+
+\Hpar ``Advanced Web Server for Gridded Data" -- {\em NOAA/ESDIM}, \$50K
+
+\vfill\eject
+\section{Acronyms}\label{acronyms}
+\begin{latexonly}
+{\begin{acronym}
+\small
+\parskip 0pt
+ \acro{ADCP}{Acoustic Doppler Current Profiler}.
+ \acro{AGU}{American Geophysical Union}.
+ \acro{AI}{Artificial Intelligence}.
+ \acro{API}{Application Program Interface}.
+ \acro{AVHRR}{Advanced Very High Resolution Radiometer}.
+ \acro{BUFR}{Binary Universal Form for the Representation of 
+       meteorological data}. A data format.
+ \acro{CDF}{Common Data Format}.
+ \acro{CDR}{Common Data Representation}.
+ \acro{CEDAR}{Coupling, Energetics and Dynamics of Atmospheric Regions}.
+ \acro{CEOS}{Committee on Earth Observation Satellites}.
+ \acro{CIP}{Catalog Interoperability Protocol}.
+ \acro{CORBA}{Common Object Request Broker Architecture} 
+ \acro{CPU}{Central Processor Unit}. Used to refer to a computer.
+ \acro{CZCS}{Coastal Zone Color Scanner}.
+ \acro{DAAC}{Distribute Active Archive Center}.
+ \acro{DAP}{Data Access Protocol}.
+ \acro{DAS}{Data set Attribute Structure}.
+ \acro{DBMS}{Data Base Management System}.
+ \acro{DDS}{Data Descriptor Structure}.
+ \acro{DIF}{Directory Interchange Format}.
+ \acro{DODS}{Distributed Oceanographic Data System}.
+ \acro{ECS}{EOSDIS Core System}.
+ \acro{EOS}{Earth Observing System}.
+ \acro{EOSDIS}{Earth Observing System Data Information System}.
+ \acro{ESIP}{Earth Science Information Partner}.
+ \acro{FGDC}{Federal Geographic Data Committee}. Also refers to a 
+       metadata standard.
+ \acro{GCMD}{Global Change Master Directory}. 
+ \acro{GMT}{Generic Mapping Tool}. A plotting package based on NetCDF.
+ \acro{GRIB}{GRid In Binary}. A data format used in meteorology.
+ \acro{GSFC}{Goddard Space Flight Center}.
+ \acro{GUI}{Graphical User Interface}.
+ \acro{HAO}{High Altitude Observatory}.
+ \acro{HDF}{Hierarchical Data Format}.
+ \acro{HDF-EOS}{Hierarchical Data Format - \acs{EOS}}. This is the EOS
+       sanctioned version of HDF.
+ \acro{IDD}{Internet Data Distribution}.
+ \acro{http}{the hypertext transport protocol}. The underlying transfer
+       protocol of the Web.
+ \acro{IDL}{Interactive Display Language}. An analysis package for
+       scientific data developed by Research Systems, Inc.
+ \acro{JGOFS}{Joint Global Ocean Flux Experiment}. Also referencesa
+       data system developed for the project.
+ \acro{JPL}{Jet Propulsion Laboratory}.
+ \acro{LAS}{Live Access Server}. Refers to a server at PMEL providing
+       network access to PMEL data holding.
+ \acro{MIT}{Massachusetts Institute of Technology}.
+ \acro{MATLAB}{M{\small ATLAB}}. An analysis package for scientific 
+       data developed by M{\small ATH}W{\small ORKS}, Inc.
+ \acro{MODIS}{MODerate-resolution Imaging Spectroradiometer}.
+ \acro{MTPE}{Mission To Planet Earth}.
+ \acro{NASA}{National Aeronautics and Space Administration }.
+ \acro{NCAR}{National Center for Atmospheric Research }.
+ \acro{NCSA}{National Center for Supercomputing Applications}.
+ \acro{NDBC}{National Data Buoy Center}.
+ \acro{NetCDF}{NETwork Common Data Format}.
+ \acro{NOAA}{National Oceanic and Atmospheric Administration}.
+ \acro{NSCAT}{NASA SCATterometer}.
+ \acro{NSF}{National Science Foundation}.
+ \acro{OSU}{Oregon State University}.
+ \acro{PI}{Principal Investigator}. Often used to refer to the research
+       scientist.
+ \acro{PL}{Project Leader}.
+ \acro{PM}{Project Member}.
+ \acro{PMEL}{Pacific Marine Environmental Laboratory}.
+ \acro{PO-DAAC}{Physical Oceanography -- Distributed Active Archive 
+       Center}.
+ \acro{RISE}{Radiative Inputs from Sun to Earth}
+ \acro{RMI}{Remote Method Invocation}.
+ \acro{SST}{Sea Surface Temperature}.
+ \acro{UCAR}{University Corporation for Atmospheric Research}.
+ \acro{UMiami}{University of Miami}.
+ \acro{URI}{University of Rhode Island}.
+ \acro{URL}{Uniform Resource Locator}.
+ \acro{WOCE}{World Ocean Circulation Experiment}. A multi-national 
+       program to study the circulation of the oceans.
+ \acro{WP-ESIP}{Working Prototype Earth Science Information Partner}.
+ \acro{WWW}{World Wide Web}.
+ \acro{XBT}{Expendable BathyThermograph}.
+\end{acronym}
+}
+\end{latexonly}
+\begin{htmlonly}
+{\begin{description}
+ \item [ADCP] Acoustic Doppler Current Profiler.
+ \item [AGU] American Geophysical Union.
+ \item [AI] Artificial Intelligence.
+ \item [API] Application Program Interface.
+ \item [AVHRR] Advanced Very High Resolution Radiometer.
+ \item [BUFR] Binary Universal Form for the Representation of 
+       meteorological data. A data format.
+ \item [CDF] Common Data Format.
+ \item [CDR] Common Data Representation.
+ \item [CEDAR] Coupling, Energetics and Dynamics of Atmospheric Regions.
+ \item [CEOS] Committee on Earth Observation Satellites.
+ \item [CIP] Catalog Interoperability Protocol.
+ \item [CORBA] Common Object Request Broker Architecture 
+ \item [CPU] Central Processor Unit. Used to refer to a computer.
+ \item [CZCS] Coastal Zone Color Scanner.
+ \item [DAAC] Distribute Active Archive Center.
+ \item [DAP] Data Access Protocol.
+ \item [DAS] Data set Attribute Structure.
+ \item [DBMS] Data Base Management System.
+ \item [DDS] Data Descriptor Structure.
+ \item [DIF] Directory Interchange Format.
+ \item [DODS] Distributed Oceanographic Data System.
+ \item [ECS] EOSDIS Core System.
+ \item [EOS] Earth Observing System.
+ \item [EOSDIS] Earth Observing System Data Information System.
+ \item [ESIP] Earth Science Information Partner.
+ \item [FGDC] Federal Geographic Data Committee. Also refers to a 
+       metadata standard.
+ \item [GCMD] Global Change Master Directory. 
+ \item [GMT] Generic Mapping Tool. A plotting package based on NetCDF.
+ \item [GRIB] GRid In Binary. A data format used in meteorology.
+ \item [GSFC] Goddard Space Flight Center.
+ \item [GUI] Graphical User Interface.
+ \item [HAO] High Altitude Observatory.
+ \item [HDF] Hierarchical Data Format.
+ \item [HDF-EOS] Hierarchical Data Format - \acs{EOS}. This is the EOS
+       sanctioned version of HDF.
+ \item [IDD] Internet Data Distribution.
+ \item [http] the hypertext transport protocol. The underlying transfer
+       protocol of the Web.
+ \item [IDL] Interactive Display Language. An analysis package for
+       scientific data developed by Research Systems, Inc.
+ \item [JGOFS] Joint Global Ocean Flux Experiment. Also referencesa
+       data system developed for the project.
+ \item [JPL] Jet Propulsion Laboratory.
+ \item [LAS] Live Access Server. Refers to a server at PMEL providing
+       network access to PMEL data holding.
+ \item [MIT] Massachusetts Institute of Technology.
+ \item [MATLAB] M{\small ATLAB}. An analysis package for scientific 
+       data developed by M{\small ATH}W{\small ORKS}, Inc.
+ \item [MODIS] MODerate-resolution Imaging Spectroradiometer.
+ \item [MTPE] Mission To Planet Earth.
+ \item [NASA] National Aeronautics and Space Administration .
+ \item [NCAR] National Center for Atmospheric Research .
+ \item [NCSA] National Center for Supercomputing Applications.
+ \item [NDBC] National Data Buoy Center.
+ \item [NetCDF] NETwork Common Data Format.
+ \item [NOAA] National Oceanic and Atmospheric Administration.
+ \item [NSCAT] NASA SCATterometer.
+ \item [NSF] National Science Foundation.
+ \item [OSU] Oregon State University.
+ \item [PI] Principal Investigator. Often used to refer to the research
+       scientist.
+ \item [PL] Project Leader.
+ \item [PM] Project Member.
+ \item [PMEL] Pacific Marine Environmental Laboratory.
+ \item [PO-DAAC] Physical Oceanography -- Distributed Active Archive 
+       Center.
+ \item [RISE] Radiative Inputs from Sun to Earth
+ \item [RMI] Remote Method Invocation.
+ \item [SST] Sea Surface Temperature.
+ \item [UCAR] University Corporation for Atmospheric Research.
+ \item [UMiami] University of Miami.
+ \item [URI] University of Rhode Island.
+ \item [URL] Uniform Resource Locator.
+ \item [WOCE] World Ocean Circulation Experiment. A multi-national 
+       program to study the circulation of the oceans.
+ \item [WP-ESIP] Working Prototype Earth Science Information Partner.
+ \item [WWW] World Wide Web.
+ \item [XBT] Expendable BathyThermograph.
+\end{description}
+}
+\end{htmlonly}
+\clearpage
+
+\pagestyle{empty}
+
+{\Large
+\begin{center}
+APPENDIX A\\
+\ \\
+\vskip 1in
+\ \\
+LETTERS OF SUPPORT\\
+\end{center}
+}
+\vfill\eject
+
+{\Large
+\begin{center}
+APPENDIX B\\
+\ \\
+\vskip 1in
+\ \\
+INSTITUTIONAL RESPONSIBILITY FOR TASKS\\
+\ \\
+AND\\
+\ \\
+TASK BREAKDOWN FOR THE UNIVERSITY OF RHODE ISLAND\\
+\end{center}
+}
+
+\vfill\eject
+\vfill\eject
+
+\noindent {\Large B.1 Institutional Responsibility for Tasks}
+\bigskip
+
+Following is a summary of the role played by each of the 11 institutions
+involved in this effort.
+
+\baselineskip 11pt
+\begin{itemize}
+\item The \acl{URI} will provide coordination for the effort as 
+well as perform a significant fraction of the work associated with 
+enhancements to the \ac{DODS} core software. It will also develop an 
+expert system in collaboration with the \ac{GCMD} to automatically 
+populate the \ac{GCMD} with descriptions of \ac{DODS}-compliant data 
+sets. (Sections~\ref{catalog-server}, \ref{java-clients-servers}, 
+\ref{translation}, \ref{locator}, \ref{new-apis}, 
+\ref{virtual-data-sets},  \ref{chunking}, \ref{redundancy}, 
+\ref{push-pull}, and \ref{management-approach}.)
+
+\item The \ac{JPL}'s \ac{PO-DAAC} will provide \ac{DODS} access to the 
+physical oceanographic data in its on-line archives, will develop, 
+install and maintain the \acs{HDF-EOS} client and server libraries for 
+\ac{DODS}, and will work with the \ac{DODS} core group to provide
+a seamless interface to \acs{EOSDIS}. (Sections~\ref{daac-data} and 
+\ref{new-apis}.)
+
+%\item \ac{UCAR}'s Unidata will coordinate an effort to integrate 
+\item Unidata will coordinate an effort to integrate 
+their ``broadcast'' system for meteorological data with \ac{DODS}, 
+will provide user services support and will develop a feedback 
+mechanism for users willing to provide comments with regard to data 
+quality in the system. (Sections~\ref{push-pull}, \ref{user-support}, 
+and \ref{data-quality}.)
+
+\item The \acl{PMEL} of \ac{NOAA} will develop an application within 
+Ferret that will permit fusion of gridded and non-gridded data using 
+\ac{DODS} as the data access mechanism. (Section~\ref{data-fusion}.)
+
+\item The \acl{NCSA} at the University of Illinois will work with the 
+\ac{DODS} core group to integrate their ``chunking'' approach to data 
+compression for use with \ac{DODS} compliant data sets. They will also 
+develop and maintain \acs{HDF}-5 client and server libraries. 
+(Sections~\ref{new-apis} and \ref{chunking}.)
+
+\item The High Altitude Observatory (\ac{HAO}) of \ac{UCAR}/\ac{NCAR} 
+will develop, install and maintain \ac{DODS} servers for their 
+\ac{CEDAR} data base and will develop \acl{MATLAB} and \ac{IDL} 
+\ac{GUI}'s to facilitate access to these data via \ac{DODS}. 
+(Section~\ref{hao-data}.)
+
+\item The \ac{GCMD} of \ac{GSFC} will install and maintain \ac{DODS} 
+servers at the Goddard \ac{DAAC} for the \acs{MODIS} level 2 and level 3 
+data stream. They will also maintain a directory of \ac{DODS} compliant 
+data sets and manage the registration and maintenance process 
+associated with these entries. (Sections~\ref{daac-data} and 
+\ref{locator}.)
+
+\item The \acl{AGU} will help to work with its membership to obtain 
+feedback with respect to \ac{DODS}, will install a \ac{DODS} server 
+for their electronic data depository and will investigate the use of 
+distributed data systems in the publication process in general. 
+(Sections~\ref{stimulating-community} and \ref{publication-process}.) 
+
+\item The \acl{UMiami} will provide access to the \acs{MODIS} research 
+data stream via the Unidata \ac{IDD} and \ac{DODS}. It will also 
+provide access to the \acs{MODIS} match-up data set. 
+(Section~\ref{modis-data}.)
+
+\item \acl{OSU} will act as a ``mirror'' site in the \ac{IDD} context 
+for the \acs{MODIS} research data stream and will also serve these 
+data via \ac{DODS}. (Section~\ref{modis-data}.)
+
+\item The \acl{MIT} is part of the \ac{DODS} core group and will
+continue to participate in this way, providing input with regard to 
+system design and functionality from the user perspective.
+\end{itemize}
+
+\baselineskip 12pt
+
+\clearpage
+\noindent {\Large B.2 Detailed Description of Project Milestones}
+\bigskip
+
+\begin{center}
+{\large \bf Project Manager:URITask 1}
+\end{center}
+
+\begin{description}
+ \item{\large \bf Year 1}
+   \begin{description}
+   \item{\bf 1 Qtr} Quarterly Progress Report.
+   \item{\bf 2 Qtr} Quarterly Progress Report.
+   \item{\bf 3 Qtr} Quarterly Progress Report.
+   \item{\bf 4 Qtr} Quarterly Progress Report.
+   \end{description}
+ \item{\large \bf Year 2}
+   \begin{description}
+   \item{\bf 1 Qtr} Quarterly Progress Report.
+   \item{\bf 2 Qtr} Quarterly Progress Report.
+   \item{\bf 3 Qtr} Quarterly Progress Report.
+   \item{\bf 4 Qtr} Quarterly Progress Report.
+   \end{description}
+ \item{\large \bf Year 3}
+   \begin{description}
+   \item{\bf 1 Qtr} Quarterly Progress Report.
+   \item{\bf 2 Qtr} Quarterly Progress Report.
+   \item{\bf 3 Qtr} Quarterly Progress Report.
+   \item{\bf 4 Qtr} Quarterly Progress Report.  
+
+Task Total: 36 months 
+
+  \end{description}
+
+\begin{center}
+{\large \bf Catalog Server:URITask 2}
+\end{center}
+
+ \item{\large \bf Year 1}
+   \begin{description}
+
+   \item{\bf 1 Qtr} Design of Catalog Server component which performs
+     multiple DODS server accesses and bundles results into a single DODS
+     data object from transmission back to the client
+
+   \item{\bf 2 Qtr} Develop initial version of Catalog Server Component:
+     retrieves all data from list of URLs
+
+   \item{\bf 4 Qtr} Develop final version of Catalog Server Component:
+     combines all retrieved data into singel DODS data object
+
+ Task Total: 13 months
+
+   \end{description}
+
+\begin{center}
+{\large \bf Translation:URITask 3}
+\end{center}
+
+ \item{\large \bf Year 1}
+   \begin{description}
+   \item{\bf 1 Qtr} Design of format translator for DODS servers
+
+   \item{\bf 2 Qtr} Implementation into DODS Core of format translator for
+     DODS Grid data types
+
+   \item{\bf 3 Qtr} Implementation into DODS Core of format translator for
+     other DODS data types
+
+   \item{\bf 4 Qtr} Release optimized DODS Core format translator;
+     Document Translator features
+
+   \end{description}
+ \item{\large \bf Year 2}
+   \begin{description}
+
+   \item{\bf 2 Qtr} Release of DODS APIs format translator; Document Format
+     Translation:Technical Writer
+
+   \item{\bf 3 Qtr} Specification of DODS standardized Units translation,
+     Lat/Long and Time
+
+   \item{\bf 4 Qtr} Specification of DODS standardized Units translation,
+     other geophysical parameters; Port to UDunits
+
+   \end{description}
+ \item{\large \bf Year 3}
+   \begin{description}
+
+   \item{\bf 1 Qtr} Design of DODS Core Unit translator for Lat/Long and Time
+
+   \item{\bf 2 Qtr} Release DODS Core Unit translator for Lat/Long and Time;
+     Document Unit Translation: Technical Writer
+
+   \item{\bf 3 Qtr} Design and implementation of DODS Core Unit translator
+     for other geophysical parameters
+
+  \item{\bf 4 Qtr} Release of DODS Core Unit translator for other geophysical
+         parameters; Document DODS Unit Translation:Technical Writer
+
+ Task Total: 40 months 
+
+   \end{description}
+\begin{center}
+{\large \bf Directory Metadata Mining:URITask 4}
+\end{center}
+
+ \item{\large \bf Year 1}
+   \begin{description}
+   \item{\bf 1 Qtr} Design of Directory Metadata Mining Tool
+
+   \end{description}
+ \item{\large \bf Year 3}
+   \begin{description}
+
+   \item{\bf 1 Qtr} Expert System implementaion: Implementation of ES based
+     on ES research and design results; Document Expert System
+     Documentation:Technical Writer
+
+ Task Total: 5 months
+
+   \end{description}
+\begin{center}
+{\large \bf Data Server Development and Upgrades:URITask 5}
+\end{center}
+
+ \item{\large \bf Year 1}
+   \begin{description}
+   \item{\bf 1 Qtr} NetCDF 3 server library upgrade; client library upgrade
+
+   \item{\bf 2 Qtr} NetCDF 3 client library upgrade
+
+   \item{\bf 4 Qtr} Design and Implement DODS GRIB abd BUFR servers; Document
+     GRIB and BUFR Servers:Technical Writer
+
+ Task Total: 11 months
+
+
+   \end{description}
+\begin{center}
+{\large \bf Java Conversion:URITask 6}
+\end{center}
+
+ \item{\large \bf Year 1}
+   \begin{description}
+
+   \item{\bf 4 Qtr} Complete conversion of DODS Core code to JAVA
+
+   \end{description}
+ \item{\large \bf Year 2}
+   \begin{description}
+
+   \item{\bf 4 Qtr} Complete conversion of DODS API libraries to JAVA;
+     Document JAVA version of DODS:Technical Writer
+
+ Task Total: 14 months
+
+   \end{description}
+\begin{center}
+{\large \bf System Wide Metrics and Integrated Software Testing:URITask 7}
+\end{center}
+
+ \item{\large \bf Year 1}
+   \begin{description}
+
+   \item{\bf 1 Qtr} DODS version release; Specification of testing suite for
+     DODS servers; Design of Metrics to address Earth Systems Science Goal
+     within the DODS federated system
+
+   \item{\bf 2 Qtr} DODS version release; Specification of testing suite for
+     DODS clients; Design of metrics to address Technology Develop goals;
+     Document DODS client/server Testing Suite:Technical Writer
+
+   \item{\bf 3 Qtr} DODS version release; Implement Technology Development
+     and Earth Systems Science metrics
+
+   \item{\bf 4 Qtr} DODS version release; Preliminary analysis
+     of Technology Development and Earth Systems Science metrics
+
+   \end{description}
+ \item{\large \bf Year 2}
+   \begin{description}
+
+   \item{\bf 1 Qtr} DODS version release; System-wide integrated testing of
+     DODS Core and API libraries tied to DODS version upgrades; Design of
+     WP-Federation metrics in collaboration with other WP-ESIPS
+
+   \item{\bf 2 Qtr} DODS version release; Implementation of WP-Federation
+     metrics
+
+   \item{\bf 3 Qtr} DODS version release; Preliminary analysis of
+     WP-Fed. statistics
+
+   \item{\bf 4 Qtr} DODS version release; 2nd analysis of Technology
+     Development and Earth Systems Science metrics
+
+   \end{description}
+ \item{\large \bf Year 3}
+   \begin{description}
+   \item{\bf 1 Qtr} DODS version release
+
+   \item{\bf 2 Qtr} DODS version release
+
+   \item{\bf 3 Qtr} DODS version release; 2nd analysis of WP-Fed.  statistics
+
+   \item{\bf 4 Qtr} DODS version release; 3rd analysis of Technology
+     Development and Earth Systems Science metrics
+
+ Task Total: 33 months
+
+
+\end{description}
+\begin{center}
+{\large \bf GCMD Coordinator:URITask 8}
+\end{center}
+
+ \item{\large \bf Year 1:}
+   \begin{description}
+   \item{\bf 1 Qtr} Coordination with GCMD and installation of DODS server
+
+   \item{\bf 2 Qtr} Coordination with GCMD and implementation of enhancements
+     to GCMD/DODS Registration service
+
+   \item{\bf 3 Qtr} Coordination and evaluation of GCMD/DODS Registration
+     process; Report on the process and procedures for developing a DIF using
+     the GCMD/DODS Registration Service. report to be basis for Expert System
+     Design
+
+   \item{\bf 4 Qtr} Upgrade DODS servers and registration components at GCMD;
+     Yearly report on GCMD/DODS usage statistics
+
+   \end{description}
+ \item{\large \bf Year 2:}
+   \begin{description}
+
+   \item{\bf 1 Qtr} Update and verify DODS Datasets reference by the GCMD;
+     Coordinate and suppport registration of new DODS datasets and servers 
+
+   \item{\bf 2 Qtr} Coordinate and suppport registration of new DODS datasets
+     and servers
+
+   \item{\bf 3 Qtr} Coordinate and suppport registration of new DODS datasets
+     and servers
+         
+   \item{\bf 4 Qtr} Coordinate and suppport registration of new DODS datasets
+     and servers
+         
+
+   \end{description}
+ \item{\large \bf Year 3:}
+   \begin{description}
+   \item{\bf 1 Qtr} Update and verify DODS Datasets reference by the GCMD;
+     Coordinate and suppport registration of new DODS datasets and servers
+
+   \item{\bf 2 Qtr} Coordinate and suppport registration of new DODS datasets
+     and servers
+         
+   \item{\bf 3 Qtr} Coordinate and suppport registration of new DODS datasets
+     and servers
+
+   \item{\bf 4 Qtr} Coordinate and suppport registration of new DODS datasets
+     and servers
+         
+
+ Task Total: 36 months
+
+   \end{description}
+\begin{center}
+{\large \bf ECS Interface: URITask 9}
+\end{center}
+This task is predicated on the specification of the
+WP-Federation architecture which will be designated by the WP-ESIPS early in
+the life of the program.  We anticipate that the design and implementation of
+the WP-Federation interface will not only include the WP-ESIPs but will also
+interface with EOSDIS.  
+
+ \item{\large \bf Year 1}
+   \begin{description}
+   \item{\bf 4 Qtr} Requirements specification of WP-Federation Interface 
+
+   \end{description}
+ \item{\large \bf Year 2}
+   \begin{description}
+
+   \item{\bf 2 Qtr} Design of Prototype WP-Fed Interface
+
+
+   \item{\bf 4 Qtr} Implementation of Prototype WP-Fed Interface
+
+   \end{description}
+ \item{\large \bf Year 3}
+   \begin{description}
+
+   \item{\bf 2 Qtr} Design of Version 1 WP-Fed Interface
+
+   \item{\bf 4 Qtr} Implementation of Version 1 WP-Fed Interface 
+
+
+ Task Total: 26 months
+
+
+   \end{description}
+\begin{center}
+{\large \bf Technical Writer: URITask 10}
+\end{center}
+Tasks for the Technical Writer are in support of
+DODS development activities and system upgrades.  The Technical Writer is
+responsible for generating User and Developer documentation on DODS.  This
+includes information on the installation and use of DODS software and
+technical manuals to support independent development efforts using DODS. The
+listing below includes tasks which are associated with specific project
+supertask milestones (e.g., Data Server Development and Upgrades) and
+independent tasks which are not associated with a specific supertask.  The
+supertask associated Technical Writing milestones are designated with an **
+and are not tallied in the total below, they have been included in the tally
+of the supertasks and are provided here to provide a complete picture of the
+Technical Writers responsibilities during the project.
+
+ \item{\large \bf Year 1}
+   \begin{description}
+   \item{\bf 1 Qtr} Special Server Installation Guide
+
+   \item{\bf 2 Qtr} **System-wide Metrics and Sftw. Testing-Document Testing
+     suite:; Special Server Installation Guide
+
+   \item{\bf 3 Qtr} Special Server Installation Guide
+
+   \item{\bf 4 Qtr} **Document Catalog Server:;**Document Core
+     Format Translator:; Special Server Installation Guide
+
+   \end{description}
+ \item{\large \bf Year 2}
+   \begin{description}
+   \item{\bf 1 Qtr} General update of User Guide and Core Developers Guide
+
+   \item{\bf 2 Qtr} **API Format Translator:;**Data Server
+     Dev-Document GRIB and BUFR Servers:
+
+   \item{\bf 4 Qtr} **Document JAVA Conversion
+
+   \end{description}
+ \item{\large \bf Year 3}
+   \begin{description}
+   \item{\bf 1 Qtr} **Metadata Mining-Document Expert System:
+
+   \item{\bf 2 Qtr} **Translation-Document Lat/Long and Time Unit
+     Translator:
+
+   \item{\bf 4 Qtr} **Translation-Document Geophysical Parameter Unit
+     Translator:
+
+ Task Total: 4.5 months
+
+     ** Not counted in Total 
+
+
+   \end{description}
+\begin{center}
+{\large \bf NCAR/HAO:NCARTask 1}
+\end{center}
+
+ \item{\large \bf Year 1}
+   \begin{description}
+   \item{\bf 1 Qtr} Build and install DODS servers for CEDAR data holdings,
+     with support of DODS core group; Continue migration of the CEDAR data
+     out of theexisting DBMS
+
+   \item{\bf 2 Qtr} Build a Matlab GUI for access to the CEDAR data;
+     Participate in testing of the IDL GUI being developed
+
+   \item{\bf 3 Qtr} Add user login, password verification, transaction and
+     data request logging and summary statistics
+
+   \item{\bf 4 Qtr} Develop netCDF or HDF form of MLSO data; Implement access
+     to RISE and MLSO data
+
+   \end{description}
+ \item{\large \bf Year 2  }
+   \begin{description}
+   \item{\bf 2 Qtr} Facilitate access to all HAO data by enhancing exisiting
+     web browser based interfaces; Select friendly users for testing each
+     stage of the developed interfaces
+
+   \item{\bf 4 Qtr} Implement registration of datasets with central data
+     server for CEDAR and RISE program and register those datasets with the
+     GCMD
+
+   \end{description}
+ \item{\large \bf Year 3}
+   \begin{description}
+   \item{\bf 1 Qtr} For CEDAR, establish DODS servers at remote sites for
+     database distribution
+
+   \item{\bf 3 Qtr} Develop search and query procedures for all HAO datasets
+     
+
+   \item{\bf 4 Qtr} Develop quantitative measures of usage and satisfaction
+     of users of the new interface
+
+ Task Total: 36 months
+
+   \end{description}
+\begin{center}
+{\large \bf UNIDATA/Push System:UCARTask 1}
+\end{center}
+
+ \item{\large \bf Year 1}
+   \begin{description}
+  
+   \item{\bf 1 Qtr} Define a suitable datastream, including the source
+     institution, the "product" segmentation, and the identifier string that
+     will accompany each product through IDD.
+
+   \item{\bf 2 Qtr} Implement a single-sender/single-receiver version of the
+     IDD carrying data as defined above.
+
+   \item{\bf 3 Qtr} Design a DODS server configuration suitable for providing
+     access to a (changing) collection of products from the above datastream.
+    
+
+   \item{\bf 4 Qtr} Implement the DODS server at the IDD receiver node,
+     configured to serve new data as they arrive.
+
+   \end{description}
+ \item{\large \bf Year 2}
+   \begin{description}
+   \item{\bf 1 Qtr} Test and refine the various components of this IDD/DODS
+     system in preparation for building a mirrored version.
+
+   \item{\bf 2 Qtr} Test and refine the various components of this IDD/DODS
+     system in preparation for building a mirrored version.
+
+   \item{\bf 3 Qtr} Replicate the IDD receiver/DODS server system at one or
+     two additional sites in preparation for their service as top-level
+     relays.
+
+   \item{\bf 4 Qtr} Extend the system by replicating more of the systems and
+     implementing a relay topology that provides timely delivery to about
+     8 mirrors.
+
+\end{description}
+ \item{\large \bf Year 3}
+   \begin{description}
+   \item{\bf 1 Qtr} Design and implement a prototype method for automatically
+     updating the Master Directory when a mirror changes state.
+
+   \item{\bf 2 Qtr} Help design and implement a prototype "virtual DODS
+     server" using a notification system similar to that for updating the
+     Master Directory
+
+   \item{\bf 3 Qtr} Test and refine the above two prototypes.
+
+   \item{\bf 4 Qtr} Create a design document that reflects experiences
+     learned and specifies how push-based DODS servers should be employed in
+     future EOS activities.
+
+ Task Total: 36 months
+
+   \end{description}
+\begin{center}
+{\large \bf UNIDATA/User Support:UCARTask 2}
+\end{center}
+
+ \item{\large \bf Year 1}
+   \begin{description}
+
+   \item{\bf 1 Qtr} Set up a list server and Web pages, including pages for
+     subscribing to and unsubscribing from the lists, and pages for
+     submitting questions, all with suitable links to and from other DODS
+     pages.
+
+   \item{\bf 2 Qtr} Begin fielding questions, interacting with DODS
+     developers, and building a searchable record of support-user
+     interactions. 
+
+   \item{\bf 3 Qtr} Create Web pages for searching the support archive.
+     Create an FAQ.  Continue fielding questions, interacting with
+     developers, and building the record.
+
+   \item{\bf 4 Qtr} Field all questions that arrive in Q4 (except for the
+     last 3 days).  Interact with developers and/or perform development work
+     in order to solve problems with or to enhance the various components of
+     DODS.  Add new material to and delete obsolete material from the
+     (publicly) searchable record of support-user transactions.  Maintain the
+     FAQ to accurately reflect the state of DODS and its use in Q4. Adapt
+     topology of DODS/IDD push system to conform to changes in usage patterns
+     that occur in current quarter.
+
+   \item{\bf Qtrs 5--12} (Continued from Qtr 4)
+
+ Task Total: 36 months
+
+
+   \end{description}
+\begin{center}
+{\large \bf PMEL/Data Fusion:PMELTask 1}
+\end{center}
+
+ \item{\large \bf Year 1}
+   \begin{description}
+
+   \item{\bf 2 Qtr} Demonstrate a virtual data base formed by at least three
+     separate operational (not prototypes) LAS systems sharing data sets 
+
+   \item{\bf 3 Qtr} Install an operational LAS version at PMEL that is
+     capable of data fusion on local data sets 
+
+   \item{\bf 4 Qtr} Demonstrate at least three separate operational LAS
+     systems, each capable of "DODS-fusing" (overlaying and differencing
+     where variables are conformable) its gridded data holdings with its
+     sister servers
+
+   \end{description}
+ \item{\large \bf Year 2}
+   \begin{description}
+
+   \item{\bf 2 Qtr} The all-Java interface installed on at least three
+     servers as an operational interface
+
+   \item{\bf 3 Qtr} The shopping basket functionality installed on at least
+     three servers drawing from the same virtual data base 
+
+   \item{\bf 4 Qtr} Demonstrate a data-fusing virtual data base of at least
+     six operational servers 
+
+   \end{description}
+ \item{\large \bf Year 3}
+   \begin{description}
+
+   \item{\bf 2 Qtr} Demonstrate operational servers which are capable of
+     fusing non-conformable variables (variables of unmatched spacial or
+     temporal resolutions or units) from distributed locations
+
+   \item{\bf 3 Qtr} Demonstrate an operational server that can fuse gridded
+     data with selected satellite and in-situ data sets from other DODS
+     servers specified "live" by the user
+
+   \item{\bf 4 Qtr} Demonstrate an operational server that includes the
+     following extensions; the application of smoothers and gap fillers along
+     various axes; the computation of monthly and annual climatological
+     fields from time ranges; and performing limited frequency domain
+     analyses 
+
+ Task Total: 36 months
+
+
+   \end{description}
+\begin{center}
+{\large \bf JPL/HDF-EOS Server:JPLTask 1}
+\end{center}
+
+ \item{\large \bf  Year 1}
+   \begin{description}
+
+   \item{\bf 1 Qtr} HDF server development: HDF-EOS to DODS GRID type
+     conversion 
+
+   \item{\bf 2 Qtr} HDF server development: HDF-EOS to DODS point type
+     conversion; HDF-EOS to DODS swath type conversion
+
+   \item{\bf 3 Qtr} HDF server development: HDF-EOS to DODS Metadata type
+     conversion; HDF Server maintenance
+
+   \item{\bf 4 Qtr} HDF client development: Conversion of SDS
+
+   \end{description}
+ \item{\large \bf  Year 2}
+   \begin{description}
+
+   \item{\bf 1 Qtr} HDF client development: Conversion of VData
+
+   \item{\bf 2 Qtr} HDF client development: Conversion of raster)
+
+  \item{\bf 3 Qtr}  HDF client development: Conversion of Metadata; HDF Server 
+         Maintenance
+
+       \item{\bf 4 Qtr} HDF client development: Conversion of GRID
+
+   \end{description}
+ \item{\large \bf  Year 3}
+   \begin{description}
+
+   \item{\bf 1 Qtr} HDF client development: Conversion of point
+
+   \item{\bf 2 Qtr} HDF client development: Conversion of swath
+
+   \item{\bf 3 Qtr} HDF Server maintenance
+
+   \item{\bf 4 Qtr} HDF client development: Conversion oto HDF-EOS Metadata;
+     HDF Server maintenance
+
+ Task Total: 36 months
+
+
+   \end{description}
+\begin{center}
+{\large \bf URI/CS/Directory Metadata Mining:URI/CSTask 1}
+\end{center}
+
+ \item{\large \bf Year 1}
+   \begin{description}
+
+   \item{\bf 4 Qtr} Development of the general strategies for automating the
+     integration of the local catalogs into a central global catalog using
+     the metadata at each site
+
+   \end{description}
+ \item{\large \bf Year 2}
+   \begin{description}
+
+   \item{\bf 4 Qtr} Development of the structure of the general catalog to
+     permit data mining and the development of the user usage patterns
+     tracking system
+
+   \end{description}
+\begin{center}
+{\large \bf NCSA/HDF-EOS:NCSATask 1}
+\end{center}
+
+ \item{\large \bf Year 1}
+   \begin{description}
+  
+   \item{\bf 2 Qtr} Report on study of of HDF-based storage formats to
+     support efficient access to DODS
+
+ Task Total: 4.5 months
+
+   \end{description}
+\begin{center}
+{\large \bf NCSA/HDF-EOS:NCSATask 2}
+\end{center}
+
+ \item{\large \bf Year 1}
+   \begin{description}
+  
+   \item{\bf 4 Qtr} Report on study of mapping between HDF--EOS and DODS data
+     types
+
+ Task Total: 4.5 months
+
+   \end{description}
+\begin{center}
+{\large \bf NCSA/HDF 5:NCSATask 3}
+\end{center}
+
+ \item{\large \bf Year 2}
+   \begin{description}
+
+   \item{\bf 4 Qtr} Implementation of HDF 5 API with DODS protocol
+
+ Task Total: 12 months
+
+   \end{description}
+ \item{\large \bf Year 3}
+   \begin{description}
+
+   \item{\bf 4 Qtr} Report on maintaining, troubleshooting, and providing
+     user support for the HDF, HDF-EOS and HDF 5 implementations
+
+Task Total: 6 months
+
+   \end{description}
+
+\end{description}
+
+\end{document}

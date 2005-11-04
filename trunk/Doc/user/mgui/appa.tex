@@ -1,0 +1,199 @@
+% Appendix to the Matlab GUI User Guide
+%
+% $Id$
+%
+% $Log: appa.tex,v $
+% Revision 1.7  2004/12/09 03:04:14  tomfool
+% updated for GUI 6
+%
+% Revision 1.6  1999/05/27 15:58:39  tom
+% expunged remaining references to "dods.gso.uri.edu"
+%
+% Revision 1.5  1999/05/25 20:47:46  tom
+% modifications for DODS release 3.0
+%
+% Revision 1.4  1999/02/04 17:42:13  tom
+% modified to use dods-book.cls and Hyperlatex
+%
+% Revision 1.3  1999/01/20 15:18:38  tom
+% updated, and changed for dods-book.cls and hyperlatex
+%
+% Revision 1.2  1998/12/07 15:41:15  tom
+% updated for DODS v2.19 and GUIv0.7
+%
+% Revision 1.1  1998/02/12 18:10:40  tom
+% added to CVS archive
+%
+%
+
+\chapter{Getting Started with the \GUI\ Software}
+\label{gui,install}
+
+This appendix contains instructions for acquiring the \GUI\
+software. It also contains instructions for a quick start, in case you
+feel like diving in without reading the rest of this document. If you
+are very familiar with Matlab, this may be just fine.
+
+The \GUI\ consists of the following pieces:
+
+\begin{description}
+
+\item[Program Files]
+
+These are the M-files and data for the browser itself. These are
+usually stored in a single directory (the ``Matlab directory'') that
+must be accessible on the Matlab path. These files are the same on all
+platforms.
+
+\item[Archive Files]
+
+M-files describing the data archives accessible to the browser.  These
+are found in the \lit{DATASETS} subdirectory of the Matlab
+directory. You can add your own files to the browser by adding M-files
+to this directory. (See page~\pageref{gui,adding,manifest.lcl}) These
+files are the same on all platforms.
+
+\item[Helper Programs]
+
+Three helper programs: \lit{loaddods}, \lit{writeval}, and
+\lit{geturl}. These programs are part of the DODS ``Matlab Client''
+distribution. The directory with loaddods in it must be on the Matlab
+path, and the directory with writeval and geturl in it must be on the
+shell's \$PATH. These programs differ among platforms. You must either
+retrieve and compile the source distribution, or make sure to secure
+the binary distribution appropriate for the computer you are using.
+
+\end{description}
+
+In addition to these programs, you will need a copy of the GNU gzip
+utility to uncompress the archives. The \OPDhome\ contains links to
+an up-to-date version of that utility.
+
+The \GUI\ does not come with Matlab itself. You will have to
+secure a copy of Matlab in order to run any of this.
+
+\section{Getting the \GUI\ Software}
+
+All the \opendap software can be downloaded from \OPDhome, which has a
+link at the top reading \but{Download}.  Click there and follow the
+directions. 
+
+
+\section{Unpacking the \GUI\ Software}
+\label{install,unpack}
+
+Once you have the files downloaded 
+they must be uncompressed with the \lit{gzip} program, and un-tarred
+with the \lit{tar} program. The following command executes both at the
+same time:
+
+\begin{vcode}{ib}
+gzip -d -c GUI-stuff.tar.gz | tar -xvf -
+\end{vcode}
+
+or, if you use GNU \lit{tar}:
+
+\begin{vcode}{ib}
+tar -xvzf GUI-stuff.tar.gz 
+\end{vcode}
+
+Move to the directory where you wish to store the \GUI, 
+repeat this for each \lit{tar} file you need to install.
+
+If you are installing this software from a binary distribution, you
+may move on to the next section, \sectionref{install,install}.
+
+After the \lit{tar} files have been unpacked, set the \DODSroot\
+environment variable. The way to do this will differ depending on the
+shell you use\footnote{Type \lit{echo \$SHELL} to find out which shell is
+active on your system.}. For csh and tcsh, use:
+
+\begin{vcode}{ib}
+setenv DODS_ROOT /usr/local/OPD-2.8
+\end{vcode}
+
+(Make sure to use the correct version number.)
+For ksh and bash, use:
+
+\begin{vcode}{ib}
+export DODS_ROOT=/usr/local/OPD-2.8
+\end{vcode}
+
+After you have set the environment variable (this might be a good time
+to add the variable definition to your \lit{.login}, \lit{.cshrc} or
+\lit{.profile} initialization file), finish the configuration with the
+following shell commands:
+
+\begin{vcode}{ib}
+cd $DODS_ROOT
+./configure
+make
+make install
+\end{vcode}
+%$
+
+If you already have some \opendap software installed on your system, and
+are simply adding the Matlab functions, you need not execute
+\lit{configure} and \lit{make} in the \DODSroot\ directory, but 
+can change your directory to the \lit{\$DODS_ROOT/src/matlab-GUI}
+directory, and run \lit{configure} and \lit{make install} there.
+
+\section{Installing the \GUI\ Software}
+\label{install,install}
+
+To run the \GUI, change your working directory to the directory where
+the \GUI\ files are kept (\lit{\$DODS\_ROOT/bin/matlab-gui}), and
+start Matlab. Then issue the \lit{browse} command.
+In order to run the \GUI\ from other directories, you only need to set 
+three environment variables:
+
+\begin{itemize}
+\item
+Be sure that the \DODSroot\ environment variable is set, as
+described in \sectionref{install,unpack}.
+
+\item
+The \lit{\$PATH} environment variable must include an entry for the 
+\DODSroot\lit{/bin} directory containing the \lit{writeval} and
+\lit{geturl} programs.
+
+\item The \lit{\$MATLABPATH} environment variable must include entries
+  for the directories containing the Matlab client program
+  (\lit{loaddods}), the browser programs and data, as well as the
+  directory containing the data archive files. These are usually
+  \DODSroot\lit{/bin}, \DODSroot\lit{/matlab-GUI} and
+  \DODSroot\lit{/matlab-GUI/DATASETS}\footnote{If you prefer, you can
+    set the Matlab search path from within Matlab with the
+    \lit{path()} or \lit{addpath} commands. You can put this command
+    into a \lit{startup.m} file to set the path automatically.}
+
+\end{itemize}
+
+If you didn't do it before, put these variable definitions into your
+shell's initialization file (\lit{.login}, \lit{.profile},
+\lit{bashrc} or whatever), so you won't have to set them by hand.
+
+You are now ready to run the \GUI. Simply start Matlab, and
+type 'browse' at the prompt to see the browser window appear:
+
+\begin{vcode}{ib}
+>> browse
+\end{vcode}
+
+
+\section{The Archive Files}
+\label{install,archive}
+
+The \GUI\ software is not updated as frequently as are the archive
+M-files in the central DODS directory. This means that it is generally
+a good idea to issue an ``update all'' command (\but{Get All} on the
+\pdmenu{Update} menu) soon after you complete the installation. This
+is also a good test of the installation.
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

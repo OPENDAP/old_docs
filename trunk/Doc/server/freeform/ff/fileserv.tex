@@ -1,0 +1,570 @@
+\chapter{File Servers}
+\label{fs}
+
+The DODS project uses the \ffs\ to present a catalog of data files to
+the world as a single dataset.  Normally, in the DODS argot, a
+``dataset'' is contained in a single file on a disk.  However, this
+paradigm is often broken by large datasets that may contain many
+thousands or tens of thousands of data files.  The DODS file server is
+a way to make these dicrete datasets appear to be a single large
+dataset. 
+
+The DODS file server is a DODS server that returns a URL or set of
+URLs in response to a query containing selection variables.  For
+example, a dataset organized by date and geographic location might
+provide a file server that allowed you to query the dataset with a
+range of dates and longitudes.  This fileserver would return a list of
+one or more URLs corresponding to files within that dataset that fell
+within the given range.
+
+
+\section{The Problem}
+\label{fs,problem}
+
+Consider the following (imaginary) list of files:
+
+\begin{vcode}{ib}
+1997360.nc  1998001.nc  1998007.nc  1998013.nc ...
+1997361.nc  1998002.nc  1998008.nc  1998014.nc
+1997362.nc  1998003.nc  1998009.nc  1998015.nc
+1997363.nc  1998004.nc  1998010.nc  1998016.nc
+1997364.nc  1998005.nc  1998011.nc  1998017.nc
+1997365.nc  1998006.nc  1998012.nc  1998018.nc
+\end{vcode}
+
+These appear to be a set of netCDF files, arranged by
+date\footnote{A serial date, with a year and the day of the
+  year, expressed in an ordinal number from 1 to 365 or 366.}
+
+If you want data from the first week of January, 1998, it is fairly
+clear which files to request.  However, a basic DODS server provides
+no way to request data from more than one file, so your request would
+have to be split into 7 different requests, from \lit{1998001.nc} to
+\lit{1998007.nc}.  This could be represented as a set of seven DODS
+URLs: 
+
+\begin{vcode}{ib}
+http://dods/cgi-bin/nph-nc/1998001.nc
+http://dods/cgi-bin/nph-nc/1998002.nc
+http://dods/cgi-bin/nph-nc/1998003.nc
+http://dods/cgi-bin/nph-nc/1998004.nc
+http://dods/cgi-bin/nph-nc/1998005.nc
+http://dods/cgi-bin/nph-nc/1998006.nc
+http://dods/cgi-bin/nph-nc/1998007.nc
+\end{vcode}
+
+But what if you then uncover another similar dataset whose data you
+want to compare to the first?  Or what if you want to expand the
+inquiry to cover the entire year?  Keeping track of this many URLs
+will quickly become burdensome.
+
+What's more, another similar dataset could be arranged in two
+different directories, \lit{1997} and \lit{1998}, each with files:
+
+\begin{vcode}{ib}
+001.nc
+002.nc
+003.nc
+...
+\end{vcode}
+
+and so on.  Now you have to keep track of two large sets of URLs, in
+two different forms.  But you could also imagine files called:
+
+\begin{vcode}{ib}
+0011998.nc
+0021998.nc
+0031998.nc
+\end{vcode}
+
+or 
+
+\begin{vcode}{ib}
+00198.nc
+00298.nc
+00398.nc
+\end{vcode}
+
+or 
+
+\begin{vcode}{ib}
+1Jan98.nc
+2Jan98.nc
+3Jan98.nc
+\end{vcode}
+
+That is, the number of possible sensible arrangements may not, in
+fact, be infinite, but it may seem that way to a scientist who is
+simply trying to find data.
+
+
+\section{The DODS Solution}
+\label{fs,solution}
+
+To create a system that allows data providers to assert a degree of
+uniformity over wildly variable dataset organizations, DODS provides
+for the installation of a DODS \new{file server}.  The file server is
+a DODS dataset, containing associations between the names of files
+within a dataset and some ``selectable'' data values.
+
+
+\subsection{Selectable Data}
+\label{fs,selectable}
+
+The concept of \new{selectable data} requires some explanation.  This
+is used to indicate the data variables you might ordinarily use to
+narrow your search for data in the first pass at a dataset.
+
+For geophysical data, the selectable data is often the time and
+location of the data, since typical searches for data often begin by
+specifying a part of the globe that bears examining, or a date of some
+event.  For other types of data, other data variables will seem more
+appropriate.  Model data, for example, which has no real location or
+time, might be arranged by the parameters that varied between runs.
+
+A comprehensive definition of selectable data has so far eluded the
+DODS group, but there are some guidelines, albeit fairly vague ones:
+
+\begin{itemize}
+\item The selectable data is generally \emph{not} recorded within each
+  data file.  However, the selectable data may often include a
+  \emph{range} summarizing some of the data within each file.
+\item The selectable data should help a user decide whether a
+  particular data file in a dataset is useful.  A temperature range
+  might not be as useful as a time range, since data searches more
+  often start with time.  (Both would presumably be still more useful,
+  but there is a trade-off between the utility of the file server and
+  the time spent maintaining it.)
+\end{itemize}
+
+\subsection{What It Looks Like}
+\label{fs,look}
+
+Consider again the set of data files shown in \sectionref{fs,problem}.
+We could associate each one of these files with a date, and this would
+provide the rudiments of a file server if we then serve that data with
+a DODS server such as the \ffs .
+
+
+\begin{vcode}{ib}
+1997/360 http://dods/cgi-bin/nph-nc/1997360.nc
+1997/361 http://dods/cgi-bin/nph-nc/1997361.nc
+1997/362 http://dods/cgi-bin/nph-nc/1997362.nc
+1997/363 http://dods/cgi-bin/nph-nc/1997363.nc
+1997/364 http://dods/cgi-bin/nph-nc/1997364.nc
+1997/365 http://dods/cgi-bin/nph-nc/1997365.nc
+1998/001 http://dods/cgi-bin/nph-nc/1998001.nc
+1998/002 http://dods/cgi-bin/nph-nc/1998002.nc
+1998/003 http://dods/cgi-bin/nph-nc/1998003.nc
+1998/004 http://dods/cgi-bin/nph-nc/1998004.nc
+1998/005 http://dods/cgi-bin/nph-nc/1998005.nc
+1998/006 http://dods/cgi-bin/nph-nc/1998006.nc
+1998/007 http://dods/cgi-bin/nph-nc/1998007.nc
+1998/008 http://dods/cgi-bin/nph-nc/1998008.nc
+1998/009 http://dods/cgi-bin/nph-nc/1998009.nc
+1998/010 http://dods/cgi-bin/nph-nc/1998010.nc
+\end{vcode}
+
+This list represents a set of DODS URLs, each identified by a date,
+given as a year and a serial day.  The files appear to be netCDF
+format files, served by a DODS netCDF server, but that is not
+important for this discussion.
+
+To use the \ffs\ for your file server, you could use a format
+description file with an input section like this:
+
+\begin{vcode}{ib}
+ASCII_input_data "File Server Example Input"
+year 1 4 short 0
+serial_day 6 8 short 0
+DODS_Url 10 46 char 0
+\end{vcode}
+
+\begin{comment}
+\section{File Server Functions}
+\label{ss-fns}
+
+
+
+
+Yes, but it may take a while to get there. Right now the grid_select function
+*is* available to every server, while the DODS_Date, DODS_Time,
+DODS_DateTime, date, time and datetime function are only in the FF server.
+I'm not sure when those will mve into the general server population.
+
+
+
+
+
+ >"Paul" == Paul Hemenway <paul@koko.gso.uri.edu> writes:
+
+ > Hi, Dan,
+ >>> loaddods('http://koko.gso.uri.edu/cgi-bin/nph-ff/servers/nscat/fsu/fsutestfs.dat?DODS_URL,DODS_Date()&date("1996/366","1997/006")')          
+
+ > Reading: http://koko.gso.uri.edu/cgi-bin/nph-ff/servers/nscat/fsu/fsutestfs.dat
+ >   Constraint: DODS_URL,DODS_Date()&date("1996/366","1997/006")
+ > Server version: dods/2.21
+ > Creating string vector `DODS_Date'.
+ > Creating string vector `DODS_URL'.
+
+ > DODS_URL                                           
+
+ > DODS_URL =
+
+Oh, Bad docs on my part. Add the name of the constructor variable that should
+contain the DODS_Date variable. In the following dataset:
+
+    [dcz:/usr/local/DODS/src/dap-2.23] ./geturl -d http://koko.gso.uri.edu/cgi-bin/nph-ff/servers/nscat/fsu/fsutestfs.dat
+    Dataset {
+        Sequence {
+            Int32 year;
+            Int32 day;
+            String DODS_URL;
+        } FSU_nscat1;
+    } fsutestfs;
+
+The ctor variable that should contain DODS_Date is `FSU_nscat1'. How did I
+know that? Because the variable year and day are contained by the ctor
+variable. If you look at the DAS you can see that this is the case. But I
+can't since the server is older and does not have the ancillary DAS fix in it.
+
+However, something else is wrong, maybe in the ancillary DAS. Here's some
+tests: 
+
+This works OK:
+
+    [dcz:/usr/local/DODS/src/dap-2.23] ./geturl -D http://koko.gso.uri.edu/cgi-bin/nph-ff/servers/nscat/fsu/fsutestfs.dat -c "DODS_URL&year=1997&day=170"The data:
+        Sequence {
+            String DODS_URL;
+        } FSU_nscat1;
+     = { { "http://www.coaps.fsu.edu/cgi-bin/nph-nc/nscat/data/wt_W25/NSCAT.wt0.5.1997170.nc" }};
+
+But not this:
+
+    [dcz:/usr/local/DODS/src/dap-2.23] ./geturl -D http://koko.gso.uri.edu/cgi-bin/nph-ff/servers/nscat/fsu/fsutestfs.dat -c "DODS_URL,DODS_Date(FSU_nscat1)&year=1997&day=170"
+    The data:
+        Sequence {
+            String DODS_URL;
+            String DODS_Date;
+        } FSU_nscat1;
+     = { { "", "" }};
+
+Nor this:
+
+    [dcz:/usr/local/DODS/src/dap-2.23] ./geturl -D http://koko.gso.uri.edu/cgi-bin/nph-ff/servers/nscat/fsu/fsutestfs.dat -c"DODS_URL&date(\"1997/170\")"
+The data:
+        Sequence {
+            String DODS_URL;
+        } FSU_nscat1;
+     = { { "" }};
+
+ > *****************************************
+
+ > I can go ahead with the "year" and "day", but it's much less elegant than
+ > with date().  And I'd like to find out how to do it "right" in the end.
+
+ > (I changed the day_variable to year_day_variable in the .das file.)
+
+ > Any ideas?
+
+Send your ancillary DAS to the list and/or get the latest server.
+
+
+
+
+Overview:
+
+To set up a file server for particular dataset you first must create a simple
+database to server up with the FreeForm server. Once that is done you will
+need to customize some of the constraint expression functions and rebuild
+(compile and link) the FreeForm server with those functions. In some future
+version of the file server I'll make this something that can be set up in a
+(text) config file. However, for now its C++ all the way (just what you
+wanted to hear, huh?).
+
+Stepwise:
+
+1) Build a database to server with FreeForm. Use something like `ls -1 -R' or
+   find to build up a list of the files. If you do this for the DSP files
+   that gives you the date information needed to build a simple ASCII
+   flat-file database. I made a test one using `ls -1' and perl. You need to
+   put the year, day-number and URL in separate columns. Bag time for right
+   now (I'm still working on Time and DateTime). The database should look
+   something like:
+
+   98 001 http://.../h98001xxyyzz.dsp.Z
+
+   Of course, you'll start at (19)79 or whatever.
+
+2) Set up a regular FF server. To do that you need to make a FreeForm format
+   file. To do that you need the starting and ending column positions for the
+   fields. Using the earlier example:
+
+   98 001 http://.../h98001xxyyzz.dsp.Z
+   ^^ ^ ^ ^                           ^
+   || | | |                           35
+   || | | 8
+   || | 6
+   || 4
+   |2
+   1
+
+   Note that FreeForm is like Fortran in that counting starts at one. The
+   format file would look like:
+
+      ASCII_input_data "AVHRR"
+      year 1 2 int32 0
+      day 4 6 int32 0
+      DODS_URL 8 35 text 0
+
+   There are some trick here: `ASCII_input_data' must be the first word on
+   the first non-comment line (comments start with `/'). The name of the
+   dataset is the string following ASCII_input_data. FF will let you put
+   spaces there, but DODS *won't*. The variable used to hold the URL *cannot*
+   be called `URL' (or Url or url) because that is a reserved word in DODS. I
+   use DODS_URL, but anything other than a type name will work.
+
+   One more trick: You can add an ASCII_output_data section to the format
+   file and use the `newform' program (in the FF server distribution subdir
+   FFND) to test out your new dataset. It could be:
+
+      ASCII_output_data
+      year 1 2 int32 0
+      DODS_URL 4 27 text 0
+
+   The idea is to make a different (smaller) set of output variables so you
+   can process things with newform and see it change those data.
+
+3) set up the FF stuff. Store the database in a text file named
+   <something>.dat and store the format file *in the same directory* in a
+   file named <something>.fmt. The <something>s have to match.
+
+   --> The FF manual and DODS FF server manual (should) explain all this
+   --> stuff.
+
+4) Test the FF server. Look at the DDS and make simple queries with the
+   dataset. You can run the ff_dods server component on the command line and
+   pipe the resulting stuff to asciival:
+
+      ff_dods AVHRR.dat -e 'year,day,DODS_URL&year=82&day=12' | asciival -a -- -
+
+   Note the convention that `--' separates options from the URLs and the `-'
+   for a URL means read from stdin. asciival is the DODS_ROOT/etc.
+
+5) Build a custom copy of the ce_functions.cc file for you dataset. In the
+   distribution of the FF server there is a file called ce_functions.cc. In
+   that file you'll need to customize the function
+
+      DODS_Date_jpl_pathfinder(DDS &dds)          
+
+   so that it does you bidding. Here's the code:
+
+    DODS_Date
+    DODS_Date_jpl_pathfinder(DDS &dds)
+    {
+        BaseType *day_var = dds.var("JPL_Pathfinder.day");
+        int day_number;
+        int *day_number_p = &day_number;
+        day_var->buf2val((void **)&day_number_p);
+
+        BaseType *year_var = dds.var("JPL_Pathfinder.year");
+        int year;
+        int *year_p = &year;
+        year_var->buf2val((void **)&year_p);
+
+        DODS_Date d(year, day_number);
+
+        DBG(cerr << "year: " << year << " day number: " << day_number << endl);
+
+        return d;
+    }
+
+   This function reads two variables from the dataset and builds a DODS_Date
+   object. Note that I use the fullname of each variable. The DODS_Date class
+   has ctors for yyddd and yymmdd dates (look at the file DODS_Date.h for
+   reference documentation; run it through doc++ to get Latex & ps).
+
+   You should (for sanity's sake) change the name from DODS_Date_jpl... to
+   DODS_Date_gso... Once you've done that, make sure to change the other
+   places in ce_functions.cc where this particular function is called. The
+   function could be declared static (in fact I guess not doing so is a bug
+   on my part). 
+
+6) What is going on here? The comment in ce_functions.cc are pretty lean.
+   Here's a run down. To get standard comparisons of dates I hide the actual
+   work inside a function that is called in a CE. To do the same sample URL I
+   gave above, you could now say:
+
+    ff_dods AVHRR.dat -e 'year,day,DODS_URL&date("1982/12")' | asciival -a -- -
+
+   Note that the URL is in single quotes and the date is in double quotes.
+   Dates are passed to the `date()' CE function as strings.
+
+   The other part of those functions in ce_functions.cc provide a way to get
+   dates back from the server in a standard form. I added `projection
+   functions' to the CE parser to make that possible. By asking for a
+   variable with the projection function DODS_JDate() you will get a DODS
+   year-day date string back from the server. For example:
+
+    ff_dods AVHRR.dat -e DODS_URL,DODS_JDate(AVHRR)&date("1982/12")' \
+      | asciival -a -- -
+
+  Could produce:
+  
+    "http://..../h98012...dsp.Z" "1998/12"
+    .
+    .
+    .
+
+  The key thing is that the using the function `DODS_JDate(...)' in the
+  projection part of the CE causes a new variable to be inserted into the DDS
+  and added to the current projection (users don't need to know that, but
+  reading through the ce-functions.cc code might be easier knowing it).
+
+
+
+
+DODS and the Fileserver.
+
+Paul Hemenway 20 March 1999
+
+DODS links a user (Client) to a dataset, usually through a Graphical 
+User Interface (GUI).   The link is made over the World Wide Web (www) 
+through a set of serving files and programs that takes the user's data 
+specifications and converts them into a request for specific data from the 
+specified data set(s).  Often, but not always, these serving files are 
+located in a "Fileserver".
+
+When it exists, THE FILESERVER is 
+a) the set of files that is used by DODS to convert the user's 
+      data specifications into specific Universal Record Locators (URLs), and 
+b  the location of that set of files.
+ 
+
+The steps before, during and after the call to the file server are:
+
+1) Client  sets data criteria (e.g., date-, lat-, lon-, temp-, ranges).
+
+2) Client    <==>  FILESERVER  (to get data URLs)
+
+3) Client    <==>  Dataset   (specific data are requested and sent.)
+
+
+   
+In the following example, the Client will be represented by the 
+MATLAB gui, the fileserver will be represented by three specific
+Freeform files which make up the fileserver, and the served dataset
+will be represented by a directory containing the given dataset.  The
+dataset will be assumed to be served as dsp files.
+
+1)  Client, using the MATLAB-gui, specifies:
+                dataset,variables and ranges (including lat,lon,time) 
+                of the request.
+                     
+                         
+                   THIS IS THE FreeForm FILESERVER!
+                                ^
+                                |
+                                |
+                             fs.dat  
+2)      MATLAB-gui <==>    fs.dat.das    (located in:
+                             fs.fmt       http://fsmachine/path2fsdirectory)
+
+
+
+3)  MATLAB-gui, requests data from: http://datamachine/path2datadirectory
+                which is returned over the www.
+
+
+All machine names, path names, and directories are generic.
+
+
+
+
+Notes on Communication.
+
+I)  In the MATLAB-gui:
+
+The MATLAB-gui must know where the dataset and the fileserver reside.
+In the archive.m file (see the MATLAB-gui Manual), two variables are set:
+
+Server = 'http://mymachine/cgi-bin/nph-dsp/path2datadirectory'
+
+CatalogServer = 'http://fsmachine/cgi-bin/nph-ff/path2fsdirectory'
+
+The first points to the dataset.  The second points to the fileserver.
+
+
+II) Within the Fileserver itself:
+
+The fs.dat file is made up of the dataset URLs, prepended with time
+or other information used by the gui to determine which URLs to call.
+
+(e.g.:
+
+1981/01/26:23:09:02 http://dods.gso.uri.edu/cgi-bin/nph-dsp/avhrr/1981/1/n81026230902.pvu.Z )
+
+The fs.dat.das file contains, among other things, a construct that looks like:
+
+  DODS_Date_Time {
+                # The DODS_Date_Time prototype is as follows:
+                #
+                #       yyyy/mm/dd:hh:mm:ss
+                #
+                # This prototype is purely experimental.
+
+                String year_variable URI.Avhrr.year;
+                String month_variable URI_Avhrr.month;
+                String day_variable URI_Avhrr.day;
+                String hours_variable URI_Avhrr.hours;
+                String minutes_variable URI_Avhrr.minutes;
+                String seconds_variable URI_Avhrr.seconds;
+                String gmt_time true;
+        }
+
+The string: URI_Avhrr   
+
+is the same string that appears in the fs.fmt file (e.g.:
+
+ASCII_input_data "URI_Avhrr"
+year     1 4    int32 0
+month    6 7    int32 0
+day      9 10   int32 0
+hours    12 13  int32 0
+minutes  15 16  int32 0
+seconds  18 19  int32 0
+DODS_URL 21 92  text  0   )
+
+which determines the data structure within the .dat file.  (NB.  In this
+case, the fileserver is a FreeForm server, hence the specific formatting
+in the .fmt file, and the existance of the .fmt file itself.)
+
+AN OBSERVATION:
+   The fileserver and the dataset do not need to know where each other are,
+except that the URLs for the dataset must be in the fs.dat file.  The 
+Client (through the MATLAB-gui) first selects the data criteria, second, 
+accesses the fileserver to determine which URLs to call, and third, after
+the the fileserver has provided the URLs, the client  actually calls for
+the URLs from the dataset.  The fileserver and dataset may be in the same
+directory on the same machine, but they need not be.
+
+
+
+
+
+
+
+\section{Building a File Server: An Example}
+\label{fs,example}
+
+Here is an example of building a file server for a large collection of
+data files, served by DODS.
+\footnote{All the files mentioned in this section are available in the
+  \lit{examples} directory on \DODShome .}
+
+\end{comment}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

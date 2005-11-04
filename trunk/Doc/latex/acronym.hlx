@@ -1,0 +1,123 @@
+%% 
+%% This is the LaTeX acronym package, translated into hyperlatex.
+%%
+%% Tom Sgouros 4/27/2000 
+%%
+%%   The usage of this package is best dscribed in the documentation
+%%   for the acronym LaTeX package.  Briefly, here it is:
+%%
+%%   There are six macros and an environment defined here.  The ket is
+%%   \acrodef, which has two arguments, an acronym and a definition:
+%%
+%%     \acrodef{TS}{Tom Sgouros}
+%%
+%%   After you invoke this macro, you can refer to the acronym by name
+%%   with one of four different macros.  Depending on which one you
+%%   use, you will see some combination of the acronym and its
+%%   definition.  To wit:
+%%
+%%     \acs{TS}  -->  TS
+%%     \acl{TS}  -->  Tom Sgouros
+%%     \acf{TS}  -->  Tom Sgouros (TS)
+%%     \ac{TS}   first invocation-->  Tom Sgouros (TS) 
+%%     \ac{TS}   subsequent invocations-->  TS
+%%
+%%   There is also an environment and another macro for making nice
+%%   lists of acronym definitions:
+%%
+%%     \begin{acronym}
+%%       \acro{TS}{Tom Sgouros}. This is my name.
+%%       \acro{WB}{William Beebe}.  This is not my name.
+%%     \end{acronym}
+%%
+%%   prints:
+%%
+%%     TS
+%%        Tom Sgouros.  This is my name.
+%%     WB
+%%       William Beebe.  This is not my name.
+%%
+%%   To install this, just put it with the other .hlx files.  (Try
+%%   /usr/local/lib/hyperlatex) 
+%%
+%%   $Id$
+
+
+\newenvironment{acronym}{\begin{description}}{\end{description}}
+\HlxEval{
+(put 'acro              'hyperlatex 'hyperlatex-format-acro)
+(put 'ac                'hyperlatex 'hyperlatex-format-ac)
+(put 'acs               'hyperlatex 'hyperlatex-format-acs)
+(put 'acl               'hyperlatex 'hyperlatex-format-acl)
+(put 'acf               'hyperlatex 'hyperlatex-format-acf)
+(put 'acrodef           'hyperlatex 'hyperlatex-format-acrodef)
+
+; Here is where the associative list of acronym definitions should
+; be consed.  The alist consists of these elements:
+;    (acronym . (definition . bool-used))
+; acronym is the key into the list, and bool-used is a boolean value
+; indicating whether the acronym has been used yet.
+(defvar hyperlatex-acronym-list nil)
+
+(defun hyperlatex-format-acro ()
+  "Create a definition for the acronym, and write a list item."
+  (let ((acronym (hyperlatex-parse-required-argument))
+        (definition (hyperlatex-parse-required-argument)))
+    (if hyperlatex-final-pass
+      (progn 
+        (insert "\\item[" acronym "] " definition)
+        (goto-char hyperlatex-command-start))
+      (hyperlatex-acronym-create-def acronym definition))))
+
+(defun hyperlatex-format-acrodef ()
+  "Create a definition for the acronym, don't write a list item."
+  (if (not hyperlatex-final-pass)
+      (hyperlatex-acronym-create-def 
+        (hyperlatex-parse-required-argument)
+        (hyperlatex-parse-required-argument))))
+
+(defun hyperlatex-acronym-create-def (acronym definition)
+  (setq hyperlatex-acronym-list 
+    (cons (list acronym definition 'acronym-not-used-yet)
+      hyperlatex-acronym-list)))
+
+(defun hyperlatex-format-ac ()
+  "Insert the acronym.  At the first use in the document, insert the definition."
+  (if hyperlatex-final-pass
+     (let* ((acro (hyperlatex-parse-required-argument))
+            (acronym-record (assoc acro hyperlatex-acronym-list)))
+       (if (equal 'acronym-not-used-yet (nth 2 acronym-record))
+           (progn
+             (insert (nth 1 acronym-record))
+             (insert " (" acro ")")
+             (setcar (cdr (cdr (assoc acro hyperlatex-acronym-list)))
+                     'acronym-used))
+           (insert acro))
+     (goto-char hyperlatex-command-start))))
+
+(defun hyperlatex-format-acs ()
+  "Insert the acronym."
+  (if hyperlatex-final-pass
+     (progn
+       (insert (hyperlatex-parse-required-argument))
+       (goto-char hyperlatex-command-start))))
+
+(defun hyperlatex-format-acl ()
+  "Insert the acronym's definition."
+  (if hyperlatex-final-pass
+     (let* ((acro (hyperlatex-parse-required-argument))
+            (acronym-record (assoc acro hyperlatex-acronym-list)))
+       (insert (nth 1 acronym-record))
+       (goto-char hyperlatex-command-start))))
+
+(defun hyperlatex-format-acf ()
+  (if hyperlatex-final-pass
+     (let* ((acro (hyperlatex-parse-required-argument))
+            (acronym-record (assoc acro hyperlatex-acronym-list)))
+       (insert acro)
+       (insert " (" (nth 1 acronym-record) ")")
+       (setcar (cdr (cdr (assoc acro hyperlatex-acronym-list)))
+               'acronym-used)
+       (goto-char hyperlatex-command-start))))
+
+}

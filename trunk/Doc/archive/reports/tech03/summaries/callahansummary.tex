@@ -1,0 +1,56 @@
+Jonathan Callahan reviewed the status of the \ac{LAS}.  The goals of 
+\ac{LAS} include:
+
+\begin{itemize}
+   \item Web based, common interface to diverse data
+   \item Single interface for subsetting, download, visualization, comparison
+   \item Easy access to metadata and documentation
+   \item Unified access to distributed data holdings
+   \item Uniform user interface to existing back end visualization packages
+\end{itemize}
+
+He reviewed the architecture and then how that architecture is used
+to deliver \ac{OPeNDAP} data.  He then went into the details of metadata
+ingestion, and how \ac{LAS} provides a uniform interface to disparate
+datasets.  He stressed the requirement for a common complete subset
+of necessary metadata among varied datasets to make them uniformly
+accessable, not only via \ac{LAS}, but by any tool that would treat
+datasets uniformly with common use metadata.  He gave three examples
+of \ac{NVODS} datasets in \ac{LAS}.  He followed that with an example of
+a dataset configuration XML.  The \ac{AIS} is needed by \ac{LAS} because
+
+\begin{itemize}
+   \item Fix datasets by adding 'use' and 'presentation' metadata.
+   \item Source files don't need to be changed.
+   \item \ac{AIS} files created by users can be shared with data providers.
+\end{itemize}
+
+He then described the need for conventions for use metadata, and he listed
+some of the existing conventions that one might follow.  
+
+Finally, his recommended list of most useful 'use' metadata would include:
+
+\begin{enumerate}
+   \item convention that is being followed 
+   \item variable title 
+   \item variable units that follow some convention (not 'Temp' or 'YYYYMMDD') 
+   \item variable bad flag 
+   \item axis units 
+   \item time axis encoding should follow some convention 
+\end{enumerate}
+
+% $Id$
+%
+% $Log: callahansummary.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

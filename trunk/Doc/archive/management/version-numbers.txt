@@ -1,0 +1,60 @@
+
+	$Id$
+
+Version/revision numbers in DODS are formed from two or three numbers
+separated by a dot. Version numbers is DODS have the following meanings:
+
+	x.y.z
+
+where 
+
+	x: This is the major version number. Two different major versions are
+	almost certain to be incompatible. This is used to indicate a big
+	change in the way the software works.
+
+	y: This is the minor version number. Two different minor versions are
+	probably incompatible in some ways but work together in other ways.
+	This indicates an important change in the software. 
+
+	Each minor version has a corresponding tag in CVS *that is a branch*.
+	That is, you can checkout/update using `-r release-x-y' and get the
+	latest code for that major.minor release number. Fixes for the
+	release should get checked in on one of these branches.
+
+	z: This is the sub-minor version number. These are used to indicate
+	that problems with a particular version of the software have been
+	found and fixed. Different sun-minor versions should work together
+	except that a problem fixed might cause and incompatibility.
+
+	Note: the CVS information that follows only makes sense for software
+	which will be worked on by several people at the same time. If this
+	is not the case, don't do this extra work!
+
+	Each sub-minor version number corresponds to a real release of
+	software. Each has a tag that looks like `release-x-y-z'. However,
+	this tag is *not* a branch. This might seem confusing at first, but
+	it makes working with CVS simpler in the long haul. Here's an
+	example. Lets say we have made a release of version 3.1.0 and some
+	problems have been found. We can commit changes to that release until
+	we are happy with the fixes. At that time we then tag *that point* on
+	the 3-1 branch as 3-1-1 and make the source code tar files for
+	version 3.1.1. Here's a picture.
+
+
+			   --------------------------------
+			  /       ^   	      ^	          ^
+			 /        3-1-alpha   3-1-0	  3-1-1
+			/
+	   3-1-branch  /
+	       \      /
+		\--> /
+	   -------------------------------------------------------
+			  Trunk -->
+
+	Why make those non-branch tags? Because they make place holders for
+	merging the changes back onto the trunk. While we work on the 3.1
+	code, fixing bugs and tweaking features, other completely new
+	features are added to the trunk code. At some point there will be
+	enough changes on the trunk to merge the 3.1 software into the trunk
+	and make a 3.2 branch for the 3.2.x releases. And we do the whole
+	thing over again.

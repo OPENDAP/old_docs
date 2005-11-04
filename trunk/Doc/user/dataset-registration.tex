@@ -1,0 +1,176 @@
+
+% Architecture for the DODS data delivery mechanism. 
+%
+% $Id$
+
+\documentstyle[12pt,psfig,html,margins]{article}
+
+\psfigurepath{reg-fig}
+\input{/usr/users/george/project/DODS/doc/boiler/html-refs}
+
+\begin{document}
+
+\title{DODS---Dataset Registration Service}
+\author{George Milkowski}
+\date{\today}
+
+\maketitle
+
+\begin{abstract}
+
+  This paper describes the DODS Dataset Registration Service. 
+
+\end{abstract}
+
+\input{/usr/users/george/project/DODS/doc/boiler/warning.tex}
+\input{/usr/users/george/project/DODS/doc/boiler/developers.tex}
+\begin{htmlonly}
+\pslink{file://dods.gso.uri.edu/pub/DODS/dataset-registration.ps}
+\end{htmlonly}
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\section{Introduction}
+
+This paper describes the Dataset Registration Service of the Distributed
+Oceanographic Data Systems, DODS.  The registration service allows
+dataset providers to document and register their data with the Global Change
+Master Directory, GCMD, one component of the DODS Locator Service.
+The registration service includes a user interface that aids dataset
+providers in the creation of a Directory Interchange Format (DIF) data
+structure, the input format used to load directory level information into the
+GCMD.  
+
+\section{Overview}
+
+Because DODS is a system which will support many distributed data resources
+it is necessary to provide a data location service for users which allows
+them to quickly determine what datasets are available from DODS servers.  The
+DODS Data Location Service will use the NASA Global Change Master Directory
+to provide directory level information on DODS datasets as well as the URL of
+their DODS servers.  The GCMD is an on-line directory of Earth science
+datasets that supports multi-parameter searching on its relation database
+management system.  Data providers who have installed DODS servers and intend
+to allow others access to their on-line datasets via DODS will need to
+register their datasets with the GCMD.  The DODS Registration Service is
+intended to aid data providers in providing the dataset and server
+information required to create a reference in the GCMD.
+
+\subsection{DIF Data Structure}
+
+The standard input data structure for the GCMD is called the Directory
+Interchange Format or DIF.  A DIF is a complex data structure that contains
+information used to support both relational and text based searching within
+the GCMD.  The types of information contained in a DIF include; dataset
+attributes, archive and data provider descriptions as well as general summary
+information.  The documentation on the DIF standard is available at {\tt
+  http://gcmd.gsfc.nasa.gov/docs.html}.
+
+The DODS registration service generates a dataset DIF based on information
+supplied interactively by the data provider and information extracted
+automatically from DODS servers of the datasets being registered.  The data
+provider reviews, modifies and submits the registration service DIF
+controlling when the DIF is registered and its content.  
+
+
+\subsection{Registration Service Component Architecture}
+
+The Registration service components and their architecture are depicted in
+Figure 1.  The components are the Data Provider Input form, a DIF generation
+cgi, a DIF review and modification form and a DIF uploader cgi that submits
+the completed DIF to the GCMD.  Each is describe below.
+
+
+\subsubsection{Data Provider Input Form}
+
+When a data provider wants to register a dataset he or she 
+pulls up the Data Provider Input form, Figure 2.  This form takes as its
+input the name of the dataset being registered, the address of the DODS
+server that accesses the dataset, the names and location of the DODS cgis
+that describe that dataset and the email address of the data provider.  In
+addition the data provider can submit the name of a file containing
+descriptive information on the dataset.  Once the information has been filled
+in the data provider hits the ``Create DIF'' button to post the form to the
+DIF generation cgi.  The following input fields and the information required
+are in the Data Provider Input form:
+
+\begin{description}
+
+\item{DODS Server Address:}  This field requires the URL address of the
+  machine where the DODS server is installed (e.g.; http://dods.gso.uri.edu ).
+
+\item{DDS cgi name and location:} This is the specification of the dds cgi
+  that access the dataset being registered.  The location is relative to the
+  httpd ScriptAlias directory defined at the time the httpd server is
+  configured (e.g., ScriptAlias -> /cgi-bin/ =
+  /usr/local/etc/httpd/cgi-bin/).  An example of a DDS specification,
+  /cgi-bin/DODS-cgi/ctd$\_$DDS.
+ 
+\item{DAS cgi name and location:} Equivalent to the DDS only for the DAS cgi.
+
+\item{Dataset name} The name of the dataset.  This name can be a discrete
+  filename or a reference name.  The actual value will depend on the cgi
+  filters that access the dataset.  For example, in the JGOFS system dataset
+  names actually reference JGOFS objects.  The DODS cgis use a JGOFS object
+  lookup table to reference the actual JGOFS data file and its access
+  methods.  For a NetCDF implementation the dataset name must include the
+  directory location of the data file being accessed.  The directory location
+  can be either relative to the DocumentRoot of the httpd server (e.g.,
+  DocumentRoot/data/DODS/fnoc1.nc) or an alias that is defined when the httpd
+  server is configured (e.g. /icons/ -> /usr/local/spool/icons/).
+
+\item{Contact EMAIL} The email address of the person registering the dataset
+  is requested.
+
+\item{Other Dataset Description Information}  The name of a file that
+  contains summary information.  This function is not implemented at present.
+  In the future it will allow the data provider to specify a text file to
+  also be used to help generate the DIF valids for the dataset. 
+\end{description}
+
+\subsubsection{DIF Generation cgi}
+
+This cgi reads the input data from the Data Provider Input form.  Using the
+DODS server URL, the cgi names and the dataset name it next accesses the cgis
+of the dataset being registered and reads in its DDS and DAS.  The DDS and
+DAS structures are parsed into words and each word is submitted to a DIF
+thesaurus which matches input words with words found in the complete set of
+DIF valids.  The DIF thesaurus outputs a set of DIF valids based on the words
+in the DAS and DDS that are separated DIF attribute categories, Sensor,
+Source, Parameter, Discipline and Location. Figure 3 is a data flow diagram
+for the DIF generator cgi.  The output from the DIF thesaurus
+along with the information from the Data Provider Input form are then used
+to create the DIF Review and Modification form.
+
+\subsubsection{DIF Review and Modification Form}
+
+This html form (Figures 4a \& 4b) allows the data provider an opportunity to
+review and modify the DIF valids that describe the dataset being registered.
+The most critical information is that in the DIF Valids Generated from
+Dataset Descriptor Files section of this form.  The data provider must select
+all appropriate DIF valids from the lists provided under each of the DIF
+categories in the form (Sensor, Source, Parameter, Discipline and Location).
+The form permits the specification of multiple values for any of the
+categories by simply clicking on the value.  In cases where no DIF valids
+were generated from the DIF thesaurus for a particular DIF category, a
+default list of all valid DIF values for that category is provided.
+
+Once the data provider has reviewed the form he or she may then submit the
+completed DIF to the GCMD for uploading by hit the Submit DIF button. 
+
+\subsubsection{DIF Upload cgi}
+
+This cgi accepts input from the DIF Review and Modification Form and
+constructs a valid GCMD DIF for uploading.   The DIF is then evaluated for
+completeness and either accepted or rejected for uploading into the GCMD.  In
+either case an acknowledgement and copy of the DIF submitted along with
+whether the DIF was accepted or rejected is returned to the data provider.
+
+\end{document}
+
+
+

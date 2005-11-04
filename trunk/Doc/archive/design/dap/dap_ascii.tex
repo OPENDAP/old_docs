@@ -1,0 +1,824 @@
+%
+% Specification for ASCII formatted data responses for the DAP
+%
+
+\documentclass[justify]{dods-paper}
+\usepackage{acronym}
+\usepackage{xspace}
+\usepackage{gloss}
+\rcsInfo $Id$
+
+\include{dap_boiler}
+
+\title{\DAPASCIITitle\\ DRAFT}
+\htmltitle{\DAPASCIITitle\ -- DRAFT}
+\author{James Gallagher\thanks{The University of Rhode Island,
+    jgallagher@gso.uri.edu}, Tom Sgouros}
+\date{Printed \today \\ Revision \rcsInfoRevision}
+\htmladdress{James Gallagher <jgallagher@gso.uri.edu>, 
+  \rcsInfoDate, Revision: \rcsInfoRevision}
+\htmldirectory{html}
+\htmlname{dapa}
+
+\begin{document}
+
+\maketitle
+\T\tableofcontents
+
+\section{Text Data Format}
+\label{sec-ascii}
+
+The text data response (also called the \lit{ASCII} response) provides
+a way for a client to get data from a \DAP server formatted as plain
+text. Server implementors may develop custom text representations for
+their data as long as they meet the requirements given here:
+
+\begin{enumerate}
+\item The formatting must use comma-separated values with text that
+  associates a name with a value or group of values.
+\item The response body should be easy to incorporate into commonly
+  available spreadsheet programs.
+\item There must be enough structural information in the response to
+  remove any ambiguity about which variable(s) it contains.  The
+  intent of the text data object is that the client does not require a
+  copy of the dataset \DDX to make sense of the data.\footnote{Variable
+  attributes are not usually included in the text representation,
+  though global ones often are.}
+\end{enumerate}
+
+The Text Data response from an \opendap\ server is an HTTP
+service.  See \DAPHTTP\ for a description of the \DAP HTTP
+implementation, and see \DAPObjects\ for a description of the \DAP\
+overall.  
+%\DAPServices contains descriptions of some of the other
+%HTTP services. 
+
+\subsection{Interaction}
+
+The text response is triggered by a client using \lit{.asc} as the URL
+suffix in a request to a \DAP HTTP server.  See \DAPHTTP for a
+description of the \DAP URL components.
+
+The reply must contain the following header:
+
+\begin{textoutput}{Required Headers:}
+XDODS-Server: dods/4.0\\
+Content-Type: text/plain\\
+Date: \emph{date}
+\end{textoutput}
+
+
+\section{ASCII Format Description}
+
+The following sections present a suggested format for servers to
+follow when returning text data.  In general, constructor datatypes
+each have two different representations, one for when they contain
+only atomic data types, and another for when they contain other
+constructor data types.
+
+Note that since the \Dataset type encloses all the variables in a
+dataset, each text data message has an implicit (and anonymous)
+\Structure as its outermost variable.
+
+
+\subsection{Atomic Types}
+\label{sec-ascii-atomic}
+
+The \DAP atomic data types may be encoded as follows:
+
+\begin{description}
+\item[Integer types] Numbers without decimal point.
+
+\item[Floating-Point types] Numbers with a decimal point.
+  
+\item[String types] Recorded as quoted strings using double quotes
+  (\qt).  Double quote characters within the string are shown as
+  \texorhtml{$\backslash$}{\back}\qt.
+  
+\item[Binary images] The base64 encoding of the binary image, enclosed
+  in brackets.  (Base64 encoding uses only alphanumeric characters,
+  plus \lit{+}, \lit{/}, and \lit{=}, and cannot produce commas,
+  colons or brackets, so these may be included in documents with other
+  data.)
+
+\end{description}
+
+A simple variable, whose only value is an atomic data type may be
+presented with the variable name, followed by a colon, then the
+value.  For example:
+
+\begin{vcode}{ist}
+ShipName: "Oceanus"
+Latitude: 43.44
+StationNumber: 378
+GIF27: {R0lGODlhBwAHAIAAAAAAAP///ywAAAAABwAHAAACDERil7uHAFV7SlZUAAA7}
+\end{vcode}
+
+\subsection{\Grids}
+\label{sec-ascii-grid}
+
+
+\begin{enumerate}
+\item A \Grid with only a single dimension will be represented as a table of
+  values. The values of the sole map vector will be printed in a row,
+  separated by commas and prefixed by the map vector's name. The values of
+  the \Grid's \Array will be prefixed by its name and printed on the following
+  row, also as \CSVs.  See \exampleref{ex-1}.
+
+\begin{minipage}[t]{3in}
+\examplelabel{ex-1}
+
+\begin{vcode}{tis}
+<Grid name="values">
+  <Array name="x">
+    <Byte/>
+    <dimension name="lat" size="5"/>
+  </Array>
+  <Map name="lat">
+    <Float64/>
+    <dimension size="5"/>
+  </Map>
+</Grid>
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+values.lat, $values.lat[0]$, \ldots, $values.lat[4]$\\
+values.x, $values.x[0]$, \ldots, $values.x[4]$
+\end{textoutput}
+\end{minipage}
+
+
+\item A \Grid with two or more map vectors will be printed as follows. The
+  rightmost dimension/map will be printed on one line as \CSVs and prefixed
+  by the map vector's name as is the case for a \Grid with only a single map.
+  The \Array's values will be printed on subsequent lines which enumerate
+  all of the indices of the other dimensions/maps so that the rightmost
+  varies fastest. Each row of values will be prefixed by the array-part's
+  name and the list of bracketed map vector values which describe the given
+  row's data. See \exampleref{ex-2} and \exampleref{ex-3}.
+
+
+\begin{minipage}[t]{2.5in}
+\examplelabel{ex-2}
+
+\begin{vcode}{tis}
+<Grid name="v">
+  <Array name="temp">
+    <Byte/>
+    <dimension name="lat" size="5"/>
+    <dimension name="lon" size="5"/>
+  </Array>
+  <Map name="lat">
+    <Float64/>
+    <dimension size="5"/>
+  </Map>
+  <Map name="lon">
+    <Float64/>
+    <dimension size="5"/>
+  </Map>
+</Grid>
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+v.lon, $v.lon[0]$, \ldots, $v.lon[4]$\\
+v.temp[v.lat=$v.lat[0]$], $v.temp[0][0]$, \ldots, $v.temp[0][4]$\\
+\vdots\\
+v.temp[v.lat=$v.lat[4]$], $v.temp[4][0]$, \ldots, $v.temp[4][4]$
+\end{textoutput}
+\end{minipage}
+
+\begin{minipage}[t]{2.5in}
+\examplelabel{ex-3}
+
+\begin{vcode}{its}
+<Grid name="v">
+  <Array name="temp">
+    <Byte/>
+    <dimension name="lat" size="5"/>
+    <dimension name="lon" size="5"/>
+  </Array>
+  <Map name="t">
+    <Int32/>
+    <dimension size="4">
+  </Map>
+  <Map name="lat">
+    <Float64/>
+    <dimension size="5"/>
+  </Map>
+  <Map name="lon">
+    <Float64/>
+    <dimension size="5"/>
+  </Map>
+</Grid>
+\end{vcode}
+\end{minipage}
+\\
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+v.lon, $v.lon[0]$, \ldots, $v.lon[4]$\\
+v.temp[v.t=$v.t[0]$][v.lat=$v.lat[0]$], $temp[0][0][0]$, \ldots, $temp[0][0][4]$\\
+\vdots\\
+v.temp[v.t=$v.t[0]$][v.lat=$v.lat[4]$], $temp[0][4][0]$, \ldots, $temp[0][4][4]$\\
+\vdots\\
+v.temp[v.t=$v.t[3]$][v.lat=$v.lat[0]$], $temp[3][0][0]$, \ldots, $temp[3][0][4]$\\
+\vdots\\
+v.temp[v.t=$v.t[3]$][v.lat=$v.lat[4]$], $temp[3][4][0]$, \ldots, $temp[3][4][4]$\\
+\end{textoutput}
+\end{minipage}
+
+\end{enumerate}
+
+\subsection{\Structures}
+\label{sec-ascii-structure}
+
+\begin{enumerate}
+\item \Structures that contain only simple types are printed as a table
+  with a single row. That is, a row of comma separated field names
+  followed by a row of comma separated values. See \exampleref{ex-4}.
+
+\begin{minipage}[t]{2.25in}
+\examplelabel{ex-4}
+
+\begin{vcode}{it}
+<Structure name="drop">
+  <String name="name">
+  <String name="date">
+  <Float64 name="lat">
+  <Float64 name="lon">
+</Structure>
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+drop.name, drop.date, drop.lat, drop.lon\\
+$drop.name$, $drop.date$, $drop.lat$, $drop.lon$
+\end{textoutput}
+\end{minipage}
+
+\item A \Structure contains simple types and/or other \Structures which
+  themselves contain only simple types will be flattened and printed
+  as if it were a single \Structure composed of solely of simple types.
+  See \exampleref{ex-5}.
+
+\begin{minipage}[t]{2.25in}
+\examplelabel{ex-5}
+
+\begin{vcode}{sit}
+<Structure name="drop">
+  <String name="name"/>
+  <String name="date"/>
+  <Structure name="point">
+    <Float64 name="lat"/>
+    <Float64 name="lon"/>
+  </Structure>
+</Structure>
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+drop.name, drop.date, drop.point.lat, drop.point.lon\\
+$drop.name$, $drop.date$, $drop.point.lat$, $drop.point.lon$
+\end{textoutput}
+\end{minipage}
+
+\item A \Structure that contains one or more \Array, \Sequence or \Grid
+  variables uses a vertical ordering of its fields. Each field is
+  printed by writing its print representation on successive rows,
+  starting with the first field and going in order to the last. For
+  each row the type of variable determines the specific format of the
+  output. \exampleref{ex-6} shows a \Structure which contains a \String
+  and a \Grid.
+
+\begin{minipage}[t]{2.5in}
+\examplelabel{ex-6}
+
+\begin{vcode}{xit}
+<Structure name="test">
+  <String name="date"/>
+  <Grid name="values">
+    <Array name="temp">
+      <Byte/>
+      <dimension name="lat" size="5"/>
+      <dimension name="lon" size="5"/>
+    </Array>
+    <Map name="lat">
+      <Float64/>
+      <dimension size="5"/>
+    </Map>
+    <Map name="lon">
+      <Float64/>
+      <dimension size="5"/>
+    </Map>
+  </Grid>
+</Structure>
+\end{vcode}
+\end{minipage}
+
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+test.date, $test.date$\\
+test.v.lon, $test.v.lon[0]$, \ldots, $temp.lon[4]$\\
+test.v.temp[$test.v.lat[0]$]: $test.v.temp[0][0]$, \ldots, $test.v.temp[0][4]$\\
+\vdots\\
+test.v.temp[$test.v.lat[4]$]: $test.v.temp[4][0]$, \ldots, $test.v.temp[4][4]$
+\end{textoutput}
+\end{minipage}
+
+\end{enumerate}
+
+
+\subsection{\Sequences}
+\label{sec-ascii-sequence}
+
+\begin{enumerate}
+\item \Sequences containing only simple types will be represented as tables.
+  The first row of output will list the \Sequence's field names separated by
+  commas. Each instance of the \Sequence will be listed on subsequent rows as
+  comma separated values.  See \exampleref{ex-7}.
+
+\begin{minipage}[t]{2.5in}
+\examplelabel{ex-7}
+
+\begin{vcode}{it}
+<Sequence name="drop">
+  <String name="name"/>
+  <Float64 name="lat"/>
+  <Float64 name="lon"/>
+</Sequence>
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+drop.name, drop.lat, drop.lon\\
+$drop.name$, $drop.lat$, $drop.lon$\\
+\vdots
+\end{textoutput}
+\end{minipage}
+
+\item \Sequences containing simple types and/or other \Sequences or \Structures
+  which themselves contain only simple types will be flattened and printed as
+  a table.  See \exampleref{ex-8} and \exampleref{ex-9}.
+
+\begin{minipage}[t]{2.5in}
+\examplelabel{ex-8}
+
+\begin{vcode}{its}
+<Sequence name="drop">
+  <String name="name"/>
+  <Sequence name="loc">
+    <Float64 name="lat"/>
+    <Float64 name="lon"/>
+  </Sequence>
+</Sequence>
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+drop.name, drop.loc.lat, drop.loc.lon\\
+$drop.name$, $drop.loc.lat$, $drop.loc.lon$\\
+\vdots
+\end{textoutput}
+\end{minipage}
+
+\begin{minipage}[t]{2.5in}
+\examplelabel{ex-9}
+
+\begin{vcode}{it}
+<Sequence name="drop">
+  <String name="name"/>
+  <Structure name="loc">
+    <Float64 name="lat"/>
+    <Float64 name="lon"/>
+  </Structure>
+</Sequence>
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}  
+Dataset: $dataset name$\\
+drop.name, drop.loc.lat, drop.loc.lon\\
+$drop.name$, $drop.loc.lat$, $drop.loc.lon$\\
+\vdots
+\end{textoutput}
+\end{minipage}
+
+\item \Sequences that contain either, directly or indirectly, \Arrays or \Grids
+  will be printed with each field on its own row. Successive rows of the
+ \Sequence will be printed as successive blocks of rows. To print each field
+  its type-dependent print representation will be used. See
+  \exampleref{ex-10} and \exampleref{ex-11}.
+
+
+\begin{minipage}[t]{2.5in}
+\examplelabel{ex-10}
+
+\begin{vcode}{it}
+<Sequence name="data">
+  <String name="name">
+  <Array name="temps">
+    <Byte/>
+    <dimension size="5">
+  </Array>
+</Sequence>
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+data.name, $data.name$\\
+data.temps, $data.temps[0]$, \ldots, $data.temps[4]$\\
+\vdots
+\end{textoutput}
+\end{minipage}
+
+\begin{minipage}[t]{2.25in}
+\examplelabel{ex-11}
+
+\begin{vcode}{it}
+<Sequence name="data">
+  <String name="name"/>
+  <Array name="temps">
+    <Byte/>
+    <dimension size="5">
+    <dimension size="5">
+  </Array>
+</Sequence>    
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{4in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+data.name, $data.name_0$\footnote{The subscripts are here to reinforce that a
+ \Sequence consists of $N$ values (or instances) and thus there are $N$
+  values for both \texttt{name} and \texttt{temps}.}\\
+data.temps[0], $data.temps[0][0]_0$, \ldots, $data.temps[0][4]_0$\\
+\vdots\\
+data.temps[4], $data.temps[4][0]_0$, \ldots, $data.temps[4][4]_0$\\
+\vdots\\
+data.name, $data.name_N$\\
+data.temps[0], $data.temps[0][0]_N$, \ldots, $data.temps[0][4]_N$\\
+\vdots\\
+data.temps[4], $data.temps[4][0]_N$, \ldots, $data.temps[4][4]_N$\\
+\end{textoutput}
+\end{minipage}
+
+\end{enumerate}
+
+\subsection{\Arrays}
+\label{sec-ascii-array}
+
+\begin{enumerate}
+\item A one-dimensional \Array of simple types is printed as a name and comma
+  separated list of values of the vector, all on a single line. See \exampleref{ex-12}.
+
+\begin{minipage}[t]{2.5in}
+\examplelabel{ex-12}
+
+\begin{vcode}{it}
+<Array name="x">
+  <Int32/>
+  <dimension size="10"/>
+</Array>
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+x, $x[0]$, \ldots, $x[9]$
+\end{textoutput}
+\end{minipage}
+
+\item A multidimensional \Array of simple types of rank $N$ is represented by
+  writing out, for each of its $N-1$ dimensions' indices, the name, the index
+  and a row of values. See \exampleref{ex-13} and \exampleref{ex-14}.
+
+\begin{minipage}[t]{2.5in}
+\examplelabel{ex-13}
+
+\begin{vcode}{it}
+<Array name="x">
+  <Int32/>
+  <dimension size="20"/>
+  <dimension size="10"/>
+</Array>
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+x[0], $x[0][0]$, \ldots, $x[0][9]$\\
+\vdots\\
+x[19], $x[19][0]$, \ldots, $x[19][9]$\\
+\end{textoutput}
+\end{minipage}
+
+\begin{minipage}[t]{2.5in}
+\examplelabel{ex-14}
+
+\begin{vcode}{it}
+<Array name="x">
+  <Int32/>
+  <dimension size="5"/>
+  <dimension size="10"/>
+  <dimension size="15"/>
+</Array>
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+x[0][0], $x[0][0][0]$, \ldots, $x[0][0][14]$\\
+\vdots\\
+x[0][9], $x[0][9][0]$, \ldots, $x[0][9][14]$\\
+\vdots\\
+x[4][0], $x[4][0][0]$, \ldots, $x[4][0][14]$\\
+\vdots\\
+x[4][9], $x[4][9][0]$, \ldots, $x[4][9][14]$\\
+\end{textoutput}
+\end{minipage}
+
+\item Each element of an \Array of complex types is printed on a group of
+  lines. For an \Array of complex types of rank $N$, each row will be prefixed
+  by the \Array name and the index for that row.  See
+  \exampleref{ex-15} and \exampleref{ex-16}.
+
+\begin{minipage}[t]{2.5in}
+\examplelabel{ex-15}
+
+\begin{vcode}{it}
+<Array name="pair">
+  <Structure>
+    <Int32 name="x"/>
+    <String name="name"/>
+  </Structure>
+  <dimension size="10"/>
+</Array>
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+pair[0], $pair[0].x$, $pair[0].name$\\
+\vdots\\
+pair[9], $pair[9].x$, $pair[9].name$
+\end{textoutput}
+\end{minipage}
+
+\begin{minipage}[t]{2.5in}
+\examplelabel{ex-16}
+
+\begin{vcode}{it}
+<Array name="pair">
+  <Structure>
+    <Int32 name="x"/>
+    <String name="name"/>
+  </Structure>
+  <dimension size="5"/>
+  <dimension size="10"/>
+</Array>
+\end{vcode}
+\end{minipage}
+\begin{minipage}[t]{5in}
+\begin{textoutput}{Output}
+Dataset: $dataset name$\\
+pair[0][0], $pair[0][0].x$, $pair[0][0].name$\\
+\vdots\\
+pair[0][9], $pair[0][9].x$, $pair[0][9].name$\\
+\vdots\\
+pair[4][0], $pair[4][0].x$, $pair[4][0].name$\\
+\vdots\\
+pair[4][9], $pair[4][9].x$, $pair[4][9].name$\\
+\end{textoutput}
+\end{minipage}
+
+\end{enumerate}
+
+\appendix
+
+%\bibliographystyle{plain}
+%\T\addcontentsline{toc}{section}{References}
+%\T\raggedright
+%\bibliography{../../../boiler/dods}
+
+\section{Alternate Form}
+
+The following DDS examples correspond to the XML examples that appear
+earlier in this text.
+
+\exampleref{ex-1}
+\begin{vcode}{tis}
+Dataset {
+  Grid {
+    Array:
+      Byte x[5];
+    Maps:
+      Float64 lat[5];
+  } values;
+} ex1;
+\end{vcode}
+
+\exampleref{ex-2}
+\begin{vcode}{tis}
+Dataset {
+  Grid {
+    Array: 
+      Byte temp[lat=5][lon=5];
+    Maps:
+      Float64 lat[5];
+      Float64 lon[5];
+  } v;
+} ex2;
+\end{vcode}
+
+\exampleref{ex-3}
+\begin{vcode}{tis}
+Dataset {
+  Grid {
+    Array: 
+      Byte temp[t=4][lat=5][lon=5];
+    Maps:
+      Int32 t[4];
+      Float64 lat[5];
+      Float64 lon[5];
+  } v;
+} ex3;
+\end{vcode}
+
+\exampleref{ex-4}
+\begin{vcode}{tis}
+Dataset {
+  Structure {
+    String name;
+    String date;
+    Float64 lat;
+    Float64 lon;
+  } drop;
+} ex6;
+\end{vcode}
+
+\exampleref{ex-5}
+\begin{vcode}{tis}
+Dataset {
+  Structure {
+    String name;
+    String date;
+    Structure {
+      Float64 lat;
+      Float64 lon;
+    } point;
+  } drop;
+} ex7;
+\end{vcode}
+
+\exampleref{ex-6}
+\begin{vcode}{tis}
+Dataset {
+  Structure {
+    String date;
+    Grid {
+      Array: 
+      Byte temp[lat=5][lon=5];
+      Maps:
+      Float64 lat[5];
+      Float64 lon[5];
+    } values;
+  } test;
+} ex8;
+\end{vcode}
+
+\exampleref{ex-7}
+\begin{vcode}{tis}
+Dataset {
+  Sequence {
+    String name;
+    Float64 lat;
+    Float64 lon;
+  } drop;
+} ex8;
+\end{vcode}
+
+\exampleref{ex-8}
+\begin{vcode}{tis}
+Dataset {
+  Sequence {
+    String name;
+    Sequence {
+      Float64 lat;
+      Float64 lon;
+    } loc;
+  } drop;
+} ex10;
+\end{vcode}
+
+\exampleref{ex-9}
+\begin{vcode}{tis}
+Dataset {
+  Sequence {
+    String name;
+    Structure {
+      Float64 lat;
+      Float64 lon;
+    } loc;
+  } drop;
+} ex11;
+\end{vcode}
+
+\exampleref{ex-10}
+\begin{vcode}{tis}
+Dataset {
+  Sequence {
+    String name;
+    Array temps[5];
+  } data;
+} ex12;
+\end{vcode}
+
+\exampleref{ex-11}
+\begin{vcode}{tis}
+Dataset {
+  Sequence {
+    String name;
+    Array temps[5][5];
+  } data;
+}ex13;
+\end{vcode}
+
+\exampleref{ex-12}
+\begin{vcode}{tis}
+Dataset {
+    Int32 x[10];
+} ex1;
+\end{vcode}
+
+\exampleref{ex-13}
+\begin{vcode}{tis}
+Dataset {
+    Int32 x[20][10];
+} ex3;
+\end{vcode}
+
+\exampleref{ex-14}
+\begin{vcode}{tis}
+Dataset {
+    Int32 x[5][10][15];
+} ex4;
+\end{vcode}
+
+\exampleref{ex-15}
+\begin{vcode}{tis}
+Dataset {
+    Structure {
+        Int32 x;
+        String name;
+    } pair[10];
+} ex2;
+\end{vcode}
+
+\exampleref{ex-16}
+\begin{vcode}{tis}
+Dataset {
+    Structure {
+        Int32 x;
+        String name;
+    } pair[5][10];
+} ex5;
+\end{vcode}
+
+
+
+\section{Change log}
+
+\begin{verbatim}
+$Log: dap_ascii.tex,v $
+Revision 1.6  2003/07/24 22:32:12  tom
+excised dap_services document references
+
+Revision 1.5  2003/07/18 18:57:58  tom
+moved out all DDS forms
+
+Revision 1.4  2003/07/16 01:06:08  tom
+progress on comments, fixed titles
+
+Revision 1.3  2003/05/23 22:08:30  tom
+makefile repairs, bibliography
+
+Revision 1.2  2003/05/23 21:50:52  tom
+progress made
+
+Revision 1.1  2003/05/23 19:27:42  tom
+new files, rearranging DAP spec into separate documents
+
+
+\end{verbatim}
+
+\end{document}

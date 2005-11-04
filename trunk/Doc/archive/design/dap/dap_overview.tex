@@ -1,0 +1,439 @@
+%
+% Documentation for the DAP. Intended to be like an RFC document.
+%
+
+\documentclass[justify]{dods-paper}
+\usepackage{acronym}
+\usepackage{xspace}
+\usepackage{gloss}
+
+\include{dap_boiler}
+
+\rcsInfo $Id$
+
+% Note: to get the glossary to work, run bibtex on the *.gls.aux file,
+% then latex the file, then bibtex *.gls, then latex again. Also, make
+% sure to set your BST and BIBINPUTS environment variables so that the
+% BST and BIB files will be found.
+% \makegloss
+
+\title{\DAPOverviewTitle\\ DRAFT}
+\htmltitle{\DAPOverviewTitle\ -- DRAFT}
+\author{James Gallagher\thanks{The University of Rhode Island,
+    jgallagher@gso.uri.edu}}
+\date{Printed \today \\ Revision \rcsInfoRevision}
+\htmladdress{James Gallagher <jgallagher@gso.uri.edu>, \rcsInfoDate, 
+  Revision: \rcsInfoRevision}
+\htmldirectory{html}
+\htmlname{dap}
+
+\bibliographystyle{plain}
+
+\begin{document}
+
+\maketitle
+\T\tableofcontents
+
+\section{Organization of the Specification}
+
+This is the specification of the \DAP, \dapversion.\footnote{Whenever
+  `Data Access Protocol' or `DAP' is used, the reader should assume
+  \dapversion of the protocol is being discussed. If a feature of
+  another version is being discussed, that version will be explicitly
+  given.}  The specification is divided among several documents, each
+describing a different aspect of the protocol.  The documents are
+arranged in a more-or-less concentric manner.  That is, an
+implementation of the \DAP can satisfy the requirements in one or more
+of the documents.
+
+\begin{description}
+
+\item[\DAPObjects] All implementations of the \DAP, regardless of the
+  communication protocol used, must satisfy the requirements specified
+  in this document.
+
+\item[\DAPHTTP]  Implementations of the \DAP using HTTP as the
+  communication protocol must satisfy the requirements of this
+  document. 
+
+\item[\DAPASCII] HTTP implementations of the \DAP that provide
+  ASCII-formatted data should satisfy the requirements of this
+  document.
+
+\item[\DAPHTML] HTTP implementations of the \DAP that provide
+  an interactive query mechanism should satisfy the requirements of
+  this document.
+
+%\item[\DAPServices] HTTP implementations of the \DAP that provide
+%  information about the datasets served by a server should satisfy the
+%  requirements of this document.
+
+\end{description}
+
+This is a complete list of the specification documents issued by the
+\opendap\ group, as of \rcsdocumentdate.  Other specification documents,
+referring to implementations using different communication protocols,
+or providing different services, may be available from other groups.
+
+\section{Introduction}
+
+The \DAP is a presentation- and application-level protocol
+\cite{IEC94} for access to distributed data organized as
+name-type-value tuples. While the name-type-value model is a nearly
+universal \emph{conceptual} organization of data, the actual
+organization takes nearly as many forms as there are individual
+collections. Nonetheless, information stored in a computer can often be
+broken down into a set of variables that have names, data types and
+values.  For example, data from a satellite might be stored in a named
+array of bytes.  
+
+Complicating the picture, however, there are many different file
+formats, APIs and file/directory organizations used to house data. The
+\DAP was designed to hide the implementation of different collections
+of data behind a simple language-like interface based on the
+name-type-value conceptual model.
+
+The \DAP provides ways to sub-set the holdings of data sources so that
+only the interesting parts are accessed. This makes the \DAP ideal for
+remote access to data sources that are too large to replicate onto many
+machines and to situations where many different data sources are used in
+combination. In both cases it is both necessary to keep the data remote
+(spreading the burden of its storage and management) and to be able to
+selectively retrieve information.
+
+\section{Requirements}
+
+The key words ``MUST'', ``MUST NOT'', ``REQUIRED'', ``SHALL'', ``SHALL NOT'',
+``SHOULD'', ``SHOULD NOT'', ``RECOMMENDED'', ``MAY'' and ``OPTIONAL'' in this
+document are to be interpreted as described in RFC 2119~\cite{rfc2119}.
+
+An implementation is not compliant if it fails to satisfy one or more of the
+``MUST'' or ``REQUIRED'' level requirements for the protocols it implements.
+An implementation that satisfies all of the ``MUST'' or ``REQUIRED'' level
+and all of the ``SHOULD'' level requirements for its protocols is said to be
+`unconditionally compliant'; one that satisfies all the ``MUST'' level
+requirements but not all the ``SHOULD'' level requirements for its protocols
+is said to be `conditionally compliant.'
+
+\section{Overall Operation}
+
+The \DAP is actually a collection of protocols that
+provide a way to describe and access a remote data source. The
+information within a data source is described using the \DAP Data
+Model and those descriptions are held in objects defined by the \DAP
+Objects specification.  The Data Model and Objects define an
+interface to the information in a data source.  The interface may be
+operated in different ways, depending on the implementation.
+
+The \DAP does not define what constitutes a data source. Instead it
+describes an interface to the information in a data source. A data
+source can be anything for which this interface can be meaningfully
+used. For example, a data source might be a single data file and a set
+of programs which map the contents of that file onto the \DAP data
+model and objects.  A data source might also be a collection of files
+which can be logically grouped together and treated as a single entity
+or it might be all or part of a relational data base. Literally any
+collection of information that can be mapped onto the \DAP data model
+and objects qualifies as a \DAP data source.
+
+\subsection{The \DAP Data Model}
+
+% Describe a data set as variables and attributes.
+
+The \DAP models data sources as a collection of variables, each of
+which has a name, a type, one or more values and zero or more
+\new{attributes}.\footnote{A variable \emph{is} simply the binding
+  between names, data types, and values.}  A client can interrogate
+the data source to find out the names of its variables, their types,
+and their attributes and it can then use that information to access
+the values.  The \DAP defines a basic collection of data types
+commonly found in general programming environments.  These include
+integer and floating point number types, character strings and URLs
+(atomic types), arrays, structures, sequences, grids (container types)
+and binary images.\footnote{The \DAP versions 1 and 2 included a List
+  data type which has been dropped because it can be implemented using
+  Sequence.  \dapversion adds a binary image data type so that
+  arbitrary collections of bytes can be manipulated. Binary images are
+  unsized arrays of bytes and should not be confused with digital
+  image formats such as JPEG.}  The container types Sequence,
+Structure and Grid can be used to create different aggregations of the
+types. Because there are few limits on ways the types can be combined,
+there are very few data sources which cannot be described using the
+\DAP's data types.
+
+
+% Describe attributes
+
+Like the variables they describe, the attributes corresponding to a
+variable are also name-type-value tuples.  Attribute types are limited
+to the atomic types, vectors (one dimensional arrays) of the atomic
+types and structures (which are called \new{containers} for historical
+reasons). Each variable must have at least one \new{attribute
+  container} associated with it; that container holds the variable's
+attributes. There may be zero or more attributes in the container,
+including other containers. Beyond this there are no requirements for
+a variable's attributes.
+
+Attributes provide a way to bind information beyond a name and type to
+a variable. While the name and type associated with a variable defines
+all that a computer needs to know to store and retrieve the values
+associated with a variable, attributes provide a way to store other
+information which is generally required to \emph{use} the values of a
+particular variable.  For example, a variable might hold a two
+dimensional array of bytes which represent magnitudes derived from a
+satellite-borne sensor.  All that a computer program need know to read
+the data are the dimensions of the array and the type of its
+constituents.  However, to make effective use of those values, a
+person (or a program) must know what units those magnitudes represent
+(say degrees Celsius), how to scale the byte values to real numbers,
+or even just the proper way to spell the name of this kind of data
+(e.g. ``T,'' ``Temperature,'' or ``Sea Surface Temperature'').
+Another way to think about the difference between variables and
+attributes is that the name-type-value properties of a variable are
+not dependent on any particular use of the data, while the values of
+attributes generally are.\footnote{In other documents the name and
+  type of a variable are called \new{syntactic metadata} while
+  that variable's attributes are referred to as
+  \new{semantic metadata}.}
+
+Access to values from a data source is accomplished by requesting one
+or more variables. Because the \DAP was designed for efficient access
+to a remote data source, it provides a set of sub-setting operators
+which may be applied to each requested variable.  The exact operators
+vary with the type of the data variable to be sampled; some provide
+ways to request parts of arrays (sometime referred to as hyper-slabs)
+while others provide ways to access values using relational
+expressions.
+
+A complete description of the \DAP data model can be found in
+  \DAPObjects .
+
+
+%\subsection{Services}
+%\label{sec:services}
+
+%The distinction between a \emph{service} and an
+%\emph{object} is that the latter is part of the foundation on which the
+%\DAP is built. A service is a way of accessing
+%information from a server.  It might return the network representation of one
+%of the objects or it might return data in ASCII ready to be imported into a
+%spreadsheet.
+
+%The \DAP Services protocol defines how programs interact with a remote
+%data source. Each potential response from a remote data source is considered
+%a service that data source offers. \textbf{SOAP exceptions \& our Error
+%  object; a service???} Thus, when a program requests the \ac{DDX} object
+%from a server and receives the XML-encoded persistent representation of that
+%object, it is using a service just as it is when it requests the \ac{HTML}
+%interface for the data source. This is one departure from the \DAP
+%version 2 specification; all responses are explicitly described as services.
+
+%In \DAP versions 1 and 2, interaction with a data source was assumed to
+%take place using \ac{HTTP}. In \DAP version 3, interaction can take place
+%using any transport protocol. Server and client toolkits implementing the
+%\DAP are encouraged to take advantage of certain \ac{HTTP} features when
+%that is the transport protocol. These include the reuse of socket connections
+%between communicating processes and local (i.e., client-side) caching.
+
+%The Services defined by \DAP version 3 are:
+
+%Responses which contain the persistent representations of the four objects
+%defined by \DAP version 3, encoded using XML or XDR as noted:
+
+%\begin{description}
+%\item[DDX] The \ac{DDX} object. XML.
+%\item[Blob] Data values. XDR.
+%\item[DAX] Ancillary information. XML.\footnote{I'm not sure if this is really a service\ldots jhrg}
+%\item[ErrorX] Errors. XML.\footnote{Or this\ldots jhrg}
+%\end{description}
+
+%Responses which contain the persistent representations of the objects defined
+%by versions 1 and 2 of the \DAP. These responses are ASCII documents or
+%mixed-content (ASCII and application/octet-stream); object information is
+%represented using a curly-brace notation similar to the C programming
+%language. These are included in version 3 to provide backward compatibility
+%for older clients. Given the similarity between these responses and the
+%objects in version 3, generating them should be easy.
+
+%\begin{description}
+%\item[DDS] The \ac{DDS} object. ASCII.
+%\item[DAS] The \ac{DAS} object. ASCII.
+%\item[DataDDS] A pseudo-multi-part \acs{MIME} document that contains a
+%    \ac{DDS} and a Blob. ASCII and XDR-encoded binary.
+%\item[Error] Errors. ASCII. This differs from the ErrorX response because it
+%  uses the curly-brace encoding scheme (ErrorX uses XML). It
+%  also defines a slightly different set of error codes.
+%\end{description}
+
+%The remaining responses provide additional ways clients can interact with a
+%data source. Some of these responses are optional and some are only loosely
+%defeined.
+
+%\begin{description}
+%\item[ASCII] Get data values encoded as \ac{CSV} ASCII. This is designed to
+%  be easy to parse, view in a web browser and import to a spreadsheet.
+%  Required. 
+%\item[Version] Return the \DAP protocol version. This may also include
+%  the implementation name and version. Required.
+%\item[Capabilities] Return a description of the features supported by this
+%  server. Required.
+%\item[HTML] An \ac{HTML} interface to the data source. This should display an
+%  \ac{HTML} form, or other interactive user interface that can be rendered by
+%  a web browser, which provides a way for people to examine the variables in
+%  a particular data source.
+%\item[Directory] Return information about different data sources accessible
+%  through a particular server.
+%\item[Info] Return an \ac{HTML} document that presents the information in the
+%  \ac{DDX} object.
+%\end{description}
+
+
+
+%\printgloss{dods-glossary}
+
+\T\addcontentsline{toc}{section}{References}
+\T\raggedright
+\bibliography{../../../boiler/dods}
+
+\appendix
+
+\section{Brief History}
+
+The \DAP has been used by \DODS since 1996, \NVODS since 1999 and
+several other projects. The first version of the protocol dealt only
+with the three pseudo-objects used by DAP 1.0 to describe information
+sources. Version 2.0 added constraint expressions to provide a way to
+extract part of a data source. In addition, version 2.0 added services
+that integrate the \DAP more with the rest of the \ac{WWW}.  
+% Delete this if we go with version 3.0
+Version 3.0 began the process of moving data descriptions to the XML
+syntax. 
+
+% XBrowse and JGOFS
+
+The origin of the \DAP has its roots in the \DODS project. Work on
+\DODS started in late 1993 after experiments to combine URI's XBrowse
+software for remote access to satellite imagery with MIT's JGOFS data system
+seemed to reach a point where further work would best proceed by developing a
+completely new data system that combined the best aspects of both systems.
+
+% RPC, netCDF and JGOFS
+
+The first protocol used by \DODS was based on the netCDF and JGOFS APIs.
+These APIs were reimplemented using Sun Microsystem's \ac{RPC} software. It
+was clear that designing \DODS so that it could use existing programs as
+clients was a powerful idea, because it meant a data system could be built
+by leveraging the effort already put into existing software. However, as
+Waldo, et al.~\cite{waldo:dist-comp} point out, schemes which hide network
+access from programmers are brittle. In addition, the RPCized versions of
+netCDF and JGOFS could not interoperate.
+
+% Version 1, no CEs, a way to deal with translation
+
+In early 1995 the \DODS project decided to scrap the initial
+implementation based on \ac{RPC}s and develop a new mechanism based on
+a more universal data model. This new mechanism was designed to
+encompass the types of data found in XBrowse, netCDF and JGOFS and was
+based on common data types found in most programming languages. The
+`variables and attributes' organizational scheme found in netCDF and
+HDF 4 (along with programming languages such as Lisp) was adopted as a
+way to characterize data sources. In addition, the mechanism was
+designed to minimize the number of interactions that would be required
+between a client program and a remote data server.  Furthermore, the
+\ac{RPC} network protocol was dropped in favor of \ac{HTTP}.  This
+allowed the \DODS project to make use of web browsers as rudimentary
+clients and provided a way to simplify construction of \DAP servers.
+This new mechanism became the first version of the \DAP.
+
+% Version 2, CEs
+
+In mid 1996 \DAP version 1 was extended so that variables could be
+sub-set using operators. The \DODS servers were extended so that
+information could be requested using Constraint Expressions built up using
+the sub-setting operators \cite{gallagher:dods}.
+
+There have been several sub-versions of the \DAP 2 protocol. These
+versions added services beyond the basic objects originally defined by
+version 1.0. These included access to data as \ac{CSV} ASCII values, a
+simple \ac{HTML} interface for building \ac{URL}s and a simple
+directory interface for navigating collections of files served a one
+logical data source \cite{gallagher:dap-spec}.
+
+By early 2000 the \DODS project had six data server implementations
+using one of the \DAP 2.x sub-versions, and there were several hundred
+data sources on-line. In addition, other groups had developed their
+own servers which used the \DAP. Some of these were used for
+oceanographic data, but others were used to access data from other
+disciplines. At this point it became clear that a formal description
+of the protocol was needed. This need was partially addressed by the
+\DAP 2.0 Draft Specification \cite{gallagher:dap-spec}. However, that
+specification was not completed because by this time the \DAP's
+overall design was beginning to show its age. In the intervening years
+the \ac{WWW} had eclipsed other network infrastructures and \ac{XML}
+had emerged as a dominant way to encode information for systems like
+\DODS which used \ac{HTTP} to transport non-\ac{HTML} documents.
+
+% Version 3, XML, protocols, explicit breakdown of parts, more formal
+% specification 
+
+\DAP Version 3.0 consisted of some additions to the 2.0 version.  The
+\DAP software, meanwhile, had advanced to version 3.3.  To avoid
+confusion about the version of the \DAP and the version of the
+software, the \DAP version was incremented to \dapversion.
+
+That brings us to \DAP \dapversion, described in this and the associated
+Data Model, Objects and Services documents. This version of the \DAP
+keeps the essentials in place, removing a few features of the 1.0 and 2.x
+protocols that were rarely used and hard to implement. It augments the
+current persistent representation of objects with one based on XML and
+provides support for the old scheme using services. The new protocol is also
+designed to function with other transport protocols besides HTTP in
+response to requests from high-performance computing groups.
+
+% Future, SOAP.
+
+Planned future work on the \DAP includes adding a \ac{SOAP} service. This
+will provide a way for clients and servers to communicate using the \ac{SOAP}
+protocol. In addition, this may lead to the development of other
+\ac{SOAP}/\ac{XML} based services.
+
+%\section{Notational Conventions and Generic Grammar}
+%\label{app:grammar}
+%\input{../../../boiler/bnf-grammar.tex}
+
+%\section{Acronyms and Abbreviations}
+%\begin{acronym}
+%\input{acronyms-dap-overview.tex}
+%\end{acronym}
+
+\section{Change log}
+
+\begin{verbatim}
+$Log: dap_overview.tex,v $
+Revision 1.8  2003/07/24 22:32:12  tom
+excised dap_services document references
+
+Revision 1.7  2003/07/16 01:06:08  tom
+progress on comments, fixed titles
+
+Revision 1.6  2003/06/10 16:13:53  tom
+incorporated suggestions from March meeting
+
+Revision 1.5  2003/05/22 19:37:30  tom
+rearranging
+
+Revision 1.4  2003/03/17 17:45:10  tom
+progress made.  draft for discussion 3/18/03
+
+Revision 1.3  2002/11/19 05:37:52  jimg
+Added a paragraph about sub-setting to the Purpose section.
+
+Revision 1.2  2002/11/19 05:26:20  jimg
+Fixed a few errors. Ready for comments. Still very much a draft.
+
+Revision 1.1  2002/11/16 01:29:03  jimg
+First version of the overview document.
+
+\end{verbatim}
+
+\end{document}

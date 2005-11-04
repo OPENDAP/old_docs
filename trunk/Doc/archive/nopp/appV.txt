@@ -1,0 +1,1129 @@
+APPENDIX V
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+West Coast Regional Workshop
+
+
+National Ocean Partnership Program, Virtual Ocean Data Hub
+(VODHub)
+
+Distributed Oceanographic Data System (DODS)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+January 17th and 18th, 2001
+Oregon State University
+Corvallis, OR
+Executive Summary
+
+The science presentations on research in the California Current highlighted a few key 
+themes.  These include:
+o Processes vary on long time and large space scales (e.g., local vs. remote 
+forcing).
+o Mesoscale variability is an important component of the California Current.
+o Eastern boundary currents are productive biologically, and coupling with 
+physical forcing is a critical issue.
+In a sense, these issues are almost dogma, but they do lead to some common 
+requirements for any data system:
+o Preservation and stewardship of data --> time series are critical.
+o Integration across variety of data types --> biology/physics/chemistry.
+o Access by non-experts  --> managers as well as researchers who are not 
+specialists with every data set.
+
+Discussions during the workshop led to strong support for the idea of a West Coast 
+regional node, in addition to the local nodes.  The regional node would provide services 
+that would be beyond the capabilities of a local node or would be done more efficiently at 
+a regional site.  Possible functions include:
+o Data set certification - mechanisms to provide some degree of assurance 
+of data quality for decades.
+o Data archaeology and rescue - many datasets are lacking homes.
+o Long-term archiving - when projects end, investigators retire, etc.
+o Advanced visualization services - display tools such as those developed at 
+NOAA/PMEL as part of the Live Access Server 
+(http://ferret.wrc.pmel.noaa.gov/las).
+o Define computer scenarios and output that might be made accessible (e.g., 
+ENSO vs. non-ENSO model runs).
+
+Participants at the workshop discussed possible local nodes that might form a 
+cooperative, pilot study for the West coast.  The local nodes include:
+o Scripps Institution of Oceanography
+o University of California, Santa Barbara
+o Pacific Fisheries Environmental Group
+o Monterey Bay Aquarium Research Institute
+o Naval Postgraduate School
+o University of California, Santa Cruz
+o San Francisco State University
+o Oregon State University
+o Pacific Marine Environmental Laboratory
+o University of Washington
+
+In parallel, there are projects, some of which span multiple institutions: California 
+Cooperative Oceanic Fisheries Investigations (CalCOFI), SIO Data Zoo, Mineral 
+Management Service (MMS), Northeast Pacific GLOBEC,  Pacific Northwest Coastal 
+Ecosystem Regional Study (PNCERS), Partnership for Interdisciplinary Studies of 
+Coastal Oceans (PISCO), National Oceanographic Partnership Program (NOPP, which 
+includes multiple programs), and Coastal Oceanography Program (CoOP, including 
+COAST and WEST).  The point was not to list all possible projects and all possible 
+institutions, but to develop a "reasonable" list for a possible pilot study.
+
+Datasets (again, not meant to be comprehensive) include: CTD, moorings, drifters, 
+ADCP, CODAR, SeaSoar/Scanfish, surface meteorology, satellite imagery, chlorophyll, 
+zooplankton biomass, and nutrients.
+
+Participants discussed the minimum set of semantic metadata (in the DODS vernacular) 
+that would be necessary to use "minimally" processed data.  That is, we do not expect 
+people to serve raw volts from a sensor.  These are:
+o Time and location - this will require an ancillary file that describes the 
+time/space axes (e.g., latitude/longitude convention, time convention, 
+etc.).
+o Descriptive variable name - including something that would indicate the 
+sensor type.
+o Units
+o Missing data value - e.g., -9999, NaN, etc.
+o Scaling, including slope/offset.
+
+This information would allow a researcher to read in a data file and conduct useful 
+science.  It was noted that the COARDS convention as part of the NetCDF standard 
+would help with naming, etc.  See 
+http://www.unidata.ucar.edu/packages/udunits/index.html for more details.  Also see 
+http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html
+
+A minimum set of metadata for data set discovery (that is, to help users find datasets of 
+interest) could be built up from the NASA Global Change Master Directory (GCMD) 
+which has an extensive set of catalog information, standard terms, etc.  The GCMD is 
+also willing to help users describe their data holdings (see http://gcmd.gsfc.nasa.gov/).
+
+For data presentation, it is often useful to provide palettes for display of imagery, maps, 
+sections, etc.  This would fall under the category of presentation metadata.
+
+Lastly, participants discussed information that would help “certify” datasets and
+increase user confidence.  This metadata would include:
+o Publications based on the data set.
+o Calibration files.
+o Quality control procedures and description.
+o Comparisons with other data.
+o Error fields, caveats.
+o Processing algorithms.
+
+These four “layers” (use or semantic metadata, discovery metadata, presentation 
+metadata, and certification metadata) are all optional, but the more layers a data provider 
+delivers, the more useful the data.  At a minimum, we expect that any data set in the pilot 
+study would provide the use/semantic metadata.  Other layers of metadata could then be 
+added on this base.
+
+Participants recommended that endangered datasets critical for California Current 
+research be identified and a rescue plan developed and implemented.  A plan for a West 
+Coast DODS would build up a set of local nodes and establish a regional, loosely 
+coordinating node.
+
+Introductions and NOPP Objective
+
+The meeting convened with Mark Abbott, West Coast DODS regional workshop 
+coordinator, welcoming the workshop participants and then asking everyone to introduce 
+themselves (Appendix A lists the workshop participants).  He noted that there is an 
+abundance of data available to scientists (historic, etc.) and that the NOPP project would 
+facilitate greater data sharing.  Mark stated that he wants to focus on science as it pertains 
+to DODS in this workshop. 
+
+He presented the NOPP Objective: “to easily access certain data types in specified 
+locations/times, regardless of data sources, and without special efforts or insights on the 
+part of the user about the data sources.”
+
+VODHub (DODS) Workshop Issues
+
+During the course of the workshop, the following questions pertaining to DODS would 
+be addressed:
+- Is the DODS data model adequate?  If not, what additions are required?
+- What are the user interface issues?  This should include basic functionality ranging 
+from data discovery to data use.
+- What types of metadata are required?  The focus should be on search and use 
+metadata.
+- What datasets will be served via DODS?  These may include fixed sets, region-
+specific sets, and missing sets.
+- Is a central regional node needed for coordination?
+
+West Coast Workshop Issues
+
+In addition to the VODHub issues above, the following specific issues pertaining to the 
+West Coast were to be discussed:
+- Enhance dataset discovery, sharing, and access through the use of web-based servers 
+and applications, not just DODS.
+- Increase the number of West Coast datasets available in readily usable format 
+(include both historical and real-time).
+- Identify a suite of data types of special interest to West Coast researchers.
+- Foster collaboration of West Coast region-specific issues.
+
+Workshop Agenda and Guiding Principles
+
+The workshop agenda was as follows:
+1. Presentations on DODS and Live Access Server (LAS) capabilities.
+2. Presentations on research activities on the West Coast and available datasets.
+3. Evaluation of data servers.
+4. Future activities and demonstrations.
+
+Some of the guiding principles should include:
+1. Simplicity and endurance.
+2. Gain user experience by starting early, starting small end-to-end systems.
+3. Multiple sources of data and services.
+4. Science involvement is essential.
+5. Learn from experience.
+
+Overview of the DODS System
+
+Paul Hemenway, of the DODS technical staff at URI, summarized the DODS concept 
+with a graphical example.  He pointed out that DODS is a data transfer mechanism that 
+allows users access to data at different sites and does it independently of data format.  
+Paul drew an example of a DODS client accessing data over the web from a DODS 
+server.
+
+The floor was then turned over to James Gallagher, one of the developers of DODS, who 
+covered the underlying aspects of DODS and how they relate to the workshop.  James 
+covered the following issues:
+- What types of metadata are required?
+- Level of architecture and design constraints of DODS.
+- The DODS protocol: capabilities and deficiencies.
+- Is the data model sufficient?   
+- DODS is an end-to-end system.
+
+James began the overview of DODS by accessing the DODS demonstration website 
+(http://po.gso.uri.edu/~dan/dods-regional-workshops/dods-regional-workshops.html).  By going 
+through a series of web pages, the DODS model concept was conveyed to the workshop.  
+Some of the more important web pages are highlighted below:
+
+WEB PAGE:  What is DODS? 
+- An architectural framework to allow a user to easily access data over the network in a 
+consistent fashion.
+- DODS is an extension of the web.
+
+WEB PAGE:  DODS can subset, acquire, and ingest data.  
+- DODS does not locate or analyze data for a user.
+- DODS can move model and non-model data.  
+
+As an aside, James pointed out that there are several levels of DODS clients ranging from 
+Matlab, Ferret, GRADS, and IDL to writing your own client using languages such as 
+C++ or Java.  It is also possible to write applets to create clients.
+
+WEB PAGE:  What DODS is not:
+- An analysis package.
+- A data location service.
+- A web browser.
+- A tool to make value judgements with regard to data in the system. (Data quality is 
+the responsibility of the provider AND of the user). But it is very easy to provide a 
+listing of “acceptable” DODS datasets.
+
+WEB PAGE:  Data level systems
+- Directory level (Global Change Master Directory (GCMD) is a good example).
+- Inventory level (satellite data).
+- Data level.
+
+DODS has been built from bottom up.  Other earth science systems are built from the top 
+down.  DODS focus is to build data transfer functionality first and worry about inventory 
+and directory capabilities later.
+
+WEB PAGE:  Underlying Philosophy of DODS
+- Anyone willing to share their data should be able to so via DODS.
+- The user should be able to use the application package with which she or he is the 
+most familiar to examine or analyze the data of interest.
+
+WEB PAGE:  Metadata and Interoperability
+Syntactic metadata – information about the data type and structures at the computer level 
+often referred to as the data model (the base level of information you need, in order to 
+have something inside a computer).
+Semantic metadata – information about the content of the data (information about 
+variables, etc.).
+
+WEB PAGE:  Metadata relationships between levels – syntactic metadata
+- The directory and inventory levels are generally subsets of that at the data level.
+
+Metadata relations between levels – Semantic Metadata
+At the data level (information needed to use the data):
+- Parameter names (e.g. temperature).
+- Units (e.g. degrees centigrade).
+- Missing value parameter (e.g. –9999).
+
+WEB PAGE:  At the directory level (information needed to locate datasets):
+- Parameter ranges.
+- Parameter names.
+- Campaign.
+
+Question:  Where does DODS stand with federal metadata standards?
+Answer:  Some are currently served with metadata.  The group needs to decide on what 
+metadata standard to use (FGDC, EPIC, etc.).  
+
+WEB PAGE:  Semantic metadata at the data level.
+- Use metadata.
+- Directory level.
+
+WEB PAGE:  Use Metadata.
+Translational use metadata  - Metadata to translate dataset data objects to those with 
+which the user is more familiar (e.g., variable names, scaling of data values).
+Descriptive use metadata – Metadata that describes operations performed to obtain the 
+delivered data.
+DODS focus is on translational use metadata.
+
+WEB PAGE:  Levels of interoperability at the data level:
+Level 0 – No syntactic or semantic metadata, FTP.
+Level 1 – Rigid syntactic, no semantic metadata, DODS.
+Level 2 – Rigid syntactic, human readable semantic metadata, a subset of DODS datasets.
+Level 3 – Rigid syntactic, consistent semantic metadata; i.e., machine readable, a subset 
+of the DODS Level 2 datasets.
+
+WEB PAGE:  DODS supports three data objects:
+1. Data descriptor structure - .dds  (syntactic metadata).
+2. Data attribute structure  - .das (semantic metadata).
+3. Data (the actual data in a binary structure).
+
+In addition, DODS servers support several other services:
+- .ascii, an ascii representation of the data.
+- .info, a more readable version of the .dds and .dat combined.
+- .html form, a web-based form that will help to build a DODS URL.
+  
+James showed an example requesting WOCE TOPEX data from a DODS server.  The 
+URL is passed to httpd via a DODS client.  The DODS client enters the data into the 
+user’s application from the DODS server via httpd. (Several comments were made to the 
+syntax that James was writing.)  It was emphasized that WRITING DODS URLS CAN 
+BE DIFFICULT!
+
+Examples of the browser form and DODS dataset access form were presented.    
+There were many comments on the content of the data retrieved, such as latitude and 
+longitude, as they relate to metadata.
+
+WEB PAGE:  The DODS data model consists of the following data types:
+- Byte
+- Integer
+- Short integer
+- Float
+- String
+- URL
+And groupings of these data types:
+- Array
+- Structure
+- List
+- Sequence (important for relational databases)
+- Grid (any array with axes of information that mean something)
+
+A user can mix and match the above data types to represent any possible data structure.  
+It was noted that satellite swath data is difficult to represent in DODS.  Various array 
+types and structures (i.e., unstructured grid models) that workshop attendees worked with 
+were discussed.  James noted that handling complex arrays would likely be a future 
+enhancement to the DODS model.
+
+Question:  For time varying, 3-D array datasets with many variables, how do users slice 
+though the data to obtain time slice or level slice information?
+Answer:  
+1. For large datasets, where data are stored in HDF as “chunked” data, it is possible to 
+reach in and pull small sections out.  Model data is usually large and is typically 
+stored in compressed granules.
+2. Usually in multi parameter datasets, each parameter is stored in separate files, which 
+means each has it’s own separate URL.
+
+Metadata about space and time is actually data in the dataset.  Latitude and longitude are 
+easier to handle than time.
+
+WEB PAGE:  Additional DODS core attributes include:
+- De-referencing of DODS URLs in the constrained expression.
+- Server side functions.
+
+James noted that space and time variables need to be handled in a special way. 
+
+The File Server is a DODS accessible inventory of the files in a multi-file dataset. 
+
+WEB PAGE:  The Aggregation Server was still in beta development (available in two 
+months).
+
+WEB PAGE:  DODS – Dir
+- Uses a browser to run through a collection of files.
+- When the URL ends in a “/”, this indicates that it is a directory.
+
+WEB PAGE:  Client and server status graphic (see the DODS website for details).
+Also, an analysis server for GRADS and SQL are available.
+
+Examples and Demos
+
+First Demo
+James went to the Global Change Master Directory (GCMD) website.  He used the 
+GCMD to find several DODS datasets.  Using the metadata provided, a DODS URL was 
+selected.  The following procedures were used:
+1.  The URL was pasted into Matlab.
+2.   Data was then put into Matlab using the LOADDODS command.
+3. Sea surface temperature was plotted into a GUI window.
+4. A sub-sample was performed to get every 16th value.
+
+Question:  Is the image data type served by DODS?
+Answer:  Animation and image formats are not served by DODS.  James thought it 
+should be added in the future.  Some users want this functionality.
+
+ Second Demo
+James used Matlab and Level 3 metadata to create an image of sea surface temperature 
+(an example of Level 3 interoperability).  The interface constructed the constraint based 
+on geographic and time data and, as a result, variables were created.  Other functionality 
+was demonstrated.
+
+Question:  How does DODS differ from JGOFS (as it pertains to the NE GLOBEC 
+program)?
+Answer:  Data management systems and data delivery systems are different.  JGOFS and  
+DODS are very similar.
+
+Question:  Are there security issues (e.g., breaking in or corrupting datasets)?
+Answer:  There are different levels.
+1. Modifying your data files (but DODS is read-only so it is difficult to corrupt your 
+data).
+2. PERL is insecure on the web.
+3. C++ software is more secure.
+4. Security support exists but is not great right now.
+
+Demonstration of the Live Access Server (LAS)  
+
+Jon Callahan – PMEL
+
+Several examples of the LAS were given by accessing data using a web browser and 
+using Ferret:
+1. Displayed SODA data.
+2. Pacific Fisheries Environmental Lab (did not connect).
+3. Carbon Modeling Consortium (CMC) website.
+4. Displayed CO2 emissions data for Mauna Loa. 
+5. Displayed ship tracking.
+
+Comments:
+1    LAS provides useful visualizations of data.
+2. The data provider needs to know how to present data.  
+3. The niche for LAS is data browsing.
+4. Ferret is hard to use.
+5. Prefers NetCDF format.
+6. Jon could possibly put West Coast datasets up on the LAS, given funding.
+
+Question:  Are there other interfaces?
+Answer:  No other interfaces other than the web browser.
+
+Science Presentations and Related Regional Datasets   (see Appendix B for important 
+websites)
+
+Jane Huyer – OSU (used overheads)
+
+Dataset listing:
+1. CTD sampling (3 and 5 times per year).
+2. Satellite track.
+3. GLOBEC LTOP in NCCS
+4. CTD, biochemistry, Drifters, mooring, ADCP, mocness, vertical nets, towed 
+acoustics.
+
+The goal is to look at long-term climate change.  Interested in long term and 
+vulnerability.
+
+OVERHEAD - Example of five seasonal means.
+
+OVERHEAD - El Nino September temperature graph.
+
+OVERHEAD - Derived data set.
+
+Would like to make current meter data readily accessible.
+
+
+Jerry Wanetick – SIO (web presentation, www.ccs.ucsd.edu/zoo)
+Center for Coastal Studies (CCS) Data Zoo Contents (see Appendix C)
+Note:  Table of Non-Zoo CCS data is not available at the website.
+
+At the website: 
+- Showed directory of data.
+- All data is formatted into ASCII.
+- Data could be served using a FreeForm server.
+- All time series data are in ASCII.
+
+Community information node to get information about regional data.
+- Would list performance of server, etc.
+- Data may need to be certified for making it usable.
+- Some people may not want to do this.
+
+WEB PAGE: Plotted drifter data. (Jerry noted that SIO is putting together a catalog 
+showing how each have been released).
+
+WEB PAGE:	Showed drifter trajectory image.
+
+WEB PAGE:	Displayed meteorological data.
+
+WEBSITE:	Showed current and temperature observation data.
+
+WEB PAGE:	Displayed de-tided data.
+
+WEB PAGE:	Displayed current meter data.
+
+Comments:
+- Possibly have a server that gives a user data in various formats (de-tided, raw, avg., 
+etc.) and then creates a view of the dataset.
+- Regional node function (certification, community kinds of things)?
+
+WEB PAGE:	ADCP data displayed from website.
+
+WEB PAGE:	Data broken up by depth.
+
+CCS Data, Zoo Data Characteristics:
+- Heavy on velocity and temperature time series.
+- Hourly averages mostly. 
+- Missing data:
+? Shipboard ADCP from CODE, SMILE, etc.
+? Incomplete CTD data from SMILE.
+? Big holes in SuperCODE (only partial CTD).
+- 4-minute averages available for SBCSMB & NCCCS.
+- High frequency ADCP & pressure data from Iwaves.
+- SMILE 7.5-minute data, possibly still at WHOI (may need to rescue soon).
+
+CCFS Data, Zoo Science Issues:
+- Hourly average data preclude internal wave studies.
+- Description of seasonal cycles of temperature and velocity for the West Coast shelf.
+- Response to wind forcing on the West Coast.
+? Analysis of remote forcing (coastal trapped waves) for the entire West Coast.
+? Study the relative roles of local and remote wind forcing along the West Coast.
+- Abundant data available to estimate tidal constituents for currents all along the West 
+Coast.
+? A high- resolution tide model including data assimilation of both velocities and 
+sea level.
+? De-tiding satellite altimetry and shipboard ADCP coastal data.
+? Internal tide climate (barotropic tide model – observed currents) following 
+Foreman et al. (Dec 15, 2000 JGR).
+
+
+Hal Batchelder – OSU/COAS (used overheads)
+
+The focus of his work is on GLOBEC data.
+
+OVERHEAD – Showed a listing of nineteen datasets, the area covered, time period, and 
+data source.
+
+OVERHEAD – Graphic of time series of three fish species.
+
+OVERHEAD – Graphic of larval ship surveys.
+
+OVERHEAD – Graphic of geographic distribution.
+
+OVERHEAD – Graphic of 3-5 time visitation.
+
+OVERHEAD – Graphic of long term sampling.
+
+OVERHEAD – Graphic showing Gulf of Alaska GLOBEC monitoring stations.
+
+Comments:
+- Lots of surface information, long-track, etc. have been collected.
+- Lots of other miscellaneous datasets have been collected.
+- Hard models to distribute.
+- There is a need to make models available to other researchers.
+- Lots of these models are going on in research groups, but how to share this data is key 
+(near-line storage vs. on-line storage).
+
+
+Corrine James – OSU
+Oregon State’s Satellite Archive for the NE Specific US GLOBEC Program (website).
+
+Comments:
+- Has a large archive of satellite data.
+- Long- range plan is to serve up AVHRR high resolution data.
+- Pathfinder data is available.
+- Will add SeaWiFS data in the future.
+- Data resides in a sequel server database.
+- Data is gridded to Level 3.
+- 1 kilometer resolution.
+
+
+Mark Abbott – OSU
+Remote Sensing Ocean Optics
+(presentation from website,  http://picasso.oce.orst.edu/ORS00/oregon/drifters)
+
+Mark noted that data files are available via ftp through a web interface.
+
+WEB PAGE:	WOCE style drifter (follows current, not wind).
+
+There have been two sets of deployments:
+
+WEB PAGE:	Displayed plots of drifters.
+
+WEB PAGE:	Displayed data files (3000 points in a file).
+
+WEB PAGE:	Satellite Dish Installation. (Installed an x-band receiving station.)
+
+WEB PAGE:	Showed coverage of OSU satellite dish.
+
+Comments by Mark:
+- The web is good for quick requests for data.
+- People are moving to near real-time on West Coast.
+- Data provider issues need to be addressed.
+- A lot of data from the southern oceans.
+? Moorings.
+? Older California drifter data.
+? Some profile data.
+
+
+Brian Schlining – MBARI (used overheads).
+
+The primary questions the staff at MBARI seek to answer are:
+1. What are the mean and fluctuation components of phytoplankton primary production, 
+biomass, and species composition on time scales ranging from days to years?
+2. What are the physical, chemical, and biological processes responsible for the mean 
+and fluctuating components?
+3. What controls primary production and phytoplankton growth rates?
+4. What is the role of meso and microzooplankton in coastal upwelling systems?
+5. What is the fate of primary production?
+6. What are the biological consequences of El Nino?
+
+Scientific questions:
+1. What are the physical links between the Tropical Pacific and the California Current, 
+and what are their characteristic time and space scales?
+2. What alternate physical processes affect the California Current at these characteristic 
+scales?
+3. What are the relative roles of mesoscale versus basin-scale dynamics in forcing 
+ecosystem variability?
+4. By which processes do physical forcing regulate ecosystem dynamics at seasonal, 
+interannual and decadal time-scales?
+5. By which processes do physical forcing regulate ecosystem structure and bio-
+diversity?
+
+OVERHEAD – Overall display of El Nino.
+
+OVERHEAD – Display of El Nino bloom.
+
+Brian noted that MBARI is putting together an El Nino notebook.
+
+OVERHEAD – Showing buoys, moorings, and drifter data.
+
+OVERHEAD – Showing master plan.
+
+Brian next went to the MBARI website to show what datasets are available:
+- OASIS Mooring data
+- Wind data
+- CTD data
+- Barometer data
+
+He mentioned that all the datasets would be available through DODS in the next few 
+weeks.
+
+
+Toby Garfield – San Francisco State University (used overheads)
+
+Data types available:
+- Mooring data (at Scripps)
+- Meteorology
+- CODAR
+- Ship-based (CTD)
+- Bottle/Net
+Underway data:
+- ADCP.
+- Scanfish.
+- Floats.
+- Drifters.
+- Modeling.
+- Pioneer Seamount for broadband acoustic data.
+- CalCOOS (potential dataset).
+- CIRSI.
+
+
+Server Issues
+
+Question:  What does it take to build a DODS server?
+
+As an example, CTD data (from Jerry’s Data Zoo) was used.  The CTD data has the 
+following attributes:
+- Currently they are flat ASCII files.
+- Have a header file.
+- Have other information in an ancillary file.
+
+James Gallagher suggested to use the FreeForm server for CTD (columnar data).  
+However, he noted that NetCDF is easier with which to serve data, as opposed to 
+FreeForm which needs a special configuration script to read columnar data.  A lot of 
+discussion and questions arose about handling this kind of data.
+
+Some of the questions included:
+Question:  Does NetCDF require EPIC convention metadata?
+Answer:  NO.
+
+Question:  What happens to your data files if there is sensor dropout, when you are using 
+FreeForm?
+Answer:  The URI staff has had some experience with this but not sure what would 
+happen.
+
+Question:  How long would it take to get a FreeForm server up and running for Jerry’s 
+data?
+Answer:  If the FreeForm server exists on the machine with data, the format file and 
+additional files could be formatted in one hour.
+
+Question:  How do you tell DODS how your data is laid out?
+Answer:  It depends on which server you want to use and how your data is laid out.  The 
+servers don’t inherently understand directory structure.  JGOFS can traverse hierarchical 
+collections of files.  James is not sure if FreeForm can cross multiple data files.
+
+Question:  What is the next step to turn on a DODS server?
+Answer:  Put the executable in a directory along with other files in certain directories.
+
+Installation of the servers is handled automatically.  James noted that the FreeForm server 
+is the most complicated server to set up.
+
+Question:  Can you get metadata from FreeForm?
+Answer:  You get no semantic metadata.  It must be written up in a structured text object.  
+The metadata goes into a third file.
+
+Question:  Is the format for FreeForm in DODS documentation presented with examples?
+Answer:  Yes, and there are examples.
+
+James compared and contrasted JGOFS and NetCDF.  He noted that JGOFS can be 
+tailored quite easily to handle your data.
+
+Supported DODS Servers (user software products):
+- NetCDF
+- HDF 4 (HDF.EOS)
+- DSP
+- Matlab
+- FreeForm
+- JGOFS
+- RDBS (anything using JDBC)
+
+Servers not supported:
+HAO, GRIA, GrADS, WMT (Gateway)
+
+There is a user guide for the FreeForm server.
+
+Question:  Are there unique issues concerning satellite data?
+Answer:  Anything below level 3 would be difficult.  Swath data is difficult.
+
+Question:  What about .jpg and .gif images?
+Answer:  These file types are easily viewed in a browser.
+
+Comment:
+Large format files, like towed acoustic data, need to be put into NetCDF format.
+
+Question:  What are the maintenance issues and efforts involved once someone has 
+established a DODS server?
+Answer:  URI tries to make sure configuration files never need to be changed.  Unidata 
+provides user support.
+
+Is the DODS data model adequate?
+
+There were no major deficiencies noted.  Acoustic data and animation capabilities were 
+issues that would be tackled at a later date.
+
+The California Current System   
+
+Throughout the science presentations, a few key themes emerged.
+
+California Current System research issues:
+- Processes vary on long time and large space scales (e.g., local vs. remote forcing).
+- Mesoscale variability is an important component.
+- Eastern boundary currents are productive biologically, and coupling with physical 
+forcing is a critical issue.
+
+In a sense, these issues are almost dogma, but they do lead to some common 
+requirements for any data system:
+- Preservation and stewardship of data --> time series are critical.
+- Integration across a variety of data types --> bio/phys/chem.
+- Access by non-experts  --> managers as well as researchers who are not specialists 
+with every data set.
+
+Regional Node  
+
+Group discussion led to strong support for the idea of a West Coast regional node, in 
+addition to the local nodes (discussed below).  The regional node would provide services 
+that would be beyond the capabilities of a local node or would be done more efficiently at 
+a regional site.  Possible functions include:
+- Data set certification - mechanisms to provide some degree of assurance of data 
+quality for decades.     
+- Data archaeology and rescue - many datasets are lacking homes.
+- Long-term archiving - when projects end, investigators retire, etc.
+- Advanced visualization services - display tools such as those developed at 
+NOAA/PMEL as part of the Live Access Server.  
+(http://ferret.wrc.pmel.noaa.gov/las)
+- Define computer scenarios and output that might be made accessible (e.g., ENSO vs. 
+non-ENSO model runs).
+
+Datasets and Nodes   
+
+The workshop participants briefly discussed possible local nodes that might form a 
+cooperative pilot study for the West Coast.
+
+? SIO
+? UCSB
+? PFEG
+? MBARI
+? NPS
+? UCSC
+? SFSU
+? OSU
+? PMEL
+? UW
+
+In parallel, there are projects, some of which span multiple institutions: CalCOFI, SIO 
+Data Zoo, MMS, GLOBEC,  PNCERS, PISCO, NOPP (multiple programs), CoOP 
+(COAST and WEST).  The point was not to list all possible projects and all possible 
+institutions, but to develop a "reasonable" list for a possible pilot study.
+
+Datasets (again, not meant to be comprehensive) include:  CTD, moorings, drifters, 
+ADCP, CODAR, SeaSoar/Scanfish, surface meteorology, satellite imagery, chlorophyll, 
+zooplankton biomass, and nutrients.
+
+Metadata and Data Services 
+
+Participants discussed the minimum set of semantic metadata (in the DODS vernacular) 
+that would be necessary to use "minimally" processed data. That is, we do not expect 
+people to serve raw volts from a sensor. These are:
+- Time and location - this will require an ancillary file that describes the time/space 
+axes (e.g., lat/lon convention, time convention, etc.).
+- Descriptive variable name, including something that would indicate the sensor type.
+- Units.
+- Missing data value - e.g., -9999, NaN, etc.
+- Scaling, including slope/offset.
+
+This information would allow a researcher to read in a data file and conduct useful 
+science.  It was noted that the COARDS convention as part of the NetCDF standard 
+would help with naming, etc.  See http://www.unidata.ucar.edu/packages/udunits/index.html for 
+more details.  Also see
+http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html
+
+A minimum set of metadata for dataset discovery (that is, to help users find datasets of 
+interest) could be built up from the NASA Global Change Master Directory (GCMD) 
+which has an extensive set of catalog information, standard terms, etc.  The GCMD is 
+also willing to help users describe their data holdings (see http://gcmd.gsfc.nasa.gov/).
+
+For data presentation, it is often useful to provide palettes for display of imagery, maps, 
+sections, etc.  This would fall under the category of presentation metadata.
+
+Lastly, we discussed information that would help "certify" datasets and increase user 
+confidence.  This metadata would include:
+- Publications based on the data set.
+- Calibration files.
+- Quality control procedures and description.
+- Comparisons with other data.
+- Error fields, caveats.
+- Processing algorithms.
+
+These four "layers" (use or semantic metadata, discovery metadata, presentation 
+metadata, and certification metadata) are all optional, but the more layers a data provider 
+delivers, the more useful the data.  At a minimum, we expect that any dataset in the pilot 
+study would provide the use/semantic metadata.  Other layers of metadata could then be 
+added on this base.
+
+
+APPENDIX A
+
+West Coast DODS Regional Workshop
+January 17th and 18th, 2001
+Attendee List
+
+
+NAME			ORGANIZATION	PHONE #		EMAIL
+
+Mark Abbott		COAS/OSU		(541)737-4045		mark@oce.orst.edu
+
+Hal Batchelder		COAS/OSU		(541)737-4500		hbatchelder@oce.orst.edu
+
+Eric Beals		OSU			(541)737-4548		beals@oce.orst.edu
+
+Jon Callahan		NOAA/PMEL		(206)526-6801		callahan@pmel.noaa.gov
+
+Jane Fleischbein		OSU			(541)737-5698		flei@oce.orst.edu
+
+Jim Fritz			TPMC			(781)545-1346		jfritz@tpmc.com
+
+James Gallagher		URI			(541)757-7992		jgallagher@gso.uri.edu
+
+Toby Garfield		SFSU-RTC		(415)338-3713		garfield@sfsu.edu
+
+Paul Hemenway		URI			(401)874-6677		phemenway@gso.uri.edu
+
+Jane Huyer		OSU			(541)737-2108		ahuyer@oce.orst.edu
+
+Corinne James		OSU			(541)737-2270		corinne@oce.orst.edu
+
+Mike Korso		COAS/OSU		(541)737-3079		kosro@oce.orst.edu
+
+Nathan Potter		OSU			(541)737-2293		ndp@oce.orst.edu
+
+Brian Schlining		MBARI			(831)775-1855		brian@mbari.org
+
+Ted Strub		OSU			(541)737-3015		tstrub@oce.orst.edu
+
+Jerry Wanetick		SIO			(858)534-7999		jwanetick@ucsd.edu
+
+
+APPENDIX B
+
+West Coast DODS Regional Workshop
+
+Important Websites 
+
+
+NASA Global Change Master Directory		
+http://gcmd.gsfc.noaa.gov/cgi-bin/
+
+NOAA PMEL LAS Examples
+http://ferret.wrc.noaa.gov/nopp/main.html
+
+SIO Data Zoo
+http://www.ccs.ucsd.edu/zoo
+
+GLOBEC Satellite Data
+http://coho.oce.orst.edu
+
+GLOBEC Drifter Data
+http://picasso.oce.orst.edu/OR500/oregon/drifters
+
+DODS
+http://unidata.ucar.edu/packages/dods
+
+DODS Documentation
+http://top.gso.uri.edu/
+
+DODS Workshop Presentations
+http://po.gso.uri.edu/~dan/dods-regional-workshops/dods-regional-workshops.html
+
+MBARI
+http://www.mbari.org
+
+NOAA PMEL LAS
+http://www.coho.oce.orst.edu
+
+NOAA PMEL LAS
+http://www.ferret.noaa.gov/Ferret/LAS
+
+http://unidata.ucar.edu/packages/dods/  (home page)
+
+http://globec.oce.orst.edu
+
+http://www.gcmd.gsfc.nasa.gov
+
+
+APPENDIX C
+
+CCS Data Zoo Contents
+
+
+	Project	
+Sponsor/
+Contractor
+Region 
+Data Types
+Dates
+CAMP
+MMS/SAIC
+Pt. Conception
+Currents
+April 1992 – July 1994
+CCCCS (Central 
+California Coastal 
+Circulation Study)
+MMS/Raytheon
+Pt. Conception to 
+San Francisco
+Moored Currents
+CTD
+Drifters
+Sea Level (NOS)
+Met
+IR Sat, XBT 
+(unavailable)
+Feb 1984 – July 1985
+CODE (Coastal 
+Ocean Dynamics 
+Experiment)
+NFS/ NCAR, 
+NOAA, USGS, 
+WHOI, SIO, OSU, 
+UNH
+Pt. Reyes to Pt. 
+Arena
+Moored Currents
+CTD
+Drifters
+Met
+XBT (unavailable)
+April 1981 – August 1982
+CTZ (Coastal 
+Transition Zone)
+ONR/OSU, NPS
+N. California
+ADCP
+
+1987
+Del Mar 
+Temperatures
+
+Del Mar, CA
+Temperatures 
+(Thermistor Chains)
+1978
+SBCSMB (Santa 
+Barbara Channel, 
+Santa Maria Basin 
+Study)
+MMS/SIO
+Santa Barbara 
+Channel, Santa 
+Maria Basin 
+Moored Currents
+CTD (Survey, Moored)
+Drifters
+Met
+XBT
+ADCP (Survey, 
+Moored)
+Bottom Pressure
+NDBC Met & ADCP
+AVHRR
+April 1992 - Present
+NCCCS (Northern 
+California Coastal 
+Circulation Study)
+MMS/EG&G/SIO
+San Francisco – 
+Oregon Border
+Moored Currents
+CTD (Survey, Moored)
+Drifters
+Met
+XBT
+Bottom Pressure
+1986 – 1989
+OPUS 
+(Organization of 
+Persistent 
+Upwelling 
+Structures)
+NSF/OSU
+Pt. Conception – Pt. 
+Arguello
+Moored Currents 
+CTD
+Drifters
+Met
+XBT
+Bottom Pressure
+Sea Level
+Pilot: March –April 1981
+Main: April – July 1983
+SBC (Santa Barbara 
+Channel Study)
+MMS/SAIC, 
+Dyanlysis of 
+Princeton
+Santa Barbara 
+Channel
+Moored Currents
+CTD (Survey, Moored)
+Drifters
+Met
+Bottom Pressure
+Jan 1984 – Jan 1985
+SMILE (Shelf 
+Mixed Layer 
+Experiment)
+NSF/WHOI
+Pt. Reyes – Pt. 
+Arena
+Moored Currents
+CTD (Survey, Moored)
+ADCP (Survey)
+Met
+Thermistor Chains
+Sea Level
+Nov 1988 – May 1989
+
+
+
+APPENDIX C (continued)
+
+Non-Zoo CCS Data
+
+
+	Project	
+Sponsor/Contracto
+r
+Region 
+Data Types
+Dates
+CDIP (Coastal Data 
+Information 
+System)
+USACOE-
+CDBW/SIO
+West Coast, Hawaii, 
+East Coast (couple 
+of stations)
+Wave direction and 
+energy spectra
+1977 – Present
+
+Iwaves
+ONR/SIO
+San Diego Co.
+Bottom-mounted 
+upward-looking ADCP 
+& Temp
+1998-1999
+Swash2000, BSRip, 
+Undertoad
+ONR/SIO
+La Jolla
+Numerous nearshore 
+wave, current, run-up, 
+sonic altimeter and bed 
+stress measurements
+1980 - present
+NSTS (Nearshore 
+Sediment Transport 
+Study) 
+USACOE
+Torrey Pines, SD 
+Co
+Santa Barbara
+Numerous nearshore 
+wave, current, run-up, 
+dye injection and bed 
+stress measurements
+1977
+1980
+CCSTWS (Coast of 
+California Storm 
+and Tidal Wave 
+Study)
+USACOE
+Dana Point – 
+Mexican Border
+Sub-areal and 
+bathymetric survey 
+transects of the beach 
+and nearshore region
+1980 - 1982
+
+
+
+
+1
+
+Technology Planning & Management Corp.                                                    National Oceanographic Partnership Program
+Scituate, MA  02066                                                                                                 Distributed Oceanographic Data System
+10
+                                                                                                                                              West Coast Regional Workshop
+
+

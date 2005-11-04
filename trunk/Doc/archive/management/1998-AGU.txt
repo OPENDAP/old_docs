@@ -1,0 +1,72 @@
+
+	$Id$
+
+Items from the Fall 1998 AGU Meeting
+
+Ocean and Atmospheric Data Management Journal: Submit paper on DODS. See
+hanout. www.elsevier.nl/locate/oadm
+
+Mercury: Data system we could work with. Harvester provides cataloging. See
+handout. Tim Rhyne (Systems analyst) btr@ornl.gov
+
+AGU: XML and DODS. AGU and DODS.
+
+Dave Uhlir
+
+Jim Berger (NODC)
+
+Mathworks has a lunch-time meeting (11 am, Wed). Great demo opertunity.
+
+------------------------------------------------------------------------
+
+Task list from AGU
+
+Ranking: 1=now, 2=pre-developer's meeting, 3=post-developer's meeting
+
+1 Automatic checker for datasets; test loaddods too
+3 Transform Ethan to 100% DODS
+1 Single link download for the gui (Done)
+1 Subscribe list for update information (Done. BUT we have to USE that list).
+3 Add sponsors to signage.
+2 IDL GUI
+3 Linux laptop for Richard
+1,2,3 Matlab GUI; short-term support
+? ESRAT
+2 Rob morris adds datasets to the ML GUI
+2 WWW Interface
+4 Mercury
+2-3 DIAL
+
+------------------------------------------------------------------------
+Population
+
+Welles
+Lamont
+NODC
+Flement(SP?)/HI
+IFREMER
+SIDS
+Ted Strubb
+Hathaway (Army Corps of Eng.)
+Challenor
+
+ESIPs
+
+Cath Gautier
+Menas Kafatos
+Frew
+Ron Webber
+Goddard DAAC
++ more
+
+Systems
+
+Big Sur
+Kenn Gardells
+UMBC Greek (?)
+Ecologic
+GLOBE
+
+Adamic (SP?): Make a mini-Matlab (free) so users can run browser w/o ML
+license. 
+

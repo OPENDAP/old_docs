@@ -1,0 +1,68 @@
+#!/usr/local/bin/perl
+#
+# Extract Bounding Box *.bb and compress postscript figure files.
+#
+# usage: epsbb          --- For all files in the current directory.
+#        epsbb DIR      --- For all files in the directory DIR.
+#        epsbb FILES... --- For all the FILES on the command line
+#
+#  Author: Peter Whaite (peta@mcrcim.mcgill.edu)
+#          Centre for Intelligent Machines, McGill University.
+$RCSVERSION='$Id$';
+
+## USER CONFIG -- edit the following to suit your system.
+#
+$GZIP='/usr/local/bin/gzip';
+$ZCAT='/usr/local/bin/gunzip -c';
+#
+## END USER CONFIG
+
+@ARGV=<*> unless ($#ARGV>=0);	                    # epsbb
+@ARGV=<$ARGV[0]/*> if ($#ARGV==0 && (-d $ARGV[0])); # epsbb DIR
+
+FILE: while ($_=shift)
+{
+    /\.bb$/ && next;
+    -e ($eps=$_) || -e ($eps="$_.gz") || -e ($eps="$_.z") || -e ($eps="$_.Z")
+	|| do { warn("$_ does not exist\n"); next;};
+    -f $eps || do { warn("$eps not a plain file\n"); next;};
+    $epsf = $eps;
+    $compressed = 0;
+    $eps =~ /^(.*)\.(gz|z|Z)$/ && do
+    {
+	$eps = $1;
+	$epsf = "$ZCAT $eps|";
+	$compressed = 1;
+    };
+    
+    open(EPS,$epsf) || do {warn("$0: $epsf: $!\n"); next;};
+    while (<EPS>)
+    {
+	/^%[%\w]*BoundingBox/ && do
+	{
+	    open(BB,">$eps.bb") || do
+	    {
+		warn("$0: $eps.bb: $!\n");
+		next FILE;
+	    };
+	    print STDERR "Writing $eps.bb";
+	    print BB;
+	    close BB;
+	    if (!$compressed)
+	    {
+		print STDERR ", compressing $eps...";
+		system("$GZIP $eps") unless $compressed;
+	    }
+	    print STDERR "\n";
+	    close EPS;
+	    next FILE;
+	};
+    };
+    close EPS;
+    warn("$eps has no bounding box\n");
+}
+
+# Local Variables:
+# mode: perl
+# auto-fill-hook: do-auto-fill
+# End:

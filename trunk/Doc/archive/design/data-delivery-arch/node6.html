@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>HyperText Transfer Protocol--HTTP</TITLE>
+<META NAME="description" CONTENT="HyperText Transfer Protocol--HTTP">
+<META NAME="keywords" CONTENT="data-delivery-arch">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-arch.css">
+
+<LINK REL="next" HREF="node7.html">
+<LINK REL="previous" HREF="node5.html">
+<LINK REL="up" HREF="node3.html">
+<LINK REL="next" HREF="node7.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html138"
+  HREF="node7.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html134"
+  HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html128"
+  HREF="node5.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html136"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html139"
+  HREF="node7.html">Data Model</A>
+<B> Up:</B> <A NAME="tex2html135"
+  HREF="node3.html">Important Terms and Technologies</A>
+<B> Previous:</B> <A NAME="tex2html129"
+  HREF="node5.html">Remote Procedure Call RPC</A>
+ &nbsp; <B>  <A NAME="tex2html137"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00033000000000000000">
+HyperText Transfer Protocol--HTTP</A>
+</H2>
+
+<P>
+A second data delivery mechanism that is, on the surface, very different from
+RPCs is the <A NAME="tex2html16"
+  HREF="http://www.w3.org/hypertext/WWW/Protocols/HTTP/HTTP2.html">HyperText Transfer Protocol</A><A NAME="tex2html14"
+
+HREF="footnode.html#foot460"><SUP>3</SUP></A>. This transport mechanism is primarily intended to move
+hypertext documents (text, images, ...) over a network. Its basic unit of
+transfer is a file. The protocol is closely coupled with existing HTTP
+servers from <A NAME="tex2html17"
+  HREF="http://www.w3.org/">World Widw Web Consortium</A>, <A NAME="tex2html18"
+  HREF="http://www.ncsa.uiuc.edu/">National Center for Supercomputing Applications</A> and commercial providers.  These servers support
+an extension mechanism called the <A NAME="tex2html19"
+  HREF="http://hoohoo.ncsa.uiuc.edu/cgi/overview.html">Common Gateway Interface</A> which can be used to transform
+information on the server computer to a hypertext document. Once the
+hypertext document has been prepared, it is passed back to the HTTP server
+which then sends it to the client.
+
+<P>
+A crucial difference between RPC technology and HTTP is that RPC is used to
+build an application-level communication protocol while HTTP <EM>is</EM> an
+application level protocol. While RPC can be used to build either stateless
+of stateful distributed systems, HTTP can only be used to build stateless
+systems. Because HTTP's extensions typically take the form of filter programs
+combined (using the CGI mechanism) with a server, HTTP is a poor choice for
+supporting `fat' interfaces. In other words, HTTP/CGI is a good choice for
+interfaces that are stateless and have a small number of entry points, but a
+poor choice for stateful or large interfaces.
+
+<P>
+The widespread use of HTTP and the competition between various providers of
+HTTP daemons has focused the attention of those server providers on important
+considerations like system security and accounting. Thus, while providers of
+HTTP software need to make high quality implementations of the HTTP protocol
+available, there is also considerable effort expended towards additional
+features which improve the overall function of any networked system. Because
+using RPCs virtually necessitates rebuilding support features like access
+control and logging, using HTTP can translate into significant savings during
+the design, implementation and management phases of a project.
+
+<P>
+The widespread use of HTTP means that server programs for HTTP are likely to
+exist on many of the would-be data-provider machines. Thus using HTTP will
+remove one impediment from a user becoming a data provider, that is, to
+become a data provider users will not necessarily have to install a data
+server. The nature of RPC technology is such that data server installation is
+typically considered complex by users and removing that hurdle improves the
+accessibility of the system (since the system depends on, to a large extent,
+the willingness of people to become data providers).
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:http-interface"></A><A NAME="514"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+HTTP can be used to construct servers architecturally similar to
+  those built with RPCs. (Figure&nbsp;<A HREF="node5.html#fig:prog2client-server"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>).  To
+  do so the <EM>RPC server stub</EM> portion of the server is implemented
+  using HTTPD and one or more <EM>Common Gateway Interfaces</EM> as shown in
+  this figure.</CAPTION>
+<TR><TD><IMG
+ WIDTH="119" HEIGHT="14" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=http-interface.ps,height=2.5in}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+While there are fundamental differences between RPC and HTTP,
+Figure&nbsp;<A HREF="#fig:http-interface"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> shows how the <EM>RPC server stubs</EM> layer
+in Figure&nbsp;<A HREF="node5.html#fig:prog2client-server"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> can be constructed using one
+implementation of HTTP and some additional software.  One crucial difference
+between systems built with RPC and those built using HTTP is that the
+RPC-based server can maintain state information while the HTTP-based server
+cannot.  Thus, while servers based on RPC can use any convenient set of
+functions as the server interface, the HTTP interface must be more carefully
+chosen so as to insure that the system can function efficiently without state
+information retained in the server.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html138"
+  HREF="node7.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html134"
+  HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html128"
+  HREF="node5.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html136"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html139"
+  HREF="node7.html">Data Model</A>
+<B> Up:</B> <A NAME="tex2html135"
+  HREF="node3.html">Important Terms and Technologies</A>
+<B> Previous:</B> <A NAME="tex2html129"
+  HREF="node5.html">Remote Procedure Call RPC</A>
+ &nbsp; <B>  <A NAME="tex2html137"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,75 @@
+%
+% $Id$
+%
+% This is a SDD template for software that has already been implemented but
+% needs significant redesign and implementation. 7/19/2000 jhrg
+
+\documentclass{article}
+\usepackage{epsfig}
+\usepackage{rotating}
+\usepackage{subfigure}
+\usepackage{vcode}
+\usepackage{xspace}
+
+% Change paragraph typesetting; eliminate indenting and add more space between
+% paragraphs. 2/15/2000 jhrg
+\setlength{\parindent}{0em}     % Amount of indentation
+\addtolength{\parskip}{1ex}     % Vertical separation
+
+% Sample macros including a URL which can be hyphenated. 
+\newcommand{\Cpp}{\rm {\small C}\raise.5ex\hbox{\footnotesize ++}\xspace}
+\newcommand{\dap}{\rm {\small DAP}\raise.5ex\hbox{\footnotesize ++}\xspace}
+\newcommand{\maewesturl}{http://maewest.gso.uri.edu/\-cgi-bin/\-nph-dsp/\-htn\_sst\_decloud/\-1992/\-i92098065016.htn\_d.Z\xspace}
+
+\begin{document}
+
+\title{}
+\author{James Gallagher\thanks{The University of Rhode Island,
+    jgallagher@gso.uri.edu}}
+\date{\today \\ $Revision$ }
+
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+
+Section~\ref{sec:arch} describes the architecture of loaddods, including how
+loaddods and writeval work together.
+
+Section~\ref{sec:requirements} describes the new requirements.
+
+Section~\ref{sec:design} describes how those requirements are satisfied.
+
+\section{Architecture}
+\label{sec:arch}
+
+% Sample figure. For tables with their own footnotes, use the minipage
+% environemnt. See the Latex companion.
+\begin{figure}
+\begin{center}
+\epsfig{file=.eps,width=5in}
+\caption{}
+\label{fig:loaddods-component}
+\end{center}
+\end{figure}
+
+\section{Requirements}
+\label{sec:requirements}
+
+\section{Design and Implementation}
+\label{sec:design}
+
+\clearpage
+\appendix
+
+\section{ChangeLog}
+\begin{verbatim}
+
+$Log: sdd-for-redesign.tex,v $
+Revision 1.2  2000/07/20 23:55:05  jimg
+*** empty log message ***
+
+
+\end{verbatim}
+
+\end{document}

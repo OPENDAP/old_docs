@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Getting Information about Variables</TITLE>
+<META NAME="description" CONTENT="Getting Information about Variables">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="next" HREF="node17.html">
+<LINK REL="previous" HREF="node15.html">
+<LINK REL="up" HREF="node14.html">
+<LINK REL="next" HREF="node17.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html312"
+  HREF="node17.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html308"
+  HREF="node14.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html302"
+  HREF="node15.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html310"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html313"
+  HREF="node17.html">Reading the Values of</A>
+<B> Up:</B> <A NAME="tex2html309"
+  HREF="node14.html">Client Library Functions</A>
+<B> Previous:</B> <A NAME="tex2html303"
+  HREF="node15.html">Rewriting the Open and</A>
+ &nbsp; <B>  <A NAME="tex2html311"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00041200000000000000">
+Getting Information about Variables</A>
+</H3>
+
+<P>
+Most APIs for self-describing data sets include functions which return
+information about the variables that comprise a data set. These functions
+return information about the type and shape of variables in a form that can
+be used by a program as well as ancillary information about the variables
+that is more often than not intended for use by humans. Each of these
+functions must be rewritten so that to the extent possible, information
+present in the DAS and DDS is used to satisfy them.
+
+<P>
+Figure&nbsp;<A HREF="#fig:client-metaread"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> shows a simple structure chart for this type
+of operation. While many `self-describing' APIs may have 20-30 or more of
+these functions, the basic structure of the re-implemented code is the same
+for each one. If the data set is local, use the original implementation,
+otherwise use the locally storedq state information (DAS and DDS) to answer
+the function.
+
+<P>
+However, rewriting these functions can be the most labor intensive part of
+re-implementing a given API. This is typically the largest group of functions
+in the API and the information stored in the DAS and DDS must often
+be `massaged' before it fulfills the specifications of the API. Thus the
+rewritten functions must not only get the necessary information from the DAS
+and DDS objects, but they must also transform the types of the objects used
+to return that information to the user program into the data types the
+program expects.
+
+<P>
+The DODS <A NAME="tex2html64"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html">Client and Server Toolkit</A> contains <FONT SIZE="-1">C</FONT><FONT SIZE="-1">++</FONT> classes which both define the DAS and DDS
+objects and provide member functions which simplify this process.
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:client-metaread"></A><A NAME="563"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+Simple Structure Chart for the Metadata Access Functions in a DODS
+  Client Library</CAPTION>
+<TR><TD><IMG
+ WIDTH="119" HEIGHT="14" BORDER="0"
+ SRC="img9.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=client-metaread.ps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html312"
+  HREF="node17.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html308"
+  HREF="node14.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html302"
+  HREF="node15.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html310"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html313"
+  HREF="node17.html">Reading the Values of</A>
+<B> Up:</B> <A NAME="tex2html309"
+  HREF="node14.html">Client Library Functions</A>
+<B> Previous:</B> <A NAME="tex2html303"
+  HREF="node15.html">Rewriting the Open and</A>
+ &nbsp; <B>  <A NAME="tex2html311"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

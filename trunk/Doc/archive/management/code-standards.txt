@@ -1,0 +1,32 @@
+
+Code standards for C++ code. For the DAP++ implementation
+
+C++ Classes should have a header (.h) which defines the class' interface and
+a .cc file which contains the implementation.
+
+C++ Accessors should be const methods and should be names set_*. Mutators
+should be named get_*.
+
+C++ class Headers:
+   
+   o Should use #ifndef _header_file_h ... #endif to protect against multiple
+   inclusions. The <header define> is a lower case version of the header
+   file's name with a leading underscore and all non-alphanums replaced by a
+   an underscore.
+   o Should use #ifdef __GNUG__ #pragma interface #endif
+   o Should include doc++ comments for all public members
+   o Should not include headers unless they are part of the public interface
+   of the class
+   o Should wrap includes in #ifndef <header define> #include <header>  #endif
+   o Log files at the end of the file
+   o No headers should include am autoconf-style config header. Include these
+   in the .cc files. This means library users should never see the config
+   header. 
+
+C++ implementations
+
+   o Should use #pragma implementation (wrapped in __GNU__)
+   o Log files at the end of the file
+   o Any class with a pointer member should define the copy constructor,
+   default constructor and operator=
+   o operator= must delete storage in the LHS before doing the assignment.

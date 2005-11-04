@@ -1,0 +1,370 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dods-ex.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.4.1, Sat May 11 14:26:10 2002 -->
+<head>
+<title>Writing an OPeNDAP Client</title>
+</head><body bgcolor="ccffcc">
+<pre>
+
+// (c) COPYRIGHT URI/MIT 1997-1999
+// Please read the full copyright statement in the file COPYRIGHT.
+//
+// Authors:
+//	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
+
+// This is the source to `geturl'; a simple tool to exercise the Connect
+// class. It can be used to get naked URLs as well as the DODS DAS and DDS
+// objects.  jhrg.
+<font COLOR="cc6600"><b>
+#include "config_dap.h"
+</b></font>
+static char rcsid[] not_used = {"$Id$"};
+
+#include < stdio.h >
+#include < assert.h >
+
+#include < GetOpt.h >
+#include < string >
+<font COLOR="cc6600"><b>
+#include "Connect.h"
+</b></font>
+#ifdef WIN32
+#define MAIN_RETURN void
+#else
+#define MAIN_RETURN int
+#endif
+
+using std::cerr;
+using std::endl;
+
+const char *version = "$Revision$";
+
+extern int keep_temps;		// defined in Connect.cc
+
+
+void
+usage(string name)
+{
+    cerr << "Usage: " << name
+	 << " [dDagVvk] [c <expr>] [t <codes>] [m <num>] [-T <list>] <url> [<url> ...]" << endl
+	 << "[gVvk] [t <codes>] [T <list>] <file> [<file> ...]" << endl
+	 << endl
+	 << "In the first form of the command, dereference the URL" << endl
+	 << "perform the requested operations. This include routing" << endl
+	 << "the returned information through the DAP processing" << endl
+	 << "library (parsing the returned objects, et c.). If none" << endl
+	 << "of a, d, or D are used with a URL, then the DAP library" << endl
+	 << "routines are NOT used and the URLs contents are dumped" << endl
+	 << "to standard output." << endl
+	 << "In the second form of the command, assume the files are" << endl
+	 << "DODS data objects (stored in files or read from pipes)" << endl
+	 << "and process them as if -D were given. In this case the" << endl
+	 << "information *must* contain valid MIME header in order" << endl
+	 << "to be processed."
+	 << endl
+	 << "Options:" << endl
+	 << "        d: For each URL, get the DODS DDS." << endl
+	 << "        a: For each URL, get the DODS DAS." << endl
+	 << "        D: For each URL, get the DODS Data." << endl
+	 << "        g: Show the progress GUI." << endl
+	 << "        v: Verbose." << endl
+	 << "        V: Version." << endl
+	 << "        c: <expr> is a contraint expression. Used with -D." << endl
+	 << "           NB: You can use a `?' for the CE also." << endl
+	 << "        k: Keep temporary files created by DODS core" << endl
+	 << "        m: Request the same URL <num> times." << endl
+	 << "        z: Don't ask the server to compress data." << endl
+	 << "        T: <list> List of `Accepted Types'. Translating servers use this." << endl
+	 << "        s: Print Sequences using numbered rows." << endl
+	 << endl
+	 << "        t: <options> trace output; use -tz for default." << endl
+	 << "          a: show anchor trace." << endl
+	 << "          A: show app trace." << endl
+	 << "          b: show bind trace." << endl
+	 << "          c: show cache trace." << endl
+	 << "          h: show auth trace." << endl
+	 << "          i: show pics trace." << endl
+	 << "          k: show core trace." << endl
+	 << "          l: show sgml trace." << endl
+	 << "          m: show mem trace." << endl
+	 << "          p: show protocol trace." << endl
+	 << "          s: show stream trace." << endl
+	 << "          t: show thread trace." << endl
+	 << "          u: show uri trace." << endl
+	 << "          U: show util trace." << endl
+	 << "          x: show mux trace." << endl
+	 << "          z: show all traces." << endl;
+}
+
+bool
+read_data(FILE *fp)
+{
+    char c;
+    
+    if (!fp) {
+	cerr << "geturl: Whoa!!! Null stream pointer." << endl;
+	return false;
+    }
+
+    // Changed from a loop that used getc() to one that uses fread(). getc()
+    // worked fine for transfers of text information, but *not* for binary
+    // transfers. fread() will handle both.
+
+    while (fp && !feof(fp) && fread(&c, 1, 1, fp))
+	printf("%c", c);	// stick with stdio 
+
+    return true;
+}
+
+static void
+process_data(<font COLOR="red"><b>Connect & url</b></font>, <font COLOR="red"><b>DDS *dds</b></font>, bool verbose = false, 
+	     bool print_rows = false)
+{
+    switch (<font COLOR="cc6600"><b>url.type()</b></font>) {
+      case dods_error:
+	throw <font COLOR="cc6600"><b>url.error()</b></font>;
+	return;
+
+      case web_error:
+	// Web errors (those reported in the return document's MIME header)
+	// are processed by the WWW library.
+	return;
+
+      case dods_data: 
+      default: {
+	  if (verbose)
+	      cerr << "Server version: " << <font COLOR="cc6600"><b>url.server_version()</b></font> << endl;
+
+	  cout << "The data:" << endl;
+
+	  for (<font COLOR="red"><b>Pix q = dds->first_var(); q; dds->next_var(q)</b></font>) {
+	      <font COLOR="red"><b>BaseType *v</b></font> = <font COLOR="red"><b>dds->var(q)</b></font>;
+	      if (print_rows && <font COLOR="red"><b>v->type()</b></font> == <font COLOR="red"><b>dods_sequence_c</b></font>)
+		  <font COLOR="red"><b>dynamic_cast<Sequence*>(v)->print_val_by_rows(cout)</b></font>;
+	      else
+		  <font COLOR="red"><b>v->print_val(cout)</b></font>;
+	  }
+      }
+      cout << endl;
+    }
+}
+
+MAIN_RETURN
+main(int argc, char * argv[])
+{
+    GetOpt getopt (argc, argv, "AdaDgVvkc:t:m:zT:s");
+    int option_char;
+    bool async = false;
+    bool get_das = false;
+    bool get_dds = false;
+    bool get_data = false;
+    bool gui = false;
+    bool cexpr = false;
+    bool verbose = false;
+    bool trace = false;
+    bool multi = false;
+    bool accept_deflate = true;
+    string accept_types = "All";
+    int times = 1;
+    char *tcode = NULL;
+    char *expr = "";  // can't use NULL or C++ string conversion will crash
+    int topts = 0;
+    bool print_rows = false;
+
+#ifdef WIN32
+    _setmode(_fileno(stdout), _O_BINARY);
+#endif
+
+    while ((option_char = getopt()) != EOF)
+	switch (option_char) {
+	  case 'A': async = true; break;
+	  case 'd': get_dds = true; break;
+	  case 'a': get_das = true; break;
+	  case 'D': get_data = true; break;
+	  case 'V': cerr << "geturl version: " << version << endl; exit(0);
+	  case 'v': verbose = true; break;
+	  case 'g': gui = true; break;
+	  case 'k': keep_temps =1; break; // keep_temp is in Connect.cc
+	  case 'c':
+	    cexpr = true; expr = getopt.optarg; break;
+	  case 't': 
+	    trace = true;
+	    topts = strlen(getopt.optarg);
+	    if (topts) {
+		tcode = new char[topts + 1];
+		strcpy(tcode, getopt.optarg); 
+	    }
+	    break;
+	  case 'm': multi = true; times = atoi(getopt.optarg); break;
+	  case 'z': accept_deflate = false; break;
+	  case 'T': accept_types = getopt.optarg; break;
+	  case 's': print_rows = true; break;
+	  case 'h':
+	  case '?':
+	  default:
+	    usage(argv[0]); exit(1); break;
+	}
+
+    char c, *cc = tcode;
+    if (trace && topts > 0)
+	while ((c = *cc++))
+	    switch (c) {
+	      case 'a': WWWTRACE |= SHOW_ANCHOR_TRACE; break;
+	      case 'A': WWWTRACE |= SHOW_APP_TRACE; break;
+	      case 'b': WWWTRACE |= SHOW_BIND_TRACE; break;
+	      case 'c': WWWTRACE |= SHOW_CACHE_TRACE; break;
+	      case 'h': WWWTRACE |= SHOW_AUTH_TRACE; break;
+	      case 'i': WWWTRACE |= SHOW_PICS_TRACE; break;
+	      case 'k': WWWTRACE |= SHOW_CORE_TRACE; break;
+	      case 'l': WWWTRACE |= SHOW_SGML_TRACE; break;
+	      case 'm': WWWTRACE |= SHOW_MEM_TRACE; break;
+	      case 'p': WWWTRACE |= SHOW_PROTOCOL_TRACE; break;
+	      case 's': WWWTRACE |= SHOW_STREAM_TRACE; break;
+	      case 't': WWWTRACE |= SHOW_THREAD_TRACE; break;
+	      case 'u': WWWTRACE |= SHOW_URI_TRACE; break;
+	      case 'U': WWWTRACE |= SHOW_UTIL_TRACE; break;
+	      case 'x': WWWTRACE |= SHOW_MUX_TRACE; break;
+	      case 'z': WWWTRACE = SHOW_ALL_TRACE; break;
+	      default:
+		cerr << "Unrecognized trace option: `" << c << "'" << endl;
+		break;
+	    }>
+    
+    delete[] tcode; tcode = 0;
+
+    // If after processing all the command line options there is nothing left
+    // (no URL or file) assume that we should read from stdin.
+    for (int i = getopt.optind; i < argc; ++i) {
+	if (verbose)
+	    cerr << "Fetching: " << argv[i] << endl;
+	
+	string name = argv[i];<font color="red"><b>
+	Connect url(name, trace, accept_deflate);
+	url.set_accept_types(accept_types);</b></font>
+
+	if (<font color="cc6600"><b>url.is_local()</b></font>) {
+	    if (verbose) 
+		cerr << "Assuming that the argument " << argv[i] 
+		     << " is a file" << endl 
+		     << "that contains a DODS data object; decoding." << endl;
+
+	    FILE *source;
+	    if (strcmp(argv[i], "-") == 0)
+		source = stdin;
+	    else
+		source = fopen(argv[i], "r");
+	    
+	    if (!source) {
+		cerr << "The input source: " << argv[i] 
+		     << " could not be opened." << endl;
+		break;
+	    }
+
+	    // NB: local access should never use the popup gui.
+	    try {<font color="red"><b>
+		DDS *dds</b></font> = <font color="red"><b>url.read_data(source, false, false);</b></font>
+		process_data(<font color="red"><b>url</b></font>, <font color="red"><b>dds</b></font>, verbose, print_rows);
+	    }
+	    catch (<font COLOR="cc6600"><b>Error &e</b></font>) {
+		<font COLOR="cc6600"><b>e.display_message(url.gui()</b></font>);
+		break;
+	    
+	    if (source != stdin)
+		fclose(source);
+	}
+
+	else if (<font COLOR="3366cc"><b>get_das</b></font>) {
+	    for (int j = 0; j < times; ++j) {
+		try {
+		    if (<font color="red"><b>!url.request_das(gui)</b></font>)
+			continue;
+		}
+		catch (<font COLOR="cc6600"><b>Error &e</b></font>) {
+		    <font COLOR="cc6600"><b>e.display_message(url.gui()</b></font>);
+		    continue;
+		}
+		if (verbose) {
+		    cerr << "Server version: " << <font color="cc6600"><b>url.server_version()</b></font> 
+			 << endl;
+		    cerr << "DAS:" << endl;
+		}<font color="red"><b>
+		url.das().print();</b></font>
+	    }
+	}
+
+	else if (<font COLOR="3366cc"><b>get_dds</b></font>) {
+	    for (int j = 0; j < times; ++j) {
+		try {
+		    if (<font color="red"><b>!url.request_dds(gui))</b></font>
+			continue;
+		}
+		catch (<font COLOR="cc6600"><b>Error &e</b></font>) {
+		    <font COLOR="cc6600"><b>e.display_message(url.gui()</b></font>);
+		    continue;	// Goto the next URL or exit the loop.
+		}
+		if (verbose) {
+		    cerr << "Server version: " << <font color="cc6600"><b>url.server_version()</b></font>
+			 << endl;
+		    cerr << "DDS:" << endl;
+		}<font color="red"><b>
+		url.dds().print();</b></font>
+	    }
+	}
+
+	else if (<font COLOR="3366cc"><b>get_data</b></font>) {
+	    if (!(expr || name.find('?') != name.npos)) {
+		cerr << "Must supply a constraint expression with -D."
+		     << endl;
+		continue;
+	    }
+	    for (int j = 0; j < times; ++j) {<font color="red"><b>
+		DDS *dds;</b></font>
+		try {<font color="red"><b>
+		    dds</b></font> = <font color="red"><b>url.request_data(expr, gui, async);</b></font>
+		    if (!dds) {
+			cerr << "Error: " << <font color="cc6600"><b>url.error().error_message()</b></font> << endl;
+			continue;
+		    }
+		    process_data(<font color="red"><b>url</b></font>, <font color="red"><b>dds</b></font>, verbose, print_rows);
+		    delete <font COLOR="red"><b>dds</b></font>; <font COLOR="red"><b>dds</b></font> = 0;
+		}
+		catch (<font COLOR="cc6600"><b>Error &e</b></font>) {
+		    <font COLOR="cc6600"><b>e.display_message(url.gui()</b></font>);
+		}
+	    }
+	}
+
+	else { // if (!get_das && !get_dds && !get_data) {
+#ifdef GUI<font color="cc6600"><b>
+	    url.gui()->show_gui(gui);</b></font>
+#endif
+	    string url_string = argv[i];
+	    for (int j = 0; j < times; ++j) {
+		try {
+		    if (<font color="red"><b>!url.fetch_url(</b></font>url_string<font color="red"><b>)</b></font>)
+			continue;	
+		    if (verbose)
+			cerr << "Server version: " << <font COLOR="cc6600"><b>url.server_version()</b></font> 
+			     << endl;
+		    FILE *fp = <font color="red"><b>url.output();</b></font>
+		    if (!read_data(fp))
+			continue;<font color="red"><b>
+		    url.close_output();</b></font>
+		}
+		catch (<font COLOR="cc6600"><b>Error &e</b></font>) {
+		    <font COLOR="cc6600"><b>e.display_message(url.gui()</b></font>);
+		    continue;
+		}
+	    }
+	}	    
+    }
+
+    exit(0); //  Running DejaGun/Cygwin based test suites require this.
+#ifdef WIN32
+    return;  //  Visual C++ asks for this.
+#endif
+}
+
+</pre></body></html>

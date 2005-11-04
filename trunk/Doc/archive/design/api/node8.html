@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Base-Type Variables</TITLE>
+<META NAME="description" CONTENT="Base-Type Variables">
+<META NAME="keywords" CONTENT="api">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="api.css">
+
+<LINK REL="next" HREF="node9.html">
+<LINK REL="previous" HREF="node7.html">
+<LINK REL="up" HREF="node7.html">
+<LINK REL="next" HREF="node9.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html176"
+  HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html172"
+  HREF="node7.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html166"
+  HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html174"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html177"
+  HREF="node9.html">Type Constructor Variables</A>
+<B> Up:</B> <A NAME="tex2html173"
+  HREF="node7.html">The Data Model</A>
+<B> Previous:</B> <A NAME="tex2html167"
+  HREF="node7.html">The Data Model</A>
+ &nbsp; <B>  <A NAME="tex2html175"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00052100000000000000"></A>
+<A NAME="base-type-variables"></A>
+<BR>
+Base-Type Variables
+</H3>
+
+<P>
+Variables in the DODS DAP have two forms. They are either base types or type
+constructors. Base type variables are similar to predefined variables in
+procedural programming languages like C or Fortran (e.g., <TT>int</TT> or <TT>  integer*4</TT>).  While these certainly have an internal structure, it is not
+possible to access parts of that structure using the DAP. Base type
+variables in the DAP have three predefined attributes (or characteristics):
+Name, Type, and Unit.  They are defined as follows:
+
+<P>
+<DL>
+<DT><STRONG>Name</STRONG></DT>
+<DD>A unique identifier that can be used to reference the part of
+  the data set associated with the variable.
+
+<P>
+</DD>
+<DT><STRONG>Type</STRONG></DT>
+<DD>The data type contained by the variable. This can be one of <TT>    byte</TT>, <TT>int32</TT>, <TT>float64</TT>, <TT>string</TT>, and <TT>URL</TT>.
+  Where:
+
+<P>
+<DL>
+<DT><STRONG>byte</STRONG></DT>
+<DD>is the same as unsigned char in ANSI C.
+</DD>
+<DT><STRONG>int32</STRONG></DT>
+<DD>is a 32 bit integer--it is synonymous with long in
+  ANSI C when that type is implemented as 32 bits.
+</DD>
+<DT><STRONG>float64</STRONG></DT>
+<DD>is the IEEE 64 bit floating point data type.
+</DD>
+<DT><STRONG>string</STRONG></DT>
+<DD>is a sequence of bytes terminated by a null character.
+</DD>
+<DT><STRONG>URL</STRONG></DT>
+<DD>is a string as defined in <A NAME="tex2html13"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/urls/urls.html">DODS--Uniform Resource Locator</A>.
+</DD>
+</DL>
+
+<P>
+</DD>
+<DT><STRONG>Unit</STRONG></DT>
+<DD>This contains the name of the units of the value contained in
+  the variable.  Examples of typical units are degrees Celsius, degrees
+  Kelvin, ...If a variable is unit less, then this is null.
+
+<P>
+</DD>
+</DL>  
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html176"
+  HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html172"
+  HREF="node7.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html166"
+  HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html174"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html177"
+  HREF="node9.html">Type Constructor Variables</A>
+<B> Up:</B> <A NAME="tex2html173"
+  HREF="node7.html">The Data Model</A>
+<B> Previous:</B> <A NAME="tex2html167"
+  HREF="node7.html">The Data Model</A>
+ &nbsp; <B>  <A NAME="tex2html175"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

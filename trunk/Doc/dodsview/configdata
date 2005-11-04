@@ -1,0 +1,19 @@
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/nwa_declouded_6km.catalog::Northwest Atlantic 6km Declouded
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/nwa_declouded_1km.catalog::Northwest Atlantic 1km Declouded
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/nwa_raw_6km.catalog::Northwest Atlantic 6km Raw
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/nwa_raw_1km.catalog::Northwest Atlantic 1km Raw
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/nep_declouded_1km.catalog::Northeast Pacific 1km Declouded
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/nep_declouded_6km.catalog::Northeast Pacific 6km Declouded
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/coastwatch.catalog::Coastwatch 1km Declouded
+
+END
+default: PRO: peter_gif  HTML: peter.html
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/nwa_declouded_6km.catalog: PRO: peter_gif HTML: peter.html
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/nwa_declouded_1km.catalog: PRO: peter_gif HTML: peter.html
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/nwa_raw_6km.catalog: PRO: peter_gif HTML: peter.html
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/nwa_raw_1km.catalog: PRO: peter_gif HTML: peter.html
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/nep_declouded_1km.catalog: PRO: peter_gif HTML: peter.html
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/nep_declouded_6km.catalog: PRO: peter_gif HTML: peter.html
+http://dods.gso.uri.edu/cgi-bin/nph-dods/catalog/coastwatch.catalog: PRO: peter_gif HTML: peter.html
+END
+

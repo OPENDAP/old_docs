@@ -1,0 +1,9 @@
+
+$Id$
+
+This directory contains dinqcdf, dgetcdf and dgetcdf_batch. They are modified
+versions of inqcdf, getcdf and getcdf_batch which accept URLs in addition to
+netcdf file names. The modifications are very minor and should not affect the
+normal operation of the tools on local files. 
+
+James Gallagher, 9/18/96

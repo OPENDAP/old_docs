@@ -1,0 +1,294 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dods-ex.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.4.1, Sat May 11 14:26:10 2002 -->
+<head>
+<title>Writing an OPeNDAP Client</title>
+</head><body bgcolor="ccffcc">
+<pre>
+
+package <font COLOR="cc6600"><b>dods.clients.matlab</b></font>;
+
+import <font COLOR="cc6600"><b>dods.dap.*</b></font>;
+
+/**
+ * The factory to create matlab types
+ *
+ * @version $Revision$
+ * @author jehamby
+ * @see BaseTypeFactory
+ */
+
+public class <font COLOR="red"><b>MatlabFactory</b></font> implements <font COLOR="red"><b>BaseTypeFactory</b></font> {
+  //..................................
+  /** 
+   * Construct a new DBoolean.
+   * @return the new DBoolean
+   */
+//  public DBoolean newDBoolean() {
+//    return new DBoolean();
+//  }
+
+  /**
+   * Construct a new DBoolean with name n.
+   * @param n the variable name
+   * @return the new DBoolean
+   */
+//  public DBoolean newDBoolean(String n) {
+//    return new DBoolean(n);
+//  }
+
+  //..................................
+  /** 
+   * Construct a new DByte.
+   * @return the new DByte
+   */
+  public <font COLOR="cc6600"><b>DByte</b></font> <font color="red"><b>newDByte()</b></font> {
+    return new <font COLOR="cc6600"><b>DByte()</b></font>;
+  }
+
+  /**
+   * Construct a new DByte with name n.
+   * @param n the variable name
+   * @return the new DByte
+   */
+  public <font COLOR="cc6600"><b>DByte</b></font> <font color="red"><b>newDByte(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>DByte(n)</b></font>;
+  }
+
+  //..................................
+  /** 
+   * Construct a new DInt16.
+   * @return the new DInt16
+   */
+  public <font COLOR="cc6600"><b>DInt16</b></font> <font color="red"><b>newDInt16()</b></font> {
+    return new <font COLOR="cc6600"><b>DInt16()</b></font>;
+  }
+
+  /**
+   * Construct a new DInt16 with name n.
+   * @param n the variable name
+   * @return the new DInt16
+   */
+  public <font COLOR="cc6600"><b>DInt16</b></font> <font color="red"><b>newDInt16(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>DInt16(n)</b></font>;
+  }
+
+  //..................................
+  /** 
+   * Construct a new DUInt16.
+   * @return the new DUInt16
+   */
+  public <font COLOR="cc6600"><b>DUInt16</b></font> <font color="red"><b>newDUInt16()</b></font> {
+    return new <font COLOR="cc6600"><b>DUInt16()</b></font>;
+  }
+
+  /**
+   * Construct a new DUInt16 with name n.
+   * @param n the variable name
+   * @return the new DUInt16
+   */
+  public <font COLOR="cc6600"><b>DUInt16</b></font> <font color="red"><b>newDUInt16(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>DUInt16(n)</b></font>;
+  }
+
+  //..................................
+  /** 
+   * Construct a new DInt32.
+   * @return the new DInt32
+   */
+  public <font COLOR="cc6600"><b>DInt32</b></font> <font color="red"><b>newDInt32()</b></font> {
+    return new <font COLOR="cc6600"><b>DInt32()</b></font>;
+  }
+
+  /**
+   * Construct a new DInt32 with name n.
+   * @param n the variable name
+   * @return the new DInt32
+   */
+  public <font COLOR="cc6600"><b>DInt32</b></font> <font color="red"><b>newDInt32(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>DInt32(n)</b></font>;
+  }
+
+  //..................................
+  /** 
+   * Construct a new DUInt32.
+   * @return the new DUInt32
+   */
+  public <font COLOR="cc6600"><b>DUInt32</b></font> <font color="red"><b>newDUInt32()</b></font> {
+    return new <font COLOR="cc6600"><b>DUInt32()</b></font>;
+  }
+
+  /**
+   * Construct a new DUInt32 with name n.
+   * @param n the variable name
+   * @return the new DUInt32
+   */
+  public <font COLOR="cc6600"><b>DUInt32</b></font> <font color="red"><b>newDUInt32(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>DUInt32(n)</b></font>;
+  }
+
+  //..................................
+  /** 
+   * Construct a new DFloat32.
+   * @return the new DFloat32
+   */
+  public <font COLOR="cc6600"><b>DFloat32</b></font> <font color="red"><b>newDFloat32()</b></font> {
+    return new <font COLOR="cc6600"><b>DFloat32()</b></font>;
+  }
+
+  /**
+   * Construct a new DFloat32 with name n.
+   * @param n the variable name
+   * @return the new DFloat32
+   */
+  public <font COLOR="cc6600"><b>DFloat32</b></font> <font color="red"><b>newDFloat32(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>DFloat32(n)</b></font>;
+  }
+
+  //..................................
+  /** 
+   * Construct a new DFloat64.
+   * @return the new DFloat64
+   */
+  public <font COLOR="cc6600"><b>DFloat64</b></font> <font color="red"><b>newDFloat64()</b></font> {
+    return new <font COLOR="cc6600"><b>DFloat64()</b></font>;
+  }
+
+  /**
+   * Construct a new DFloat64 with name n.
+   * @param n the variable name
+   * @return the new DFloat64
+   */
+  public <font COLOR="cc6600"><b>DFloat64</b></font> <font color="red"><b>newDFloat64(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>DFloat64(n)</b></font>;
+  }
+
+  //..................................
+  /** 
+   * Construct a new DString.
+   * @return the new DString
+   */
+  public <font COLOR="cc6600"><b>DString</b></font> <font color="red"><b>newDString()</b></font> {
+    return new <font COLOR="cc6600"><b>MatlabString()</b></font>;
+  }
+
+  /**
+   * Construct a new DString with name n.
+   * @param n the variable name
+   * @return the new DString
+   */
+  public <font COLOR="cc6600"><b>DString</b></font> <font color="red"><b>newDString(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>MatlabString(n)</b></font>;
+  }
+
+  //..................................
+  /** 
+   * Construct a new DURL.
+   * @return the new DURL
+   */
+  public <font COLOR="cc6600"><b>DURL</b></font> <font color="red"><b>newDURL()</b></font> {
+    return new <font COLOR="cc6600"><b>MatlabURL()</b></font>;
+  }
+
+  /**
+   * Construct a new DURL with name n.
+   * @param n the variable name
+   * @return the new DURL
+   */
+  public <font COLOR="cc6600"><b>DURL</b></font> <font color="red"><b>newDURL(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>MatlabURL(n)</b></font>;
+  }
+
+  //..................................
+  /** 
+   * Construct a new DArray.
+   * @return the new DArray
+   */
+  public <font COLOR="cc6600"><b>DArray</b></font> <font color="red"><b>newDArray()</b></font> {
+    return new <font COLOR="cc6600"><b>MatlabArray()</b></font>;
+  }
+
+  /**
+   * Construct a new MatlabArray with name n.
+   * @param n the variable name
+   * @return the new MatlabArray
+   */
+  public <font COLOR="cc6600"><b>DArray</b></font> <font color="red"><b>newDArray(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>MatlabArray(n)</b></font>;
+  }
+
+  //..................................
+  /** 
+   * Construct a new DList.
+   * @return the new DList
+   */
+  public <font COLOR="cc6600"><b>DList</b></font> <font color="red"><b>newDList()</b></font> {
+    return new <font COLOR="cc6600"><b>MatlabList()</b></font>;
+  }
+
+  /**
+   * Construct a new DList with name n.
+   * @param n the variable name
+   * @return the new DList
+   */
+  public <font COLOR="cc6600"><b>DList</b></font> <font color="red"><b>newDList(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>MatlabList(n)</b></font>;
+  }
+
+  //..................................
+  /** 
+   * Construct a new DGrid.
+   * @return the new DGrid
+   */
+  public <font COLOR="cc6600"><b>DGrid</b></font> <font color="red"><b>newDGrid()</b></font> {
+    return new <font COLOR="cc6600"><b>DGrid()</b></font>;
+  }
+
+  /**
+   * Construct a new DGrid with name n.
+   * @param n the variable name
+   * @return the new DGrid
+   */
+  public <font COLOR="cc6600"><b>DGrid</b></font> <font color="red"><b>newDGrid(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>DGrid(n)</b></font>;
+  }
+
+  //..................................
+  /** 
+   * Construct a new DStructure.
+   * @return the new DStructure
+   */
+  public <font COLOR="cc6600"><b>DStructure</b></font> <font color="red"><b>newDStructure()</b></font> {
+    return new <font COLOR="cc6600"><b>DStructure()</b></font>;
+  }
+
+  /**
+   * Construct a new DStructure with name n.
+   * @param n the variable name
+   * @return the new DStructure
+   */
+  public <font COLOR="cc6600"><b>DStructure</b></font> <font color="red"><b>newDStructure(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>DStructure(n)</b></font>;
+  }
+
+  //..................................
+  /** 
+   * Construct a new MatlabSequence.
+   * @return the new MatlabSequence
+   */
+  public <font COLOR="cc6600"><b>DSequence</b></font> <font color="red"><b>newDSequence()</b></font> {
+    return new <font COLOR="cc6600"><b>MatlabSequence()</b></font>;
+  }
+
+  /**
+   * Construct a new DSequence with name n.
+   * @param n the variable name
+   * @return the new DSequence
+   */
+  public <font COLOR="cc6600"><b>DSequence</b></font> <font color="red"><b>newDSequence(String n)</b></font> {
+    return new <font COLOR="cc6600"><b>MatlabSequence(n)</b></font>;
+  }
+}
+</pre></b></html>

@@ -1,0 +1,671 @@
+\documentclass{report}
+\usepackage{hyperlatex}
+\W\usepackage{sequential}
+\usepackage{fancyhdr}
+\usepackage{longtable}
+
+%% $Id$
+
+\renewcommand{\rmdefault}{ptm}
+\W\newcommand{\vspace}[1]{}
+\newcommand{\pause}{\vspace{10pt}}
+\T\setlength{\parindent}{0pt}
+\T\setlength{\parskip}{\medskipamount}
+\T\setcounter{tocdepth}{1}
+
+\W\htmlcss{http://www.unidata.ucar.edu/packages/dods/css/quickstyle.css}
+\W\htmldirectory{synth}
+\W\htmltitle{DODS NOPP}
+
+\T\setlength{\textheight}{610pt}
+
+\T\pagestyle{fancy}
+%\T\setlength\headheight{25pt}
+\T\fancyfoot[CE,CO]{}
+\T\fancyhead[RO,RE]{Page \thepage}
+\T\fancyhead[LO,LE]{\textbf{DODS/NOPP Regional Workshop Synthesis Report}}
+
+\newcommand{\tblhd}[1]{\textbf{#1}}
+\newcommand{\synthURL}{http://www.unidata.\-ucar.edu/\-packages/\-dods/\-reports/\-nopp-synth-html/\-synthesis.html}
+\newcommand{\synthPS}{../synthesis.ps.gz}
+\newcommand{\synthPDF}{../synthesis.pdf}
+\W\renewcommand{\HlxIcons}[1]{http://www.unidata.ucar.edu/packages/dods/icons/}
+
+\begin{ifhtml}
+\newcommand{\toppanel}{\EmptyP{\HlxSeqPrevUrl\HlxUpUrl\HlxSeqNextUrl}{%
+  \xml*{table width="100%" cellpadding=0 cellspacing=2}\xml{tr}
+  \xml*{td bgcolor="##99ccff"}%
+  \EmptyP{\HlxSeqNextUrl}
+  {\xlink{\HlxCallEval{\HlxImage}{\HlxPure{\HlxSeqNextTitle}}{next.gif}}%
+    {\HlxSeqNextUrl}}%
+  {\htmlimage[alt=""]{\HlxIcons{}blank.gif}}%
+  \xml*{/td}%
+  \xml*{td bgcolor="##99ccff"}%
+  \EmptyP{\HlxUpUrl}
+  {\xlink{\HlxCallEval{\HlxImage}{\HlxPure{\HlxUpTitle}}{up.gif}}%
+    {\HlxUpUrl}}%
+  {\htmlimage[alt=""]{\HlxIcons{}blank.gif}}%
+  \xml*{/td}%
+  \xml*{td bgcolor="##99ccff"}%
+  \EmptyP{\HlxSeqPrevUrl}
+  {\xlink{\HlxCallEval{\HlxImage}{\HlxPure{\HlxSeqPrevTitle}}{previous.gif}}%
+    {\HlxSeqPrevUrl}}%
+  {\htmlimage[alt=""]{\HlxIcons{}blank.gif}}%
+  \xml*{/td}%
+  \xml*{td align="center" bgcolor="##99ccff" width="100%"}%
+    \textbf{\chaptertitle}\xml{br}\HlxThisTitle%
+  \xml*{/td}%
+  \HlxPanelFields
+  \xml*{/tr}%
+  \xml*{/table}}}
+\end{ifhtml}
+\newcommand{\chaptertitle}{NOPP Regional Workshop Synthesis Report}
+
+\begin{document}
+
+\title{\textbf{Regional Workshop Synthesis Report}\\
+\vspace{15pt}National Ocean Partnership Program,\\
+Virtual Ocean Data Hub (VODHub)\\
+\vspace{15pt}Distributed Oceanographic Data System (DODS)} 
+%\author{Prepared for \\\vspace{10pt}P.I. Dr. Peter Cornillon \\
+%Prepared by:\\ Technology Planning \& Management Corporation}
+
+\maketitle
+
+\texorhtml{}{\begin{center}Printable versions of this document are available. 
+  \xlink{PostScript}{\synthPS} or \xlink{PDF}{\synthPDF}.\end{center}}
+
+\tableofcontents
+
+\chapter{Report Objective}
+
+To provide a synthesis of the NOPP/DODS regional workshop results.
+The contents of this report include:
+
+\begin{enumerate}
+\item A brief background on the NOPP/DODS project, its goals and
+  objectives, and information about the regional workshops.
+\item A response summary of the five basic issues presented at the
+  Gulf Coast, Southeast, Northeast, and West Coast NOPP/DODS regional
+  workshops.
+\item A summary of the NOPP/DODS-Environmental Systems Research
+  Institute (ESRI) workshop.
+\item Other ideas, suggestions, and recommendations made by the
+  regional workshops. 
+\texorhtml{}{\item Appendices containing the final reports from each of the
+  regional NOPP/DODS workshops.}
+\end{enumerate}
+
+\texorhtml{The online version of this report includes appendices
+  containing the final reports from each of the regional NOPP/DODS
+  workshops.  (See \texttt{\synthURL}.)}{}
+
+\chapter{DODS Background}
+
+The DODS project was begun in the early 1990's.  An outgrowth of the
+development of two earlier oceanographic data systems, XBrowse and
+JGOFS, DODS sought to take advantage of the internet to improve access
+to oceanographic data.  At a meeting in 1992, participants discussed
+the development of a new data distribution system that would
+incorporate the best features of both of these earlier models, as well
+as additional features suggested by their shortcomings.  This first
+workshop had forty attendees and was held at the University of Rhode
+Island.  The vision that emerged from that and subsequent meetings was
+of a distributed system that would encourage individual scientists to
+be their own data providers, alongside the traditional centralized
+data archives, such as the federal data centers.
+
+Since that time, the DODS system has developed into a sophisticated
+data transport mechanism, as well as several specialized program
+interfaces that allow unmediated access to scientific data from a
+variety of user applications, ranging from simple web browsers (e.g.
+Netscape, Internet Explorer) to advanced data analysis packages (e.g.
+Matlab, IDL, Ferret).  Data made available through DODS ranges from
+large collections of simple satellite data files to complex relational
+databases.
+
+In 2000, the National Ocean Partnership Program (NOPP) awarded DODS a
+grant to develop a Virtual Ocean Data Hub system, to create a
+structure through which ocean data can easily be made available to the
+larger ocean sciences community.
+
+Plans for the first year center around an effort to develop a
+cooperative approach to creating the Hub system.  Four regional groups
+were formed: Northeast, Southeast, Gulf Coast, and West Coast where
+workshops have been held to discuss the DODS concept.  A fifth
+workshop examined the overlapping development of ESRI's Geographic
+Information System (GIS) technology and DODS.  The workshops were led
+by regional coordinators who ran each of the workshops and who have
+control on how money allocated to the regions will be spent in the out
+years (second and third years).  Each of the regional coordinators
+have an interest in oceanography but are from differing backgrounds,
+with the idea of bringing as many diverse contributions as possible to
+the overall effort.
+
+A final synthesis report (this paper) is based on the reports
+generated by each of the regional workshops.  This report is to be
+provided as background to participants at a national workshop, to
+be held in Washington, DC, April 25-27, 2001.  After the national
+workshop, an overall report discussing recommendations for the DODS
+project will be written.  A technical meeting will then be held to
+address technical issues related to the implementation of
+recommendations of the national report.
+
+\chapter{DODS/NOPP Program Objectives}
+
+The objective of the DODS/NOPP project is to plan and implement a
+Virtual Ocean Hub (VODHub) system that will provide users with the
+ability to easily access certain data types measured at specified
+locations and times, regardless of data source, and without special
+efforts or insights on the part of the user about the data source(s).
+
+Specific research objectives identified in the BAA (Broad Agency
+Announcement) are to:
+
+\begin{enumerate}
+\item Identify individuals and organizations who will take the lead to
+  foster development of community-based data conventions for the
+  available variety of data types;
+\item Partner with local institutions (public and private) to improve
+  access to coastal and regional data using these same community-based
+  data conventions;
+\item Enhance connections to existing national and international
+  archives of ocean data as well as the program offices of major ocean
+  programs (e.g., WOCE, JGOFS);
+\item Partner with international groups to foster a world-wide ``ocean
+  data dictionary'' to further commonality of access for all sources
+  of ocean data; and
+\item Work with national and international user standards groups
+  (e.g., International Hydrographic Organization and their Electronic
+  Navigation Charts) to foster access to ocean data.
+\end{enumerate}
+
+\chapter{The DODS Regional Workshops}
+
+Five regional workshops were held between October 2000 and January
+2001.  Attendance at the workshops ranged in size from 15 to 40
+participants.
+
+\begin{center}
+  \begin{tabular}[t]{|l|l|l|} \hline
+    \tblhd{Workshop} & \tblhd{Location} & \tblhd{Workshop Coordinator}
+    \\ \hline
+    Gulf Coast (GC) & Stennis, MS & Worth Nowlin \\ \hline
+    ESRI (ESRI) & Redlands, CA & Ted Habermann \\ \hline
+    Southeast (SE) & Charleston, SC & Anne Ball \\ \hline
+    Northeast (NE) & Greenwich, RI & Linda Mercer \\ \hline
+    West Coast (WC) & Corvallis, OR & Mark Abbott \\ \hline
+  \end{tabular}
+\end{center}
+
+Although the workshop agendas varied, each included:
+
+\begin{enumerate}
+\item An overview and demonstration of DODS presented by University of
+  Rhode Island personnel; 
+\item A presentation by workshop attendees of information on agency program
+  activity and datasets that could potentially be served via DODS in
+  the VODHub; 
+\item A summary of the data interests and data holdings of the
+  workshop attendees, presented by each attendee; 
+\item A discussion pertaining to DODS functionality as it relates to the
+  VODHub; and 
+\item A discussion addressing regional data needs that might
+  be addressed by the VODHub.
+\end{enumerate}
+
+
+\texorhtml{The appendices to this report, containing an account of the
+  proceedings of each workshop are available in the online version.
+  (See \texttt{\synthURL}.)}{
+The appendices to this report contain an account of the proceedings of
+each workshop.}
+
+\chapter{DODS Basic Issues}
+
+The following issues were presented to the regional workshop
+participants for consideration:
+
+\begin{enumerate}
+\item Is the DODS data model adequate for datasets to be served in the
+  region, and if not, what additions are required?  
+\item What are the important interface issues for users in the region?
+  This question addresses issues related to the basic functionality of
+  the system ranging from data discovery to data use.  
+\item What types of semantic metadata will be required and what
+  semantic metadata standard(s) will be used?  The focus should be on
+  search and use metadata. 
+\item What datasets will be served via the system as part of this
+  effort?  Seed the system?  What assistance will be needed?  
+\item Is a central regional node required to provide coordination for
+  the region including such services as user support and data
+  location, as well as other currently unforeseen services?
+\end{enumerate}
+
+\section{Response to Issue \#1}
+
+\emph{Is the DODS data model adequate for datasets to be served in the
+region, and if not, what additions are required?}\pause
+
+When asked whether the DODS data model was adequate, participants at
+the five workshops saw no major flaws in the DODS data model.  Some
+workshop participants suggested the DODS data model be modified to
+handle maps, graphs, images stored in GIF or JPEG format, and
+animation data types.
+
+Some secondary data model issues also arose.  For example, it is easy
+to use the DODS data model to transport satellite swath data, but most
+users want these data in more typical projections that require further
+processing.  The requirement of further processing could be considered
+a data model issue.  
+
+% It was also noted that model outputs generated by
+% scientists could be served via DODS.  DODS us well suited to serve
+% model output.  Although this is not a problem for the data model, it
+% might be a problem to a catalog system that depended on space and time
+% coordinates.  Neither of these are, technically, data model issues,
+% but they might be considered to occupy a nearby niche.
+
+\section{Response to Issue \#2}
+
+\emph{What are the important interface issues for users in the region?  This
+question addresses issues related to the basic functionality of the
+system ranging from data discovery to data use.}\pause
+
+Data location was consistently identified as important (one group said
+``essential'') for optimal use of the VODHub.  Some of the regions
+suggested that a regional web- based data catalog (with a template) be
+developed.  Furthermore, the catalog should be searchable by keyword
+and geography.  Some argued that the catalog should list any available
+dataset, whether or not it is accessible by DODS.
+
+Two other interface issues emerged from the workshops:
+
+\begin{description}
+\item[Previewing capability]  One region proposed the development of a
+  web browser interface that would allow a user to preview data before
+  retrieving data.  Functionality should include location/sub-setting,
+  manipulation, display, and data download.  (This is, in fact,
+  similar to the Live Access Server, whose development is underway.
+  An operational LAS can be found at
+  \xlink{http://ferret.wrc.noaa.gov/las}{\texttt{http://ferret.wrc.noaa.gov/las}}.)
+  
+\item[Data request] Most of the workshops agreed that writing URLs is
+  difficult.  One workshop suggested that a graphical, web browser,
+  interface be developed to assist in the building of URLs.  Another
+  workshop suggested a URL builder designed for sophisticated and
+  unsophisticated users both locally and globally.
+
+\end{description}
+
+\section{Response to Issue \#3}
+
+\emph{What types of semantic metadata will be required and what semantic
+metadata standard(s) will be used?  The focus should be on search and
+use metadata.}\pause
+
+``Search'' metadata is the information needed to select
+a dataset to use (e.g. location and time of measurements), while
+``use'' metadata is information needed to use a dataset (e.g.  missing
+value flags, or units).  The two sets overlap, but they are distinct
+notions.
+
+All of the regions agreed that semantic metadata was vital to the DODS
+effort.  Most of the workshop focus was on use metadata, with
+relatively little attention paid to search metadata.  Workshop
+attendees emphasized the importance of being able to find the data you
+need, but the metadata requirements proposed had more to do with
+making the data you've found easy to use.
+
+There was not a great deal of discussion about how important it is
+that use metadata be machine-readable---that is, supplied in a
+consistent format a computer can parse.  
+
+%However, there appeared to be
+%wide agreement that the creation of effective catalog strategies was
+%essential to a working system.  This, in turn, implies a commitment to
+%machine-accessible discovery metadata somehow tied to the datasets.
+%One basis for this conclusion was the mention of FGDC and GCMD at all
+%of the workshops, as a means for collecting and disseminating discovery
+%metadata.
+
+Several lengthy discussions dealt with the varieties of use metadata
+that make datasets valuable, though there was little talk about
+interoperability with respect to this variety of metadata.  One
+possible implication of this is that machine-level interoperability
+was not seen as crucial by workshop participants.  If someone is going
+to use data from two different datasets, perhaps they will inevitably
+do so at the user level rather than at the machine level, if only to
+maintain a degree of control over the process.
+
+The importance of associating existing data set descriptions---in the
+FGDC clearinghouse or the GCMD---to data sets was dealt with in at
+least one of the workshops.  This led to a discussion of third party
+metadata description in general and the value of rendering these
+accessible via the data access protocol, even when the descriptions
+and the data do not reside on the same server.
+
+Topping the workshop lists of essential metadata types were:
+
+\begin{description}
+\item[Names and descriptions] What is meant by the abbreviation of the
+  variable name?
+\item[Units and scaling factors] What units are the data delivered in?
+\item[Missing values] How are missing values flagged in the dataset?
+\end{description}
+
+Several participants commented that a useful metadata collection would
+have a place for data quality indicators.  Suggestions for these took
+many different forms, including simple flags to indicate accuracy and
+precision (Gulf Coast workshop), to descriptions of quality control
+procedures (West Coast), to quality ``flags'' (Southeast).  One
+suggestion (from the Southeast workshop) was that if a web-based
+description exists for a dataset, the URL for this description should
+be in the dataset's data attribute structure (DAS).
+
+Finally, there were several comments about metadata people wished they
+could have for datasets they would like to use.  These suggestions
+included:
+
+\begin{itemize}
+\item Methods;
+\item Platforms;
+\item Instrument type and details, such as calibration data;
+\item Data originator (P.I.);
+\item Funding source;
+\item Palettes for display of imagery, such as maps and sections;
+\item Publications based on this data; 
+\item Comparisons with other data; and 
+\item Processing algorithms.
+\end{itemize}
+
+The Southeast and Gulf Coast workshops were explicit in urging that
+the DODS project accommodate the Z39.50 metadata standard, and do so
+by working with the FGDC Clearinghouse.  They suggested that DODS
+should be able to use metadata supplied by a third party, such as
+FGDC, and should be able to do so automatically.  The Gulf Coast
+workshop further recommended that data originators should make use of
+commercial software packages to assist them in preparing metadata in
+FGDC format.
+
+One suggestion (from the Southeast workshop) was that support should
+be provided to those interested in proper descriptions of their
+datasets.This support could take the form of:
+
+\begin{enumerate}
+\item A white paper that would be made available via either the
+national or a regional DODS website, and 
+\item Training sessions offered either at a central site or at
+individual institutions.
+\end{enumerate}
+
+
+
+
+\section{Response to Issue \#4}
+
+\emph{What datasets will be served via the system as part of this effort?
+Seed the system?  What assistance will be needed?}\pause
+
+Many of the regional agencies and participating scientists have
+datasets stored in a variety of commercial DBMS software packages.
+Workshop participants recommended that DODS servers be developed to
+handle Microsoft EXCEL and ACCESS files, SAS, S+, and ArcINFO GIS
+formatted data.
+
+The workshop attendees had varying levels of expertise when it came to
+installing servers.  It was noted that money would come from the
+project to support server installation.  In the proposal, each region
+would either:
+
+\begin{itemize}
+\item Hire an individual to use the money to help install servers, or
+\item Let a sub-contract for people to install their own servers.
+\end{itemize}
+
+Ultimately, it is up to each region to decide how they want to proceed
+and perhaps identify a few high priority sites for server
+installation.
+
+It was noted that the DODS project bears a great deal of
+responsibility for the success of this phase.  in particular, the
+workshops pointed out that: 
+
+\begin{itemize}
+\item Servers must be easy to install;
+\item A regional help desk should be provided for answering questions
+  on installing servers and developing clients; and
+\item High quality, easy to understand documentation should be made
+  available.
+\end{itemize}
+
+Some of the workshops suggested that funds would be well spent to
+provide even more intensive help to people who want to install DODS
+servers.
+
+Each workshop spent some time detailing the datasets attendees knew
+about that could be served by DODS.  These lists are available in the
+respective appendices.
+
+It was noted in the Northeast workshop that there are many good
+datasets developed by various government resource management agencies
+(who were not represented at the workshop).  These data are presumed
+to be small datasets housed on a variety of platforms and stored with
+many different kinds of software.  Making these datasets DODS
+accessible will be a large task.
+
+\section{Response to Issue \#5}
+
+\emph{Is a central regional node required to provide coordination for the
+region including such services as user support, data location, etc.?}\pause
+
+The requirements for and function of a regional ``node'' varied from
+workshop to workshop, but the following themes did emerge:
+
+\begin{itemize}
+\item Providing user support such as ``help desks,'' and recording
+  problems users have experienced using DODS and installing servers;
+\item Developing web-based data catalogs containing regional datasets,
+  model output, and products participants are willing to serve;
+\item Creating pilot projects to demonstrate the use of DODS for
+  current regional players and for other organizations and researchers
+  not in attendance at the workshops;
+\item Establishing ad hoc working groups and/or possible local nodes
+  to tackle regional cooperative pilot studies, evaluating available
+  datasets (including satellite data) and serving real-time data;
+\item Developing functionality to address dataset certification, data
+  archaeology and rescue, long-term archiving;
+\item Defining data rules to make computer models and output
+  accessible (e.g., ENSO vs. non-ENSO model runs); and
+\item Creating a regional website and/or listserv for highlighting
+  issues of regional importance and to facilitate greater
+  communication among regional players.
+\end{itemize}
+
+
+\section{Other ideas, suggestions, and recommendations}
+
+Several other issues were identified by the regional workshops.  These
+are outlined in the sections that follow.
+
+\subsection{Archiving Issues}
+
+Two workshops expressed the need for a committment to an archive for
+data and product sets considered to be of long-term value.  Many of
+these datasets are compiled by individual researchers and on their
+retirement or death may no longer be accessible.
+
+\subsection{Security Issues}
+
+Several security issues were identified.
+
+\begin{description}
+\item[Data Security] Several attendees in the Southeast and Gulf Coast
+  workshops expressed the desire to control access to data served by
+  DODS.  It was pointed out that being able to restrict access to
+  particular datasets is an important feature.  
+  
+  A few participants in the Southeast workshop discussed the need to
+  be able to display a disclaimer to users of DODS data.
+  This is apparently a requirement of some prospective data
+  providers. 
+  
+\item[System Security] It is vital for the DODS project to be able to
+  assure data providers that there are no security ``leaks'' in the
+  DODS software.  It was suggested that Perl software isn't as secure
+  as compiled software (C++ was specifically mentioned).  It was also
+  suggested that the DODS documentation or web site contain a section
+  describing known httpd security issues.
+  
+\item[Data Integrity] Some users expressed concern that data served by
+  DODS could be modified by users.  DODS is a read-only protocol,
+  however, so this is not possible.
+
+\end{description}
+
+\subsection{Inclusion of others}
+
+Two of the workshops especially sought to look for other groups that
+would be interested in making use of DODS and the VODHub.  In the
+Northeast, the various government resource management agencies were
+identified, and in the Gulf Coast workshop, attendees mentioned that
+industry scientists (e.g. oil and gas exploration) could potentially
+be interested.  The Gulf Coast workshop also suggested inviting
+representatives from Canada, Mexico, and Cuba to use regional data
+centers and potentially contribute datasets.
+
+\subsection{Suggestions for Years 2 and 3}
+
+Funding in the out years was essentially left up to each region to
+decide where money was to be spent.  Some suggestions included:
+
+\begin{itemize}
+\item Web browser and direct download for clients;
+\item Establish mailing lists for workshop participants; 
+\item Create a web client focus group; 
+\item Develop regional pilot projects;
+\item Coordinate efforts with FGDC;
+\item Explore metadata to DODS relationships; and
+\item Hire outside consultants and/or programmers to:
+  \begin{itemize}
+  \item Build websites with information pertinent to DODS users;
+  \item Perform demonstrations on the use of DODS;
+  \item Provide help desk support; and
+  \item Develop software for web client(s) and DODS URL builders.
+  \end{itemize}
+\end{itemize}
+
+
+\chapter{Summary of the DODS-ESRI Workshop}
+
+The purpose of the DODS-ESRI workshop was different than the regional
+workshops.  This meeting was to facilitate the creation of data
+exchange technology that would allow data to be shared between
+Geographic Information System (GIS) systems and scientific users.  The
+meeting's purpose was to:
+
+\begin{itemize}
+\item Examine the overlapping development between ESRI and DODS;
+\item Help ESRI understand ocean scientist user requirements;
+\item Assist DODS designers and developers to understand current GIS
+  technology; and
+\item Lay the groundwork for year two and three of the NOPP/DODS project.
+\end{itemize}
+
+The summary report for this workshop is included in
+appendix~\ref{app,esri} of this report. 
+
+Some of the priority questions for the DODS-ESRI integration include:
+
+\begin{itemize}
+\item How to provide DODS data access to GIS users?
+\item How to provide GIS access to DODS users?
+\end{itemize}
+
+Next steps identified:
+
+\begin{itemize}
+\item Build a DODS-ArcIMS connector.  This will provide DODS clients
+  access to GIS data.  It may be the starting point for building
+  client software for ESRI users to access DODS data.
+\item Begin working with the ArcIMS Software Development Kit (SDK).
+  Although the technology is still in development, it has the
+  functionality to provide GIS users access to DODS servers.
+\item Schedule an additional meeting at the ESRI National user
+  conference.
+\end{itemize}
+
+Unresolved Issues:
+\begin{itemize}
+\item Data discovery mechanism is not clear.
+\item Understanding and accessing GIS metadata requirements for a DODS
+  client.
+\end{itemize}
+
+\begin{comment}
+\texorhtml{}{
+\chapter{Appendices}
+
+The appendices to this report are linked below:
+
+\begin{tabular}[t]{ll}
+Appendix I: &  \xlink{Gulf Coast}{appI.txt} \\
+Appendix II: &  \xlink{ESRI}{appII.txt} \\
+Appendix III: &  \xlink{Southeast}{appIII.txt} \\
+Appendix IV: &  \xlink{Northeast}{appIV.txt} \\
+Appendix V: &  \xlink{West Coast}{appV.txt} \\
+\end{tabular}
+}
+\end{comment}
+
+\T\newcommand{\HlxEval}[1]{}
+\newcommand{\sectionref}[1]{section~\ref{#1}}
+\newcommand{\tableref}[1]{Table~\ref{#1}}
+\HlxEval{
+(put 'appendix       'hyperlatex 'hyperlatex-ts-format-appendix)
+
+(defun hyperlatex-ts-format-appendix ()
+  (progn
+    (hyperlatex-setcounter "chapter" 0)
+    (hyperlatex-define-macro "thechapter" 0
+      (concat "\\Alph{chapter}") "")))
+}
+\newcommand{\Url}[1]{\xlink{#1}{#1}}
+\W\renewcommand{\paragraph}[1]{\textbf{#1}  }
+\texorhtml{\newenvironment{tablelist}{\begin{list}{}{%
+      \setlength{\topsep}{0mm}%
+      \setlength{\itemsep}{0mm}%
+      \setlength{\leftmargin}{0mm}%
+      \setlength{\rightmargin}{0mm}%
+      \setlength{\itemindent}{0mm}%
+      \setlength{\parskip}{0mm}%
+      \setlength{\partopsep}{0mm}}}{\end{list}}
+}{\newenvironment{tablelist}{\begin{itemize}}{\end{itemize}}}
+
+\appendix
+
+\include{appI}
+\include{appII}
+\include{appIII}
+\include{appIV}
+\include{appV}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
+
+
+

@@ -1,0 +1,302 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Dataset Descriptor Structure</TITLE>
+<META NAME="description" CONTENT="Dataset Descriptor Structure">
+<META NAME="keywords" CONTENT="api">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="api.css">
+
+<LINK REL="next" HREF="node13.html">
+<LINK REL="previous" HREF="node11.html">
+<LINK REL="up" HREF="node5.html">
+<LINK REL="next" HREF="node13.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html222"
+  HREF="node13.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html218"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html212"
+  HREF="node11.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html220"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html223"
+  HREF="node13.html">Dataset Attribute Structure</A>
+<B> Up:</B> <A NAME="tex2html219"
+  HREF="node5.html">Design</A>
+<B> Previous:</B> <A NAME="tex2html213"
+  HREF="node11.html">The External Representation of</A>
+ &nbsp; <B>  <A NAME="tex2html221"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00054000000000000000"></A>
+<A NAME="api:dds"></A>
+<BR>
+Dataset Descriptor Structure
+</H2>
+
+<P>
+In order to translate from the user program's API to the data set's API, the
+translator process must have some knowledge about the types of the variables,
+and their semantics, that comprise the data set. It must also know something
+about the relations of those variables--even those relations which are only
+implicit in the data set's own API. This knowledge about the data set's
+structure is contained in a text description of the data set called the <EM>  Dataset Description Structure</EM>.
+
+<P>
+The data set description structure (DDS) does not describe how the information
+in the data set is physically stored, nor does it describe how the data set's
+API is used to access that data. Those pieces of information are contained in
+the data set's API and in the translating server, respectively.  The
+translating server uses the DDS to describe the structure of a particular
+data set to a translator--the DDS contains knowledge about the data set
+variables and the interrelations of those variables.  In addition, the DDS
+can be used to satisfy some of the DODS supported APIs data set description
+calls. For example, netCDF has a function which returns the names of all the
+variables in a netCDF data file. The DDS can be used to get that information.
+
+<P>
+The DDS is a textual description of the variables and their classes that
+comprise the entire data set. The data set descriptor syntax is based on the
+variable declaration/definition syntax of C and C++. A variable that is a
+member of one of the base type classes is declared by by writing the class
+name followed by the variable name. The type constructor classes are declared
+using C's brace notation. A grammar for the syntax is given in
+Table&nbsp;<A HREF="#tab:DDS"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>. Each of the keywords for the type constructor and base
+type classes have already been described in
+section&nbsp;<A HREF="node8.html#base-type-variables"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>. The <TT>data set</TT> keyword has the same
+syntactic function as <TT>structure</TT> but is used for the specific job of
+enclosing the entire data set even when it does not technically need an
+enclosing element (because at the outermost level it is a single element such
+as a structure or sequence).
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER">
+
+<A NAME="tab:DDS"></A>
+<DIV ALIGN="CENTER"><A NAME="631"></A>
+<TABLE CELLPADDING=3 BORDER="1">
+<CAPTION><STRONG>Table:</STRONG>
+Dataset Descriptor Structure Syntax</CAPTION>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>data sets</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>data set</EM> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>data sets</EM> </FONT><FONT SIZE="-1"><EM>data set</EM> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>data set</EM>  </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>dataset</TT> </FONT><FONT SIZE="-1"><TT>{</TT> </FONT><FONT SIZE="-1"><EM>declarations</EM> </FONT><FONT SIZE="-1"><TT>}</TT> 
+                   </FONT><FONT SIZE="-1"><EM>name</EM> </FONT><FONT SIZE="-1"><TT>;</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>declarations</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>declaration</EM> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>declarations</EM> </FONT><FONT SIZE="-1"><EM>declaration</EM> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">  <IMG
+ WIDTH="103" HEIGHT="12" ALIGN="BOTTOM" BORDER="0"
+ SRC="img10.png"
+ ALT="$\delta$"> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>declaration</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">   </FONT><FONT SIZE="-1"><EM>list</EM> </FONT><FONT SIZE="-1"><EM>declaration</EM>  </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>base-type</EM> </FONT><FONT SIZE="-1"><EM>var</EM> </FONT><FONT SIZE="-1"><TT>;</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>structure</EM>  </FONT><FONT SIZE="-1"><TT>{</TT> </FONT><FONT SIZE="-1"><EM>declarations</EM> </FONT><FONT SIZE="-1"><TT>}</TT> 
+                  </FONT><FONT SIZE="-1"><EM>var</EM> </FONT><FONT SIZE="-1"><TT>;</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>sequence</EM> </FONT><FONT SIZE="-1"><TT>{</TT> </FONT><FONT SIZE="-1"><EM>declarations</EM> </FONT><FONT SIZE="-1"><TT>}</TT> 
+                  </FONT><FONT SIZE="-1"><EM>var</EM> </FONT><FONT SIZE="-1"><TT>;</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>function</EM> </FONT><FONT SIZE="-1"><TT>{</TT> </FONT><FONT SIZE="-1"><TT>independent</TT> </FONT><FONT SIZE="-1"><TT>:</TT>
+                  </FONT><FONT SIZE="-1"><EM>declarations</EM> </FONT><FONT SIZE="-1"><EM>dependent</EM> </FONT><FONT SIZE="-1"><TT>:</TT> 
+                  </FONT><FONT SIZE="-1"><EM>declarations</EM> </FONT><FONT SIZE="-1"><TT>}</TT> 
+                  </FONT><FONT SIZE="-1"><EM>var</EM> </FONT><FONT SIZE="-1"><TT>;</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>grid</EM> </FONT><FONT SIZE="-1"><TT>{</TT> </FONT><FONT SIZE="-1"><TT>array</TT> </FONT><FONT SIZE="-1"><TT>:</TT> 
+                  </FONT><FONT SIZE="-1"><EM>declaration</EM> </FONT><FONT SIZE="-1"><TT>maps</TT> </FONT><FONT SIZE="-1"><TT>:</TT> 
+                  </FONT><FONT SIZE="-1"><EM>declarations</EM> </FONT><FONT SIZE="-1"><TT>}</TT> 
+                  </FONT><FONT SIZE="-1"><EM>var</EM> </FONT><FONT SIZE="-1"><TT>;</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>list</EM>    </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>list</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>structure</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>structure</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>sequence</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>sequence</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>function</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>function</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>grid</EM>    </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>grid</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>base-type</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>byte</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">  
+                  </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>int32</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                  </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>float64</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                  </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>string</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                  </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>url</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>var</EM>     </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>id</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>var</EM> </FONT><FONT SIZE="-1"><EM>array-decl</EM> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>array-decl</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT><IMG
+ WIDTH="12" HEIGHT="14" ALIGN="MIDDLE" BORDER="0"
+ SRC="img11.png"
+ ALT="$[$"></TT> </FONT><FONT SIZE="-1"><TT>integer</TT> </FONT><FONT SIZE="-1"><TT><IMG
+ WIDTH="8" HEIGHT="32" ALIGN="MIDDLE" BORDER="0"
+ SRC="img12.png"
+ ALT="$]$"></TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                   </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT><IMG
+ WIDTH="12" HEIGHT="14" ALIGN="MIDDLE" BORDER="0"
+ SRC="img11.png"
+ ALT="$[$"></TT> </FONT><FONT SIZE="-1"><TT>id</TT> </FONT><FONT SIZE="-1"><TT>=</TT> </FONT><FONT SIZE="-1"><TT>integer</TT> </FONT><FONT SIZE="-1"><TT><IMG
+ WIDTH="8" HEIGHT="32" ALIGN="MIDDLE" BORDER="0"
+ SRC="img12.png"
+ ALT="$]$"></TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>name</EM>    </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>id</TT> </FONT></TD>
+</TR>
+</TABLE></DIV>
+</DIV>
+<BR>
+
+<P>
+An example DDS entry is shown in Figure&nbsp;<A HREF="#fig:dds"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>. Suppose that three
+experimenters have each performed temperature measurements at different
+locations and at different times. This information could be held in a data set
+consisting of a sequence of the experimenter's name, the time and location of
+each measurement and the list of measurements themselves, and indicates that
+there is a relation between the experimenter, location, time and temperature
+called temp_measurement.
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:dds"></A><A NAME="732"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+Example Dataset Descriptor Entry.</CAPTION>
+<TR><TD><IMG
+ WIDTH="10" HEIGHT="34" BORDER="0"
+ SRC="img13.png"
+ ALT="\begin{figure}\begin{code}{cb}
+data set {
+int catalog_number;
+function {
+ind...
+...mperature;
+} temperature;
+} temp_measurement;
+} data;
+\end{code}
+\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html222"
+  HREF="node13.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html218"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html212"
+  HREF="node11.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html220"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html223"
+  HREF="node13.html">Dataset Attribute Structure</A>
+<B> Up:</B> <A NAME="tex2html219"
+  HREF="node5.html">Design</A>
+<B> Previous:</B> <A NAME="tex2html213"
+  HREF="node11.html">The External Representation of</A>
+ &nbsp; <B>  <A NAME="tex2html221"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

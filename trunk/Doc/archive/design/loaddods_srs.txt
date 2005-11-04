@@ -1,0 +1,19 @@
+
+	$Id$
+
+Loaddods SRS.
+
+General features:
+
+loaddods will work with Matlab (ML) 5 only. ML 4 will not be supported.
+
+Interning variables:
+
+When loaddods interns variables it will intern them in the global workspace
+unless the return argument feature is used.
+
+Single Strings will be interned using mxCreateString which returns a mxArray
+pointer. 
+
+Sets of strings will be returns in mxArray pointers using
+mxCreateCharMatrixFromStrings(...).

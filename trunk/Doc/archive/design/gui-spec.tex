@@ -1,0 +1,1631 @@
+% A usage specification for DODS
+%
+%  Tom Sgouros, 3/98
+%
+%  $Id$
+
+
+% Things to do:
+%
+%   Worry about the connection between the GUI and the analysis
+% package  (loaddods? IPC? whatever?)
+%   Worry about the hierarchy of attributes.
+%   Incorporate James's comments.
+%
+
+
+
+\documentclass[10pt]{report}
+\usepackage{psfig,html,ifthen,fancyhdr,code,changebar}
+\pagestyle{fancyplain}
+
+\newcommand{\cs}{Catalog Server}
+\newcommand{\gui}{GUI}
+\newcommand{\bigspace}{\vspace*{1.5in}}
+
+
+\raggedbottom
+\sloppy
+
+% When `draft-document is 1, print marginalia.
+\newcounter{draft-document}
+\setcounter{draft-document}{0}
+\include{../../boiler/layout}
+\setlength{\changebarsep}{10pt}
+
+\begin{document}
+
+\title{A \emph{Usage} Specification for DODS}
+\author{Tom Sgouros}
+\date{\today}
+
+\maketitle
+
+\begin{abstract} 
+  The DODS functionality is very close to complete.  Servers exist who
+  can send data requested by clients, and clients exist who can ask
+  for it.  There remain a few problems of data API interoperability,
+  platform support and so on, but while knotty, they are entirely
+  surmountable details.  The most substantial obstacle to widespread
+  DODS use has to do with the lack of attention paid to the \emph{use}
+  of the system.  In this paper I describe several usage problems,
+  some widely agreed-upon, and others not, and attempt to suggest (and
+  specify) design solutions to them.
+\end{abstract}
+
+
+
+\tableofcontents
+
+\chapter{Introduction}
+\label{sec:intro}
+
+The DODS data retrieval system as it currently exists is a nearly
+complete solution to many of the problems involved in accessing
+remote earth science data.  With a few exceptions, DODS provides a way
+to access data on remote machines with a minimum of fuss, independent
+of the data format.  There are still several wrinkles to work out,
+like specific data model translation issues, platform portability, and
+error handling and so on, but these are details.  The design works.
+
+Despite this success, there remain several serious obstacles to
+widespread use of DODS in the science community.  (Besides overcoming
+the dreaded ``not-invented-here'' syndrome.)  Most of these have to do
+with data retrieval issues not addressed by DODS.  For example, DODS
+deals well with issues of conflicting data models, but not at all with
+conflicting choices of units and names.  DODS deals well with the
+issue of decentralizing data archives, but not at all with how
+researchers are to find the decentralized data.
+
+The obstacles I've identified are these:
+
+\begin{itemize}
+
+\item Lack of a central source of data about DODS datasets.
+
+\item Datasets rendered compatible by clever DODS software may still
+  be incompatible because of differing units or names or usage
+  conventions. 
+
+\item Lack of a ``browser'' compatible with several different analysis
+  packages.
+
+\end{itemize}
+
+The following sections contain design proposals for dealing with these
+issues.  They may be read in any order, but are meant as a unified
+proposal.
+
+Several of the proposed designs would impose certain standards (for
+attribute and variable names, for example) on datasets.  It is
+important to note that DODS itself does not impose these standards.  A
+researcher can use DODS to share his or her data with colleagues or
+whomever without conforming to these proposed standards.  Datasets
+that do conform, however, will be more widely accessible via the \cs\ 
+and \gui\ proposed here.  Further, nothing here would preclude
+\emph{another} similar standard from being created.\footnote{This is
+  not a bad thing, since standards relevant for earth science data may
+  not apply to genetic data, for example, or accounting data or
+  whatever.  DODS is infrastructure for data exchange in the same way
+  that roads are infrastructure for travel.  The same roads can be
+  used by motorcycles, Bentleys, go-carts, and unicycles.  Similarly,
+  because a community of earth science researchers establish certain
+  standards for DODS earth science data does not mean that a community
+  of particle physicists should feel bound by them.}
+
+
+\chapter{Catalog Server}
+\label{sec:catalog}
+
+\cbstart
+This proposal envisions an indefinite number of \cs s in the world.
+Typically, there will be a \cs\ for any large collection of data,
+whether it be one or many datasets.
+
+The \cs\ has two functions:
+
+\begin{itemize}
+\item To help make sense of the internal organization of DODS
+  datasets, and
+\item To help a researcher survey the data available that might apply
+  to a particular scientific problem.
+\end{itemize}
+
+\section{A Possible Catalog Structure}
+\label{sec:dbstruct}
+
+The internal organization problem was first identified in the case of
+datasets that occupy multiple disk files.  The AVHRR archive, for
+example, is organized into several thousand data files, each
+containing a single image.  The \cs\ was envisioned as the solution to
+the problem of linking each data file with the time value
+corresponding to it.
+
+Consider a relational database that links time values with images.  It
+might be modeled with a table like the following:
+
+\begin{table}[h] 
+\begin{center}
+\textbf{AVHRR Archive} \\
+\begin{tabular}{|l|l|} \hline
+Time        &Image \\ \hline
+1400-4Apr98 &Img1 \\
+1800-4Apr98 &Img2 \\
+2200-4Apr98 &Img3 \\
+0200-5Apr98 &Img4 \\
+0600-5Apr98 &Img5 \\
+1000-5Apr98 &Img6 \\ \hline
+\end{tabular}
+\end{center}
+\caption{A Relational Table for the AVHRR Archive}
+\label{fig:reltbl}
+\end{table}
+
+\noindent
+The ``Img\emph{X}'' entries stand for an image object instead of a
+simple scalar value.  This table associates the time attribute with
+each image, so that a search for a specific time or range of times can
+return a specific image or images.
+
+Assume that the table and images are to be served by some server or
+set of servers.  With the addition of a column for storing the URL of
+a particular data file, our data catalog could look like this:
+
+\begin{center}
+\textbf{AVHRR Archive} \\
+\begin{tabular}{|l|l|l|} \hline
+Time        &Image &URL \\ \hline
+1400-4Apr98 &      &URL1 \\
+1800-4Apr98 &      &URL2 \\
+2200-4Apr98 &      &URL3 \\
+0200-5Apr98 &      &URL4 \\
+0600-5Apr98 &      &URL5 \\
+1000-5Apr98 &      &URL6 \\ \hline
+\end{tabular} \\ {\huge\strut}
+\textbf{URL1}
+\begin{tabular}{|l|} \hline
+Img1 \\ \hline
+\end{tabular}
+\hfill
+\textbf{URL2}
+\begin{tabular}{|l|} \hline
+Img2 \\ \hline
+\end{tabular}
+\hfill
+\textbf{URL3}
+\begin{tabular}{|l|} \hline
+Img3 \\ \hline
+\end{tabular} \\ {\huge\strut} 
+\textbf{URL4}
+\begin{tabular}{|l|} \hline
+Img4 \\ \hline
+\end{tabular}
+\hfill
+\textbf{URL5}
+\begin{tabular}{|l|} \hline
+Img5 \\ \hline
+\end{tabular}
+\hfill
+\textbf{URL6}
+\begin{tabular}{|l|} \hline
+Img6 \\ \hline
+\end{tabular}
+\end{center}
+
+\noindent
+The data here is distributed among seven different sources, which
+could be different machines or just different URLs.  An energetic
+client could use these seven servers to amass the data for a single
+large table like the one in \tableref{fig:reltbl}.  Alternatively,
+the primary server labeled ``AVHRR Archive'' could use the six
+subordinate data servers to assemble the same table.
+
+One thing is important to note: the table in \tableref{fig:reltbl}
+exists nowhere.  It is entirely a dynamic construction, whose pieces
+are constructed as needed.  The table can ``exist'' without all the
+data being on one server \emph{if} the primary server is smart enough
+to issue a subordinate request when the data it has is not enough to
+fulfill some query.  So, if the primary server received a request for
+all the images recorded in the morning of April 5, 1998, it would
+issue subordinate requests for the data stored at URL4, URL5, and
+URL6.  The information on the primary server is enough to determine
+that the data at URL1, URL2, and URL3 need not be requested to satisfy
+the query.
+
+Some queries need not produce any subordinate requests.  For example,
+a request for a list of times where there is a corresponding image
+could be satisfied entirely by the primary server, without any
+subordinate queries.
+
+This structure is roughly the picture of the \cs\ that has been under
+discussion in the DODS group.  The structure proposed in this paper is
+simply an extension of that model that covers much of the other
+presumed used for the \cs .  Some of the refinement is a software
+issue; the \cs\ must be somewhat more sophisticated than was
+previously envisioned.  However, much more functionality will be added
+due to the organization and definition of information within the
+framework defined by the \cs\ software.
+
+\subsection{Refining the Picture}
+
+Consider a slightly more complex example.  The following (vastly
+simplified) relational table could be used for XBT data.  The \emph{T}
+indicates a vector of temperature data, and the \emph{P} indicates a
+corresponding vector of pressures.
+
+\begin{center}
+\textbf{XBT Data} \\
+\begin{tabular}{|l|l|l|l|l|l|} \hline
+Ship    &Time    &Lon  &Lat &Press &Temp  \\ \hline
+Oceanus &4Apr98 &-40.3 &34.4&P1    &T1    \\
+Knorr   &5Apr98 &-42.2 &32.3&P2    &T2    \\ \hline 
+\end{tabular}
+\end{center}
+
+For a simple \cs , like in the previous example, all of the
+information in the table except the pressure and temperature vectors
+would be in the \cs\ and the vectors themselves would be in the data
+files.  So this information could be arranged\footnote{The operative
+  word is ``could.''  There are many ways to arrange this information,
+  and what is shown is perhaps not among the likely alternatives.  But
+  it is useful for illustrating the database structure.} on three
+different servers like this (one \cs\ and two standard DODS servers):
+
+\begin{center}
+\textbf{\cs} \\
+\begin{tabular}{|l|l|l|l|l|l|l|} \hline
+Ship    &Time    &Lon  &Lat &Press &Temp &URL \\ \hline
+Oceanus &4Apr98 &-40.3 &34.4&      &     &URL1 \\
+Knorr   &5Apr98 &-42.2 &32.3&      &     &URL2 \\ \hline 
+\end{tabular}
+
+\strut \\ \textbf{URL1}\\
+\begin{tabular}{|c|c|} \hline
+P1   &T1 \\ \hline 
+\end{tabular}
+
+\strut \\ \textbf{URL2}\\
+\begin{tabular}{|c|c|} \hline
+P2   &T2 \\ \hline
+\end{tabular}
+\end{center}
+
+To see how this would work, look at what would happen if the \cs\
+receives a query.  Assume that the queries come in the form of a DODS
+constraint expression, and imagine the \cs\ receiving an expression
+like this:
+
+\begin{code}{c}
+?URL&Time=4Apr98&Ship="Oceanus"
+\end{code}
+
+or this:
+
+\begin{code}{c}
+?URL&Lon>-41&Lat>30
+\end{code}
+
+Both of these queries would return a list of URLs corresponding to the
+conditions found in the constraint expression.\footnote{Note that the
+  requested scalar in the example, ``URL'', must be turned into a
+  List.}  Of course, if you are only browsing the dataset, rather than
+trying to retrieve data, you could also make queries like these:
+
+\begin{code}{c}
+?Time&Lon>-41&Lat>30
+\end{code}
+
+or
+
+\begin{code}{c}
+?Ship&Time>1Apr98&Time<1May98
+\end{code}
+
+These requests would return lists of dates and ships corresponding to
+the input constraints.  This provides a useful way for a user to see
+the dimensions of a dataset.
+
+
+\subsubsection{Subsidiary \cs s}
+
+Now consider an archive of a large number of data files, sharing
+several attributes.  The relational table for a \cs\ containing such
+an archive is shown here:
+
+\begin{center}
+\textbf{Whole Shebang} \\
+\begin{tabular}{|l|l|l|l|l|l|} \hline
+Ship    &Time    &Lon  &Lat &Press &Temp \\ \hline
+Oceanus &4Apr98 &-40.3 &34.4&P1A   &T1A  \\
+Oceanus &5Apr98 &-40.3 &34.4&P1B   &T1B  \\
+Oceanus &6Apr98 &-40.3 &34.4&P1C   &T1C  \\
+Oceanus &7Apr98 &-40.3 &34.4&P1D   &T1D  \\
+Knorr   &5Apr98 &-42.2 &32.3&P2    &T2   \\ \hline 
+\end{tabular}
+\end{center}
+
+This data could be distributed among two \cs s in the following
+manner:
+
+\begin{center}
+\textbf{Primary \cs} \\
+\begin{tabular}{|l|l|l|l|l|l|l|} \hline
+Ship    &Time    &Lon  &Lat &Press &Temp &URL \\ \hline
+Oceanus &       &-40.3 &34.4&      &     &CS1 \\
+Knorr   &5Apr98 &-42.2 &32.3&      &     &URL2 \\ \hline 
+\end{tabular}
+
+\strut \\ \textbf{CS1}\\
+\begin{tabular}{|l|l|l|l|} \hline
+Time    &Press &Temp &URL \\ \hline
+4Apr98  &      &     &URL1A \\
+5Apr98  &      &     &URL1B \\
+6Apr98  &      &     &URL1C \\
+7Apr98  &      &     &URL1D \\ \hline
+\end{tabular} \\ {\huge\strut}
+\textbf{URL1A}
+\begin{tabular}{|c|c|} \hline
+P1A &T1A \\ \hline
+\end{tabular}
+\hfill
+\textbf{URL1B}
+\begin{tabular}{|c|c|} \hline
+P1B &T1B \\ \hline
+\end{tabular} \\ {\huge\strut} 
+\textbf{URL1C}
+\begin{tabular}{|c|c|} \hline
+P1C &T1C \\ \hline
+\end{tabular} 
+\hfill
+\textbf{URL1D}
+\begin{tabular}{|c|c|} \hline
+P1D &T1D \\ \hline
+\end{tabular} \\ {\huge\strut}
+\textbf{URL2}
+\begin{tabular}{|c|c|} \hline
+P2   &T2 \\ \hline
+\end{tabular}
+\end{center}
+
+The primary \cs\ contains all the data it needs to reply sensibly to
+the following query:
+
+\begin{code}{c}
+?Ship&Lon>-41&Lat>30
+\end{code}
+
+However, a user might make a request like this:
+
+\begin{code}{c}
+?Time&Lon>-41&Lat>30
+\end{code}
+
+or
+
+\begin{code}{c}
+?Ship&Time>1Apr98&Time<1May98
+\end{code}
+
+In this case, the primary \cs\ does not contain all the information
+necessary to respond to the request, and must seek the information it
+needs from the subordinate \cs\ (\textbf{CS1}).  It does this by
+stripping from the CE the clauses it can answer and passing them along
+(if all the clauses it can answer are true).  The above two requests
+to the primary \cs\ would become the following two requests to the
+\textbf{CS1} server:
+
+\begin{code}{c}
+?Time
+\end{code}
+
+or
+
+\begin{code}{c}
+?&Time>1Apr98&Time<1May98
+\end{code}
+
+Note that the DODS constraint expression semantics would have to be
+adjusted to make the second example here return a boolean value.
+
+The data in the primary \cs\ and a subordinate \cs\ need not be
+strictly complementary.  In the above example, there is no reason why
+the \textbf{CS1} server could not also contain a value for the
+``Ship'' field.  The only requirement is that the subordinate server
+either be able to fill in the missing information needed by the
+primary \cs , or be able to issue a subordinate query to another
+server who can.
+
+This structure will also allow direct examination of the \textbf{CS1}
+server, which can be queried by date alone.  This would allow a local
+\cs\ to be maintained, and be accessible to local users, while still
+making the information available to users of the primary \cs .
+
+\pagebreak
+\subsection{Extending the Model}
+
+Consider another table:
+
+\begin{table}[h]
+\begin{center}
+\textbf{The Really Big Shebang} \\
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|} \hline
+Platform&Time        &Lon   &Lat &Press &Temp &LonRange&LatRange&Image\\ \hline
+Oceanus &1200-4Apr98 &-40.3 &34.4&P1A   &T1A  &        &        &     \\
+Oceanus &1430-5Apr98 &-40.3 &34.4&P1B   &T1B  &        &        &     \\
+Oceanus &1510-6Apr98 &-40.3 &34.4&P1C   &T1C  &        &        &     \\
+Oceanus &2200-7Apr98 &-40.3 &34.4&P1D   &T1D  &        &        &     \\
+Knorr   &2259-5Apr98 &-42.2 &32.3&P2    &T2   &        &        &     \\
+AVHRR   &1400-4Apr98 &      &    &      &     &-77,-63 &34,45   &Img1 \\
+AVHRR   &1800-4Apr98 &      &    &      &     &-77,-63 &34,45   &Img2 \\
+AVHRR   &2200-4Apr98 &      &    &      &     &-77,-63 &34,45   &Img3 \\
+AVHRR   &0200-5Apr98 &      &    &      &     &-77,-63 &34,45   &Img4 \\
+AVHRR   &0600-5Apr98 &      &    &      &     &-77,-63 &34,45   &Img5 \\
+AVHRR   &1000-5Apr98 &      &    &      &     &-77,-63 &34,45   &Img6 \\ \hline
+\end{tabular}
+\end{center}
+\caption{A Table Including Multiple Datasets}
+\label{fig:reltbl2}
+\end{table}
+
+This table could be broken up like this:
+
+\begin{center}
+\textbf{Primary \cs} \\
+  \begin{tabular}{|l|l|l|l|} \hline
+    Platform&LonRange&LatRange&URL\\ \hline
+    Oceanus &-40.3,-40.3&34.4,34.4&CS1 \\
+    Knorr   &           &         &CS2 \\
+    AVHRR   &-77,-63    &34,45    &CS3 \\ \hline
+  \end{tabular}
+
+  \textbf{{\huge\strut}CS1} \\
+  \begin{tabular}{|l|l|l|l|l|l|} \hline
+    Time        &Lat   &Lon &Press &Temp &URL    \\ \hline
+    1200-4Apr98 &-40.3 &34.4&      &     & URL1A \\
+    1430-5Apr98 &-40.3 &34.4&      &     & URL1B \\
+    1510-6Apr98 &-40.3 &34.4&      &     & URL1C \\
+    2200-7Apr98 &-40.3 &34.4&      &     & URL1D \\ \hline
+  \end{tabular}
+
+  \textbf{{\huge\strut}CS2} \\
+  \begin{tabular}{|l|l|l|l|l|l|} \hline
+    Time        &Lat   &Lon &Press &Temp & URL   \\ \hline
+    2259-5Apr98 &-42.2 &32.3&      &     & URL2  \\ \hline
+  \end{tabular}
+
+  \textbf{{\huge\strut}CS2} \\
+  \begin{tabular}{|l|l|l|} \hline
+    Time       &Img & URL   \\ \hline
+   1400-4Apr98 &    & URL3A \\
+   1800-4Apr98 &    & URL3A \\
+   2200-4Apr98 &    & URL3A \\
+   0200-5Apr98 &    & URL3A \\
+   0600-5Apr98 &    & URL3A \\
+   1000-5Apr98 &    & URL3A \\ \hline
+  \end{tabular}
+\end{center}
+
+\noindent
+The Img\emph{X}, P\emph{X}, and T\emph{X} variables are served by DODS
+servers specified with the URL\emph{X} in the tables.
+
+The following features are notable about the above example.
+
+\begin{itemize}
+\item To construct the (imaginary) table in \tableref{fig:reltbl2} you
+  need not have headings for the empty columns in the primary \cs\ 
+  tables.  If a \cs\ can make no sense of a clause in a constraint
+  expression, it can simply pass it on to the next lower level.  The
+\item Some data attributes, such as the spatial ranges in the
+  \textbf{Primary \cs} can be considered optional.  That is, if they
+  are present, they will make a data query simpler to answer.
+  Consider a spatial query received by the \textbf{Primary \cs} in the
+  above example.  That server has the information necessary to
+  determine whether or not to make a query of the Oceanus or AVHRR
+  servers, but not the Knorr.  A spatial query will, therefore,
+  \emph{always} produce a subordinate query to the Knorr server, but
+  will only generate a subordinate query to the Oceanus or AVHRR
+  archives if there is likely to be data returned.
+\item The proposed \cs\ structure can be used not only to address the
+  problem of organizing multi-file datasets, but also to provide a way
+  to organize a multi-dataset catalog.  After all, the problems of
+  browsing a complex dataset and browsing a catalog of datasets are
+  quite comparable.
+\end{itemize}
+
+This \cs\ structure is illustrated in \figureref{fig:cs-org}.  The \cs
+s can be thought of as the branch nodes in a hierarchy of servers,
+where the DODS data servers are the leaf nodes.  As in the figure, a
+``naive'' client can direct its requests to the top level \cs .  The
+``smart'' client, who knows many of the attributes served at the top
+level, and directs its data queries at the lower level.  There can be
+repetition of data among the layers; the only requirement is that
+together, all the nodes create a unified table of values.
+
+For example, consider the AVHRR archive.  Most of the dataset
+attributes for the 16,000 data files are identical.  These would be
+stored in a high-level \cs .  A user who is working every day with
+this archive should be able to direct a catalog query to a \cs\ local
+to the dataset server itself.  This user already knows most of the
+dataset's attributes, and is only interested in the time and coverage
+of any particular data file.  A user who is looking for satellite data
+may not know all the attributes of the AVHRR dataset, so should have
+access to the dataset attributes found in the higher-level \cs .
+
+\begin{figure}[hp] 
+\centerline{\psfig{figure=gui-figs/cs-org.ps}}
+\caption{Structure of the \cs}
+\label{fig:cs-org}
+\end{figure}
+
+There is only one version of the \cs\ software in this proposal;
+though the database is distributed, each server installation is
+essentially the same.  Of course, the database served by each server
+is different, and might even be optimized with respect to different
+variables.  That is, one \cs\ might have optimized searches on the
+time variable, while another might optimize searches on spatial
+variables.  However, the basic structure, represented by the set of
+all possible queries and responses, remains constant across servers.
+This means that client requests can be directed to any level of the
+\cs\ structure.  However, as we have seen, a client is only guaranteed
+to have access to the complete set of attributes for a given database
+if it directs its request to the top level of the \cs\ structure.
+
+
+\subsection{So What?}
+
+The \cs\ software manages a relational database; several \cs s
+together can form the distributed database DODS \cs\ structure
+outlined in \figureref{fig:cs-org}.  However, the \emph{only}
+assumptions made about the \cs\ software to satisfy the structure
+defined here are these:
+
+\begin{enumerate}
+\item Dataset queries are made using DODS constraint expressions.
+\item Responses to queries are made with a DODS data stream.
+\item The \cs\ can edit constraint expressions, and make subordinate
+  queries with an edited CE when it does not have enough information
+  to answer a query.
+\end{enumerate}
+
+This means that the \cs\ code can be readily adapted from one of the
+existing DODS servers that can deal with relational tables.  What must
+be added is the module that can edit a constraint expression and
+dereference a URL.\footnote{It may be that the existing DODS servers
+  capable of handling relational tables are not the optimum solution.
+  A better solution may be to use one of the many free relational
+  DBMS systems available, and adapt it to use with DODS}
+
+%Some datasets are organized into multiple files, while others occupy
+%just a single file.  The rough correspondence between URLs and disk
+%files gave rise to the concern that multiple-file datasets would
+%``break'' the dataset-scanning capacity of DODS.  But even datasets
+%contained in one disk file can have non-standard internal
+%organizations.  Two different netCDF datasets containing arrays of
+%some data variable might have the independent variables stored in two
+%different orders, for example.
+%
+
+\subsection{What's in the \cs ?}
+\label{sec:structure}
+
+A \cs\ functions as a piece of a distributed relational database of
+dataset ``attribute'' information.  This is the information typically
+found in the DODS DAS.  (Unlike the DAS, however, the information in
+the \cs\ can be computed.  That is, numbers are numbers and strings
+are strings, unlike in a DODS DAS, where everything is a string.)  Each
+entry in the \cs\ consists of dataset attributes, \emph{and} a URL to
+which more detailed queries can be directed.
+
+There is no fixed set of dataset attributes in each \cs\ record.
+However, if an attribute required by a given query is not present in
+a \cs\ record, a subordinate query must be issued to the corresponding
+URL for the missing information.
+
+
+\subsection{Problems with the \cs\ Structure}
+\label{sec:prblems}
+
+These are the known problems associated with the \cs\ structure
+outlined in this chapter:
+
+\begin{description}
+\item{\bf Circular references}\\The \cs\ must be equipped to recognize
+  when it is participating in a circular reference. 
+  
+  \textit{Solution}: The \cs\ could append its address to the CE when
+  it makes a subordinate request.  When a \cs\ intends to make a
+  subordinate query, it can compare the URL with the list of
+  addresses.  If any match, the subordinate query would be skipped.  A
+  query could also be submitted with a POST, which would allow this
+  information to appear in the message body.
+\item{\bf Duplicate references}\\Two \cs s might point to the same
+  dataset, or to the same \cs .
+  
+  \textit{Solution}: The \cs\ must scan the list that results from a
+  query to remove duplicate entries.  It is possible, however, that
+  for a particular structure of datasets and a particular query, that
+  two different datasets would produce identical entries in such a
+  return list.
+\item{\bf DODS Constraint Expression Syntax}\\The CE Syntax must be
+  expanded to allow a List return when more than one value meets the
+  CE criterion, and to provide for a boolean return value for CEs
+  without a projection expression.
+
+  Other possible extensions might include the server return address
+  indicated above.
+\item{\bf Data Volume}\\Considering the volume of data that may flow
+  from a data request, a \cs\ must have a way to control its
+  subordinate requests.  That is, if someone makes an AVHRR data query
+  through the GCMD DODS server, the system can't allow megabytes of
+  data to flow through the GCMD server.
+  
+  \textit{Solution}: By default, the result of a data query made
+  through a \cs\ should be the list of URLs that \emph{would} have
+  been dereferenced in that query.  In general, a client (either a
+  user or another \cs ) should have a way to control whether a query
+  can issue a subordinate query.  Like the return address idea above,
+  this might take the form of a flag appended to the constraint
+  expression.
+\end{description}
+
+\cbend
+
+%
+%\section{A Function Prototype}
+%\label{sec:proto}
+%
+%From the point of view of a DODS \gui , a \cs\ can be considered a
+%programming procedure, or function, with enumerable inputs and
+%outputs.  The inputs would usually (though not exclusively) be
+%constructed with the help of the \gui , which would also be available
+%to display the output.  (As well as the subsequent look at the data
+%itself.) 
+%
+%\subsection{Inputs}
+%
+%A query about datasets typically takes the form of a dataset name (or
+%names) and a set of variables or dataset attributes to search for.
+%Each variable may also have a data range.  For example, you might be
+%only be interested in sites where the temperatures are above
+%$29^{\circ}$ celsius, or only in data between two latitudes, or two
+%dates.  In a search for datasets satisfying some criteria, the dataset
+%name would be omitted.  (Its place might be taken by some other search
+%criteria, like observing platform or principal scientist.)
+%
+%These queries are similar to the sorts of queries made of datasets
+%themselves.  As was mentioned in section~\ref{sec:dbstruct} DODS has
+%already developed a fairly sophisticated syntax for making these
+%queries, the constraint expression.  With a small number of
+%enhancements to the semantics of this form (see
+%page~\pageref{sec:prblems}), the same expression can be used to query
+%the \cs\ database as well.  This will give the \cs s great 
+%
+%Note that one may make a data request for some data range without
+%asking for that variable.  That is, one might want all temperatures
+%where the salinity is greater than 37 ppt.  This is not, however, a
+%request the \cs\ can make any sense of, since it has only access to
+%summary data (upper and lower bounds).  From data summaries alone, one
+%can't tell which points have which combinations of values.  The
+%esponses from a \cs\ are necessarily imperfect.  Only queries to the
+%datasets themselves can produce complete responses.
+%
+%A query may refer to dataset attributes as well as to dataset
+%variables.\footnote{In fact, inasmuch as dataset variables can be
+%  considered to be attributes of the dataset, this amounts to the same
+%  thing.  Some datasets reflect this hierarchy, which is designed into
+%  the DAS structure, better than others.}  That is, one can request
+%all data taken from a certain ship, for example, or all climatologies,
+%\emph{if} there exists a consistently named attribute signalling ship
+%names or climatologies.
+%
+%The input to the \cs\ can be written using the same constraint
+%expression syntax as you might use to make a request to a DODS data
+%server. 
+%
+%\subsection{Outputs}
+%
+%There are several different forms that could be taken by the return
+%data from a \cs\ query, depending on the input constraint expression.
+%What is important is that the return be a DODS data stream.  That is,
+%whether the client is receiving data or attribute data, it should be
+%transmitted using the DODS DAP.
+%
+%Some attention is due to the URL that may be transmitted for a
+%dataset.  This attribute may take the form of a simple string:
+%
+%\begin{code}{cb}
+%String URL "http://saci/cgi-bin/nph-nc/weekly.nc";
+%\end{code}
+%
+%\noindent or it may be an interpreted function that must be
+%executed in order to derive the URL(s).  The arguments of the function
+%are taken from the query parameters.
+%
+%\begin{code}{cb}
+%URL {
+%   String Call "make_urls(query_time_min, query_time_max)";
+%   String Def "List Structure make_urls(time_min, time_max) {
+%                      ...
+%   }";
+%}
+%\end{code}
+%
+%The client receiving this function must know how to execute it, so the
+%query parameters must exist in a local name space with names
+%standardized so that the URL function arguments can be properly
+%specified. (See section~\ref{sec:functions}.)  It is not important how
+%the function operates.  The function could be the encoding of an
+%algorithm to create a file name from time values, for example, or it
+%could just select from a list of file names.
+%
+%The return value of the URL function is a data structure that contains
+%a list of URLs, and a list of the data variable values that identify
+%them.  So, for example, a URL function might accept two times, and
+%return a list of the URLs that fall between those two times.  That
+%list would also have to be accompanied by a list of time values, one
+%or each URL.  In addition, the data structure must somehow signify
+%that the accompanying data is ``time.''
+%
+%A dataset's DAS received from a query to the \cs\ will differ from the
+%DAS received from a query to the dataset itself only by the addition
+%of the URL field, which is not required to be present in a ``native''
+%DAS.
+%
+%The \cs\ returns an \emph{entire} DAS.  Even if the query range covers
+%only a fraction of the DAS area, the whole DAS is sent back to the
+%client.  The client is then free to modify the DAS before presenting
+%it to the user.  That is, if a DAS describes a dataset temperature
+%range as [-1.5, 29.6], and a query is for datasets whose range is
+%between [10.0, 30.0], the server returns [-1.5, 29.6], and lets the
+%\gui\ (or other client program) make the adjustment in the range to
+%[10.0, 29.6].
+%
+%
+%\section{Operating the \cs}
+%\label{sec:operating}
+%
+%The \cs\ is run with a database consisting of a list of DODS Data
+%Attribute Structures (DAS), slightly modified from the DAS stored at
+%the site of the dataset itself.  The modification requires the
+%addition of a URL field to the top-level attribute list,\tbd{You could
+%allow URLs to appear at lower levels, as well.  For example, you might
+%have a dataset where different variables occupied different files.
+%What then?} and the conversion of units in the ranges to the DODS
+%standards.  (See section~\ref{sec:units})
+%
+%The value of the URL field is either a string containing a single URL,
+%or a function of the query arguments, to be evaluated by the
+%client. (See section~\ref{sec:functions}.)
+%
+%The \cs\ returns the entire DAS for any dataset whose bounds overlap
+%the query criteria.  The requesting program (generally the \gui ) is
+%responsible for adjusting the bounds of the data variable attributes
+%to accommodate the query criteria.
+%
+%\cbstart 
+%
+%An entry in the \cs\ database can consist of either a DAS or the URL
+%of another DODS \cs .  If a database entry indicates another \cs , the
+%first \cs\ forwards the search request to that subsidiary \cs\ and
+%incorporates the return data into the data accumulated for the initial
+%data request.
+%
+%This structure allows great flexibility in the number and structure of
+%\cs s, and how DODS uses them, but it has some important implications:
+%
+%\begin{enumerate}
+%\item A \cs\ must check the source of a request before searching its
+%  database.  Otherwise a \cs\ could initiate a subordinate query to
+%  a \cs , which could then initiate a subordinate query right back to
+%  the first server.  A \cs\ must know when it is processing a query
+%  for a client, and when it is processing a query for another \cs .
+%  In the second case, there must be a record of all the servers that
+%  have handled the request so far.
+%\item The potential exists for creating serious network traffic
+%  issues.  A client should be able to specify whether or not a \cs\
+%  query should be subordinated to another server or not.
+%\end{enumerate}
+%
+%\cbend
+
+\cbstart
+
+\section{Getting from Here to There}
+\label{sec:getting}
+
+The implementation of the \cs should proceed as follows:
+
+\begin{enumerate}
+\item Implement the \cs without redirection, but \emph{with}
+  standardized attribute names.  This will allow the Matlab GUI to be
+  rewritten to run without (or with substantially smaller) archive
+  M-files.  This will require the creation of a \cs\ that might be
+  larger than eventually will be necessary.
+\item Implement redirection.  The \cs s can assume their proper size.
+\end{enumerate}
+
+\cbend
+
+\chapter{Units, Names, and other Attributes}
+\label{sec:attr}
+
+The \cs\ design presented so far will work only insofar as the
+attributes (DASs) of several different datasets are compatible with
+one another.  Comparisons between one set of attributes and another
+are not possible unless the two structures use comparable sets of
+attributes, as well as compatible data variable names and units.
+
+Here is a preliminary list of the essential attributes.  In the spirit
+of trying to keep the burden on the data provider to a minimum, I have
+tried to minimize the number of entries on the list.  They are
+separated into a list of ``global'' attributes (apply to an entire
+dataset) and a list for each data variable.
+
+\begin{itemize}
+\item Dataset name
+\item Dataset description
+\item URL
+\end{itemize}
+
+\noindent The following attributes must be present for each data variable in a
+dataset: 
+
+\begin{itemize}
+\item Variable's DODS-standard name
+\item Data range (This can be a minimum and maximum or an enumerated
+  list of possibilities.)
+\item Units
+\item Unit Conversion Function (if necessary)
+\item Period (if any) ``Granularity''
+\end{itemize}
+
+In addition, the data variable storage order must be recorded somehow.
+For some data APIs (e.g. netCDF), this matters.  Therefore, the order
+of the attributes in the DAS must correspond to the order of the
+variables in the dataset.
+
+\section{Names}
+\label{sec:names}
+
+The standardization of attributes also implies a concomitant
+standardization of attribute and variable names.  To compare two
+datasets, the simple attributes used in the comparisons must have
+comparable names.  Similarly, compound (container) attributes must
+have attributes in common.
+
+Consider the following DAS:
+
+\begin{code}{cb}
+Attributes {
+  String ShipName "Knorr";
+  String ChiefScientist "Sally";
+
+  salt {
+    String DodsName "Ocean/Salinity";
+  }
+
+  temp {
+    String DodsName "Ocean/Temperature";
+  }
+}
+\end{code}
+
+\noindent To compare the DAS above to the one below, it is simple 
+for a computer to answer the question of whether the two datasets were
+taken from the same ship, but more challenging to answer whether the
+two ships were under the same scientist.
+
+\begin{code}{cb}
+Attributes {
+  String ShipName "Endeavour";
+  String PrincipalInvestigator "Peter";
+
+  Salinity {
+    String DodsName "Ocean/Salinity";
+  }
+
+  Temperature {
+    String DodsName "Ocean/Temperature";
+  }
+}
+\end{code}
+
+\noindent On the other hand comparing salinities and temperatures 
+between the two datasets is relatively simple, since in both datasets,
+all the data variables are identified with a common attribute,
+``DodsName.''  DODS needs standards for both metadata names \emph{and}
+data variable names.
+
+\subsection{GCMD Names}
+\label{sec:gcmd-names}
+
+The GCMD maintains a hierarchical list of valid keywords for earth
+science data that would be compatible with use by the DODS project.
+The names are somewhat unwieldy, but their hierarchical nature makes
+clear several important differences between data variables that might
+otherwise seem similar.  (e.g. Geologic time is distinguished from
+Oceanographic time.)  Refer to
+\htmladdnormallink{http://http://gcmd.gsfc.nasa.gov/cgi-bin/valids}{http://http://gcmd.gsfc.nasa.gov/cgi-bin/valids}.
+
+The GCMD list has two important advantages to the DODS project.
+
+\begin{itemize}
+\item It is exhaustive, covering data ranging from Ocean Temperature to
+  Poverty Indexes.
+\item Someone else is maintaining it.
+\end{itemize}
+
+I suppose that a third advantage is that the NASA CAN seems to require
+something related to the GCMD (this part is beyond my ken), and
+adopting their standards will make it ever so much easier to cooperate
+with them.
+
+One major drawback is that the GCMD names are long and quite
+unwieldy.  Using them will dictate the creation of a DAS authoring
+tool, or else no one will spell the names without typos.
+
+
+\section{Units}
+\label{sec:units}
+
+If DODS is to be useful, a user must perceive all the datasets in a
+given \cs\ to have data in comparable units.  This does not mean that
+all datasets must be kept in the same units.  In the same way that
+DODS hides issues of data access API from the user, it can hide the
+units issue.
+
+Assume that DODS establishes a standard unit for each of the data
+names in the GCMD catalog.\footnote{GCMD may already do this, but I'm
+  not sure.}  Consider a data variable in any given dataset.  Either
+it is stored in that unit or it is not.  If it is, there is no
+problem, so long as this can be verified in the DAS.  If it is not,
+the DAS must signal this, and supply a conversion function to convert
+the data storage units into the DODS standard units.  The two
+attribute containers below illustrate this.
+
+\begin{code}{cb}
+temp {
+  String StorageUnit "degCelsius";
+}
+
+Temperature {
+  String StorageUnit "Counts";
+  String UnitConvert "C = convert(counts) {
+    C = 24.55 + 133.26 * counts ;
+  }";
+}
+\end{code}
+
+This approach provides several advantages, and at least one
+significant disadvantage.  The principal advantage is universality.
+\emph{Any} unit conversion can be set up this way, even ones that
+depend on other data.  The principal disadvantage is the limitations
+placed on the formulation of constraint expressions.  This is
+described below.
+
+Many unit conversions are linear, so there is a temptation simply to
+use the slope and offset instead of the entire function definition.
+But several units in common use have non-linear conversions from other
+common units.  One need only consider time to see the truth of this
+(convert decimal years to julian days, for example), but other units,
+like CTD machine units, also use non-linear conversions. \cbstart\
+Since so many conversions are linear in nature, it would make sense to
+have a ``cheat'' linear conversion method available, optimized for
+this case.\cbend
+
+The values stored as range boundaries in the \cs\ collection of DASs
+must all be in the same units.  They are to be converted when the \cs\
+database is compiled and updated.
+
+This unit conversion scheme does not cover all the cases. Consider the
+two cases of a data variable that is and is not stored in
+DODS-standard units, and the two cases of a variable in a constraint
+expression projection clause and a selection clause.  This makes the 
+following four conditions:
+
+\begin{center} 
+\begin{tabular}{| c || c | c |} \hline 
+ & Projection  & Selection \\ \hline \hline
+DODS Units & A & B \\ 
+non-DODS Units & C & D \\ \hline
+\end{tabular} 
+\end{center} 
+
+In the ``DODS Units'' row, cases A and B, the dataset stores its units
+in the DODS standard units for that data variable.  Therefore, there
+is no conversion issue in selecting that variable, or constraining a
+data query with it.  
+
+For case C, the user will query the \cs , which is stored in
+DODS-standard units.  The \cs\ provides a conversion function, which
+the client keeps on hand.  When a query is made to that dataset and
+variable, the stored conversion function can be used to transform the
+incoming data points in memory.
+
+\cbstart\ 
+Case D, however, is not as readily subdued.  Here, the user wants to
+make a query to the dataset (not the \cs ), selecting on a variable
+not stored in DODS-standard units.  To do this in a way that doesn't
+load the DODS server, the constraint expression must be converted
+before being sent to the server.  
+
+ Since the conversion functions are
+stored as functions, they are not readily invertible.  In this
+scenario, a user may have queried the \cs , and found some dataset
+with interesting data.  When she then goes to formulate a query to the
+dataset, the selection clause must be expressed in different units
+than it was for the catalog query.  The \gui\ should alert the user to
+the discrepancy, and provide the opportunity to use different values
+for the variable.  Since many conversions are simple, the \gui\ could
+provide guesses.
+\cbend
+
+Most instances of case D would be solved if the constraint expression
+parser contained arithmetic capabilities.  
+
+\subsection{Longitude}
+\label{sec:longitude}
+
+This quantity deserves a special mention since it is probably the only
+periodic data type regularly encountered in earth-science datasets
+that has more than one accepted coordinate system.\footnote{Calendar
+  days are also periodic, for example, but everyone agrees (these
+  days) that December 31 is always represented by a positive number.}
+
+\section{Functions}
+\label{sec:functions}
+
+The concept of the client-executed interpreted functions deserves
+amplification.\footnote{Plus, if it is decided that such a structure
+  makes sense, choosing a language then becomes an issue.  The fact
+  that Tcl is already embedded into DODS clients may make the choice
+  simple or hard, depending on whether Tcl can be made to be
+  appropriate to the task at hand.}  These functions would be
+available to handle the construction of URLs, conversion of units,
+creation of calculated data values (like density or potential
+vorticity), and possibly even data type translation.
+
+\subsubsection{Execution}
+
+A function is not executed until (or unless) the user asks to see a
+quantity whose value depends on that function.  For example, a URL
+returned as a function will not be evaluated until the user asks to
+see it.  A unit conversion function will not be evaluated until the
+quantity that uses it is mapped or displayed.
+
+\subsubsection{Environment}
+
+The ``environment'' in which these functions are evaluated is made up
+of the data and attributes of a dataset.  More technically, the
+environment might simply be the DDS of a dataset, with data attributes
+available through some extension of the `.' operator.  For example,
+the long name (``DODS Name'') of a temperature variable called
+\lit{temp} might be referenced as a string called
+\lit{temp.DodsName}.\footnote{Since `.' is also used to reference
+  Structure fields, another character (`:') might be less confusing.
+  On the other hand, it isn't so bad to think of data attributes as
+  members of a structure, so perhaps the consistency might be useful.}
+
+The variables in the DDS would be the ``global'' variables in such a
+space.  The DDS manipulation methods can be used to manage a
+function's local variables.  The list of global variables also must
+include the URL query parameters (components of the constraint
+expression), so that URL-building functions can operate.
+
+\cbstart
+%\section{Local Caching of Attributes}
+%\label{sec:cache}
+
+%Local attributes would override those in the remote dataset.  They
+%could be edited locally by the \gui\ or by hand for good or for evil.
+
+
+
+%
+%\section{Hierarchy of Attributes}
+%\label{sec:hierarchy}
+%
+%Don't \emph{need}, but would be nice to have a hierarchy of
+%attributes, so that, as you can currently define attributes for an
+%entire dataset, you could define attributes for all temperatures, for
+%all netCDF datasets, for all vectors, and so on.  This, combined with
+%local attribute caching, would be a pretty cool thing.
+
+\cbend
+
+\chapter{GUI}
+\label{sec:gui}
+
+The DODS \gui\ allows a user graphic access to data retrieval
+functions, as well as a limited amount of graphic data display
+capacity.  The DODS \gui\ must allow a user to:
+
+\begin{itemize}
+\item Scan available remote DODS datasets, using information from one
+  or more \cs s, displaying graphic information about the datasets
+  and the data they contain.  The user should be able to control
+  aspects of the display to answer questions about the datasets.
+\item Import data from those datasets to the local machine.  The user
+  should be able to control how that data gets imported, and whether
+  it goes directly into an analysis package, or to a disk file.
+\end{itemize}
+
+The graphic display needs for the \gui\ are fairly limited.  Part of
+the strength of the DODS analysis of science data usage is that its
+designers made explicit the distinction between data retrieval and
+data analysis.  DODS is a data retrieval system, \emph{not} an
+analysis package, and it will be a mistake to try to emulate one (at
+least until such time as the DODS team has the coding capacity of the
+Mathworks, for example).
+
+When using local data, the retrieval and analysis phases
+are typically done by the same program.  Matlab, for example, has
+``load'' functions to load data into the workspace, and a wealth of
+other functions for the analysis.  However, though the same program
+handles both phases, they are still distinct operations.  
+
+\section{Relation to Analysis Software}
+\label{sec:analysis}
+
+The DODS \gui\ is a standalone application, capable of reading remote
+DODS data, and writing it to a local disk file for later reading.
+Alternatively, you can also run DODS from an analysis package, like
+Matlab, IDL, Ferret, and so forth.  In this case, data can be written
+to a file, or exported directly to the analysis package for display,
+analysis, slicing, dicing or whatever.
+
+Science data extracted from DODS datasets travels from the \gui\ 
+to the analysis package when the user selects \but{File:Export} from
+the menu bar.
+
+
+\section{Relation to Catalog Server}
+\label{sec:cat-rel}
+
+This section describes the data sent back and forth from the \gui\ to
+the \cs\ and back again.
+
+
+\subsubsection{From the \gui\ to the \cs\ }
+
+A data query uses the following data to specify a catalog search to be
+done.
+
+\begin{itemize}
+\item The dependent variable name (or names) to search for.
+\item The dataset name (or names) to search in.
+\item The variable names to search with.  These independent variables
+  define the bounding box of the search.  Note that these don't have
+  to be geographic boundaries, just boundaries in the N-space defined
+  by the dataset.
+\item The values of the bounding box.  There should be a range
+  specified for each of the variables in the independent variable
+  list. 
+\item The desired resolution, for searching gridded data.
+\end{itemize}
+
+\subsubsection{From the \cs\ to the \gui\ }
+
+The results of a data query are given in a set of DODSS objects
+returned from the \cs .  Conceptually speaking, the results are a list
+of dataset URLs and descriptions of the data found by dereferencing
+those URLs.
+
+%More detail is provided in section~\ref{sec:proto}.
+
+Some refinements of the data query can be done locally, with the data
+returned by the \cs , without making another query to the \cs .  For
+example, a user can eliminate a URL from the list of returned URLs.
+For many other modifications, you must make another query to the \cs\ 
+.
+
+The \gui\ must be able to amalgamate the results of several dataset
+queries so that a user can export to the analysis package the results
+of several different queries.  This means that successive queries must
+be able to be merged into a single data space.
+
+
+
+
+\section{Display Capacity}
+\label{sec:display}
+
+the DODS \gui\ must be able to display simple two- and
+three-dimensional graphs of input data, allowing a user to choose
+among whatever number of data variables is returned by a data
+request.  The graph types supported are:
+
+\begin{itemize}
+\item Scatter plots and Line graphs
+\item Contour and pseudo-color maps
+\end{itemize}
+
+\section{Main Window}
+\label{sec:main-window}
+
+The main window of the \gui\ is shown in
+\figureref{fig:gui-main-window}.  It contains the following areas:
+
+\begin{description}
+\item[Menu Bar] The menu bar, running along the top of the window,
+  contains the pull-down menus used to control the \gui .
+\item[Shortcut Buttons] A few of the most commonly used functions can
+  be executed with shortcut buttons displayed in a column on the left
+  of the main window.
+\item[Scale] The bottom of the column on the left of the main window
+  is used for a data scale.  In the case of a color plot, this is
+  where the color scale is displayed.  In the case of a scatter plot
+  or line graph, the point shapes and line weights are explained
+  here. 
+\item[Data Viewport] The data viewport contains windows used to
+  specify data constraints, and one window used to display returned
+  data.  
+\end{description}
+
+\begin{figure}[htbp] 
+\centerline{\psfig{figure=gui-figs/gui-main.ps}}
+\caption{The \gui\ Main Window}
+\label{fig:gui-main-window}
+\end{figure}
+
+\noindent Most of these window parts will be familiar to any user who 
+has used other UNIX or Windows graphical interfaces.  The Data
+Viewport demands somewhat more explanation.
+
+\subsubsection{Data Viewport}
+\label{sec:window:viewport}
+
+The Data Viewport contains a collection of windows used to specify
+data constraints and to display data.  The viewport contains one
+2-dimensional window and an arbitrary number of one-dimensional
+windows.  The number of windows and the properties of each window are
+controlled by the \but{Display:Variables} dialog box.  
+
+The one-dimensional windows, or display scales, allow you to set a
+range for the indicated variable.  Use the \but{Display:Set Data
+  Range} to set the range with the mouse.  You can also set a range
+with the \but{Query:Constraint} dialog, in which case, the range will
+be displayed on the appropriate display scale.
+
+The two-dimensional window is used both to set a range and to display
+some of the returned data.  The returned variable can be displayed on
+one of the window axes, in which case the data is displayed as a line
+or scatter graph. If neither axis corresponds to the displayed.
+
+Returned data is displayed in the 2-d window.  The two figures nearby
+show the data viewport in two different states.  The first,
+figure~\ref{fig:gui-main-window}, shows a view of a standard map,
+while the second, figure~\ref{fig:gui-main-window-alt} shows a
+slightly less orthodox, but still possible useful, view of latitude in
+Temperature-Salinity space, bounded by longitude values to include
+(roughly) the Atlantic.
+
+\begin{figure}[htbp] 
+\centerline{\psfig{figure=gui-figs/gui-main-alt.ps}}
+\caption{The \gui\ Main Window, Another State}
+\label{fig:gui-main-window-alt}
+\end{figure}
+
+\section{Using the GUI}
+\label{sec:using-GUI}
+
+Several steps:
+
+\begin{enumerate}
+\item Describe data desired, including variables and limits.
+  \begin{enumerate}
+  \item Describe variables desired.
+  \item Describe limits
+  \end{enumerate}
+\item Find datasets with that data. (This is done implicitly with the
+  modal Datasets and Variables menus in the Matlab \gui .)
+\item Select a specific dataset.
+\item Request data from that dataset.
+\item Refine the request.
+\item Import data into analysis package for further display.
+\end{enumerate}
+
+
+\subsection{Modes}
+\label{sec:modes}
+
+Several items may be selected by a user.  These \emph{settings} define
+the \gui\ modes.  Several \gui\ functions depend on these setting.
+The following settings have no default values, and functions dependent
+on them should be grayed out until the selections are made.
+
+\begin{itemize}
+\item The dataset to be queried.
+\item The variables to be retrieved.
+\end{itemize}
+
+\noindent The following settings have default values:
+
+\begin{itemize}
+\item The variables used as query criteria. (Default: geographic, plus
+  time)
+\item The resolution used when searching for gridded data. (Default:
+  whatever corresponds to the stride value of one.)
+\item The variables to be displayed. (Default: the first variable in
+  the ``projection'' list.)
+\item The query criteria. (Default: None.  The default gets all the
+  data in the specified dataset.)
+\end{itemize}
+
+
+\subsubsection{Data Selection Modes}
+
+There are two data selection modes: ``selection'' and
+``subselection.''  The ``selection'' mode is used to specify a data
+query, and allows you to set the necessary parameters to submit a data
+query search to the \cs .
+
+The ``subselection'' mode is used to refine a previously-made
+selection.  When you refine a subselection, the query response can be
+constructed from data already received.  You do not need to issue
+another request to the \cs .
+
+\subsection{Menu Reference}
+\label{sec:menu}
+
+The \gui\ menus are described below.
+
+\subsubsection{File}
+\label{sec:menu:file}
+The File menu contains functions related to the overall \gui\
+session.  It controls the connection to the \cs\ , and the
+relationship with the analysis package in use.
+\begin{description}
+\item[]
+  \begin{center}
+    \begin{tabular}[c]{|l|} \hline
+      \textbf{File} \\ \hline
+      Open \\
+      Save Data \\
+      Save Session \\
+      Export \\
+      Import \\
+      Print \\
+      Quit \\ \hline
+    \end{tabular}
+  \end{center}
+  
+  \begin{description}
+  \item[Open] Open a connection to a new \cs\ .
+  \item[Save Data] Saves the data currently displayed in the \gui\ in
+    a disk file.
+  \item[Save Session] Save a record of the \gui\ session, so that
+    interrupted work can be easily resumed.
+  \item[Export] Sends data to an analysis package.
+  \item[Import] Receives data from an analysis package.
+  \item[Merge Data] Merge the results from two or more data queries
+    so that it can be mapped or exported all at once.
+  \item[Print] Creates a readable record of the current session,
+    including the datasets queried and result summaries.
+  \item[Clear All] Flush all the \gui\ memory.  (Equivalent to
+    restarting it.)
+  \item[Quit] Leave the \gui .
+  \end{description}
+\end{description}
+
+\subsubsection{View}
+\label{sec:menu:View}
+The View menu contains functions used to control various
+aspects of what is displayed.  This controls such aspects as the
+dataset from which data is sought, and the variables requested, as
+well as whether the window contains the text description of the
+dataset or the graphic depiction of the request.
+\begin{description}
+\item[] 
+  \begin{center}
+    \begin{tabular}[c]{|l|} \hline
+      \textbf{View} \\ \hline
+      Variables \\
+      Datasets \\
+      Text \\ \hline
+    \end{tabular}
+  \end{center}
+  \begin{description}
+  \item[Variables] Displays a window containing the list of variables
+    available in the currently selected datasets. This window is also
+    available through a \but{Variables} button on the \gui\ main
+    display.  You use this window to select the variables you want
+    returned from your dataset query.
+  \item[Datasets] Displays a window containing the list of datasets
+    that may satisfy the search criteria.  This includes the list of
+    desired variables, and whatever query conditions (e.g. location)
+    are already set.  This window is also available through a
+    \but{Datasets} button on the \gui\ main display.\footnote{The
+      current \gui\ filters the dataset and variable lists on the fly,
+      whenever a condition is added to the query.  You can leave these
+      windows exposed and watch them change as conditions are added.
+      This may not be appropriate for a substantially larger, or
+      hierarchically organized list of datasets, where filtering the
+      list may require substantial processing time.}
+  \item[Text] Displays a window with the narrative information about
+    the selected dataset, if any.
+  \end{description}
+\end{description}
+
+\subsubsection{Query}
+\label{sec:menu:query}
+The Query menu controls the various query parameters used in a
+data request.  The \but{Constraints} button controls the selection
+clause of a constraint expression.  The projection clause is
+controlled with the \but{View:Variables} menu button.
+\begin{description}
+\item[] 
+  \begin{center}
+    \begin{tabular}[c]{|l|} \hline
+      \textbf{Query} \\ \hline
+      Set Data Range \\
+      Constraints \\ 
+      Resolution \\
+      Mode \\ \hline
+    \end{tabular}
+  \end{center}
+  \begin{description}
+  \item[Set Data Range] Use this to set a range in any of the display
+    scales on the \gui\ main window.  There is also a \but{Set Data
+    Range} button on the main window.
+  \item[Constraints] Brings up a dialog box that allows you to select
+    from a list of variables in the dataset those to use for the
+    query. The same dialog box allows you to specify ranges for the
+    variables.  You can use this dialog to add constraints to a data
+    request beyond what can be specified in the \gui\ main window.
+  \item[Resolution] Sets the desired resolution for requesting grid
+    data. 
+  \item[Mode] Allows you to toggle back and forth between selection
+    modes.  ``Selection'' mode is for describing a request to be made
+    to the \cs , while ``subselection'' mode is for refining a
+    previously made request.  This allows you to weed out unwanted
+    data without incurring network transmission overhead.
+  \end{description}
+\end{description}
+
+\subsubsection{Get}
+\label{sec:menu:get}
+Once a dataset has been selected, and a query set up, these
+functions are used to initiate the network requests.  The \gui\ 
+makes requests both to \cs s and directly to data servers.
+\begin{description}
+\item[] 
+  \begin{center}
+    \begin{tabular}[c]{|l|} \hline
+      \textbf{Get} \\ \hline
+      Details \\
+      Data \\ 
+      Dataset List \\ \hline
+    \end{tabular}
+  \end{center}
+  \begin{description}
+  \item[Details] Retrieves summary information about the selected
+    dataset with the given constraint.  This information includes the
+    number of datapoints in the selection, and an estimate of the size
+    of the returned file.  This request goes to the \cs\ .
+  \item[Data] Retrieves the data from the selected dataset.  This is
+    grayed out until a dataset and variables to retrieve are
+    selected.  This request goes to the data server itself, although
+    the \cs\ may be queried (if it hasn't been already) to determine
+    the server's URL.
+  \item[Dataset List] Queries the specified \cs\ (See
+    \but{File:Open}) for an updated list of the available datasets.
+  \end{description}
+\end{description}
+
+\subsubsection{Display}
+\label{sec:menu:display}
+This menu contains several functions that controls how the \gui\ 
+displays its data, and what is shown in the main window.  These
+functions do not control the data itself, which is done through the
+\but{View} and \but{Query} menus.  Some display options that don't
+have anything to do with the data are under the \but{Options} menu.
+\begin{description}
+\item[] 
+  \begin{center}
+    \begin{tabular}[c]{|l|} \hline
+      \textbf{Display} \\ \hline
+      Variables \\
+      Zoom \\
+      Data Display \\
+      Data Colors \\
+      Reset \\
+      Clear \\ \hline
+    \end{tabular}
+  \end{center}
+  \begin{description}
+  \item[Variables] This brings up a dialog box allowing the user to
+    specify:
+    \begin{enumerate}
+    \item The dependent variable to graph.  If there is only one
+      variable selected for the data query, (See
+      \but{View:Variables}), that variable will be graphed.
+    \item The independent variables to display.  The user can indicate
+      on the scales displayed in the main window constraints to add to
+      the data query.  Use this dialog box to specify the limits of
+      the variable scales, and the format of their labels.
+    \end{enumerate}
+  \item[Zoom] Use this to zoom in closer to one of the display scales
+    on the \gui\ main window.  There is also a \but{Zoom} button on
+    the main window.
+  \item[Data Display] Use this to open a dialog box to select the type
+    of graph to be displayed (if any).  The choices are:
+    \begin{description}
+    \item[Line] 
+    \item[Scatter] 
+    \item[Color] 
+    \end{description}
+  \item[Data Colors] Specify the color scale for a pseudo-color plot.
+    This dialog box controls both the color scale and the limits.
+  \item[Reset] Redraw the current main window, and all the plots in it.
+  \item[Clear] Clear the plots in the current main window.
+  \end{description}
+\end{description}
+
+
+\subsubsection{Options}
+\label{sec:menu:options}
+The functions in this menu are used to set communications and
+display options.
+\begin{description}
+\item[] 
+  \begin{center}
+    \begin{tabular}[c]{|l|} \hline
+      \textbf{Options} \\ \hline
+      Data Size Threshold \\
+      Colors \\
+      Fonts \\
+      Save Options \\ \hline
+    \end{tabular}
+  \end{center}
+  \begin{description}
+  \item[Data Size Threshold]  Data requests estimated to result in
+    network transfers greater than this amount cause the \gui\ to
+    prompt the user to be sure that the request is intentional.
+  \item[Colors] Sets the colors of various parts of the \gui\ main
+    window. 
+  \item[Fonts]  Control the fonts used as labels in the \gui\ main
+    window. 
+  \item[Save Options] Saves the currently selected options (including
+    display options set in the \but{Display} menu) in a disk file.
+    These options will be read when the \gui\ starts up next time.
+  \end{description}
+\end{description}
+
+
+\subsubsection{Help}
+\label{sec:menu:help}
+Displays documentation for the \gui\ and DODS.
+\begin{description}
+\item[] 
+  \begin{center}
+    \begin{tabular}[c]{|l|} \hline
+      \textbf{Help} \\ \hline
+      Contents \\
+      Index \\
+      About DODS \\
+      DODS Web Page \\ \hline
+    \end{tabular}
+  \end{center}
+  \begin{description}
+  \item[Contents] The \gui\ documentation table of contents.
+  \item[Index] The \gui\ documentation index.
+  \item[About DODS] Whatever.
+  \item[DODS Web Page] Starts a web browser pointing to the DODS home
+    page. 
+  \end{description}
+\end{description}
+
+\chapter{A Specification}
+\label{sec:spec}
+
+Conclusion
+\bigspace
+
+
+
+
+
+
+\end{document}

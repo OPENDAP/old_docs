@@ -1,0 +1,32 @@
+1) loaddods(URL?constraint)
+
+  Spews out unstructured variables directly into the workspace.
+
+2) X = loaddods(URL?constraint);
+
+  Writes data request into a structure named X using data DDS to
+  name fields.
+
+3) X = loaddods('-Q', URL?constraint);
+
+  writes data structure called X using data DDS to name fields.
+  (identical to 2).
+
+4) loaddods('-Q',URL[?constraint])
+
+   returns an error
+
+5) X = loaddods('-Q',URL); -- downloads whole dataset into a 
+   structure named X.
+
+6) X = loaddods('-A',URL);
+
+  writes combined DAS/DDS into a structure named X.
+
+7) X = loaddods('-A',URL?constraint);
+
+  Ignores constraint and reads entire DAS/DDS into a structure named X.
+
+8) loaddods('-A',URL[?constraint])
+
+  returns an error

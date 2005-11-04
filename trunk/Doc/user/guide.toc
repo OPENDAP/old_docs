@@ -1,0 +1,95 @@
+\sffamily 
+\contentsline {chapter}{Preface}{iii}
+\contentsline {section}{\numberline {0.1}Tasks Illustrated in this Guide}{iv}
+\contentsline {section}{\numberline {0.2}Who is this Guide for?}{v}
+\contentsline {section}{\numberline {0.3}Organization of this Document}{vi}
+\contentsline {section}{\numberline {0.4}Conventions}{vii}
+\contentsline {part}{I\hspace {1em}Overview}{1}
+\contentsline {chapter}{\numberline {1}What is OPeNDAP\xspace ?}{3}
+\contentsline {section}{\numberline {1.1}Why Use OPeNDAP\xspace to Read Data?}{5}
+\contentsline {subsection}{\numberline {1.1.1}An Example: Using ftp}{5}
+\contentsline {subsection}{\numberline {1.1.2}An Example: Using OPeNDAP\xspace }{7}
+\contentsline {subsection}{\numberline {1.1.3}The OPeNDAP\xspace Client}{8}
+\contentsline {section}{\numberline {1.2}Providing Data with OPeNDAP\xspace }{11}
+\contentsline {subsection}{\numberline {1.2.1}The OPeNDAP\xspace Server}{11}
+\contentsline {subsection}{\numberline {1.2.2}Ancillary Data}{12}
+\contentsline {subsection}{\numberline {1.2.3}Administration and Centralization of Data}{12}
+\contentsline {part}{II\hspace {1em}Using OPeNDAP\xspace to Read Data}{13}
+\contentsline {chapter}{\numberline {2}Using OPeNDAP\xspace }{15}
+\contentsline {section}{\numberline {2.1}How OPeNDAP\xspace Finds Data}{16}
+\contentsline {subsection}{\numberline {2.1.1}Security}{17}
+\contentsline {section}{\numberline {2.2}The OPeNDAP\xspace Services}{18}
+\contentsline {subsection}{\numberline {2.2.1}WWW Interface}{19}
+\contentsline {section}{\numberline {2.3}Using an OPeNDAP\xspace Program}{22}
+\contentsline {subsection}{\numberline {2.3.1}Requirements}{22}
+\contentsline {subsection}{\numberline {2.3.2}Environment Variables}{22}
+\contentsline {subsection}{\numberline {2.3.3}The Error System}{23}
+\contentsline {subsection}{\numberline {2.3.4}Temporary Files}{23}
+\contentsline {chapter}{\numberline {3}The OPeNDAP\xspace Client}{25}
+\contentsline {section}{\numberline {3.1}Configuring Programs to Use OPeNDAP\xspace }{29}
+\contentsline {subsection}{\numberline {3.1.1}An Example Using netCDF}{30}
+\contentsline {subsection}{\numberline {3.1.2}Potential Problems}{30}
+\contentsline {section}{\numberline {3.2}Writing New OPeNDAP\xspace Programs}{32}
+\contentsline {chapter}{\numberline {4}Data Analysis with OPeNDAP\xspace }{33}
+\contentsline {section}{\numberline {4.1}Selecting Data: Using Constraint Expressions}{34}
+\contentsline {subsection}{\numberline {4.1.1}Constraint Expression Syntax}{34}
+\contentsline {subsubsection}{Simple Constraint Expression Examples}{36}
+\contentsline {subsection}{\numberline {4.1.2}Operators, Special Functions, and Data Types}{38}
+\contentsline {subsection}{\numberline {4.1.3}Using Functions in a Constraint Expression}{39}
+\contentsline {subsection}{\numberline {4.1.4}Using URLs in a Constraint Expression}{39}
+\contentsline {subsubsection}{Examples}{40}
+\contentsline {subsection}{\numberline {4.1.5}Pattern Matching with Constraint Expressions}{40}
+\contentsline {subsubsection}{Examples}{42}
+\contentsline {subsection}{\numberline {4.1.6}Optimizing the Query}{42}
+\contentsline {section}{\numberline {4.2}A Word About Data Translation}{44}
+\contentsline {part}{III\hspace {1em}Providing Data with DODS}{45}
+\contentsline {chapter}{\numberline {5}The OPeNDAP\xspace Server}{47}
+\contentsline {section}{\numberline {5.1}Server Architecture}{48}
+\contentsline {subsection}{\numberline {5.1.1}Service Programs}{49}
+\contentsline {section}{\numberline {5.2}Installing an OPeNDAP\xspace Server}{53}
+\contentsline {subsection}{\numberline {5.2.1}Configuring the Server}{54}
+\contentsline {subsection}{\numberline {5.2.2}Constructing the URL}{54}
+\contentsline {subsection}{\numberline {5.2.3}Documenting Your Data}{54}
+\contentsline {subsection}{\numberline {5.2.4}Testing the Installation}{55}
+\contentsline {section}{\numberline {5.3}Displaying Information to the OPeNDAP\xspace User}{57}
+\contentsline {subsection}{\numberline {5.3.1}GUI Architecture}{57}
+\contentsline {section}{\numberline {5.4}Building OPeNDAP\xspace Data Servers}{59}
+\contentsline {part}{IV\hspace {1em}Technical Documentation}{61}
+\contentsline {chapter}{\numberline {6}Data and Data Models}{63}
+\contentsline {section}{\numberline {6.1}Data models}{64}
+\contentsline {subsection}{\numberline {6.1.1}Data Models and APIs}{66}
+\contentsline {subsection}{\numberline {6.1.2}Translating Data Models}{67}
+\contentsline {section}{\numberline {6.2}Data Access Protocol}{69}
+\contentsline {section}{\numberline {6.3}Data representation}{70}
+\contentsline {subsection}{\numberline {6.3.1}Base Types}{70}
+\contentsline {subsection}{\numberline {6.3.2}Constructor Types}{71}
+\contentsline {subsection}{\numberline {6.3.3}Operators}{75}
+\contentsline {subsection}{\numberline {6.3.4}External Data Representation}{76}
+\contentsline {section}{\numberline {6.4}Ancillary data}{79}
+\contentsline {subsection}{\numberline {6.4.1}Dataset Descriptor Structure}{79}
+\contentsline {subsection}{\numberline {6.4.2}Dataset Attribute Structure}{80}
+\contentsline {subsubsection}{Containers}{83}
+\contentsline {subsubsection}{Aliases}{84}
+\contentsline {subsubsection}{Global Attributes}{84}
+\contentsline {part}{V\hspace {1em}Appendices}{87}
+\contentsline {chapter}{\numberline {A}Installing the OPeNDAP\xspace Software}{89}
+\contentsline {section}{\numberline {A.1}Acquiring the OPeNDAP\xspace Software}{90}
+\contentsline {subsubsection}{The OPeNDAP\xspace Web Site}{90}
+\contentsline {subsubsection}{By Anonymous FTP}{90}
+\contentsline {section}{\numberline {A.2}Installing the Software}{91}
+\contentsline {subsubsection}{Building the OPeNDAP\xspace Core}{91}
+\contentsline {subsubsection}{Building an OPeNDAP\xspace Client or Server}{91}
+\contentsline {subsubsection}{Getting the Software Used by DODS}{91}
+\contentsline {subsection}{\numberline {A.2.1}Installing the OPeNDAP\xspace Libraries}{92}
+\contentsline {section}{\numberline {A.3}The OPeNDAP\xspace Client Initialization File ({\tt .dodsrc})}{93}
+\contentsline {subsubsection}{Comments}{93}
+\contentsline {subsubsection}{Caching}{93}
+\contentsline {subsubsection}{Proxy Servers}{94}
+\contentsline {subsubsection}{Compression}{96}
+\contentsline {subsubsection}{Validation}{96}
+\contentsline {chapter}{\numberline {B}Software you will need for DODS}{97}
+\contentsline {section}{\numberline {B.1}Running an OPeNDAP\xspace Server}{98}
+\contentsline {section}{\numberline {B.2}Running an OPeNDAP\xspace Client}{98}
+\contentsline {section}{\numberline {B.3}Building DODS}{99}
+\contentsline {chapter}{Glossary}{101}
+\contentsline {chapter}{Bibliography}{107}

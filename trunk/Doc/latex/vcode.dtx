@@ -1,0 +1,430 @@
+% \iffalse
+%  $Id$
+%
+%  $Log: vcode.dtx,v $
+%  Revision 1.7  2003/05/05 14:12:00  tom
+%  fixed a bug involving short lines and wide left margins
+%
+%  Revision 1.6  2000/10/30 20:10:19  tom
+%  Fixed to allow URL arguments to contain square brackets.
+%
+%  Revision 1.5  2000/10/23 20:32:14  tom
+%  'yank' is apparently not the done thing in these functions.
+%  replaced with (insert (car kill-ring))
+%
+%  Revision 1.4  2000/10/23 17:05:27  tom
+%  added optional URL argument for Hyperlatex.
+%
+%  Revision 1.3  1999/03/22 21:59:03  tom
+%  updated DODS doc tools
+%
+%  Revision 1.2  1999/02/16 14:47:51  tom
+%  minor rework
+%
+%  Revision 1.1  1999/02/03 22:37:56  tom
+%  LaTeX template creation and book design revamp.
+%
+% \fi
+%
+% \MakeShortVerb\|
+%
+% \DoNotIndex{\@minipagetrue,\@tempswatrue,\\,\ ,\addtolength}
+% \DoNotIndex{\begin,\bgroup,\box,\def,\DisableCrossrefs}
+% \DoNotIndex{\do,\DocInput,\documentclass,\egroup,\EnableCrossrefs}
+% \DoNotIndex{\end,\endinput,\endverbatim,\fbox,\fi}
+% \DoNotIndex{\gdef,\global,\hbadness,\hbox,\hsize}
+% \DoNotIndex{\hskip,\lastbox,\let,\mbox,\newcommand}
+% \DoNotIndex{\newlength,\OldMakeindex,\OnlyDescription,\par,\parindent}
+% \DoNotIndex{\parsep,\RecordChanges,\setbox,\setcounter,\setlength}
+% \DoNotIndex{\stepcounter,\textit,\textrm,\the,\theCodeLineNo}
+% \DoNotIndex{\tt,\unhbox,\unskip,\vskip,\wd}
+%
+% \iffalse
+%    \begin{macrocode}
+%<*driver>
+\newcommand{\vc}{{\tt vcode}}
+\documentclass{ltxdoc}
+\EnableCrossrefs         
+ %\DisableCrossrefs % Say \DisableCrossrefs if index is ready
+\CodelineIndex
+\RecordChanges                  % Gather update information
+ %\OnlyDescription  % comment out for implementation details
+ %\OldMakeindex     % use if your MakeIndex is pre-v2.9
+\setlength\hfuzz{15pt}  % dont make so many
+\hbadness=7000          % over and under full box warnings
+\begin{document}
+   \DocInput{vcode.dtx}
+\end{document}
+%</driver>
+%    \end{macrocode}
+% \fi
+%
+% \GetFileInfo{vcode.sty}
+% \title{Controlling {\tt verbatim} Text}
+% \author{Tom Sgouros}
+% \maketitle
+%
+% \begin{abstract}
+%    This package creates a semblance of control over aspects of the
+%    |verbatim| environment, using some of the hooks of the alternate
+%    |verbatim.sty| package.
+% \end{abstract}
+%
+% \changes{1.0}{99/01/31}{Created}
+%
+%\catcode`\<=14
+%<+sty>\typeout{Style-option: `vcode' (George Ferguson & Tom Sgouros)}
+%<+sty>\NeedsTeXFormat{LaTeX2e}
+%<+sty>\ProvidesPackage{vcode}
+%<+sty>        [1999/01/31 v1.0
+%<+sty>   LaTeX2e package for source code%
+%<+sty>                   ]
+%<+sty>\@ifundefined{verbatim@processline}{\RequirePackage{verbatim}}{}
+%\catcode`\<=12
+%
+%
+% {\parskip 0pt \tableofcontents }
+%
+% \newcommand{\hlx}{Hyperlatex}
+% \newcommand{\latex}{\LaTeX}
+%
+% \section{Introduction}
+%    Using the simplest form of {\tt verbatim.sty} presents some
+%    problems in formatting example text.  There is little control over
+%    the placement of the examples (both horizontally and vertically),
+%    and often one wants control of the size of the text, to prevent
+%    lines from running over the right margin.  Line numbers are also
+%    nice.
+%
+%    None of these present a real problem, until you try to use
+%    whatever solution you find with one of the latex-to-html
+%    converters around.  Both latex2html and Hyperlatex choke on the
+%    simple solutions.  Here, then, is a package {\tt vcode.sty}
+%    designed for use with Hyperlatex that provides substantial control
+%    over the placement of the example text, and other features
+%    (including line numbering and controlled indentation).  There is a
+%    companion {\tt vcode.hlx} that works with Hyperlatex to create
+%    html versions of the LaTeX original.
+%
+%    Since HTML does not provide the same kind of formatting control
+%    as \latex , the \hlx\ version of this package ignores the formatting
+%    instructions used by \latex .  You can use a stylesheet to
+%    control the look of the {\tt vcode} examples, and the formatting
+%    argument is used as a class identifier in the <PRE> declaration.
+%
+%    The \hlx\ version of this class provides an optional argument to
+%    create a hyperlink from the displayed text.  This is ignored by
+%    the \latex\ version.
+%
+%    Note that since the package works by putting all the verbatim
+%    lines into a box, and then outputting the box all at once, it is
+%    not well-suited for long examples (more than one page). 
+%
+%    This package was originally {\tt code.sty}, written by George
+%    Ferguson in 1991, ``based on a suggestion by Bernd Raichle
+%    (raichle@azu.informatik.uni-stuttgart.de).''  It was debugged a
+%    little, and modified to add features and to work with the
+%    Hyperlatex package by Tom Sgouros in 1998 and 1999.
+%
+%    This package assumes the use of Rainer Sch\"opf's
+%    (SCHOEPF@SC.ZIB-Berlin.DE) verbatim style option. 
+%
+% \section{\tt vcode.sty}
+%
+%    The \vc\ environment formats the text between its beginning
+%    and end in verbatim mode. The box containing the code is only as
+%    wide as its longest line.
+%
+
+%    The \vc\ environments provides the following
+%    options\footnote{We use the LaTeX iteration macro |@tfor| to process
+%    arguments to the \vc\ environment.}:
+%
+%    \begin{description}
+%    \item[c] Center the block of code.
+%    \item[l] Make the block of code flush to the left margin.
+%    \item[r] Make the block of code flush to the right margin.
+%    \item[i] Indent the block of code (by |\vcodeindent|) from the left.
+%    \item[f] Draw a frame around the block of code.
+%    \item[t] Make the resulting box have its baseline at the top.
+%    \item[b] Make the resulting box have its baseline at the bottom.
+%    \item[s] Make the text a little smaller (|\small|).
+%    \item[x] Make the text even smaller (|\footnotesize|).
+%    \item[z] Make the text smaller still (not normally useful:
+%    |\scriptsize|). 
+%    \item[n] Add line numbers.
+%    \end{description}
+%
+%    Any combination and order of options is acceptable, but only the last
+%    of any conflicting options will have any effect.
+%    The default is to produce a flush-left, bottom-aligned block of
+%    code. (normal size, no indent)
+%
+%    The |\vcodeindent| length can be used to control the length of
+%    indentation: 
+%    \begin{macrocode}
+%<*sty>
+\newlength{\vcodeindent}
+\setlength{\vcodeindent}{\parindent}
+%</sty>
+%    \end{macrocode}
+%
+%    The |CodeLineNo| counter is used to generate the line numbers.
+%    The counter is zeroed when the environment is exited, so if it is
+%    reset between environments, the next line numbers will begin after
+%    incrementing the given line number.
+%
+%    \begin{macrocode}
+%<*sty>
+\newcounter{CodeLineNo}
+\newcount\vc@CodeLineFlag
+%</sty>
+%    \end{macrocode}
+%
+%    These are convenient lengths, and definitions of default
+%    positions.
+%
+%    \begin{macrocode}
+%<*sty>
+\newlength{\vc@indent}
+\newlength{\vc@testwidth}
+\newlength{\vc@adjustmargin}
+\def\vc@flushleft#1{\hskip 0pt minus\parindent \hbox{#1}\hfill}
+\def\vc@flushright#1{\hfill\hbox{#1}}
+\def\vc@centered#1{\ \hfill\hbox{#1}\hfill\ }
+\def\vc@indented#1{\hskip\vc@indent\hbox{#1}}
+\def\vc@noop#1{#1}
+%</sty>
+%    \end{macrocode}
+%
+%    This is the environment definition.  It redefines
+%    |\verbatim@processline| in accord with the |\verbatim| package
+%    instructions.  The optional argument is ignored completely in
+%    \latex .
+%
+%    \begin{macrocode}
+%<*sty>
+\newenvironment{vcode}[2][]{%
+%</sty>
+%    \end{macrocode}
+%
+%    Here we redefine the verbatim font.  Note that we elide a bit of
+%    trickery in the verbatim.sty file that allows you to print ?` and
+%    !` .  In this package, those combinations appear to print
+%    upside-down ? and ! .  For most purposes, this is an unlikely
+%    combination, so we suffer. 
+%
+%    \begin{macrocode}
+%<*sty>
+\gdef\verbatim@font{\tt}%
+\newcommand{\CodeFont}[1]{\textrm{\textit{\footnotesize ##1}}}%
+%</sty>
+%    \end{macrocode}
+%
+%    Now redefine `processline' to produce only a line as wide
+%    as the natural width of the line.  Notice that if the line is smaller
+%    than |\@totalleftmargin|, the line length is artifically increased to
+%    that length.  This is, it appears, something you have to do if you're 
+%    going to use |\par| to indicate the separation between lines.
+%
+%    \begin{macrocode}
+%<*sty>
+\def\verbatim@processline{%
+  \stepcounter{CodeLineNo}%
+  {\setbox1=\hbox{\ifnum\vc@CodeLineFlag=1 \CodeFont{%
+      \theCodeLineNo}\ \fi\the\verbatim@line}%
+   \hsize=\ifdim\wd1>\@totalleftmargin\wd1\else\@totalleftmargin\fi%
+   \hskip-\@totalleftmargin\unhbox1\par}}%
+%</sty>
+%    \end{macrocode}
+%
+%    These are the defaults: flush left, unboxed, no line numbers,
+%    bottom-aligned. 
+%    \begin{macrocode}
+%<*sty>
+  \global\let\vc@hadjust\vc@flushleft%
+  \global\let\vc@frame\mbox%
+  \global\let\vc@vadjust\vbox%
+%</sty>
+%    \end{macrocode}
+%
+%    If the typeset box is wider than the line width, some peculiar
+%    things happen to the vertical spacing.  We save that width here,
+%    to check it later and cheat a little.
+%
+%    \begin{macrocode}
+%<*sty>
+  \setlength{\vc@testwidth}{\linewidth}%
+%</sty>
+%    \end{macrocode}
+%
+%    Here we process the arguments to the environment.  Note that
+%    arguments can easily override one another.  The rightmost of any
+%    conflicting arguments wins.
+%
+%    \begin{macrocode}
+%<*sty>
+  \@tfor \vc@char :=#2\do%
+    {\if\vc@char c\global\let\vc@hadjust\vc@centered\fi%
+     \if\vc@char l\global\let\vc@hadjust\vc@flushleft\fi%
+     \if\vc@char r\global\let\vc@hadjust\vc@flushright\fi%
+     \if\vc@char i\global\let\vc@hadjust\vc@indented\fi%
+     \if\vc@char t\global\let\vc@vadjust\vtop\fi%
+     \if\vc@char b\global\let\vc@vadjust\vbox\fi%
+     \if\vc@char f\global\let\vc@frame\fbox\fi%
+     \if\vc@char s\gdef\verbatim@font{\small\tt}\fi%
+     \if\vc@char x\gdef\verbatim@font{\footnotesize\tt}\fi%
+     \if\vc@char z\gdef\verbatim@font{\scriptsize\tt}\fi%
+     \if\vc@char n\global\vc@CodeLineFlag=1\setcounter{CodeLineNo}{0}\fi%
+    }%
+%</sty>
+%    \end{macrocode}
+%
+%    Now save the verbatim code in a box.
+%
+%    \begin{macrocode}
+%<*sty>
+  \bgroup \setlength{\vc@indent}{\vcodeindent}%
+  \@minipagetrue \@tempswatrue%
+  \setbox0=\vc@vadjust \bgroup \verbatim}%
+%</sty>
+%    \end{macrocode}
+%
+%    Here's where the environment is wrapped up.  The cheating is done,
+%    and the box in which the verbatim text is saved is dumped.
+%
+%    \begin{macrocode}
+%<*sty>
+{%
+  \endverbatim%
+  \unskip\setbox0=\lastbox% get rid of the last (empty) box.
+  \egroup % close the box.
+%</sty>
+%    \end{macrocode}
+%
+%    If the box is too wide, we cheat and move up (|-2\parsep|) a tad.
+%    We also zero the line number counter here.
+%
+%    \begin{macrocode}
+%<*sty>
+  \ifx\vc@hadjust\vc@indented\addtolength{\vc@testwidth}{-\vc@indent}\fi%
+  \ifnum\wd0>\vc@testwidth\vskip-2\parsep\fi%
+  \vc@hadjust{\vc@frame{\box0}}%
+  \global\vc@CodeLineFlag=0%
+  \egroup%
+}
+%</sty>
+%    \end{macrocode}
+%
+% \section{\tt vcode.hlx}
+%
+%    This package is especially designed to work with Otfried Cheong's
+%    Hyperlatex package.  For generating html, it is only essential
+%    that the \vc\ text be put in between |<PRE>| tags.  The \vc\
+%    arguments may be discarded.
+%
+%    The \vc\ arguments are placed in a ``class'' declaration in the
+%    |<PRE>| tag declaration.  So some semblance of control can be
+%    exerted through cascading stylesheets.  The optional argument may
+%    contain a URL to link the \vc\ text to.  If the optional argument
+%    is a single period (|.|), the text of the \vc\ is used as the
+%    hyperlink.  Obviously, this is intended for displaying URLs.
+%    Note that \ltx\ chokes when you use brackets in an optional argument.  
+%    So don't do that.
+%
+%    Future enhancements might include parsing the line-number
+%    argument, and putting that into the html.  For now, however, this
+%    will do. 
+%
+%    The default case (with no optional argument) simply searches
+%    forward for the |\end{vcode}| declaration, and envelops the whole
+%    in the |<PRE>| tags.  The optional argument makes things a little
+%    more complex.  If the argument is specified, it is simply
+%    inserted into an |<A>| tag surrounding the text.  If the `.'
+%    option is used, the \vc\ text must be scanned and killed, and
+%    yanked into the |<A>| declaration, and then into the gulf between
+%    the |<PRE>| tags.
+%
+%    If the URL uses brackets, they may be escaped with a backslash.  
+%    Note that this relies on the argument not printing in \ltx .
+%
+%    \begin{macrocode}
+%<*hlx>
+\HlxEval{
+(put 'vcode         'hyperlatex 'hyperlatex-format-vcode)
+(put 'endvcode      'hyperlatex 'hyperlatex-end-vcode)
+
+(defun hyperlatex-format-vcode ()
+  (let* ((url  (hyperlatex-parse-optional-argument-brackets))
+	 (args (hyperlatex-parse-required-argument))
+	 (begin (point)))
+    (hyperlatex-blk)
+    (search-forward "\\end{vcode}")
+    (replace-match "")
+    (kill-region begin (point))
+    (if url
+	(hyperlatex-gen
+	 (format "a href=\"%s\" class=\"url\""
+		 (if (string= url ".")
+		     (substring (car kill-ring) 1 -1)
+		   (hyperlatex-format-vcode-brackets url)))))
+    (if args
+	(hyperlatex-gen (format "pre class=\"%s\"" args))
+      (hyperlatex-gen "pre"))
+    (insert (car kill-ring))
+    (hyperlatex-gen "/pre")
+    (if url (hyperlatex-gen "/a"))
+    (hyperlatex-pop-stacks)))
+
+(defun hyperlatex-format-vcode-brackets (url)
+  "LaTeX cannot use brackets smoothly in optional arguments (which are 
+  delimited with brackets).  Use `\[' and `\]' for brackets in the vcode
+  URL argument.  This only works because the vcode optional argument is 
+  discarded in LaTeX."
+  (cond ((string-match "\\\\\\[" url)
+	 (progn
+	   (hyperlatex-message url)
+	   (hyperlatex-format-vcode-brackets (replace-match "[" t t url))))
+	((string-match "\\\\\\]" url)
+	 (progn
+	   (hyperlatex-message url)
+	   (hyperlatex-format-vcode-brackets (replace-match "]" t t url))))
+	(t url)))
+
+(defun hyperlatex-parse-optional-argument-brackets ()
+  "Parses the argument enclosed in brackets after the commands.
+Deletes command and returns argument (nil if none)."
+  (goto-char hyperlatex-command-start)
+  (hyperlatex-delete-|)
+  (hyperlatex-delete-comment)
+  (if (= (following-char) ?\[ )
+      (progn
+	(goto-char (1+ (point)))
+	(while (not (and (= (following-char) ?\])
+			 (/= (preceding-char) ?\\))) 
+	  (if (= (following-char) ?\{)
+	      (forward-sexp 1)
+	    (goto-char (1+ (point)))))
+	(prog1
+	    (buffer-substring (1+ hyperlatex-command-start) (point))
+	  (delete-region hyperlatex-command-start (1+ (point)))))))
+
+(defun hyperlatex-end-vcode ()
+  (error "Nested vcode environments!"))
+
+}
+%</hlx>
+%    \end{macrocode}
+%
+%    There is a problem with using \hlx\ and docstrip, and that's the
+%    |\endinput| that goes at the end of the file...
+%
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\endinput}{}
+%</hlx>
+%    \end{macrocode}
+
+
+% \Finale \PrintIndex
+

@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:11 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- WWW-Authentication</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_30.html"><img alt="XDODS-Server" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_22.html"><img alt="Response Headers" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_28.html"><img alt="Server" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>WWW-Authentication</b></td></tr></table>
+<h3>WWW-Authentication</h3>
+The <tt>WWW-Authenticate</tt> header MUST be included in a message that has a
+response code of 401. That is, when the DAP server is asked to provide
+access to a resource that is restricted and the request does not include
+authentication information (see "HTTP Authentication: Basic and Digest
+Access Authentication"&nbsp;<a HREF="dap_43.html#rfc2617">[5]</a>). then it must return with a response
+code of 401 and include the <tt>WWW-Authenticate</tt> header. See RFC
+2616&nbsp;<a HREF="dap_43.html#rfc2616">[4]</a> for this header's grammar.
+<p>Example:
+<p><pre class="ct">
+WWW-Authenticate: Basic realm="special directory, with CGIs"
+</pre>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_30.html"><img alt="XDODS-Server" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_22.html"><img alt="Response Headers" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_28.html"><img alt="Server" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>WWW-Authentication</b></td></tr></table></body></html>

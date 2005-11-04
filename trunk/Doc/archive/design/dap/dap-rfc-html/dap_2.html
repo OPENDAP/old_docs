@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:09 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- Purpose</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_3.html"><img alt="Requirements" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_1.html"><img alt="Introduction" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_1.html"><img alt="Introduction" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Purpose</b></td></tr></table>
+<h2>Purpose</h2>
+<p>This specification defines the protocol reffered to as "DAP/2.0." 
+<p>The Data Access Protocol (DAP) is a presentation- and application-level protocol for
+distributed access to data organized as name-datatype-value tuples. The
+protocol has been used by Distributed Oceanographic Data System (DODS) since 1996. The first version of the
+protocol delt only with the three psuedo-objects the DAP uses to describe
+information sources. Version 2.0 added constraint expressions that provide a
+way to extract part of a data source. In addition, version 2.0 added services
+that integrate the DAP more with the rest of the The World Wide Web (WWW).
+<p>While the name-datatype-value model is a nearly universal <em>conceptual</em>
+organization of data, the actual organization takes nearly as many forms as
+there are individual collections. Information in a computer
+can often be broken down into a set of variables that have names, datatypes
+and values. For example, data from a satellite might be stored in a named
+array of bytes. However, there are many different file formats, APIs and
+file/directory organizations used to house data.
+<p>The DAP was designed to hide the implementation of different collections
+of data behind a simple language-like interface based on the
+name-datatype-value conceptual model. In practice this has worked well.
+However, as the number of different implementations of the DAP
+increases, it becomes more important that they all implement the same
+protocol. 
+<p>There are now several groups which have built servers
+  supporting the
+DAP. This document provides a concise description of the DAP to
+simplify this task and to ensure that all the servers implement the same
+protocol.
+<p>As people apply the protocol to a wider variety of data sources, it also
+becomes more likely that deficiencies in the protocol will appear. If the
+DAP is found to fall short in some way, it should be extended and once
+implemented, those extensions should be documented by amending this document
+and incrementing the protocol's version number.
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_3.html"><img alt="Requirements" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_1.html"><img alt="Introduction" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_1.html"><img alt="Introduction" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Purpose</b></td></tr></table></body></html>

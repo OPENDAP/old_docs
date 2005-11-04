@@ -1,0 +1,20 @@
+$Id$
+
+What's here
+
+Aggregation server docs: agg.tex, agg-html/
+
+Catalog server: catalog.tex, cat-html/
+
+Server installation guide: install.tex, install-html/
+
+FreeForm server and FreeForm API (from NGDC) docs:
+freeform/dff.tex, dff-html
+freeform/ff.tex, ff-html
+
+No idea, these don't seem to be used anymore:
+q.tex
+x.tex
+
+Makefile: Build the code, but you need to descend into freeform and run make,
+too. 

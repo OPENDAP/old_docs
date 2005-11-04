@@ -1,0 +1,111 @@
+$Id$
+
+Notes: 
+
+1) The rest of this document notwithstanding, make sure to copy the *.css
+files to <web site>/resources and the *.hlx files to <hyperlatex lib>.
+
+2) The 'ins' files are used to generate the stuff (sty, hlx, css, cls, ...)
+   files from the dtx file. Use 'latex <base>.ins' to generate. Use 'latex
+   <base>.dtx' to build documentation for the cls, et cetera.
+
+3) The Makefile mostly works.
+
+4) Use either the dods-paper or dods-book class, don't use dods-book2.
+
+07/02/04 jhrg
+
+5) If you're getting errors like "" Try this:
+
+      If all of these are correct and TeX still complains about not being
+      able to store the files it is possible that the file texmf.cnf
+      prohibits writing into the system trees. Look for the line with
+      openout_any; if it's value is 'p' (paranoid) change it to 'r'
+      (restricted).
+
+Or see http://www.tug.org/tex-archive/macros/latex/required/babel/install.txt
+
+10/13/05 jhrg
+
+---------------------------------------------------------------------------
+
+These LaTeX 2.09 style files are used by DODS but do not come with the
+standard distribution of LaTeX.
+
+margins.sty: Written at URI. Makes 1 inch margins (more or less).
+
+html.sty: Part of LaTeX2HTML. Special support for the LaTeX2HTML translator.
+
+code.sty: From CTAN. For Source code.  Don't use.  Use vcode.sty instead.
+
+psfig.sty: From CTAN. For including postscript figures. Works well with
+	   LaTeX2HTML. 
+
+
+These style files were written to support the DODS documentation:
+
+
+dods-book.dtx -- DODS documentation tools, with accompanying usage
+     instructions, including a small number of style issues.  These
+     are meant to work as a LaTeX class, and to produce html with the
+     Hyperlatex package.
+     
+dods-book.ins -- unpacking instructions for the DODS doc tools,
+     including vcode.sty and marginparpatch.sty.
+
+dods-book2 -- *Use dods-book instead 07/02/04 jhrg* There is a dods-book2
+     class, essentially the same as dods-book, but produces slightly livelier
+     HTML documentation. Use this for informal short guides.
+
+dods-paper -- This class is for short DODS papers.  If dods-book is a
+     substitute for the LaTeX book class, this is a substitute for the
+     article class.
+
+proto.sty -- This is a package meant to work with the doc++ package.
+     It replaces the doc++.sty that comes with that package, and fixes
+     some formatting problems with that file.  DODS uses a slightly
+     hacked version of the doc++ package (does a nicer job with the
+     prototype displays, compiles with gcc 2.8.1, creates a chapter
+     instead of a free-standing document, other fixes).  We don't use
+     doc++ any more, so you can safely ignore this. 
+
+vcode.dtx -- Creates verbatim output, but with better formatting
+     control (indentation, vertical alignment, font size, box around
+     the output) There is also a vcode.ins to unpack this package.
+
+mparhack.dtx -- Partially fixes a LaTeX bug for marginpars.  (That is,
+     it is a complete fix, but only for single-column documents.)
+     There is also a mparhack.ins for unpacking.
+
+
+
+HYPERLATEX
+
+Some instructions for hyperlatex.
+
+First, the hyperlatex class files must be generated from the dods
+source.  Try `make all', which should generate the hlx files (as well
+as the cls files you'll need to use regular LaTeX on the dods
+documents). 
+
+To make hyperlatex run, you must copy the .hlx files in this directory
+to the place where hyperlatex expects to find them.  Unfortunately,
+this is not consistent.  If you install hyperlatex from the hyperlatex
+distribution, the hlx file directory will probably be
+
+  /usr/local/lib/hyperlatex.  
+
+If you're getting this from a Debian distribution, look in
+
+  /usr/lib/hyperlatex.   
+
+There is a Makefile in this directory, and `make install' should
+deliver all the necessary hyperlatex files to the right directory, if
+you find the directory and edit the Makefile first.
+
+To reiterate, try this:
+
+  1. Find the hyperlatex directory.
+  2. Make sure that the Makefile here points to it.
+  3. `make all'
+  4. `make install'

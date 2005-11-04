@@ -1,0 +1,246 @@
+% Glossary for the DODS User Guide
+%
+% $Id$
+%
+% $Log: glossary.tex,v $
+% Revision 1.4  1999/02/04 17:42:13  tom
+% modified to use dods-book.cls and Hyperlatex
+%
+
+\chapter*{Glossary}
+\addcontentsline{toc}{chapter}{Glossary}
+
+\texorhtml
+{\newcommand{\glosshead}[1]{%
+  \vspace{8pt}\par\noindent\textbf{#1}\normalfont\vspace{2pt}}}%
+{\newcommand{\glosshead}[1]{\html{h4}#1\html{/h4}}}
+
+\glosshead{alias}
+
+A synonym.  DODS uses aliases in its attribute-naming scheme.  An
+attribute can have an alias, or second name, by which a user can
+identify it.  An alias can have aliases of its own, but at this point,
+it becomes difficult to keep track of what points to whom, and we do
+not recommend this.
+
+\glosshead{Application Program Interface (API)}
+
+An API is simply a collection of functions and data types a program
+uses to access some service. The data types and functions defined in
+\lit{stdio.h}, such as \lit{printf()}, \lit{fseek()}, \lit{FILE}, and
+\lit{fputc()}, constitute a commonly used API for C program I/O.  The
+advantage of an API is that it insulates the user from the
+implentation details of the program.
+
+\glosshead{Array}
+
+An array is an ordered set of variables. The members of a DODS array
+must all be of the same data type. Array members may be accessed with
+the \lit{[]} operator. That is, \lit{array[4]} specifies the fifth
+member of \lit{array}.  Note that the index of the first array member
+is zero. Arrays with multiple dimensions are defined as
+single-dimensional arrays of arrays. For example, a two-dimensional
+array is an array of arrays.
+
+\glosshead{attribute}
+
+A quality of a data variable.  This could be the method used to
+measure the variable's value, the name of the scientist who measured
+it, the color of the sky at the time, or whatever might be relevant.
+
+%\glosshead{Catalog Service}
+
+%The Catalog Service provides a user with a list of the data sets
+%served by a specific DODS server.
+
+\glosshead{Common Gateway Interface (CGI)}
+
+A CGI program is a program that is executed by a httpd server upon
+receiving an appropriately configured URL. The DODS server is a CGI
+program. CGI is an Internet standard.  DODS uses version 1.1.1 of the
+CGI standard.
+
+\glosshead{compound data type}
+
+A compound data type is one that is constructed from other data
+types. A compound type can be built from simple base types or from
+other compound data types. \class{Arrays}, \class{Lists},
+\class{Grids}, \class{Sequences}, and \class{Structures} are all
+compound types, because they are all defined as aggregates of other
+data types.
+
+\glosshead{constraint expression}
+
+A constraint expression is appended to a DODS URL to select data from
+the data set identified by the URL.
+
+\glosshead{constructor type}
+
+See \emph{Compound Data Type}
+
+
+\glosshead{container attribute}
+
+A container attribute contains other attributes.  The analogy is with
+a compound data variable, such as a \class{Sequence} or
+\class{Structure}, that contains other variables.
+
+\glosshead{daemon}
+
+A daemon is simply a process that runs unattended on a UNIX computer.
+An \lit{httpd} server is generally run as a daemon. It's not clear how
+the peculiar spelling came into use.
+
+\glosshead{Data Access Protocol (DAP)}
+
+The DAP is the method a DODS client uses to retrieve data from a DODS
+server.  The DAP consists of an {\em intermediate data
+  representation}, an {\em ancillary data format}, a {\em procedure}
+for requesting the data from a server, and an {\em API} with which to
+execute the protocol.
+
+\glosshead{Data Attribute Structure (DAS)}
+
+This is a DODS construct, showing a list of variables, and attributes
+associated with those variables, for a given data set. A variable's
+attributes may include such things as the instrument that recorded it,
+quality control information and so on.  The response to a \lit{\_das}
+request to a DODS server is a DAS.
+
+\glosshead{Data Description Structure (DDS)}
+
+This is a DODS construct, showing a textual representation of a data
+set's data model. The response to a {\tt \_dds} request to a DODS
+server is a DDS.
+
+\glosshead{data dictionary}
+
+This is a JGOFS construct. The JGOFS API uses data set names instead
+of file names to refer to data sets. The API uses the data dictionary
+to look up the data set names, where it finds the file names or URLs
+to which the name refers.
+
+\glosshead{data model}
+
+The data model of a particular data set can be defined as the set of
+relationships between the variables that make up that data set. The
+important thing to remember is that it is this relationship that
+provides meaning to each of the numbers recorded in that data set. For
+example, without the relationship of the adjacent location
+measurement, a temperature measurement is just a number with no
+meaning.
+
+\glosshead{dataset}
+
+A quantity of data, considered as a unit.  A dataset may occupy one
+computer file, or several.  A DODS dataset is a dataset that is served
+through a DODS server.
+
+\glosshead{DODS}
+
+Distributed Oceanographic Data System. They wrote a book about it 
+once.
+
+\glosshead{global attribute}
+
+A data attribute that applies to an entire dataset.
+
+\glosshead{Grid}
+
+The Grid data type consists of an array with named dimensions, and a
+one dimensional array corresponding to each dimension. It is used to
+define data grids with irregular spacing.
+
+\glosshead{GUI manager}
+
+The DODS core software can create a client-side sub-process with which
+to manage the user's screen display. Most clients adapted to using DODS
+will not be able to display intermediate results of a data query, nor will
+they be able to make sense of network error messages. The GUI manager
+creates a path whereby messages can travel from the DODS server to the
+DODS client core software to the user without returning to the client
+application. The DODS core software can also use the GUI manager by
+itself, without messages from the server.
+
+\glosshead{HTML}
+
+Hyper-text Markup Language. This is the text formatting language in
+which web pages are written.
+
+
+\glosshead{httpd}
+
+The httpd server is the web server. Web clients, such as browsers like
+Netscape or Mosaic, send messages to httpd servers on the machine
+identified in a URL. The return messages from these servers are the
+data that is displayed to the user.
+
+\glosshead{info service}
+
+The \lit{info} service provides information about the usage of a
+particular server.  This is meant to include such information as any
+functions defined by the server for use in constraint expressions,
+error messages, the revision of the server software, and a list of any
+data model translations defined for that server.
+
+\glosshead{lazy evaluation}
+
+A method of evaluating a logical expression where evaluation halts
+after further evaluation could produce no change in the result. For
+example, when evaluating a string of sub-expressions linked by a
+logical {\em AND}, a lazy evaluator would halt after the first false
+sub-expression, because evaluation of subsequent sub-expressions would
+not change the result.
+
+\glosshead{List}
+
+A List is an unordered list of variables. DODS list members must be of
+only one data type, but the type may be any of the base or constructor
+types.
+
+\glosshead{Sequence}
+
+A Sequence is a data type similar to a structure, but multi-valued. It
+is possible to think of a Sequence as an array of Structure values.
+Unlike an Array, however, only one value of the Sequence,
+corresponding to the Sequence state is available at any one time.
+
+\glosshead{state}
+
+See Sequence. A sequence can be thought of as a multi-values
+structure. Unlike an array, where all the variable's values are
+available at once, the values of a sequence's members are only
+available for the current state. When the state advances, new
+variables become available.
+
+\glosshead{stride}
+
+A stride value is used to select a hyperslab from an array. If \lit{d}
+is a 10 by 10 array, then \lit{d[0:2:9][0:2:9]} is a hyperslab
+consisting of every second point in both dimensions.
+
+\glosshead{Structure}
+
+The Structure data type is a set of variables, similar to a structure
+in the language.
+
+\glosshead{Uniform Resource Locator (URL)}
+
+A URL is a name that is unique across the Internet. It is analogous to
+a file name on a single machine in that it identifies some resource
+that might be data or a program.
+
+\glosshead{Usage Service}
+
+See info service.
+
+
+
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

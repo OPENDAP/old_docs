@@ -1,0 +1,118 @@
+
+Distributed Oceanographic Data Systems Workshop:
+
+     The following is a proposal for a set of documents that will be provided
+     at the workshop to the participants.  These documents are seen as
+     reference materials that will play an important role in helping us to
+     achieve the goals of the workshop.  There are two types of documents
+     that will be developed: Technical Documents and Overview Documents.
+     Each of the documents is presented below with the rational for its
+     development and the role that it will play at the meeting.
+
+Technical Documentation:
+ 
+  Strawman System Design with Requirements.
+
+      This document will serve as the impetus for the DODS requirements
+      document -- the primary product of this workshop. This document will
+      outline the different components of the system. In addition, it will
+      describe how these components relate to one set of requirements, and
+      how the requirements themselves are separated into three distinct 
+      categories (science, software, and system).
+
+      We will need to outline system components (client, server, network),
+      objects (communication, data, interface), total functionality and the
+      specific functionality of individual system components.  It will also
+      be useful to reference other network systems that may be employed to
+      perform or provide specific resources.
+
+      This document is not intended to be a detailed specification of the
+      infrastructure and design of the system but a generalized view of a
+      possible configuration and would serve as a point of departure for
+      discussions. 
+
+  Engineering Document.
+
+      This document outlines the systematic approach that will be used to
+      develop the system. It will draw heavily on existing software
+      engineering techniques and will provide a discrete view of
+      the different tasks required to develop the system. It will provide a
+      methodology for building a multi-component system where specific
+      components will be developed independently and at different times. The
+      software engineering documentation will provide a means for describing
+      all aspects of the systems development.
+
+      This document will also underscore the comprehensive approach that is
+      being taken in the development of DODS system; a fact which can only be
+      viewed in good light by funding agencies.
+
+  Timeline Document.
+
+      This document is intended to detail the project milestones.  It will
+      more than likely undergo revision as a result of the meeting, but it
+      would be important to have as a guide for the project at the meeting.
+      This document will integrate the Strawman Document within the software
+      engineering methodology.
+
+Informational Documents.
+
+  Participants System Abstracts.
+
+       Each participant will be asked to provide a 1-2 page abstract of their
+       current/proposed system and its resources.  The purpose of these
+       abstracts is to provide an overview of the expertise and perspectives
+       of the different participants without the need for formal
+       presentations at the meeting itself.  Access information, on-line
+       capabilities, data held, documentation, etc. will be included in the
+       abstracts. 
+
+       We will send to each participant an abstract layout that they must
+       use when submitting their system description. From this layout we
+       will produce a table listing the different types of data to which all
+       of these systems provide access. This table may be augmented with
+       data types we feel are highly desirable but which are not currently
+       accessible using the systems represented in the abstracts.
+
+  Systems and Protocol Overview.
+
+       A number of different client-server systems (JGOFS, EOSDIS, World Wide
+       Web (WWW)) and object protocols (DFONET, EOSDIS/IMS, JGOFS, WWW
+       Hypertext Transport Protocol (HTTP)) will be reviewed and an overview
+       of their commonalities and differences given.  This document would be
+       helpful in terms of giving structure to the discussions on
+       client-server systems and protocols and the different approaches that 
+       are currently being taken.  The document will serve to highlight the 
+       functionality and flexibility of the client-server model through 
+       concrete examples of implementations relevant to scientific data
+       systems. 
+
+       It will be useful to look at the systems and then view their
+       application level communication protocols so that people can get more
+       of a handle on how protocol differences translate to characteristics
+       of a system. We will also provide an overview of the architectures
+       that these systems embody as well as a table comparing their features.
+
+       When addressing WWW, I think the core topic becomes HTML (Hypertext
+       Markup Language). EOSDIS and JGOFS are conventional (?) client-server
+       systems while WWW is a hypertext system. One way to look at the
+       difference is that HTML is a kind of programming language. Documents
+       that use HTML become part of a large (and ``infinitely extensible'')
+       finite state machine with each hypertext reference representing one
+       transition of the machine. Conventional client-server systems 
+       can also be viewed as FSMs, but their protocol defines the number of
+       states of the total system.  
+
+       Interestingly, JGOFS is really halfway between EOSDIS (conventional 
+       client-server) and WWW (hypertext reference) since it allows individual
+       server sites to add to the set of methods (many-to-many). Once another
+       server knows that these methods exist, it can use then via the
+       protocol. In this sense, JGOFS protocol is also infinitely extensible,
+       but in a geometrically different way. Its methods can span many nodes,
+       but the data objects cannot (many-to-one). 
+
+  I see the development of these documents as a way of providing a structure
+  and point of departure for the discussions that will take place at the
+  meeting.  They will also provide a common reference for the participants,
+  who will have a rather wide ranging level of expertise but differing
+  amounts of overlapping knowledge.
+

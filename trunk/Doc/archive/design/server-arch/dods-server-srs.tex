@@ -1,0 +1,251 @@
+
+% IEEE 830-1998 SRS for the new DODS server.
+% 1/11/2000 jhrg
+%
+% $Id$
+
+\documentclass{article}
+
+\usepackage{changebar}
+\usepackage{acronym}
+\usepackage{gloss}
+\usepackage{xspace}
+\usepackage{epsfig}
+
+\newcommand{\na}{{\sc N/A}\xspace}
+
+% Note: to get the gloosary to work, run bibtex in the *.gls.aux file,
+% then latex registry, then bibtex *.gls, then latex. Also, make sure to set
+% your BST and BIBINPUTS environment variables so that the BST and BIB files
+% will be found.
+\makegloss
+
+% Change paragraph typesetting; eliminate indenting and add more space between
+% paragraphs. 2/15/2000 jhrg
+\setlength{\parindent}{0em}     % Amount of indentation
+\addtolength{\parskip}{1ex}     % Vertical separation
+
+\begin{document}
+
+\title{DODS Server SRS}
+\author{James Gallagher\thanks{The University of Rhode Island, jgallagher@gso.uri.edu}}
+\date{\today \\ $Revision$ }
+
+\bibliographystyle{plain}
+
+\maketitle
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Introdunction  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+\emph{[What is this document about, in very general terms.]}
+
+This document conforms to the IEEE~830-1998 \ac{SRS} recommended practice.
+Since the recommended practice covers a wide range of possible projects, some
+of the information in it is not appropriate for this part of \acs{DODS}.
+Where that is the case, or I think it is the case, I have marked the section
+N/A.
+
+\textbf{Bold face} type is used to indicate a word or phrase that may be
+found in the glossary.
+
+\emph{Emphasized} text contained in square brackets ([]) is used to indicate
+an editorial comment about the information that should be provided in a part
+of the \ac{SRS}.
+
+\subsection{Purpose}
+\emph{[Who is this document for?]}
+
+\subsection{Scope}
+\emph{[What part of the project does this SRS cover.]}
+
+\subsection{Overview}
+
+The remainder of this document is organized as follows:
+\begin{enumerate}
+\item Section~\ref{sec:overall} provides background for the specific
+requirements and relates those requirements to the rest of DODS.
+\item Section~\ref{sec:specific} lists the specific requirements for the
+  Cache.
+\item Following Section~\ref{sec:specific} are a list of acronyms and
+  abbreviations, a change log, a glossary and references.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%  Overall Description  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Overall Description}
+\label{sec:overall}
+
+\emph{[This section of the SRS should describe the general factors that
+  affect the product and its requirements. This section should not state
+  specific requirements. Instead, it provides a background for those
+  requirements, which should be defined in Section 3.]}
+
+\subsection{Product perspective}
+DODS servers are currently implemented using a separate CGI for each
+different type of data file or data source. If the server's
+architecture is changed so that all the various data sources and/or
+file types are accessed from the same CGI, the servers will be simpler
+to manage and the common services of the servers will be simpler. 
+
+\subsubsection{System interfaces}
+\na
+\subsubsection{User interfaces}
+\paragraph{URLs}
+The primary way users interact with DODS servers is though a
+URL. Every DODS dataset is is uniquely refered to by its URL, known as
+its \textbf{DODS URL}\onlygloss{dods-url}. Given a dataset contained
+in a file whose pathname is \texttt{$<htdocs>$/data/nc/fnoc1.nc},
+where \texttt{$<htdocs>$} is the document root directory of the host's
+web server, and the DODS server's CGI script is installed in
+\texttt{$<server root>$/cgi-bin/nph-dods}, the DODS URL for that
+dataset is \texttt{http://$<machine>$/cgi-bin/nph-dods/data/nc/fnoc1.nc}.
+
+In the current implementation of DODS servers, each different data
+source uses a separate dispatch CGI, however, there's no reason for
+this other than history. By changing the architecture of the servers
+so that they use a single dispatch, every DODS dataset on a given
+machine will have a common pathname from the protocol specification
+down to the file component. This change will simplify the directory
+service, making it much easier for users to navigate between datasets
+using a web browser.
+
+\paragraph{Coalesce the multiple components into one executable}
+Currently DODS servers are comprised of a dispatch script and a
+collection of separate executables, one for each possible server
+response. Each of the exectuables contains mostly DAP library code;
+only about 10\% of each executable is unique. If the functions of each
+of the programs are combined into a single program, the size and
+complexity of a DODS server will be reduced. 
+
+While it is possible to load \emph{all} of the possible format
+handlers into a single exectuable, the resulting program would be
+huge. In addition, providers server data in all of our supported
+formats. A compromise between combining all of the format handlers
+versus keeping the current separate architecture is to combine the
+three distinct handlers on a format by format basis. The executables
+common to all of the servers should be combined into a single
+executable as well.
+
+Using this architecture, a DODS server will consist of one dispatch
+program, one program to handle the responses common to all servers and
+one exectuable for each format to which the server provides access.
+
+Question: Can we use shared libraries and/or dynamic loadding on all
+of our supported platforms? If so, how about combining the dispatch
+with common response generation and loadding in the format handlers at
+run time? This would cut a DODS server down to a single fork/exec.
+
+\paragraph{The server configuration file}
+Instead of using a specific CGI dispatch for each format, the server
+should use a configuration file which maps regular expressions to
+formats. The server will use this to decide which handler ought to be
+used to process the dataset. 
+
+\paragraph{HTML Directory page for the server}
+Each server should have an HTML page that is stored in the $<htdocs>$
+directory and that lists each dataset, matching a title and URL. The
+intent of this HTML file is two-fold; to provide users with a simple
+interface to the datasets held by a particular machine and to provide
+web robots with a toe hold for the datasets. Commercial web robots
+will probably make scant use of this, but a specialized robot could
+use it to dig into the datasets and read variable names, types,
+attributes and possibly some data values (to compute ancillary data
+otherwise missing).
+
+\subsubsection{Hardware interfaces}
+\na
+\subsubsection{Software interfaces}
+CGI~1.1
+
+HTTP~1.1
+
+\subsubsection{Communications interfaces}
+\na
+\subsubsection{Memory}
+\na
+\subsubsection{Operations}
+\na
+\subsubsection{Site adaptation requirements}
+As new file types are added, the server configuration file will have
+to be edited. If the server maintainer forgets to do this, then the
+server will not work with those new file types. This could confuse
+users of the server as well as the dataset and server maintainers. To
+counter this, the server must send an error message to the HTTPd error
+log. Obviously, the message should be explicit enough so that the server
+maintainer will understand how to fix the problem.
+
+\subsection{Product functions}
+
+\subsection{User characteristics}
+
+\subsection{Constraints}
+\emph{[This section lists any other items that may limit the developer's
+  options.]}
+
+\subsubsection{Regulatory policies}
+\subsubsection{Hardware limitations}
+\subsubsection{Interfaces to other applications}
+\subsubsection{Parallel operations}
+\subsubsection{Audit functions}
+\subsubsection{Control functions}
+\subsubsection{Higher-order language requirements}
+\subsubsection{Signal handshake protocols}
+\subsubsection{Reliability requirements}
+\subsubsection{Criticality of the application}
+\subsubsection{Safety and security considerations}
+
+\subsection{Assumptions and dependencies}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%  Specific Requirements %%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Specific Requirements}
+\label{sec:specific}
+\emph{[This section of the \ac{SRS} lists all of the software requirements to
+  a level of detail sufficient to enable designers to design a system to
+  satisfy those requirements, and testers to test that the systems satisfies
+  those requirements. Each separate requirment should be uniquely numbered.]}
+
+\subsection{External interfaces}
+
+\subsubsection{User interfaces}
+\subsubsection{Hardware interfaces}
+\subsubsection{Software interfaces}
+\subsubsection{Communications interfaces}
+
+\subsection{System features}
+\subsection{Performance requirements}
+\subsection{Design constraints}
+\subsection{Software system attributes}
+\subsection{Other requirements}
+
+\appendix
+
+\section{Acronyms and Abbreviations}
+\begin{acronym}
+\input{../../boiler/acronyms.tex}
+\end{acronym}
+
+\section{Change log}
+
+\begin{verbatim}
+$Log: dods-server-srs.tex,v $
+Revision 1.3  2000/07/21 15:21:42  jimg
+*** empty log message ***
+
+Revision 1.2  2000/07/20 21:35:58  jimg
+Minor changes
+
+Revision 1.1  2000/07/17 05:54:59  jimg
+Added
+
+\end{verbatim}
+
+\printgloss{dods-glossary}
+
+\raggedright
+
+\bibliography{dods}
+
+\end{document}

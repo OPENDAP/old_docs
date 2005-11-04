@@ -1,0 +1,341 @@
+
+% This document describes how source code distributions will be
+% made within DODS. By documenting this procedure we hope that others
+% that contribute to DODS will find it simpler to do so in a way that
+% 'gels' with the rest of DODS.
+%       
+% jhrg 4/28/95
+
+% $Id$
+
+\documentstyle[12pt,html,psfig,margins]{article}
+
+\input{../boiler/html-refs}
+
+\begin{document}
+
+\title{Producing Software Distributions for DODS}
+\author{}
+\date{\today}
+
+\maketitle
+
+\begin{abstract}
+ 
+  This document describes the parts of a software `distribution' within DODS
+  and provides information on using various freeware tools to help produce
+  them. By documenting these parts and suggesting how they might be made we
+  hope to unify the DODS software developed at URI with DODS software
+  developed at other places so that all DODS software distributions will work
+  well together. There are five parts to a DODS software distribution: The
+  source code, Pre-compiled binary versions for select computer/operating
+  system combinations, documentation, tests and a problem reporting
+  mechanism. Each of these parts of a distribution are discussed in this
+  paper.
+
+\end{abstract}
+
+\input{../boiler/warning}
+\input{../boiler/dev-manage}
+\begin{htmlonly}
+\pslink{file://dcz.gso.uri.edu/pub/DODS/distrib.ps}
+\end{htmlonly}
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\section{Introduction}
+\label{introduction}
+
+\section{Documentation}
+
+Each distribution of DODS software must have accompanying
+documentation which describes how the distribution fits in with the
+larger body of DODS software, how it is installed and how it is used.
+The description of the relation of a particular distribution to the
+rest of DODS and the information about installing the distribution
+should be in available in ASCII text. Conventionally, this type of
+documentation is stored in files named README and INSTALL; DODS
+distributions should use this convention.
+
+A single README and INSTALL file may suffice for an entire
+distribution. However, if a distribution is organized into several
+directories within the source code repository, then it might be
+clearer to provide documentation for each of those directories.
+
+The file `README' should contain information describing how the software in
+the particular distribution relates to the other software in DODS. The file
+`INSTALL' should contain information describing how to compile, link and
+install the software.
+
+Describing how a particular piece of software is used requires much
+more effort than the simple documentation provided by the README and
+INSTALL files. This type of documentation must address the use of
+software from a conceptual point of view. It is not sufficient to list
+command line options or GUI buttons and menus and explain what they
+do. Instead, user documentation must organize the use of a particular
+piece of software by tasks that the user is likely to want to do and
+then explain how to accomplish those tasks.
+
+It is best if user documentation is formatted using something more
+elaborate than ASCII text. In particular, it is important for user
+documentation to be available in hardcopy and on-line forms. At URI we
+use \LaTeX\ since it is straightforward to translate most documents
+into both PostScript and HTML. Thus, a single set of documentation
+sources can provide both hardcopy and on-line documents. User
+documentation should be distributed in both source form (whatever is
+necessary to make the document that the user reads) as well as
+something simple for most people to print such as
+PostScript\footnote{PostScript files produced on the Macintosh are
+notoriously hard for people with generic PS printers to print - avoid
+this if at all possible}.
+
+\subsection{Required Documentation}
+
+The minimum documentation for any distribution are the ASCII text
+files README and INSTALL; one each for the entire distribution.
+
+User documentation is not required for a distribution, but its absence
+will dramatically limit the usefulness of the software. This type of
+documentation is optional only because it is very time consuming to
+produce. By making it optional, software developers will hopefully be
+able to make DODS software available more quickly and can then
+subsequently update the distribution by adding documentation written
+during the beta test phase. 
+
+\section{Source Code}
+
+All DODS distributions must contain source code. That is, there are no
+binary-only distributions in DODS. This is important because DODS is a
+community effort and thus must be completely accessible to all users.
+
+The DODS software is divided into two parts. The first part is the
+core software which contains the toolkits used to build translators
+and servers for various data systems and the network I/O toolkit. The
+second part is a collection of rebuilt libraries and data servers for
+various data systems and APIs which are built using the core software.
+A user of DODS who wants to get the source code distribution should
+not have to get a different version of the core software for each API
+they want to use with DODS. Instead, the core software should be
+available separately from each of the specific API or data system
+implementations. 
+
+In order to manage building DODS source code on a number of platforms,
+the GNU autoconf system will be used. Each distribution should come
+with a single `configure' script which will correctly configure that
+distribution.
+
+Third party libraries should be provided as-is from the original
+source. DODS distributions should provide a version (whichever one the
+distribution used) as well as a pointer to the original source. Thus
+users may choose to get a newer version or use the exact version DODS
+uses. In some cases users may already have the third party software
+and the source code distributions should accommodate this as well.
+Third party libraries that are used by DODS should not become a part
+of the DODS distribution unless there is good reason to include them
+in the DODS source code. For example, much of the DODS core software
+uses libg++ --- the GNU C++ class library. The library itself is not
+part of the core distribution, however.
+
+In some cases it is simpler to include the source code to a particular
+library within DODS. For example, most of the WWW library is included
+in the DODS netio library. This was done to simplify building the DODS
+library because few systems already have the library and it is not
+widely used. On the other hand, most users of g++ (the GNU C++
+compiler) will already have libg++.
+
+\subsection{Source Code Requirements}
+
+All source code must be available.
+
+Third party software should be available, but as an extra item; users
+must be able to use their own copy or the original developers copy
+instead of the DODS-supplied version.
+
+Some third party code may be integrated into the DODS core software
+(but not the API or data systems software).
+
+\section{Binary Distributions}
+\label{binary-dist}
+
+All binaries (executables and libraries) built from source code must also be
+available for the {\em supported\/} platforms in binary form so that users of
+those platforms do not need to compile the source code. The binary
+distributions will mirror the source code distributions so that users can get
+one copy of the core software and then get copies of new client libraries and
+servers which make use of that core software. For example, if a users wants
+the DODS version of netCDF, they can get the DODS core software and DODS
+netCDF binary distributions. Later if that same user wants the DODS JGOFS
+software, they need only get the JGOFS specific distribution---the single
+copy of the core software initially obtained is sufficient.
+
+\subsection{Binary Distribution Requirements}
+
+DODS will support, according the the requirements contained in the \wrkshp\
+and suggestions from the DODS developer community, the following platforms:
+
+\begin{itemize}
+
+\item IBM RS600 running A/IX 
+\item Dec Alpha running OSF/1
+\item Dec Decstation running Ultrix 
+\item SGI running IRIX
+\item Sun SPARC running SunOS 4.1.x
+\item Sun SPARC running Solaris 2.x
+
+\end{itemize}
+
+While not part of the original requirements, support for the Sun SPARC running
+Solaris has been added at the suggestion of members of the DODS development
+community. In addition, given that DEC no longer supports Ultrix, support for
+that platform may be stopped.
+
+\section{Problem Reports}
+
+Each DODS distribution must have a mechanism in place to handle problem
+reports. It is not sufficient to rely on email alone for problem reporting.
+The developers at URI will need to manage reports of problems with several
+different distributions and do so in a way that reduces the chance that
+reported problems are never investigated. In addition, it is very likely that
+developers outside of those at URI will need to forward some problem reports
+they receive to URI.
+
+The DODS software developed at URI will use the GNU gnats (yes I know its a
+funny name \ldots) problem reporting system which maintains a simple database
+of problem reports and provides a form which users can fill out when
+submitting a report. The software uses email to actually send in the report;
+for a system which already requires the Internet, this is a very
+non-intrusive mechanism. Several of the GNU software distributions already
+use this mechanism, so users may already be familiar with it. In any case,
+few users should have trouble with gnats; it is far simple than the simplest
+email program.
+
+\section{Testing}
+
+Testing software is a hard job to do well. Tests are often as hard to write
+as the code begin tested (which makes it easy to question the validity of
+such an action in the first place) and determining which parts of a large
+piece of software are covered by a given set of tests is very hard to do by
+hand. 
+
+However, for a project like DODS which necessarily involves several different
+groups writing different components, it is imperative that software be
+distributed with tests which other developers can also run. DODS will use GNU
+DejaGNU to handle testing. When, for one reason or another, DejaGNU cannot
+(or has not) been used, other test software will be included with the
+component.
+
+A potential disadvantage of using DejaGNU is that a separate package is
+required to run the tests. This is in contrast to tests that are packaged in
+a single executable which is built solely for testing. However, the DejaGNU
+testing framework simplifies the construction of, and addition to, test
+suites to a degree that warrants its use.
+
+\subsection{Testing Requirements}
+
+Each DODS software distribution must come with tests which can be run by
+users. The tests can be either executable programs built specially for testing
+purposes or suites of tests within the GNU DejaGNU test framework.
+
+\section{Conclusion}
+
+For each piece of software distributed by DODS there are four identifiable
+components:
+
+\begin{itemize}
+
+\item Documentation
+\item Source code
+\item Binaries (ready-to-run software)
+\item Problem reporting scheme
+\item Tests
+
+\end{itemize}
+
+Because documentation is very hard to create, a DODS distribution can be
+released before the documentation is complete. However, to be useful to a
+most users each distribution must contain documentation.
+
+\appendix
+
+\section{Distribution Checklist}
+
+\begin{enumerate}
+
+\item Documentation
+
+  \begin{itemize}
+  \item README
+  \item INSTALL
+  \item NEWS
+  \item User documentation
+  \end{itemize}
+
+\item Source Code
+  
+  \begin{itemize}
+  \item configure.in
+  \item Makefile.in
+  \item configuration header
+  \end{itemize}
+
+\item Pre-Built Binary Software (see Section~\ref{binary-dist})
+
+\item Problem Reporting Software
+
+\item Tests
+
+\end{enumerate}
+
+\section{The GNU `Library' Copyright Notice}
+
+The following is a sample of the copyright notice that appears at the top of
+the DODS core software libraries. It references the GNU library copyright,
+which is included in the source code and binary directories. Software that is
+part of DODS does not have to be copyrighted this way (or any way), but using
+the GNU copyright saves developers the time and effort of writing one of
+their own as well as increasing the chances that the copyright will actually
+do what is intended. This boiler plate text is included as a suggestion, not
+a requirement.
+
+
+\begin{verbatim}
+//      The DODS Data Access Protocol (DAP) Library
+//      Copyright (C) 1994, 1995 The University of Rhode Island, Graduate
+//      School of Oceanography and The Massachusetts Institute of Technology
+//     
+//      This library is free software; you can redistribute it and/or
+//      modify it under the terms of the GNU Library General Public
+//      License as published by the Free Software Foundation; either
+//      version 2 of the License, or (at your option) any later version.
+//     
+//      This library is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//      Library General Public License for more details.
+//     
+//      You should have received a copy of the GNU Library General Public
+//      License along with this library; if not, write to the
+//      Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
+//      MA 02139, USA.
+//
+//      Authors: James Gallagher (jimg@dcz.gso.uri.edu), 
+//               Dan Holloway (dan@hollywood.gso.uri.edu), 
+//               Reza Nekovei (reza@hadaf.gso.uri.edu)
+//
+//               The University of Rhode Island
+//               South Ferry Rd.
+//               Narragansett, RI. 02882
+//               U.S.A.
+//
+//               Glenn Flierl (glenn@lake.mit.edu)
+//
+//               The Massachusetts Institute of Technology
+//               Cambride, MA. 02139
+//               U.S.A.
+\end{verbatim}
+
+\end{document}

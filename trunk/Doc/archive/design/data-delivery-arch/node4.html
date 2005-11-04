@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Application Programming Interface--API</TITLE>
+<META NAME="description" CONTENT="Application Programming Interface--API">
+<META NAME="keywords" CONTENT="data-delivery-arch">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-arch.css">
+
+<LINK REL="next" HREF="node5.html">
+<LINK REL="previous" HREF="node3.html">
+<LINK REL="up" HREF="node3.html">
+<LINK REL="next" HREF="node5.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html114"
+  HREF="node5.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html110"
+  HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html104"
+  HREF="node3.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html112"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html115"
+  HREF="node5.html">Remote Procedure Call RPC</A>
+<B> Up:</B> <A NAME="tex2html111"
+  HREF="node3.html">Important Terms and Technologies</A>
+<B> Previous:</B> <A NAME="tex2html105"
+  HREF="node3.html">Important Terms and Technologies</A>
+ &nbsp; <B>  <A NAME="tex2html113"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00031000000000000000">
+Application Programming Interface--API</A>
+</H2>
+
+<P>
+An application program interface (API) is a formal method of access to a
+computational resource such as a disk file, set of disk files or a device
+such as the display screen.
+
+<P>
+The DODS data delivery architecture addresses access to data stored on-line
+on computer systems. In this paper we assume that an API is used to access
+data stored on a random access storage device such as a disk drive.  However,
+it may be the case that some data are not actually accessed via disk files
+but through a more complex mechanism such as specialized database hardware
+systems. None-the-less, the architecture of the data delivery design is still
+based on the <EM>concept</EM> of access to data through an API, stored in disk
+files.
+
+<P>
+A specific API implementation consists of a set of operations used to access
+an instance of a well defined resource.  The set of operations are typically
+functions such as open, read, etc., that the system uses to provide access to
+the resource.  API operations are made available to the application program
+usually as function calls in a software library. Figure&nbsp;<A HREF="#fig:stand-alone"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>
+shows a user program linked with an API that is used to access some data.
+
+<P>
+As is shown in Figure&nbsp;<A HREF="#fig:stand-alone"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>, an API consists of an external
+interface and some internal implementation. The external interface is used by
+the application program. This external interface is assumed to be very
+constant throughout the life of the API. User programs can expect that future
+implementations of the API may improve performance or provide additional
+features, but will still present the original set of function calls, possibly
+with some additions over time.
+
+<P>
+By basing data access on existing APIs, DODS is reusing software
+systems for which stability and longevity were principle design goals.
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:stand-alone"></A><A NAME="443"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+Architecture of a Simple User Program--An API is Used to Access
+  Data in a Disk File.</CAPTION>
+<TR><TD><IMG
+ WIDTH="169" HEIGHT="14" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=stand-alone3.ps,width=4.5in}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html114"
+  HREF="node5.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html110"
+  HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html104"
+  HREF="node3.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html112"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html115"
+  HREF="node5.html">Remote Procedure Call RPC</A>
+<B> Up:</B> <A NAME="tex2html111"
+  HREF="node3.html">Important Terms and Technologies</A>
+<B> Previous:</B> <A NAME="tex2html105"
+  HREF="node3.html">Important Terms and Technologies</A>
+ &nbsp; <B>  <A NAME="tex2html113"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

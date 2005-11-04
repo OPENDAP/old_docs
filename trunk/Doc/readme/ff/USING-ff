@@ -1,0 +1,129 @@
+
+$Id$
+
+This is a brief `how-to' guide for users who don't want to read the more
+detailed user's guide. The User's Guide is online at
+http://unidata.ucar.edu/packages/dods/ (a postscript file is also available
+for those that want to print out a copy). Note that in addition to t he
+general user's guide, there is a manual specifically for the FreeForm server
+which contains lots of information about setting up the FreeForm server.
+
+SETTING UP A DATA SERVER
+
+Note: this discussion assumes that NCSA World Wide Web server (httpd) is
+installed on the workstation which is to be used to serve data. You do not
+need to use this particular web server, any server that supports CGI 1.1
+(Netscape, Apache, CERN, ...) will work. If you do not have a web server
+installed, first install one and then continue installing the DODS server.
+For information on various servers, see: 
+
+NCSA		http://hoohoo.ncsa.uiuc.edu/
+Apache		http://www.apache.org/
+CERN/W3C	http://www.w3c.org/
+
+To set up a DODS data server using the FreeForm server implementation, first
+follow the instructions in the INSTALL document. Four programs comprise the
+data server: a CGI (nph-ff) which is used to dispatch each data request to the
+correct filter program and three filter programs (ff_das, ff_dds,
+ff_dods). Make sure that the CGI module `nph-ff' is somewhere where the http
+server can run CGI modules. 
+
+Files that are to be served by the DODS server must either be within the http
+server's document root directory or they must be in files/directories that
+are linked to files/directories within the document root directory. To find
+out which directory is the http server's document root, look in the httpd
+configuration file srm.conf.
+
+For example, to make the file test0.dat available to users, both the data
+file and its format description file must be either placed or linked within 
+the document root directory. On my workstation the document root directory is 
+/usr/local/spool/http so the file must be moved or copied to that directory 
+or one of its subdirectories or I must create a symbolic link in that
+directory or one of its subdirectories to the files. I have created a
+directory `data' in the http server's document root directory and copied 
+the file test0.dat and test0.fmt there. The URL to that data file is:
+
+	  http://dods.gso.uri.edu/cgi-bin/nph-ff/data/test0.dat
+
+Note that after the machine name (dods.gso.uri.edu) the URL contains the path
+to the DODS data server CGI and that the path to the data (relative to the
+document root directory) *follows* the CGI name.
+
+Also note that to limit access to the server to a specific set of machines,
+place the CGI within the document root directory (this works for NCSA version
+1.5 and later and also for Apache 1.1.1 and later). See the file SECURITY for
+a detailed description of the types of security DODS provides for data and
+how to install servers to take advantage of those features.
+
+Finally, any additional information about the data file can be placed in the
+ancillary attribute (<file_name>.das) file. The ancillary attribute file
+provides a way to augment the attribute information provided by the DODS
+server without actually modifying the dataset itself.
+
+WRITING FORMAT DESCRIPTION FILES
+
+Any data file served by ff-dods must be accompanied by a format description
+file (<file_name>.fmt). The format description file defines the formats of
+headers and data in the data file. The ff-dods server uses the FreeForm easy-
+to-use data describing mechanism. The following shows a few examples of data
+description files and their translation into dods data structure, for more
+information about format descriptions, please see the DODS-FreeFrom's user
+guide.
+
+1) Format to read a dBASE sequence file 
+   
+       dbase_input_data "ISEE3_data"
+       t 1 15 double 6
+       Bx 16 30 double 6
+       By 31 45 double 6
+       Bz 46 60 double 6
+       Bx2 61 75 double 6
+
+   The above format file will map into the following DODS Data Structure:
+
+     Dataset {
+       Sequence {
+        Float64 t;
+        Float64 Bx;
+        Float64 By;
+        Float64 Bz;
+        Float64 Bx2;
+       } ISEE3_data;
+     } test5;
+
+
+2) Format to read a binary array file
+
+   binary_input_data "array_in"
+   x 1 4 ARRAY["lat" 1 to 10]["lon" 1 to 10] of int32 0
+   y 5 12 ARRAY["records" 1 to 10] of float64 15
+
+   The above format file will map into the following DODS Data Structure:
+
+   Dataset {
+      Int32 x[lat = 10][lon = 10];
+      Float64 y[records = 10];
+   } test3;
+
+
+3) Format to read an ASCII sequence with a file header
+
+      ASCII_file_header "header"
+      count 1 2 short 0
+      description 4 24 char 0
+
+      ASCII_input_data "data"
+      value 1 2 short 0
+
+   The above format file will map into the following DODS Data Structure:
+
+       Dataset {
+	  Sequence {
+	  Int32 value;
+	  } data;
+	} test0;
+
+For more examples see the test files in the ff-test subdirectory.         
+
+Good Luck :-)
+Reza Nekovei

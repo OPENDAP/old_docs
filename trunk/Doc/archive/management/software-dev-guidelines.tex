@@ -1,0 +1,190 @@
+
+% This document describes what software will be used to build DODS and why.
+% It also should lay out basic guidelins for software development.
+%
+% 3/25/94 jhrg
+%
+% $Id$
+
+\documentstyle[12pt,psfig,html,margins]{article}
+
+\input{../html-refs}
+
+\begin{document}
+
+\title{DODS---Software Development Guidelines}
+\author{}
+\date{\today}
+
+\maketitle
+
+\begin{abstract}
+Work in progress.
+\end{abstract}
+
+\input{../warning.tex}
+\input{../dev-manage}
+
+\tableofcontents
+
+\newpage
+
+\section{Implementation}
+
+Each of the institutions which participate in this effort will develop
+servers using a similar implementation plan. The first year of work will
+focus on the development of the data servers and software tools that can be
+used to build additional servers. While each of the servers developed during
+this phase of the DODS effort are intended to provide access to a data set
+that is of great importance to the oceanographic community, a second goal of
+equal importance is the development of high quality software tools that will
+ease server development in the future. Each of the servers developed during
+year one should be written so that they are an example of applying the
+DODS concept of distributed data to a particular type of data archive. Others
+who have data to contribute, but who do not have the resources to build data
+servers from scratch, should be able to use the products from year one to
+significantly ease the burden of full participation in DODS.
+
+\subsection{Coordination with DODS}
+
+Coordination of the separate development groups has two goals: maximizing
+each group's leverage of the other's efforts and to impose as little as
+possible on the normal work patterns of each group. Because of the
+geographical dispersion of the four groups, formal meetings will be kept to
+an absolute minimum. However, some form of organized communication is
+necessary.
+
+Currently, DODS developers at MIT and URI have used both in-person meetings
+and the Internet to coordinate their efforts. In-person meetings are most
+useful to discuss complex highlevel design issues. The distribution of
+documentation and software has been entirely coordinated using a central,
+publically accessible, ftp archive, on-line documentation (accessible via
+NCSA Mosaic), and mailing lists.
+
+We envision that networked workstations which support email (for both
+person-to-person and mailing lists), NCSA Mosaic (for documentation access)
+and anonymous ftp (for access to software) will be sufficient for most of the
+communication needs of the year one effort.  It is anticipated though
+that the members would get together for a formal meeting once a year
+in coordination with the DODS Workshops.  This would allow the data
+servers developers to be involved with the DODS development efforts
+and provide an opportunity for focused work as a group. 
+
+\subsection{Data Server Development}
+
+\begin{description}
+
+\item{Design}
+
+  Because of the DODS `loose collaboration' working model, there are no
+  guidelines for design processes. The effort underway at MIT and URI follows
+  a spiral development processes in which pieces are designed, developed and
+  tested one after the other, with some overlap. However a site chooses to
+  develop software, it is important that the designs be made available as
+  soon as possible. Documentation should be accessible as HTML (for network
+  access via NCSA Mosaic) and postscript (for hardcopy).
+
+  The design paradigm for data servers is discussed at some length in
+  \ddd_html.  Each server is built using an existing data model/format API
+  and Sun Microsystem's RPC version 4.0. For every entry point in the target
+  API, a RPC client and server stub is defined. The programmer then
+  implements these stubs so that they correctly marshal and unmarshal each of
+  the API's entry point's arguments and results. The goal is to produce a new
+  library with exactly the same entry points as the API, but which makes a
+  remote procedure call to the matched server so that remote data can be
+  accessed.  This new library (called a `client library') should emulate the
+  original API so that programs which were written without any knowledge of
+  DODS can link with the library and access remote data.
+
+\item{Code Development}
+
+  General guidelines for the DODS software development effort are available
+  in \wrkshp_html. Programs developed for DODS will be distributed
+  as binary images for a selected set of architectures\footnote{Sun Sparc
+    (SunOS 4.1.3 \& Solaris 5.x), Dec Alpha OSF-1.x, \dots} and thus {\em
+    must\/} compile correctly on those computers. In addition, all software
+  will be available in source code form. Both the binary and source code
+  forms of DODS software will be available on the DODS anonymous ftp archive.
+  Since both source and binary forms are available, the source code is not
+  required to be the most general possible. However, every effort should be
+  made to reduce or remove artificial barriers to building the source code.
+  This includes a prohibition against source code that can only be compiled
+  using commercially available development tools (i.e., users must be able to
+  compile source code using freely available tools).
+
+\item{Testing}
+
+  Programs that are part of the DODS effort must be thoroughly tested at the
+  site where they are written. Developers should expect that the only testing
+  their code receives is the testing they do themselves.  Each program and
+  each relevant source file that makes up a program must include code that
+  will test the associated program of module. It is especially important that
+  these tests be included in the source distributions so that researchers who
+  use DODS know what has and has not been tested. In addition, bundling test
+  code permits others to find and fix `testing bugs'.
+
+\end{description}
+
+General documentation plan.
+     Each major component has an architecture, design and implmentation doc
+     Each piece of software has documentation that explains testing,
+     installation and use
+
+Document the process of building source code:
+     Use of make
+     Use of autoconf, autoheader
+     Use of dejagnu
+     Use of gnats
+     Languages (C, C++, flex, bison)
+     Debugging tools (dbnew, dbmalloc, gdb, assert)
+
+Every directory that contains an implementation should:
+Each API client-lib and server should have a README that describes:
+     Which files from the original API implmentation are required
+     How to modify them to support LOCAL access
+     Tell how to run the tests
+
+A Makefile should include the following targets
+     Build (all, which includes the test code)
+     test
+     install
+     clean
+     depend
+     tar
+
+A Makefile should not have any absolute paths
+A Makefile should work on many platforms
+
+Use autoconf
+Use autoheader
+
+Coding standards:
+Code that uses malloc should support dbmalloc. e.g.:
+#ifdef DBMALLOC
+#include <stdlib.h>
+#include <dbmalloc.h>
+#endif
+
+#ifdef DBMALLOC
+static unsigned long  histid1, histid2, orig_size, current_size;
+#endif
+
+#ifdef DBMALLOC
+    static int flag = 0;
+
+    if (!flag) {
+        orig_size = malloc_inuse(&histid1);
+        flag = 1;
+    }
+#endif
+
+#ifdef DBMALLOC
+    current_size = malloc_inuse(&histid2);
+
+    if( current_size != orig_size )
+    {
+        malloc_list(2,histid1,histid2);
+    }
+#endif  
+
+\end{document}

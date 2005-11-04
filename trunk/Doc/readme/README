@@ -1,0 +1,67 @@
+
+$Id$
+
+See the file INSTALL for directions on building the DODS core software and
+the sample libraries and servers.
+
+DODS: The Distributed Oceanographic Data System. DODS is `middle-ware' that
+you can use to make your data available to other people over the Internet as
+well as read data others have made available. DODS works in two ways: It can
+be used to build client programs which function as standalone tools or which
+work in concert with one or more analysis packages (see geturl in the src/dap
+directory and loaddods in the src/writeval directory for examples of each of
+these types of clients). In addition, DODS clients can be made by replacing
+the API library used to read data files in your analysis package with a new
+version which reads data from a data server. On the data side, DODS builds
+servers using its core software (which takes care of the network transport
+tasks) and the original implementation of the API used to read the data.
+
+The transport software that is part of DODS is designed to translate data
+access so that users don't need to know how the remote data are stored.
+
+See the file USING for information on actually using DODS to make data
+available to others on the Internet and for directions for relinking your
+existing data analysis programs so that they can read remote as well as local
+data files.
+
+This is the top-level of the DODS file hierarchy; it contains the following
+directories:
+
+	packages: This directory holds various third-party software packages
+	     DODS. At the present time only packages used by the core
+	     software are contained in this directory. 
+
+	bin: Empty until some of the DODS software is built. Use this as a
+	     place to store binaries of data analysis programs you have
+	     re-linked with the DODS libraries.
+
+	doc: This directory contains documentation on various aspects of
+	     DODS. In additional to user documentation, this directory also
+	     contains information about the design, implementation and
+	     management of DODS which might be useful to people who want to
+	     contribute software to DODS. In addition, there are several
+	     reports on DODS in this directory.
+
+	     Note: Documentation is available separately *and* on the web. We
+	     encourage you to use the web to get the docs since that makes
+	     keeping them up to date much simpler. Our home page is at:
+	     http://dods.gso.uri.edu/DODS. There you will find both HTML and
+	     Postscript copies of our documentation.
+
+	etc: This directory contains various support files used during the
+	     build of the DODS source code. It also contains templates for
+	     the autoconf configuration and make init files.
+
+	include: Header files defined by one of the DODS libraries and used
+		 by the others.
+
+	lib: Once built, the various libraries are put here. These libraries
+	     include both the DODS core software which is common to all the
+	     servers and reimplemented APIs and the two sample DODS-IZED APIs
+	     (netcdf and jgofs).
+
+	src: All the DODS source code live here. The directory dap contains
+	     the DODS core software. This library is used to build data
+	     servers and reimplementations of existing APIs.
+
+

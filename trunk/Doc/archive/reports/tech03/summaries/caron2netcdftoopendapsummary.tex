@@ -1,0 +1,57 @@
+John Caron talked about mapping the Java-\ac{NetCDF} \ac{API} to \ac{OPeNDAP} Datasets.
+He reviewed the Java-\ac{NetCDF} packages.  Then he reviewed the \ac{NetCDF}
+and \ac{OPeNDAP} 3.0 data models, with particular emphasis on the differing
+structural elements, and the application of attributes within the 
+models.  He compared \ac{OPeNDAP} and \ac{NetCDF} primitives, and \ac{OPeNDAP}
+types the \ac{NetCDF} Objects.  He described how structures are flattened,
+and then showed the relationship among the ``DODS-NetCDF'' objects in
+the extended \ac{NetCDF} \ac{API}.  He presented outstanding issues and possible
+solutions in 4 areas:
+
+\begin{enumerate}
+   \item  Strings vs char [n],
+   \item  Lack of globally scoped Dimension,
+   \item  Performance,
+   \item  No access to sequences through the standard \ac{API}.
+\end{enumerate}
+
+Subtle issues include:
+
+\begin{itemize}
+  \item  Mutability,
+  \item  State,
+  \item  Efficiency of an operation.
+\end{itemize}
+
+Conclusions:
+
+\begin{itemize}
+   \item Java-\ac{NetCDF} 2.1 ``extended \ac{API}'' has full access to \ac{OPeNDAP}
+         Data.
+   \item ``standard'' \ac{API} has access to everything except sequences,
+         but some efficiency may be lost.
+   \item The data model mismatch is relatively minor and may be
+         fixed in DAP 4.0.
+\end{itemize}
+
+Finally he gave his view of the \ac{NetCDF} ``convention factory''
+whereby a \ac{NetCDF} file is dumped in, and a standardized
+\ac{NetCDF} Dataset results from the application of the appropriate
+units for coordinate system identification and conversion, conforming
+to any of a number of specified ``standard'' conventions.
+
+% $Id$
+%
+% $Log: caron2netcdftoopendapsummary.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

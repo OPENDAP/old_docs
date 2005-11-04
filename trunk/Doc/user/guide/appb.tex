@@ -1,0 +1,119 @@
+%
+%  $Id$
+%
+
+\chapter{Software you will need for DODS}
+\label{req-software}
+
+
+To do anything with DODS, you'll need to be able to unpack the archive
+files you can download from the \opendap site.  To save space and
+transmission time, the archive files are compressed with the
+\lit{gzip} program.  You will have to have a copy of that program to
+unpack the \opendap software.
+
+Most of the software you need for \opendap is avaliable from the GNU
+archives.  Refer to \xlink{http://www.gnu.org}{http://www.gnu.org} for
+instructions.  Look at
+\xlink{http://www.gnu.org/order/ftp.html}{http://www.gnu.org/order/ftp.html}
+for a list of mirrors of that archive.  Use the mirror closest
+to you, the transmission will be faster.
+
+\begin{description}
+\item[gzip] This is the GNU compression and de-compression program.
+  You will need to install it before you can unpack any of the other
+  software described here.  This package is \emph{not}
+  available in the \opendap distribution, since it is used to unpack the
+  distribution archive files.
+\end{description}
+
+Follow the instructions to install each of the following software
+packages.  Typically, you would install a package called \lit{foo} as
+follows: 
+
+\begin{vcode}{ib}
+gzip -dc foo.tar.gz | tar xvf -
+cd foo
+./configure
+make
+make install
+\end{vcode}
+
+This is simply a guide, of course, and the installation instructions
+for each software package should be followed carefully.
+
+
+\section{Running an \opendap Server}
+
+If you use one of the platforms for which \opendap supplies a binary
+distribution, you only need the following software to run an \opendap
+server. 
+
+\begin{description}
+\item[Perl] Perl is used for the server dispatch script.  (See
+  \sectionref{opd-server,arch}.) This is the main CGI program
+  constituting the \opendap server.  You must have Perl version 5 or
+  later.  (Alternatively, you can also rewrite the dispatch script to
+  use another scripting language, such as your shell.  However, we
+  think installing Perl is generally a simpler task.)  You can get
+  Perl from the GNU archives, or from
+  \xlink{http://www.perl.com}{http://www.perl.com}.
+\end{description}
+
+\section{Running an \opendap Client}
+
+If you use one of the pre-compiled, out-of-the-box, \opendap clients, you
+will need no additional software to run \opendap.  However, you can use
+the ``GUI'' feature of the \opendap client\footnote{This is not to be
+  confused with the \opendap Matlab or IDL GUIs, which are clients of
+  their own.  This is simply a client feature that can display
+  transmission and error information to the user.} by installing the
+following software.  We recommend this, as it provides useful
+information about the progress of data transmission or error conditions.
+
+\begin{description}
+\item[Tcl/Tk] The Tcl language and Tk libraries are available from
+  \xlink{http://www.scriptics.com}{http://www.scriptics.com}. You
+  should install the entire package, including the \lit{wish}
+  interpreter program\footnote{You can also use a safe Tcl
+    interpreter.  Refer to the Tcl documentation for information.} and
+  the \lit{expect} package.  The \lit{wish} interpreter is
+  part of the Tcl/Tk core distribution package.  This package is also
+  available in the \opendap distribution, but the one available from the
+  Tcl site may be more current.
+\end{description}
+
+\section{Building DODS}
+
+If you need to build the \opendap software, or link it to existing
+libraries, you will need the following GNU software.
+Refer to \xlink{http://www.gnu.org}{http://www.gnu.org} for
+instructions.  Look at
+\xlink{http://www.gnu.org/order/ftp.html}{http://www.gnu.org/order/ftp.html}
+for a list of mirrors of that archive.  Use the mirror closest
+to you, the transmission will be faster.
+
+\begin{description}
+\item[GNU \Cpp\ Compiler] \opendap needs \lit{g++}, the GNU \Cpp\ compiler
+  to compile.
+\item[binutils] The GNU linker is part of this package.
+\item[libstdc++] The standard \Cpp\ library.\indc{libstdc++}\indc{stdc++}
+\item[GNU Make] GNU Make is not essential, but will make like easier.
+\item[flex] The GNU lexical-analyzer generator
+\item[bison] The GNU parser generator.
+\end{description}
+
+%
+%  $Log: appb.tex,v $
+%  Revision 1.3  2004/08/24 22:51:32  jimg
+%  Fixed broken label/refs.
+%
+%  Revision 1.2  2003/09/04 19:42:06  tom
+%  DODS->OPeNDAP
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

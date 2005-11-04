@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>The Data Model</TITLE>
+<META NAME="description" CONTENT="The Data Model">
+<META NAME="keywords" CONTENT="api">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="api.css">
+
+<LINK REL="next" HREF="node11.html">
+<LINK REL="previous" HREF="node6.html">
+<LINK REL="up" HREF="node5.html">
+<LINK REL="next" HREF="node8.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html161"
+  HREF="node8.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html157"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html151"
+  HREF="node6.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html159"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html162"
+  HREF="node8.html">Base-Type Variables</A>
+<B> Up:</B> <A NAME="tex2html158"
+  HREF="node5.html">Design</A>
+<B> Previous:</B> <A NAME="tex2html152"
+  HREF="node6.html">Process and Module Configuration</A>
+ &nbsp; <B>  <A NAME="tex2html160"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00052000000000000000">
+The Data Model</A>
+</H2>
+
+<P>
+Data models provide a way to organize scientific data sets so that useful
+relationships between individual datum are evident. Many data models have
+been specifically designed to make using the data in a computer program
+simpler. Examples of computationally oriented data models for scientific data
+are hierarchical, sequential, and gridded data models. 
+
+<P>
+Data models are abstract, however, and to be used by a computer program they
+must first be implemented by a programmer. Often this implementation takes
+the form of an API--a library of functions which can read and write data
+using a data model or models as guidance. Thus every data access API can be
+viewed as implementing some data model, or in some cases several data models.
+
+<P>
+Because DODS needs to support several very different data models, it is
+important to design it around a core set of concepts that can be applied
+equally well to each of those data models. If that can be done, then
+translation between data represented in those different models may be
+possible.
+
+<P>
+Currently DODS supports two very different data access APIs: netCDF and
+JGOFS. The netCDF API is designed for access to gridded data, but has some
+limited capabilities to access sequence data (although not with all of its
+supported programming language interfaces). The JGOFS API provides access to
+relational or sequence data<A NAME="tex2html12"
+  HREF="footnode.html#foot857"><SUP>2</SUP></A>.
+Both APIs support access in several programming languages (at least C and
+Fortran) and both provide extensive support for limiting the amount of data
+retrieved.  For example a program accessing a gridded data set using netCDF
+can extract a subsampled portion or <EM>hyperslab</EM> of that data.  Likewise,
+the JGOFS API provides a powerful set of operators which can be used to
+specify which type of sequence elements to extract (e.g., only those
+corresponding to data captured between 12:01am and 11:59am) as well as
+masking certain parameters from the returned elements so that only those
+parameters needed by the program are returned.
+
+<P>
+The DODS DAP uses the concepts of variables and operators as the base for the
+data model. Within the data model, a data set consists of one or more
+variables where each variable is described formally by a number of
+attributes.  Variables associate names with each component of a data set, and
+those names are used to refer to the components of the data set. In addition
+to their different attributes, it is possible to operate on individual
+variables or named collections of variables. The principal operation is <EM>  access</EM>, although this can be modified in a number ways.
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html163"
+  HREF="node8.html">Base-Type Variables</A>
+<LI><A NAME="tex2html164"
+  HREF="node9.html">Type Constructor Variables</A>
+<LI><A NAME="tex2html165"
+  HREF="node10.html">Operators</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html161"
+  HREF="node8.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html157"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html151"
+  HREF="node6.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html159"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html162"
+  HREF="node8.html">Base-Type Variables</A>
+<B> Up:</B> <A NAME="tex2html158"
+  HREF="node5.html">Design</A>
+<B> Previous:</B> <A NAME="tex2html152"
+  HREF="node6.html">Process and Module Configuration</A>
+ &nbsp; <B>  <A NAME="tex2html160"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

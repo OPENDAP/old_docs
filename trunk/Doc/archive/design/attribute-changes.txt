@@ -1,0 +1,213 @@
+
+	$Id$
+
+This describes changes to the DAP attribute structure made for release 2.14
+
+The DAS is sometimes confusing because it sits along side of the DDS object
+but has no formal interaction with the DDS. You cannot include elements of
+the DAS in constraint expressions, for example. The operations permitted on
+the DAS are reading the object (nominally across the network via a URL),
+reading attribute containers, reading attribute name-value pairs and setting
+containers and attribute tuples.
+
+In most of the documentation for the DAS we talk about a variable's
+attributes and below I show things like `var1' in the examples. However,
+there is nothing in the DAS object that restricts the names of the containers
+in a DAS to be the names of variables in the dataset. It is merely convention
+that dictates that this should be (except for attribute containers used to
+store global attributes...).
+
+There are three new features to be added to the DAS: 1) Containers, 2) Aliases
+and 3) Global attributes.
+
+** Containers
+
+A container is a way to define a new lexical scope for a set of
+attributes. Within the attribute object (DAS) a container is analogous to
+one of our constructor types in the DDS object. Another way to think of
+an attribute container is that they are like classes in C++, Java, etc. 
+
+Until now the DAS object has had a `single level' for all `variables'. In
+effect each `variable' in the old DAS is what I'm now calling a `container'.
+The big difference is that in the old DAS a `variable' could only contain
+attribute name-value pairs. In the new (and, yes, improved) DAS, containers
+can have attribute name-value pairs *and* other containers. 
+
+Old DAS:
+	
+	Attributes {
+	    var1 {
+		<a bunch of attributes, but nothing else>
+	    }
+
+	    <a bunch of `vars'>
+	}
+
+New DAS:
+
+	Attributes {
+	    var1 {
+		<a bunch of attributes>
+	    }
+	    cont1 {
+		var1 {
+		    <a bunch of attributes, including other containers>
+		}
+		<a bunch of `vars'>
+	    }
+	    cont2 {
+		var1 {
+		    <a bunch of attributes, ...>
+		}
+		<a bunch of `vars'>
+	    }
+	}
+
+This will provide a way to encode attributes from HDF where structures in HDF
+have attributes and the variables within a structure also have attributes.
+The attributes in the `new DAS' are lexically scoped so `cont1.var1' is
+different than `cont2.var1' and `var1'.
+
+I have added to the the DAS and AttrTable interfaces. However, old code is
+still 100% compatible when accessing old style DAS objects.
+
+Proposed interface: using the DAS object you can refer to `cont1.var1' using
+that string `c o n t 1 . v a r 1' (so the old interface will still work. In
+addition, you can use new member functions in AttrTable to iterate over all
+the `vars' in `cont1', etc. See the class header for AttrTable.
+
+One way to read the two DAS objects above is to replace every occurrence of
+`var' with `cont'. In other words, in the old DAS the `variables' were in
+fact containers and I defined them to be only one level deep. In the New DAS
+the containers can hold not only attribute name-value pairs but other
+containers too. Sorry if the old hold-over notation is confusing.
+
+** Aliases
+
+Aliases define an equivalence between two attributes. I use the syntax `alias
+<name1> <name2>'.
+
+	Attributes {
+	    A {
+		Int32 smallest 10;
+		Alias minimum smallest;
+	    }
+
+	    B {
+		Byte tiny 1;
+		Alias minimum tiny;
+	    }
+
+	    Global {
+		float64 southern_most 5.87;
+		Alias minimum southern_most;
+	    }
+	}
+
+Each variable `A' and `B' has two attributes. For `A' the attribute
+`smallest' is `10'. The attribute `minimum' is aliased to smallest so its
+value is 10 also. Effectively, `A' has two attributes with both the same type
+and value. Note that `B' also has an aliased attribute `minimum' but its type
+and value are different. Each variable defines its own scope for attribute
+values.
+
+In addition it is possible to reference attributes from another container
+when creating an alias. To do this use the dot notation. E.G.:
+
+	Attributes {
+	    A {
+		Int32 smallest 10;
+		Alias minimum smallest;
+	    }
+
+	    B {
+		Byte tiny 1;
+		Alias minimum tiny;
+	    }
+
+	    Global {
+		Alias minimum B.tiny;
+		# you could also say `Alias minimum B.minimum'
+	    }
+	}
+
+Note that it is possible to alias aliases (although this will become very
+confusing!). 
+
+** Global attributes
+
+Global attributes - attributes that are not bound to a particular identifier
+in a dataset - are stored in one or more containers which have the name
+`Global' or a name matching the regular expression `..*_Global'. 
+
+This allows a dataset to support multiple views of the dataset's global
+attributes. For example a given dataset might have three global attribute
+containers; one named `Global' which contains the DODS standard names, one
+named SDTS_Global for SDTS names and one called NC_Global that contains
+information useful the netcdf client library.
+
+Here is an example (from the test suite):
+
+    Attributes {
+	Struct {
+	    Byte fields 2;
+	    var1 {
+		Int32 min 10;
+	    }
+	    var2 {
+		Float64 min 10.0;
+	    }
+	    var3 {
+		Float64 max 10.0;
+		var31 {
+		    Byte ten 10;
+		}
+	    }
+	    var2 {
+		Float64 avg 5.5;
+	    }
+
+	    Alias number var3.var31.ten;
+	}
+
+	Global {
+	    Alias minimum Struct.var2.min;
+	    Alias ten Struct.var3.var31.ten;
+	    Alias fields Struct.fields;
+	    Alias number ten;		# A alias to an alias
+	}
+    }
+
+Note that when read in the print representation of the DAS is:
+
+    Attributes {
+	Struct {
+	    Byte fields 2;
+	    var1 {
+		Int32 min 10;
+	    }
+	    var2 {
+		Float64 min 10.0;
+		Float64 avg 5.5;
+	    }
+	    var3 {
+		Float64 max 10.0;
+		var31 {
+		    Byte ten 10;
+		}
+	    }
+	    Byte number 10;
+	}
+	Global {
+	    Float64 minimum 10.0;
+	    Byte ten 10;
+	    Byte fields 2;
+	    Byte number 10;
+	}
+    }
+
+and that the keyword `Alias' appears nowhere - alias automatically
+dereference (feature or bug?).
+
+
+

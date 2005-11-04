@@ -1,0 +1,1907 @@
+\documentclass[12pt,titlepage]{dods-paper}
+\usepackage{acronym}
+
+% $Id$
+
+\W\newcommand{\vskip}{} % `\W' means `only-in-html'
+
+\newcommand{\htmlnote}[1]{\texorhtml{\footnote{#1}}{ (\xlink{#1}{#1})}}
+\newcommand{\Cpp}{\texorhtml{{\rm {\small C}\raise.5ex\hbox{\footnotesize ++}}}{C++}}
+\newcommand{\dap}{OPeNDAP$^2$}
+\newcommand{\thirdparty}{third--party}
+\newcommand{\thirdpartysite}{\thirdparty\ metadata site}
+\newcommand{\gdaac}{Goddard DAAC}
+\newcommand{\semanticuse}{{\it semantic use metadata}}
+\newcommand{\semanticsearch}{{\it semantic search metadata}}
+\newcommand{\Semanticuse}{{\it Semantic use metadata}}
+\newcommand{\Semanticsearch}{{\it Semantic search metadata}}
+
+\title{\acl{NVODS} \acs{NVODS} Status Report}
+\author{Peter Cornillon and Paul Hemenway}
+\date{24 February 2002}
+
+\begin{document}
+\maketitle
+
+\T\pagestyle{plain}
+\T\pagenumbering{roman}
+
+\pdflink{nv.pdf}
+
+\texorhtml{\tableofcontents\pagebreak\section*{Executive Summary}}%
+{\htmlmenu{2}\begin{center}\bf\Large Executive Summary\end{center}}
+
+This is a status report for the \acl{NVODS} project that includes an
+overview of the operation of the project.
+
+\ac{NVODS} is envisioned as \emph{a system that facilitates access to 
+oceanographic data and data products via the Internet} regardless 
+of:  data type, where the data are stored, the format in which they 
+are stored, the user's visualization package or the user's level 
+of expertise.
+
+\ac{NVODS} is to be a component of the \ac{GOOS}, but its use is
+expected to extend well beyond the \ac{GOOS} effort. It is to be a
+system that will evolve with the Internet, with computer hardware,
+with computer software and with the interests of its users.
+
+In order to satisfy this vision, the system must provide:
+
+\begin{enumerate}
+\item A mechanism for people with data (or data products) to serve
+  these data in a consistent form via the Internet without having to
+  reformat them;
+
+\item A data transport mechanism independent of platform, storage
+  format, or user application;
+  
+\item A set of client software applications including basic network
+  browsing tools from which the user may access any data or data
+  product in the system and with which the user may visualize the
+  data; and
+
+\item One or more data location sites which will allow the user to
+  discover in a simple and logical manner any datasets served via the
+  system containing data of interest to the user.
+\end{enumerate}
+
+\texorhtml{\begin{center}\rule{3in}{.005in}\end{center}}{\htmlrule}
+
+The \ac{NVODS} effort began with a year of intense planning.  The
+process consisted of regional workshops, a national meeting, a
+detailed analysis/synthesis by the \ac{NVODS} development team of the
+recommendations arising from the various meetings, development of a
+plan by the same group for the next two years of the \ac{NOPP}-funded
+effort and an \ac{ExCom} meeting in which this plan was finalized.
+This report summarizes each of the primary components of the planning
+effort and concludes with the plan endorsed by the \ac{NVODS}
+\ac{ExCom}.
+
+The \ac{NVODS} effort is based on the ongoing \ac{DODS} 
+project. The most important distinction between the \ac{DODS} project
+and \ac{NVODS} is that the \ac{DODS} focus is on the data access
+protocol, i.e., how data are moved around over the network, while \ac{NVODS}
+is envisioned as a more complete system consisting of the basic data
+access protocol, extensive population of the system with oceanographic 
+data, web-based and stand-alone user interfaces, data location sites, 
+intermediate processing sites and ancillary metadata sites. 
+
+The \ac{DODS} component of the system is well developed. Therefore the
+focus of the \ac{NVODS} effort over the next two years is on
+development of the remainder of the required services and on system
+population. At the end of the current \ac{NOPP} funding we would like
+to see:
+
+\begin{enumerate}
+\item A large and diverse group of users that depend on the system to
+  access ocean data for a wide variety of applications; and
+  
+\item Use of the underlying data access protocol in a suite of
+  regional, national, and international systems of analysis and
+  display which require real-time, near real-time, and/or analysis of
+  terabyte databases.
+\end{enumerate}
+
+During the first year planning effort, it became clear that the 
+community of users of ocean related data, the community that \ac{NVODS}
+must serve, is extremely broad, consisting of groups with very different
+data and data product needs and with very different visualization and
+analysis capabilities. Specifically, the \ac{NVODS} user community
+consists of:
+
+\begin{enumerate}
+\item The scientific community desiring access to the entire range of
+  data and data products (from low level data to high level data
+  products) via the entire range of data analysis tools (from low end
+  web browser interfaces to high end analysis packages);
+  
+\item Planners and managers with a need to access middle and high
+  level ocean data products also using a broad range of tools (from
+  low end web browser interfaces to high end \ac{GIS} packages); and
+  
+\item The lay public often interested in the highest level data
+  products accessed via middle to high end web browser interfaces.
+\end{enumerate}
+
+Given the extremely broad range of \ac{NVODS} user needs, it is clear
+that a centralized source of funding will not be adequate to build all
+of the tools required by all of the communities nor will it be
+adequate to fund the installation of data servers at all possible data
+provider sites. The planning effort therefore focused on developing a
+population strategy that will be ``self-seeding,'' on the development
+of an open source infrastructure to which others can add necessary
+software components, and on assembling --- with existing funding --- a
+community of software developers who will build some of the more basic
+user interfaces. With these elements in place we believe that the
+number of users will grow rapidly, as will the numbers of those
+providing their data via the system and those developing interfaces to
+the system.  This then defines the project strategy at the highest
+level.
+
+These high level goals will be met by:
+
+\begin{enumerate}
+\item Increasing user and potential user awareness and involvement
+  through committees, working groups, pilot projects and presentations
+  at national and international meetings; and
+  
+\item Developing the necessary technological infrastructure both by
+  the development of new software and by linking the system with
+  existing and emerging related technologies for data transport and
+  data product generation.
+\end{enumerate}
+
+Specific tasks that will undertaken in the remaining two years of the 
+currently funded \ac{NVODS} effort include:
+
+\begin{description}
+\item[Population] A number of population efforts will be undertaken
+  by project regional coordinators with the goal of doubling the
+  number of sites serving data via the system by the end of the
+  project.
+  
+\item[Committees and Working Groups] The Executive Committee
+  identified the need for several Committees and Working Groups
+  following the recommendations of the workshops and national meeting.
+  These groups will be set up as appropriate.
+  
+\item[Pilots] The Executive Committee recommended pursuing several
+  pilot projects to demonstrate the end-to-end utility of \ac{NVODS}
+  within specific user communities as well as across a range of user
+  communities to address regional, national, and global problems.
+  
+\item[Software Development] The \ac{NVODS} software is an extension
+  of the Distributed Oceanographic Data System \ac{DODS} software that
+  has been developed over the last decade.  The data transport
+  mechanism is robust, general, and maturing.  Clients and servers are
+  available in many formats widely used in the oceanographic
+  community.  Server-side services provide needed capabilities such as
+  allowing the user to access a browser page which can be used to
+  access and subset any dataset in the \ac{NVODS}.  Because many
+  planners, managers, and educators use \ac{GIS}, \ac{NVODS} is
+  commissioning a \ac{GIS} client to allow \ac{GIS} users to access
+  \ac{NVODS} data.  A process that allows the addition of ancillary
+  metadata to a dataset is being designed and will be implemented
+  during the course of the project.  The \ac{NVODS} project is working
+  with the \ac{GCMD} to have a complete and accurate set of search
+  metadata resident at the \ac{GCMD} for all \ac{NVODS} datasets.
+  \ac{NVODS} includes an active user-support office operated by
+  UNIDATA.  The \ac{NVODS} project includes a professional writer who
+  writes and maintains user and technical documentation of the
+  elements as they are produced.  Finally, to encourage the
+  contribution of \ac{NVODS} software from outside the core
+  developers, the project is stressing its open source development
+  structure to the outside user community.
+\end{description}
+
+The \ac{NVODS} project is designed to provide a seamless methodology
+for data provision, discovery, access, and processing for the
+oceanographic user, and is the basis for information transfer within
+the \ac{GOOS} for use by scientists, planners, and educators alike.
+It is intended to enable regional, national, and global access to data
+of all types, including real-time, global, and archival data.  In
+addition, the burden of providing data to \ac{NVODS} is designed to be
+light enough that both data centers and individual investigators will
+find it desirable --- and feasible --- to participate.  The vision of
+\ac{GOOS} is one in which we have the comprehensive knowledge of the
+oceans we need to make the most intelligent use of our marine
+environment, and \ac{NVODS} will provide the means to transfer the
+information necessary to meet that goal.
+
+\T\newpage
+\T\pagenumbering{arabic}
+\section{This Report -- Scope}
+\label{This-Report}
+
+This report presents an overview of the \acl{NVODS} effort as well as
+its status as of 24 February 2002. For the sake of completeness, it
+begins with background material associated with the \acl{NOPP} call
+for proposals which gave rise to the \ac{NVODS} project.
+Section~\ref{PLANNING-STAGE} presents a summary of the recently
+completed first year planning stage of the project. In the next
+section, the vision of \ac{NVODS} as articulated by the \ac{ExCom} at
+their August 2001 meeting is presented. This is followed with an
+overview of the organizational structure of the project recommended by
+the \ac{ExCom} at the same meeting. Appendix~\ref{STATUS} details the
+status of \ac{NVODS} at the conclusion of the planning year. The
+remaining sections detail the tasks that will be undertaken in years 2
+and 3 of this project to help achieve the broad objectives laid out in
+Section~\ref{VISION}.
+
+\section{Background}
+
+In 1999 the \ac{NOPP} released a \ac{BAA} requesting proposals for the
+``Planning and implementation of a `Virtual Ocean Data Hub' (VODHub)
+activity as a key element of the full community-based `system' to
+broaden and improve access to ocean data$\ldots$'' As described in the
+\ac{BAA}, ``[t]he genesis for this initiative was a series of
+workshops in 1997 (Nowlin) and 1998 (Powell) illuminating the need for
+an \ac{ORSMP} which garnered further impetus and definition with the
+publication of the \ac{NOPP} report `Toward a U.S. Plan for an
+Integrated, Sustained Ocean Observing System' in April 1999. These
+reports are available at the NOPP web 
+sites[: \xlink{http://nopp.org}{http://nopp.org}]''.
+
+A group of 23 primary and 27 secondary partners, led by the \ac{DODS}\ 
+group at \ac{URI}, successfully responded to this request for
+proposals\htmlnote{http://www.unidata.ucar.edu/packages/dods/archive/proposals/nopp-html/}.
+The requested funding was for three years and began in the summer of
+2000. The first year of the effort was, as requested in the \ac{BAA},
+designed to obtain community consensus on the basics of the system to
+be implemented, as well as to design this system. The second and third
+years were to be devoted to implementation of the system.
+
+\section{The Planning stage - The First Year}
+\label{PLANNING-STAGE}
+
+The first year has been completed. It involved a suite of four
+regional workshops one held in the
+Northeast\htmlnote{http://www.po.gso.uri.edu/tracking/vodhub/reports/synth/synthesis\_100.html},
+one in the
+Southeast\htmlnote{http://www.po.gso.uri.edu/tracking/vodhub/reports/synth/synthesis\_79.html},
+one on the Gulf
+Coast\htmlnote{http://www.po.gso.uri.edu/tracking/vodhub/reports/synth/synthesis\_18.html}
+and one on the West
+Coast\htmlnote{http://www.po.gso.uri.edu/tracking/vodhub/reports/synth/synthesis\_56.html},
+each led by a regional coordinator who is also a Co-I on the project.
+The focus of each of the workshops was to identify the requirements
+for the data dissemination elements of a distributed data system.  In
+the original proposal a ``Great Lakes'' region was also identified, but as
+a result of a lack of interest in the project on the part of the Great
+Lakes coordinator, this associated regional meeting was replaced with
+a meeting devoted to issues related to \ac{GIS} access to data
+available via the
+system\htmlnote{http://www.po.gso.uri.edu/tracking/vodhub/reports/synth/synthesis\_120.html}.
+Following the workshops, the five workshop reports were synthesized
+into one document that summarized the ensemble of workshop
+recommendations\htmlnote{http://www.po.gso.uri.edu/tracking/vodhub/reports/synth}.
+The synthesis report served as background material for a National
+meeting of project primary PIs that was held in Washington, D.C. from
+25 to 27 April
+2001\htmlnote{http://www.po.gso.uri.edu/tracking/vodhub/reports/NVODSnationalreport.pdf}.
+%The recommendations of this meeting were then used to define 
+%the course of the project over the next two years. 
+
+James Gallagher, the technical lead on the project, Peter Cornillon,
+the project \ac{PI}, and project staff met at \ac{URI} on 11-13 June
+2001 to determine the technical elements that were needed to implement
+the recommendations that emerged from the workshops and the National
+Meeting\footnote{The list of resulting elements is presented in
+  Appendix~\ref{WORKSHOP-RECOMMENDATIONS}}. The group then assigned
+priorities to the elements of this list for presentation to the
+\ac{ExCom}\footnote{The Executive Committee is made up of Peter
+  Cornillon of \ac{URI}, the project \ac{PI}, James Gallagher of
+  \acs{OPeNDAP}, the project technical lead, Glenn Flierl of
+  \acs{MIT}, Steve Hankin of \acs{PMEL}, Linda Mercer of the State of
+  Maine, and Worth Nowlin of Texas A\&M.}
+based on the group's perception of the overall goals of the project.
+
+The \ac{ExCom} met on 13-14 August 2001. In this meeting the committee:
+
+\begin{itemize}
+\item Formalized a vision for the project (Section~\ref{VISION});
+
+\item Made recommendations concerning the overall organization of the project 
+into committees and working groups (Sections~\ref{ORGANIZATION} and
+\ref{WORKING-GROUPS});
+
+\item Finalized the list of recommendations and the prioritization of 
+the associated software tasks (Appendix~\ref{PRIORITIZED-LIST});
+
+\item Identified regional and other pilot projects that might enhance 
+the development and the visibility of \ac{NVODS} capabilities
+(Section~\ref{PILOTS});
+
+\item Discussed issues associated with the continuance of the project beyond 
+the three-year lifetime of the grant (Appendix~\ref{OPENDAP}); and
+
+\item Identified relationships that should be pursued with ongoing 
+oceanographic projects in the nation and the world, and their project 
+data distribution needs. 
+\end{itemize}
+
+The recommendations made by the \ac{ExCom} in this meeting and the
+actions taken on these recommendations to-date are summarized in
+Appendix~\ref{EXCOM-RECOMMENDATIONS}.
+
+\section{Niche, User Community and Project Objectives}
+\label{VISION}
+
+At the end of the \ac{NVODS} National Meeting, Mel Briscoe presented the 
+\ac{NOPP} perspective on \ac{NVODS} and where it should be going. In his 
+presentation, he emphasized that the ultimate \ac{NVODS} user was to be
+the ``management'' community, not the scientific community, and that \ac{NVODS}
+was to focus on serving data products rather than the raw data from which
+these products were made. He defined the management community to be those 
+requiring access to ocean data products to make management decisions such
+as oil spill response, fisheries management, etc. This was not inconsistent 
+with the issues underling many of the recommendations that emerged from the 
+regional meetings, although his presentation did raise some questions about 
+precisely what the bounds on the \ac{NVODS} effort were. This issue was
+revisited by the \ac{ExCom}. In the ensuing discussion the \ac{ExCom} 
+outlined where \ac{NVODS} fits in with regard to an end-to-end data 
+management system (effectively a vision for \ac{NVODS}), who comprises 
+the \ac{NVODS} user community and where the project should be at the end of
+the current \ac{NOPP} funding. The \ac{ExCom} is well aware that 
+there will be some adjustment to each of these elements as the project 
+evolves.
+
+\subsection{The \ac{NVODS} Niche}
+
+At the \ac{NVODS} National Meeting, Neville Smith presented an overview of the 
+various elements of an end-to-end data system and the deficiencies associated
+with the elements as they exist today as well as with the linkages between 
+these elements. An end-to-end data system as envisioned by Smith extends from
+data acquisition at the sensor through processing, distribution, visualization,
+and analysis to a ``deep'' archive such as the \ac{NODC}. The \ac{ExCom} sees 
+\ac{NVODS} as the infrastructure in the middle necessary to facilitate access 
+to data. \ac{NVODS} as envisioned by the \ac{ExCom} is:
+
+\begin{itemize}
+\item a system that \emph{facilitates access to oceanographic data and 
+data products via the Internet} regardless of data type, where the data are 
+stored, the format in which they are stored, the user's visualization package 
+or the user's level of expertise;
+
+\item a system that is a component of \ac{GOOS}, but is also expected to 
+extend well beyond the \ac{GOOS} effort (see Appendix~\ref{GOOS-VISION} for
+an overview of the national and international efforts associated with the
+\acl{GOOS} and a brief summary of the role that we envision \ac{NVODS} 
+playing in \ac{GOOS}); and  
+
+\item a system that will evolve with the Internet, with computer hardware, 
+with computer software and with the interests of its users.
+\end{itemize}
+
+The \ac{ExCom} does not see \ac{NVODS} as dealing with the acquisition
+of data at the sensor nor as dealing with issues related to the long
+term storage of data. \ac{NVODS} should however be interfaced to the
+long term archives and could well be interfaced to sensors acquiring
+the data. \ac{NVODS} is also not seen as dealing with the system
+processing capability, the actual network infrastructure, nor the very
+low level data transport protocols, such as TCP/IP.
+
+The basic components required of the system are:
+
+\begin{enumerate}
+\item A mechanism for people with data (or data products) to serve
+  these data in a consistent form via the Internet without having to
+  reformat them;
+
+\item A data transport mechanism independent of platform, storage
+  format, or user application;
+  
+\item A set of client software applications including basic network
+  browsing tools from which the user may access any data or data
+  product in the system and with which the user may visualize the
+  data; and
+
+\item One or more data location sites which will allow the user to
+  discover in a simple and logical manner any datasets served via the
+  system containing data of interest to the user.
+\end{enumerate}
+
+Other components of a data system that lie between acquisition and
+a ``deep'' archive that were discussed are data product generation, 
+visualization software and processing or analysis software. The 
+\ac{ExCom} felt that, although very important, significant efforts in 
+these areas were beyond the scope of the current funding. They did
+however feel that to help ``jump start'' the system, low level efforts 
+associated with these might be appropriate, for example, a generic web 
+display tool for \ac{NVODS} accessible data sets or the generation of 
+some low level data products.
+
+\subsection{The \ac{NVODS} User Community}
+
+The community of users targeted for \ac{NVODS} is as critical in designing
+the system as is the niche that the system is to occupy in the end-to-end
+data system environment. The \ac{ExCom} recognized that the community of 
+potential users of ocean related data is extremely broad consisting of 
+groups with very different data and data product needs and with very 
+different visualization and analysis capabilities. Specifically, the 
+eventual \ac{NVODS} user community is expected to consist of:
+
+\begin{enumerate}
+\item the scientific community desiring access to the entire range of 
+data and data products (from low level data to high level data products) 
+via the entire range of data analysis tools (from low end web browser 
+interfaces to high end analysis packages);
+
+\item planners and managers with a need to access mid- and high-level 
+ocean data products also using a broad range of tools (from low-end
+web browser interfaces to high-end \ac{GIS} packages);
+
+\item the educational community with a need to access data and data 
+products at all levels as well as analysis tools at all levels (the level
+depending of course on the level of the students involved); and
+
+\item the lay public often interested in the highest level data 
+products accessed via mid- to high-end web browser interfaces. 
+\end{enumerate}
+
+The \ac{ExCom} believes that this is the community of users that
+\ac{NVODS} should serve \emph{in the long run}. At the same time, the
+committee recognizes that this group is so broad that it is
+impractical to design and implement a system that will \emph{at the
+  outset}, i.e., during the current funding cycle, meet the needs of
+all of the identified user groups. As indicated above, Mel Briscoe
+made it clear in his presentation that the \ac{ORAP} of \ac{NOPP} felt
+that the focus should be on the management community rather than on
+the general public or the scientific communities. The \ac{ExCom}
+agrees that this is the community where the system will have the
+largest impact --- ``the biggest bang for the buck.''  At the same time
+there was a recognition in the committee that meeting the needs of the
+scientific community is likely to benefit the project more in the
+short term than meeting the needs of the management community, in that
+the scientific community is much more likely to develop tools that
+will benefit all users of the system than either of the other
+communities. Put another way, the funding is not sufficient to develop
+all of the interfaces, servers, intermediate processors, product
+generators, and other miscellany that such a system must support. The
+only way that the effort will succeed is if the community contributes
+to the development of these tools as has been done with the web.
+
+The \ac{ExCom} feels that, again as was the case with the web itself,
+it is the scientific community that will develop these tools early on
+\emph{if} the basic infrastructure is sufficiently flexible and robust
+to accommodate a very broad range of activities and \emph{if} the
+system is open source. Because of the competing requirements here ---
+focusing on the management community as the one that offers the
+greatest return on investment as envisioned by the \ac{ORAP} of
+\ac{NOPP} and on the scientific community as the one most likely to
+quickly evolve the system as envisioned by the \ac{ExCom} --- a two
+fold approach is recommended.  First, the project will support a suite of
+pilot efforts at the regional level that will be designed to meet
+management/planning community needs, and second, the project will support
+efforts that are tied to large national or international scientific
+programs such as \acs{WOCE}/\acs{CLIVAR} or \acs{GODAE}.
+
+In the discussion associated with user groups, the \ac{ExCom} also addressed
+the range of data/data product types that \ac{NVODS} must be designed to
+handle. Specifically, it must support data set transactions in all of the 
+oceanographic sub-disciplines as well as data in related fields such as 
+meteorology, it must handle sequences of data (e.g., point measurements
+in time) as well as gridded data sets (e.g., model output or satellite
+data products) and it must be capable of handling real-time data as well
+as retrospective data sets.
+
+\subsection{Project Objectives}
+
+Based on the recommendations of the regional workshops and the National
+Meeting, the \ac{ExCom} believes that the success of this effort by
+the end of the current funding cycle will require:
+
+\begin{enumerate}
+\item The number of users should be increasing rapidly both in the 
+research and management communities.
+
+\item The \ac{DAP} on which the basic infrastructure of the system is
+founded should be accepted as a data/product access ``standard'' 
+by suppliers and users of oceanographic data and data products in 
+general and Ocean.US in particular. Specifically, a non-profit consortium 
+with significant community buy-in should have formed and be responsible 
+for developing and maintaining the \ac{DAP}. (See Appendix~\ref{OPENDAP}.)
+
+\item There should be a number of non-NOPP funded groups with 
+significant experience writing both client and server software for the 
+system.
+
+\item A plan must be in place to broaden the user community to 
+educational users and to the general public.
+
+\item A sustained funding base for continued maintenance and 
+development of the system must be identified.
+
+\item There should be 4 to 5 pilots with significant use from 
+different groups representative of the communities that \ac{NVODS}
+is trying to serve. These groups need not be large but they should be 
+obtaining significant benefit from using the system. They should serve 
+as specific examples of the capability of \ac{NVODS}. 
+
+\end{enumerate}
+
+With these elements in place the \ac{ExCom} believes that the user 
+community will grow rapidly as will those providing their data via the 
+system. This then defines the project strategy at the highest level.
+Appendix~\ref{EXCOM-RECOMMENDATIONS} of this report presents the details of the
+recommendations of specific actions that should be taken to meet these
+objectives.
+
+\section{Organization}
+\label{ORGANIZATION}
+
+An organizational structure for the \ac{NVODS} project was defined 
+in the \ac{NOPP} proposal. This structure consisted of an Executive 
+Committee (\acs{ExCom}) which was to provide input to the project 
+\ac{PI} with regard to the overall direction of the project, a 
+Project Manager reporting to the \ac{PI} with day-to-day administrative 
+responsibility and five regional coordinators responsible for organizing 
+activities in the five regions identified in the proposal --- the 
+Northeast, the Southeast, the Gulf Coast, the West Coast and the Great 
+Lakes. As a result of some personnel changes the details of this 
+structure have changed somewhat. 
+
+The regional coordinator for the Great Lakes, Anders Andren, chose not to 
+continue participation in the project following notification of funding 
+from \ac{NOPP}. At the recommendation of the \ac{ExCom} and with the 
+concurrence of the \ac{NOPP} program manager funding originally
+allocated for this region was allocated to other regions and
+this region was not included in the first year planning process.
+
+The regional coordinator identified in the proposal for the Southeast,
+Margaret Davidson, assumed a new job shortly before this project was 
+funded and was unable to continue in her role as Southeast regional 
+coordinator. She designated a replacement, Anne Ball, who lead the 
+southeast regional workshops in the planning year. Unfortunately however, 
+Anne felt that the level of effort that was required in the out years 
+would be too large for her to continue in this role and she withdrew
+following the National Meeting. The \ac{ExCom} decided not to replace
+her and instead recommended that the Southeast region be absorbed into 
+the Gulf Coast region. 
+
+As a result of the death of a critical member of the West Coast region, 
+this region had little involvement from California at the time of the 
+National Meeting. In light of this, the \ac{ExCom} recommended that an 
+effort be made to contact Steve Weisberg of the 
+\ac{SCCWRP}\htmlnote{http://www.sccwrp.org/}. The West Coast regional 
+coordinator, Mark Abbott, suggested that the project \ac{PI} do this. 
+This has been done and there is significant interest in the \ac{SCCWRP}
+in collaboration. The level of collaboration will be identified over
+the next several months. At present this effort is still viewed as 
+falling under the West Coast regional coordinator although the 
+\ac{ExCom} has designated additional funds (taken from those set 
+aside for the Great Lakes region) for this effort, so one might 
+view this as a spur of the West Coast region.
+
+Taken together these changes mean that there are now three regions,
+the Northeast, the Southeast/Gulf Coast and the West Coast, plus a
+possible separate subregion, and that funding allocated for the five 
+regions in the out years will be used predominantly by the remaining 
+three regions. The focus of the regional efforts was also changed as 
+a result of Mel Briscoe's comments at the National Meeting 
+(Section~\ref{VISION}). Specifically, the regions were asked to 
+identify one or two pilot projects that would entrain users from the 
+management community. 
+
+The Project Manager, Richard Chinman, elected to withdraw from the 
+project in the middle of the first year. The \ac{PI} has assumed the 
+associated responsibilities with the help of Paul Hemenway who has
+been hired as an Assistant Project Manager. The Assistant Project
+Manager is an ex officio member of the \ac{ExCom}.
+
+\section{Communication}
+\label{COMMUNICATION}
+
+The \ac{NVODS} project maintains a number of different communication
+mechanisms. 
+
+\subsection{e-mail Lists}
+
+There are two e-mail lists that were set up for the previous
+DODS effort with \acs{NASA} funding. These lists are still used for
+communication about technical issues related to \ac{DODS} software.
+They are: 
+
+\subsubsection{The \ac{DODS} mailing list} 
+
+This is a low traffic list that
+was set up for user discussions of \ac{DODS} software, e.g., questions 
+on installation, setup, and use of \ac{DODS}. Software release and other 
+general announcements will be made to this list. 
+
+\subsubsection{The \ac{DODS}-Tech mailing list} 
+
+This is a medium traffic list.
+It is used for technical discussions concerning \ac{DODS} development with
+an emphasis on those issues related to the \ac{DAP}. \\
+
+\noindent Those interested can join either of these e-mail 
+lists from the \ac{DODS} home page by clicking on the ``Mailing Lists'' 
+entry under the ``Support'' tab. 
+
+\subsection{Telecons}
+
+Two sets of regular telecons are run by the project. These are:
+
+\subsubsection{Management Telecon} 
+
+This weekly telecon consists of the 
+Project Manager (Cornillon), the Project Technical Lead (Gallagher), the 
+Project Lead for Client Issues (Holloway) and the Assistant Project 
+Manager (Hemenway). Issues dealt with by this group relate to all
+software issues related to the project. The group focuses on near
+term (one week to three months) aspects of these issues.
+
+\subsubsection{\ac{DODS}-Tech Telecon} 
+
+This is a weekly dial-in telecon and
+consists of anyone who wants to participate. Agenda items as well
+as scheduling changes associated with the telecon are announced on
+the \ac{DODS}-Tech e-mail list. Issues discussed here tend to focus on
+software schedules as well as software related issues. Minutes for
+these meetings are available at 
+\xlink{http://unidata.ucar.edu/packages/dods/home/developers/meetings/develTC/}{http://unidata.ucar.edu/packages/dods/home/developers/meetings/develTC/}.
+
+
+\subsection{Meetings}
+
+In the implementation phase, the NVODS effort will involve three classes 
+of meetings: annual or semiannual meetings involving long range planning
+for the project, semiannual meeting involving a broad range of technical 
+issues and ad hoc meetings designed to focus on very specific technical
+or logistic issues.
+
+\subsubsection{Planning Meetings}
+
+\paragraph {Co-I Planning Meetings:} 
+
+The primary planning meeting is the Co-I assembly held in the summer
+of each year. This meeting will involve all Co-Is on the project. The
+meeting will consist of two parts, an informational section in which
+the status of the project is summarized and a discussion phase in
+which recommendations are made for subsequent work to be undertaken in
+the effort.
+
+\paragraph {Executive Committee Meetings:} 
+
+These are semiannual meetings.  held in the late winter and late
+summer. The focus of the late summer meeting is to finalize plans for
+the upcoming year; i.e., to address the recommendations made at the
+Co-I Planning Meeting.
+
+\subsubsection{Technical Meetings}
+
+\paragraph {Semi-annual Technical Meeting:} 
+
+This is a meeting that is held in mid-winter and mid-summer. It
+involves any technical group interested in the evolution of the
+\ac{DAP}. The purpose of these meetings is threefold:
+
+\begin{description}
+\item[Coordination]  The \ac{NVODS} effort involves not only
+those directly funded by \ac{NOPP}, but a number of other groups that
+are developing software related to the \ac{DODS} \ac{DAP} or software
+that is of interest to the \ac{NVODS} effort. Many of these
+``external'' groups are (by choice) not involved in the telecons and
+e-mail lists set up for technical communication within the project.
+This meeting therefore serves as a way to better integrate the efforts
+of these groups with the rest of the project. 
+
+\item[Evolution of the System]  The \ac{NVODS} effort is 
+addressing a broad range of difficult problems associated with access
+to a very heterogeneous array of data from a large number of different
+sources. The solution to some of these problems is well defined and
+software is being written to implement these solutions. There are however
+a number of other problems for which a solution has not been identified.
+Another focus of the \ac{DODS}-Tech meeting is to begin or to continue 
+discussions related to these problems or to more clearly identify what 
+the problems actually are.
+
+\item[Project Momentum]  The \ac{NVODS} effort is very complicated. 
+We have found that despite the various e-mail lists and telecons set up for 
+communication among the developers, conveying a view of the overall 
+effort and how one's specific project fits in the project as a whole 
+is difficult at best; issues discussed in the telecons and on the e-mail 
+lists are generally buried in the details. The \ac{DODS}-Tech meeting 
+therefore serves as an important way for all those on the project to come 
+to appreciate the contribution that they are making in the context of the 
+project as a whole. We have found that this is very important with regard
+to generating or maintaining enthusiasm among those developing software 
+for the project.
+\end{description}
+
+A brief summary of the most recent \ac{DODS}-Tech meeting held in
+Boulder CO from 9 to 11 January 2002 is available in Appendix~\ref{DODS-TECH}.
+
+\paragraph {Special Purpose Meetings:} 
+
+Some elements of the project involve several components of the system
+working together or could benefit with input from a number of project
+participants. In special cases we have decided to hold focussed
+topical meetings that involve a small group of developers. The
+development of the \ac{AS} is a good example of this. The general
+objectives for this server were outlined via e-mail in early 2001.
+Then a meeting was held at Unidata in Boulder on 14 March 2001.
+Participating in the meeting were: James Gallagher (\ac{NVODS}), John
+Caron (Unidata), Russ Rew (Unidata), Steve Hankin (PMEL), Roland
+Schweitzer (CDC) and Ethan Davis (Unidata). At this meeting, classes
+of data aggregation were formalized, a suite of test datasets was
+selected, an outline for the implementation of the server was roughed
+out as was the implementation schedule. Implementation proceeded
+smoothly from there.  Several NVODS aggregated datasets are currently
+available via DODS.
+
+\subsection{Software Development}
+
+The personnel responsible for developing and maintaining \ac{NVODS}
+related software fall into two groups, the \emph{Core Group}, responsible
+for the \ac{DAP} and some of the clients and servers and others writing 
+to the \ac{DAP} who are not funded by either \ac{NVODS} or \ac{OPeNDAP},
+generally dealing with specialized clients or servers. The developers in 
+both groups are distributed around the country. Development of software 
+in this environment requires communication related to software elements
+as well as to problems with these elements. To this end, two basic
+software tracking and development mechanisms are used for software 
+developed by the Core Group:
+
+\begin{itemize}
+\item \emph{Code} -- The basic code (computer programs) is maintained in 
+\ac{CVS}\htmlnote{http://www.gnu.org/software/cvs/cvs.html}. Developers 
+check software out of the \ac{CVS} archive, make the appropriate 
+changes and check the software back into the \ac{CVS} repository, resolving 
+conflicts that may have arisen from modifications made by other programmers 
+when doing so. 
+
+\item \emph{Bug Reports} -- Problems that arise with these software elements 
+are reported using Bugzilla\htmlnote{http://bugzilla.mozilla.org/}, a 
+free-ware package designed for managing software bugs in a distributed 
+development environment. Bugzilla is used to report all problems related
+to software developed by the Core Group as well as some problems related 
+to software developed by non-Core participants.
+\end{itemize}
+
+\section{Working Groups}
+\label{WORKING-GROUPS}
+
+There are a number of issues being addressed on the project that
+could benefit from the input of a broader range of participants 
+than the core development group. The most important of these
+issues were identified at the \ac{NVODS} National Meeting and
+it was recommended that working groups be formed to address these
+issues. The issues identified are:
+
+\begin{itemize}
+\item Data Location -- a searchable list of project accessible data sets. 
+\item Standards -- both for metadata required to achieve Level 3 
+interoperability\footnote{This is machine-to-machine interoperability
+with semantic meaning.}
+\item Web Client -- the ability to, via a web browser, select subsets 
+and display these for any \ac{NVODS} accessible data sets. 
+\item GIS Technical Oversight.
+\end{itemize}
+
+\noindent As of the writing of this report, these working groups have not
+been formed. It is also likely that there will be other efforts 
+that require standing working groups for the project.
+
+\section{Pilots}
+\label{PILOTS}
+%*******
+
+As a result of comments made by Mel Briscoe at the \ac{NVODS}
+National Meeting, the \ac{ExCom} requested that each regional coordinator 
+identify one or two pilot projects that would be undertaken
+to attract users to the system, to exercise various components 
+of the system and to demonstrate the value of the system to the
+management/planning communities. These pilot projects should, where possible,
+identify the end user of the data as well as the primary sources of
+data and should use funding allocated for the regions to assemble all
+of the basic components of the system: data servers, data integration
+and data display for the target user group. To be successful, the pilot
+projects will feed their technical needs back to the \ac{NVODS}
+developers so that the technical capabilities of NVODS will meet
+the needs of the individual pilots.  Pilots that have been
+proposed as of 24 February 2002 are:
+
+\subsection {Nearshore Surface Current Pilot\label{CODAR-PILOT}}
+
+This pilot would provide near real-time access to measurements of 
+nearshore surface currents. Users of these data are thought to range 
+from decision makers addressing nearshore issues such as those involved
+in  search and rescue and hazardous spill mitigation to recreational 
+boaters to the scientific community. The primary source of data 
+envisioned for this effort will be HF radar data beginning with 
+\ac{CODAR} data. The effort will begin by focusing on the west coast
+and time and funds permitting will be extended to other HF radar sites
+along the U.S.~coast. Consideration will also be given to including
+current meter data in the pilot. The pilot will make the data available
+via OPeNDAP$^2$ as well as through a web-based interface.
+
+\subsection {Shrimp Pilot}
+
+This pilot is designed to provide fisheries management groups in the
+northeast with access to shrimp biological and fisheries data that will 
+allow them to study the effect of changes in the environment on the 
+northern shrimp population in the Gulf of Maine. The information 
+exists to do a very thorough study of the effects of changes in the 
+environment on the northern shrimp population in the Gulf of Maine,
+but these data exist at a variety of sites in a variety of formats. What 
+is needed is a mechanism for making all this information available in a 
+format that can be readily used to conduct appropriate analyses. 
+
+\subsection {Modeling Pilot}
+
+There are several modeling efforts currently underway in the Gulf
+of Mexico that are used or will be used for planning purposes. \ac{TAMU} 
+is proposing a pilot to produce an end-to-end demonstration of the value of 
+using real time data in models to improve the now-cast and forecast of 
+shelf currents in the Gulf of Mexico. This will build on the effort to 
+serve all physical data from operational observing systems in the Gulf. 
+Transfer of the model results will be via DODS. Initially the effort
+will focus on the \ac{TAMU} operational forecast model for the Gulf 
+shelves from Cape San Blas, FL to the Texas-Mexican border which is 
+funded by the Texas General Land Office.
+
+\subsection{\ac{SCCWRP}}
+
+\acs{SCCWRP} is a joint powers agency\footnote{A joint powers agency is 
+one that is formed when several government agencies have a common mission 
+that can be better addressed by pooling resources and knowledge. In the
+\ac{SCCWRP} case, the common mission is to gather the necessary scientific 
+information so that our member agencies can effectively, and cost-efficiently, 
+protect the Southern California marine environment. An important part of 
+the \ac{SCCWRP} mission is to ensure that the data they collect and 
+synthesize effectively reaches decision-makers, scientists and the public.} 
+focusing on marine environmental research. The Executive Director of
+\ac{SCCWRP}, Stephen Weisberg, has indicated that \ac{SCCWRP} would 
+like to undertake a pilot project in which they would serve a subset
+of their data holdings via OPeNDAP$^2$. This effort will be undertaken
+directly with the \ac{NVODS} Project Office as opposed to through the
+West Coast Coordinator, although close communication with regard to this
+effort will be maintained with others on the west coast.
+
+\T\newpage
+\appendix    
+
+\section{Acronyms}
+\label{Acronyms}
+\label{page-acro}
+{\begin{acronym}
+\small
+\T\parskip 0pt
+ \acro{AIS}{Ancillary Metadata Services}.
+ \acro{AGU}{American Geophysical Union}.
+ \acro{AS}{Aggregation Server}.
+ \acro{ASCII}{American Standard Code for Information Exchange}.
+ \acro{BAA}{Broad Agency Announcement}.
+ \acro{CDC}{Climate Diagnostics Center}.
+ \acro{CGI}{Common Gateway Interface}.
+ \acro{CLIVAR}{Climate Variability and Predictability}. 
+ \acro{COARDS}{Cooperative Ocean-Atmosphere Research Data Standard}.
+ \acro{CODAR}{Coastal Ocean Dynamics Applications Radar}.
+ \acro{COLA}{Center for Ocean-Land-Atmosphere Studies}.
+ \acro{CSDGM}{Content Standard for Digital Geospatial Metadata}.
+ \acro{CVS}{Concurrent Versions System}.
+ \acro{DAAC}{Distribute Active Archive Center}.
+ \acro{DAP}{Data Access Protocol}.
+ \acro{dds}{Data Descriptor Structure}.
+ \acro{das}{Data Attribute Structure}.
+ \acro{DIF}{Directory Interchange Format}.
+ \acro{DLESE}{Digital Library for Earth System Education}. 
+ \acro{DODS}{Distributed Oceanographic Data System}.
+ \acro{DRDS}{DODS Relational Database Server}.
+ \acro{EDMI}{Earth Data Multimedia Instrument}.
+ \acro{EOS}{Earth Observing System}.
+ \acro{ESIP}{Earth Science Information Partner}.
+ \acro{ESRI}{Environmental Systems Research Institute}.
+ \acro{ExCom}{Executive Committee}.
+ \acro{FGDC}{Federal Geographic Data Committee}.
+ \acro{FITS}{Flexible Image Transport System}.
+ \acro{GCMD}{Global Change Master Directory}.
+ \acro{GDS}{GrADS-DODS Server}.
+ \acro{GIF}{Graphics Interchange Format}.
+ \acro{GIS}{Geographical Information System}.
+ \acro{GODAE}{Global Ocean Data Assimilation Experiment}.
+ \acro{GOOS}{Global Ocean Observing System}.
+ \acro{GLOBEC}{Global Ocean Ecosystem Dynamics}.
+ \acro{GRIB}{GRid in Binary}.
+ \acro{GrADS}{Grid Analysis and Display System}.
+ \acro{GSFC}{Goddard Space Flight Center}.
+ \acro{GUI}{Graphical User Interface}.
+ \acro{HAO}{High Altitude Observatory}.
+ \acro{HDF}{Hierarchical Data Format}.
+ \acro{HDF-EOS}{Hierarchical Data Format - EOS}.
+ \acro{http}{Hypertext Transfer Protocol}.
+ \acro{httpd}{http deamon}.
+ \acro{IDL}{Interactive Display Language}.
+ \acro{IGOS-P}{Integrated Global Observing Strategy-Partnership}.
+ \acro{IFREMER}{Institut Français de Recherche pour l'Exploitation de la Mer}.
+ \acro{JGOFS}{Joint Global Ocean Flux Experiment}.
+ \acro{LAS}{Live Access Server}.
+ \acro{MIT}{Massachusetts Institute of Technology}.
+ \acro{NASA}{National Aeronautics and Space Administration}.
+ \acro{netCDF}{Network Common Data Format}.
+ \acro{NOAA}{National Oceanic and Atmospheric Administration}.
+ \acro{NODC}{National Oceanographic Data Center}.
+ \acro{NOPP}{National Ocean Partnership Program}.
+ \acro{NORLC}{National Ocean Research Leadership Council}.
+ \acro{NSDL}{National SMETE Digital Library}.
+ \acro{NITF}{National Imagery Transmission Format}.
+ \acro{NSF}{National Science Foundation}.
+ \acro{NVODS}{National Virtual Ocean Data System}.
+ \acro{OPeNDAP}{Open Source Project for a Network Data Access Protocol}.
+ \acro{ORAP}{Ocean Research Advisory Panel}.
+ \acro{ORSMP}{Ocean Research Synthesis and Modeling Program}.
+ \acro{PES}{Planet Earth Science}.
+ \acro{PI}{Principal Investigator}.
+ \acro{PMEL}{Pacific Marine Environmental Laboratory}.
+ \acro{RFP}{Request For Proposal}.
+ \acro{SCCWRP}{Southern California Coastal Water Research Project}.
+ \acro{SDTS}{Spatial Data Transfer Standard}.
+ \acro{SMETE}{Science, Mathematics, Engineering and Technology Education}. 
+ \acro{TAMU}{Texas A\&M University}.
+ \acro{TEDS}{Tactical Environmental Data Server}.
+ \acro{UCAR}{University Center for Atmospheric Research}.
+ \acro{UDRS}{Universal Data Reduction Server}.
+ \acro{UN}{United Nations}.
+ \acro{UNCED}{United Nations Conference on Environment and Development}.
+ \acro{URI}{University of Rhode Island}.
+ \acro{URL}{Universal Resource Locator}.
+ \acro{US}{United States of America}.
+ \acro{WCS}{Web Coverage Server}.
+ \acro{WMS}{Web Mapping Server}.
+ \acro{WOCE}{World Ocean Circulation Experiment}.
+ \acro{XML}{eXtensible Markup Language}.
+\end{acronym}
+}
+
+\T\newpage
+\section{The \ac{GOOS} Vision and Objectives }
+\label{GOOS-VISION}
+
+\subsection{The Global Imperative}
+
+In 1992, the \ac{UN} \ac{UNCED} mandated the establishment of a global
+ocean observing system that would enable effective and sustainable management
+and utilization of the marine environment and its natural resources.
+The \ac{GOOS} is an international effort to respond to this mandate.  
+
+The \ac{IGOS-P} was established in 1998 to assist with the implementation
+of several global observing systems, including GOOS.  Under the auspices of the 
+\ac{IGOS-P} a team has developed ``an Ocean Theme'' (Ocean Theme Team 2000)
+with the vision ``to develop and maintain continuity of observing capabilities
+for the global ocean and to advance to a permanent global ocean observing
+system.'' That report specifies satellite missions needed in support of the 
+Ocean Theme, ongoing in situ components of the \ac{GOOS} for which 
+commitments have been made, major pilot projects specifically acknowledged
+as a part of \ac{GOOS}, and examples of data, products, and services available
+or anticipated.
+
+\subsection{The National Imperative}
+
+In response to the global initiative and to address the security needs of the
+\ac{US}, the \ac{US} Congress mandated the formation of the \ac{NORLC}.
+In turn, the \ac{NORLC} formulated a plan for the \ac{US} to meet the
+challenges of continuously monitoring and assessing marine resources
+and environment for national and global health and safety, and for
+increased understanding and public awareness.  The plan is embodied in
+the \ac{NOPP}.  A working group prepared
+a report, ``Toward a U.S. Plan for an Integrated, Sustained Ocean Observing 
+System'' (\xlink{http://core.cast.msstate.edu/NOPPobsplan.html}{http://core.cast.msstate.edu/NOPPobsplan.html}), 
+in response to
+a Congressional request for such a plan.  The goal is an integrated, 
+sustained national ocean observing system, and the report establishes
+the following seven areas of focus for such a system (taken from the
+Executive Summary of the above report):
+\begin{itemize}
+\item Detecting and forecasting oceanic components of climate variability.
+\item Facilitating safe and efficient marine operations.
+\item Ensuring national security.
+\item Managing living resources for sustainable use.
+\item Preserving healthy and restoring degraded marine ecosystems.
+\item Mitigating natural hazards.
+\item Ensuring public health. 
+\end{itemize}
+
+The report (section 3: Design and Status of a U.S. Ocean Observing 
+System, subsection 3.1: Infrastructure) calls for creation of a prototype 
+of a data management system which ``could be a combination of DODS, LABNET, 
+Master Environmental Library, the hub-node concept described in Powell 
+(1998), and the objectives of a distributed data system in which 
+individuals and institutions serve our their data in accordance with 
+community conventions (called a National Virtual Ocean Data System; 
+CORE, 1998).'' 
+
+The U.S. Ocean Observing System comprises many elements, including
+\begin{itemize}
+\item people
+\begin{itemize}
+\item Data collectors, including scientists, fisherman, managers operating
+monitors of all types, 
+
+\item Data providers, who are the data collectors in
+many cases, but who may be data archivers, or system administrators.
+
+\item Intermediate users, who convert raw data into data products such
+as maps, graphs, images, animations, and web-based information used
+by the myriad of end users.
+
+\item End users, who make use of the data for their own purposes, which range 
+from research on all levels to fishery managers, who have to make decisions
+concerning fishing restrictions and the application of resources in marine
+habitats, to short and long range planners, to search and rescue operations,
+to educators at all levels, to government decision makers.  
+
+\item Developers and maintainers of the hardware and software to allow 
+the discovery, collection, storage 
+and access, transfer, and transformations of the information to take place 
+in a timely and efficient manner, dictated by the needs of the end users, 
+rather than the inherent limitations of the system.
+
+\end{itemize}
+\item Hardware and software.
+\begin{itemize}
+\item Hardware for the collection and analysis of the raw data.
+\item Data location mechanisms to allow users to locate data relevant to their
+needs.
+\item Data transmission mechanisms for getting data from providers to users,
+\item Hardware and software analysis tools for users to obtain the products
+they need.
+\end{itemize}
+\end{itemize}
+
+A summary of many of the user constituencies and products of
+the Ocean Observing System are given in Table 3.2 of the report, 
+arranged to address the areas of focus itemized above.
+
+However, the U.S. Ocean Observing System is more than the sum of its 
+parts, because it embodies the end uses to which the elements are put.  It 
+encompasses the determination of lobster population migrations with time and 
+with resource changes in the Gulf of Maine.  It encompasses the determination
+of coastal currents in real-time for search and rescue operations as well
+as general shipping navigation.  It encompasses the generation of plots
+of changing sea surface temperature that are downloaded in classrooms to
+describe the variations of El Ni\~{n}o and La Ni\~{n}a, and their climatic
+effects on local weather patterns.  It encompasses the improvement of
+weather and ocean modeling systems that result in more accurate 
+weather forecasts and climate modeling.  It encompasses the contributions
+to society that come from a fuller knowledge of, understanding of, and
+use of the marine environment which surrounds and flows through the
+human habitat.  
+
+\subsection{The Role of \ac{NVODS} in \ac{GOOS}}
+
+\ac{NVODS} provides the infrastructure for moving the data
+and metadata and data products (i.e. the information), necessary for the 
+Ocean Observing System to function.
+
+\ac{NVODS} has at its base the OPeNDAP data access protocol capable of
+addressing data transport needs in \ac{GOOS}. As such it forms a
+fundamental component of this system. Its contribution is however not
+limited to this system in that it will also provide access to data
+that are not formally part of \ac{GOOS} thus offering the possibility
+for interoperability between \ac{GOOS} data holding and other data of
+oceanographic interest.
+
+In light of the role that \ac{NVODS} will play in Coastal \ac{GOOS}, project
+personnel should work closely with the OCEAN.US office in establishing
+the metadata and data access standards that will be required for the
+\ac{GOOS} data system.
+
+In that \ac{NVODS} is envisioned as a fundamental component of
+\ac{GOOS}, the \ac{NVODS} user community should include, but not be limited to
+those involved in ocean management.  The \ac{NVODS} effort should begin
+working with the ocean management community immediately.
+
+\T\newpage
+\section{Workshop and National Meeting Recommendations}
+\label{WORKSHOP-RECOMMENDATIONS}
+
+A number of recommendations were made as a result of the first year
+workshops and National Meeting. These recommendations were regrouped
+following the National Meeting by Gallagher, Cornillon, Holloway and
+Hemenway and software tasks were identified to address each of the
+recommendations. Regrouping allowed for a more systematic approach
+to the software effort. These software tasks were then rank ordered
+in terms of their perceived importance to the task as a whole. The
+rank ordered list was then presented to the \ac{ExCom} which, after
+some changes, endorsed the list. The prioritized list endorsed by
+the \ac{ExCom} is presented in Appendix~\ref{PRIORITIZED-LIST}. The
+regrouped recommendations resulting from the workshops and National
+meeting are presented below:
+
+\begin{enumerate}
+\item DAP-related modifications 
+   \begin{itemize}
+   \item Modify DODS to handle: [24 - other web tools handle these well.] 
+      \begin{enumerate}
+         \item maps 
+         \item graphs 
+         \item images 
+         \item animations 
+      \end{enumerate}
+
+   \item Allow for more projection types on the earth's surface. [28,31] 
+
+   \item Define data rules to make computer models and output accessible 
+      [The DAP already handles model output well] 
+
+   \item Provide password protection for DODS-served datasets. [23] 
+
+   \item Provide the ability to display a disclaimer for certain datasets. [33] 
+
+   \item Provide secure software for DODS servers. [11] 
+
+   \item Intra and inter data set aggregation. [In progress for gridded data sets, 30] 
+
+   
+   \end{itemize}
+
+\item NVODS web/browser interface and metadata issues. (Data location and use.) 
+
+   \begin{itemize}
+   \item Provide a web-based catalog that: [1,3,8,10,15,19,21,27,37] 
+        \begin{enumerate}
+           \item is searchable by keyword. [6,16,38] 
+           \item is searchable by geography. [6,9,15] 
+           \item lists all available datasets (not just DODS). [15,21] 
+          \item Contains regional datasets, model output, and products 
+people are willing to serve. [6] 
+        \end{enumerate}
+
+   \item Provide a web browser interface that allows: [1,9,14,17,18] 
+        \begin{enumerate}
+           \item location [1,9] 
+           \item subsettng [1,9] 
+           \item manipulation [??] 
+           \item display [1,9] 
+           \item data downloading [4,16] 
+        \end{enumerate}
+
+   \item Users needs to find the data they need: see 1 above. 
+
+   \item Need a place for data quality flags [user feedback re data quality,45] 
+
+   \item Generic display [5] 
+
+   \item Coordinate metadata efforts with FGDC (and GCMD -ed) [15] 
+   \end{itemize}
+
+
+\item Client-side issues 
+   \begin{itemize}
+   \item Need a GIS client [2] 
+
+   \item URL builder [1,5,6,9,15,17,18,22,29,39,40,42]
+   \end{itemize}
+
+
+\item NVODS user-support issues 
+   \begin{itemize}
+   \item Need regional help desks for installation of DODS servers and clients. 
+      [A regional issue - Unidata support provides this at the national level.] 
+
+   \item Need high quality, easy to understand documentation. [11] 
+
+   \item Provide a means to record problems users have using DODS and installing servers.
+      [Unidata support provides this.] 
+
+   \item Establish mailing lists for regional participants. [A regional issue] 
+   \end{itemize}
+
+
+\item NVODS outreach efforts 
+   \begin{itemize}
+    \item Create pilot projects to demonstrate the usefulness of DODS for 
+current regional players and others not in attendance at the 
+workshops. [13] 
+
+   \item Find ways to identify other groups who would benefit from the 
+use of DODS. 
+      [An ExCom issue] 
+
+   \item Perform demonstrations of the use of DODS [27] 
+   \end{itemize}
+
+
+\item Other issues 
+   \begin{itemize}
+   \item Standards related to NVODS and DODS [6,12,15,20,31,36,37,44] 
+
+   \item Push-pull linkage [34] 
+
+   \item Mirror servers [38 - not really a project issue.] 
+
+   \item Develop functionality to address: 
+        \begin{enumerate}
+            \item dataset certification [27] 
+            \item data archaeology and rescue [Not a project priority] 
+            \item long term data archiving [Not a project priority] 
+        \end{enumerate}
+   \end{itemize}
+
+\item Project structure/support issues 
+   \begin{itemize}
+      \item Create regional web-sites and/or list servers to facilitate 
+greater communication within regions. [A regional issue] 
+      \item Project working groups: [An ExCom issue] 
+        \begin{enumerate}
+      \item Web-client [We have a first crack at this with the LAS evaluation group.] 
+      \item Regional/Topical efforts/pilots 
+      \item Data location/discovery 
+      \item Standards [Transport and metadata.] 
+      \item Strategic [Is this the role of the ExCom?] 
+        \end{enumerate}
+   \end{itemize}
+
+\item Issues not identified but are of importance to the project 
+   \begin{itemize}
+   \item Data server metrics [7] 
+
+   \item Repeating axes [25] 
+
+   \item BUFR server[35] 
+
+   \item HDF API client library[41] 
+
+   \item Macintosh OS[43] 
+   \end{itemize}
+
+\end{enumerate}
+
+\T\newpage
+\section{Executive Committee Recommendations}
+\label{EXCOM-RECOMMENDATIONS}
+
+In addition to addressing the list of specific recommendations listed
+in Appendices~\ref{WORKSHOP-RECOMMENDATIONS} and \ref{PRIORITIZED-LIST}, 
+the \ac{ExCom} made a number of other recommendations. These are
+summarized here along with action taken to address them.
+
+\begin{itemize}
+\item The highest short-term priority for the project should be to expand
+the \ac{NVODS} user base. To effect this, a three pronged approach was
+outline by the \ac{ExCom}: 
+
+\begin{enumerate}
+\item New Users must be entrained in the system.
+
+\emph{Status 24 February 2002} -- \ac{NVODS} staff negotiated with the
+\ac{AGU} for a booth at the Ocean Sciences Meeting held in Honolulu, HI
+11-15 February 2002.
+
+\item \ac{NVODS} capabilities must be demonstrated through pilot projects,
+
+\emph{Status 24 February 2002} -- See Section~\ref{PILOTS}
+
+\item \ac{NVODS} must entrain organizations, particularly at the national
+and regional levels, to be aware of and to take advantage of the \ac{NVODS}
+capabilities for moving data and data products to users who need them.
+To this end, the \ac{NVODS} project should have representatives at \ac{GOOS}
+and other national meetings.
+
+\emph{Status 24 February 2002} -- A 2-day meeting was held with Navy
+personnel responsible for \ac{TEDS}\htmlnote{http://www.nrlmry.navy.mil/~lande/TEDS/}.
+\end{enumerate}
+
+\item The \ac{NVODS} project must enhance the software and metadata 
+capabilities it has available to add critical components needed 
+to fulfill the \ac{NVODS} vision.  These include:
+
+\begin{enumerate}
+\item Completing the highest priority items in the prioritized software
+list.  
+
+\emph{Status 24 February 2002} -- See Appendix~\ref{PRIORITIZED-LIST}.
+
+\item Partner with an organization/agency to define a controlled
+vocabulary for the \ac{NVODS} project.
+
+\emph{Status 24 February 2002} -- No action.
+
+\item \ac{NVODS} should have a site for consistent use metadata for
+\ac{NVODS} datasets.
+
+\emph{Status 24 February 2002} -- No action, waiting for the development
+of the \ac{AIS}.
+
+\item \ac{NVODS} should establish a supporting partnership with an
+organization/agency to set up a data discovery mechanism for \ac{NVODS}
+datasets.
+
+\emph{Status 24 February 2002} -- The \ac{NVODS} project office has
+worked closely with the \ac{GCMD} to coordinate the lists of OPeNDAP$^2$
+accessible datasets. Approximately 2/3 of the known datasets are now
+searchable through the \ac{GCMD}.
+
+\item The \ac{GIS} capabilities need to be developed as openly as possible.
+
+\emph{Status 24 February 2002} -- The approach taken toward the 
+\ac{OPeNDAP}--ARCview interface has been to modularize it as much
+as possible so that some of the code can be reused with other \ac{GIS}
+vendors. 
+
+\item The \ac{NVODS} software developers must provide a set of clear
+server installation guidelines.
+
+\emph{Status 24 February 2002} -- No action.
+
+\item The \ac{NVODS} installation package should include a browser that
+can be used to access an arbitrary dataset, and a data registration tool
+that will help the data providers identify their user communities and
+provide a means to let those communities know that the new data are
+available on the \ac{NVODS} network.
+
+\emph{Status 24 February 2002} -- No action.
+
+\item The \ac{NVODS} project needs to consider how to address the needs
+of users who require access to real-time and near real-time data, and
+that UNIDATA be asked to give a demonstration of their ``push'' capabilities
+applied to an oceanographic dataset.
+
+\emph{Status 24 February 2002} -- No action.
+
+\item The \ac{NVODS} project should design the metrics gathering
+capabilities with the \ac{LAS} project to take advantage of the \ac{LAS}
+experience with end users.
+
+\emph{Status 24 February 2002} -- No action.
+\end{enumerate}
+
+\item The \ac{NVODS} project should make some management decisions which
+will enhance the project's ability to fulfill the \ac{NVODS} vision.
+\begin{itemize}
+\item Consider reducing the number of platforms supported within the
+project to allow more resources to be directed toward meeting the goals
+of the project.
+
+\emph{Status 24 February 2002} -- It is not clear which platforms to
+eliminate. No action.
+
+\item The \ac{NVODS} project should adopt an ``open source'' structure
+for software development, and encourage outside users to develop and contribute
+their own software to interface with the existing \ac{NVODS} infrastructure,
+thereby increasing and expanding that infrastructure.  Such contributions
+should be recognized and publicized as part of the \ac{NVODS} project.
+
+\emph{Status 24 February 2002} -- The first draft of a document that 
+details how one writes to the \ac{DAP} has been written. Work has also
+begun on facilitating the build process, in particular which compliers
+are used.
+\end{itemize}
+
+\end{itemize}
+
+\T\newpage
+\section{Additional Software Capabilities -- Prioritized Task List}
+\label{PRIORITIZED-LIST}
+
+The following is a partially prioritized list\footnote{An updated
+version of this list is available at: 
+\xlink{http://mail.po.gso.uri.edu/tracking/nvods/priorities.html}{http://mail.po.gso.uri.edu/tracking/nvods/priorities.html}.} 
+of software capabilities beyond those which already exist in 
+\ac{NVODS} that are required to meet the 
+recommendations of the workshops and the \ac{ExCom}. Items through
+\#25 are prioritized. Item \#26 and following are of lower priority
+than the first 25, but are not ordered relative to one another. When
+the first 25 items have been addressed the remaining issues will be
+revisited and addressed as appropriate. In addition to listing the 
+items here, their status as of 24 February 2002 is provided. 
+
+\begin{enumerate}
+\item \emph{\ac{AIS}} -- The primary problem currently faced in the project 
+is the lack of a consistent set of what we refer to as \emph{translational 
+use metadata}\footnote{See \xlink{http://www.unidata.ucar.edu/packages/dods/archive/proposals/nopp-html/nopp\_10.html}{http://www.unidata.ucar.edu/packages/dods/archive/proposals/nopp-html/nopp\_10.html} 
+for a discussion of different metadata types.}, those metadata needed for 
+Level 3 interoperability, machine-to-machine interoperability with semantic
+meaning. 
+
+\emph{Status 24 February 2002} -- This issue has been discussed extensively
+on the \ac{DODS} e-mail list. A design for this system component will be
+completed and the system implemented in the May-June 2002 time frame.
+ 
+\item \emph{GIS Client} -- This refers to the need for \ac{GIS} access
+to data sets accessible via \ac{NVODS}. 
+
+\emph{Status 24 February 2002} -- A subcontract has been let to \ac{ESRI}
+to develop an \ac{NVODS} client for \ac{ESRI} products.
+
+\item \emph{.HTML page (a top level directory page at the server)} -- Over
+the course of the project we have found that we can not rely on data providers
+to advertise the datasets that they are serving with OPeNDAP$^2$ servers.
+This item refers to automatic generation of a web page at the top of the
+htdocs directory that will advertise the existence of \ac{OPeNDAP} 
+servers. The data provider will be able to disable the installation of
+this web page.
+
+\emph{Status 24 February 2002} -- A preliminary discussion was held at
+the \ac{DODS}-Tech meeting. This item will be combined with item \#10
+below.
+
+\item \emph{File-out Tool:  DataDODS - output to - \acs{netCDF}, \acs{HDF},
+MATLAB, \acs{IDL}, etc.}
+-- Although the primary goal of \ac{NVODS} is for data accessible in the
+system to be accessible directly from the user's application this may not
+always be practical or desirable. The \emph{file-out} capability is 
+envisioned as a server-side service that will provide the desired data
+in one of a number of specified formats. 
+
+\emph{Status 24 February 2002} -- a \acs{netCDF} file-out capability is
+in beta test.
+
+\item \emph{Generic Display} -- Simple plots of any \ac{NVODS} accessible
+datasets should be possible from a web browser, \emph{even} if there is
+insufficient metadata for the plotting program to plot the data in a
+semantically meaningful context. 
+
+\emph{Status 24 February 2002} -- No action.
+
+\item \emph{Adopt a Controlled Vocabulary} -- One of the fields that is 
+important in translational use metadata is the mapping from the names of
+variables used in the dataset to names that have more geophysical meaning.
+Unfortunately, we do not yet have a list of acceptable variable names.
+This task involves either adopting one or if need be developing one.
+
+\emph{Status 24 February 2002} -- No action.
+
+\item \emph{Build Metrics-gathering into Servers} -- Knowledge of OPeNDAP$^2$
+data accesses is important for the project. Much of this information is
+currently available in the \acs{httpd} logs of systems maintaining 
+OPeNDAP$^2$ servers. This information is however tedious to collect and
+parse and is not as complete as we would like. 
+
+\emph{Status 24 February 2002} -- No action.
+
+\item \emph{Data Registration Tool} -- A simple mechanism should exist for 
+those willing to list their OPeNDAP$^2$-accessible datasets at one of
+the \ac{NVODS} directory sites.
+
+\emph{Status 24 February 2002} -- A basic tool has been built and is available
+on the web page that lists all know OPeNDAP$^2$-accessible datasets. Click
+on the ``Click here to submit a dataset'' button at the top of the datasets
+page:
+
+\noindent http://www.unidata.ucar.edu/cgi-bin/dods/datasets/datasets.cgi?
+\newline xmlfilename=datasets.xml
+
+\item {A \acs{GUI} Geospatial/temporal Selection Capability} -- For most 
+datasets accessible via the system, the lack of a consistent set of 
+translational use metadata make it difficult to impossible to develop a 
+general tool that will allow users to graphically (or even with a
+form) select subsets of the desired datasets. There are however several
+clients (\ac{LAS} and the Matlab \ac{GUI}) that do provide such a capability
+for a subset of the datasets accessible via the system. In both cases the
+needed metadata is stored at the client. With the advent of the \ac{AIS}
+it should be possible to generalize the approach taken in these interfaces
+to a more general interface that would work for a wide range of datasets
+in the system.
+
+\emph{Status 24 February 2002} -- No action.
+
+\item \emph{DODS-dir} -- This refers to the ability to traverse the
+directory structure on systems with OPeNDAP$^2$ servers searching
+for datasets accessible to \ac{NVODS} on these systems.  
+
+\emph{Status 24 February 2002} -- A preliminary version of this has been
+released and is accessible at most OPeNDAP$^2$ server sites. The version
+that currently exists is however not robust to non-OPeNDAP$^2$ datasets
+in these directories nor does it differentiate between files in the
+directories and file-servers, inventories of OPeNDAP$^2$ accessible
+datasets.
+
+\item \emph{Secure Server Software for Datasets} -- An issue of concern
+is the security of the \acs{CGI} scripts that are part of the 
+OPeNDAP$^2$ servers.
+
+\emph{Status 24 February 2002} -- Done, OPeNDAP$^2$ servers have been
+evaluated by two different groups for potential holes and none were found.
+
+\item \emph{\ac{XML} version of the \ac{DAP}} -- With the rapid adoption of
+\ac{XML} as a web based encoding scheme for text, it has become clear that
+the project would benefit from at the very least encoding the \ac{dds} and
+\ac{das} in \ac{XML}.
+
+\emph{Status 24 February 2002} -- Separate funding has been obtained by
+\ac{OPeNDAP} to explore this. Work on this will be completed this 
+Federal fiscal year.
+
+\item \emph{Enable serving \ac{CODAR} Data} -- This refers to a pilot project
+more than to any specific software required by the core. The idea is
+to develop a web interface to \ac{CODAR} data from a variety of sites.
+
+\emph{Status 24 February 2002} -- See Section~\ref{CODAR-PILOT}.
+
+\item \emph{Geospatial-Temporal Display of NVODS Datasets} -- The fact
+that all datasets accessible via OPeNDAP$^2$ in \ac{NVODS} have a
+common structural representation makes it possible to automatically
+manipulate these in client-side applications. For those that are
+semantically consistent, fusion or overplotting is possible.
+
+\emph{Status 24 February 2002} -- \ac{LAS} provides this functionality
+for a number of \ac{NVODS} accessible data.
+
+\item \emph{\acs{FGDC} Reader into the \ac{das}} -- Many datasets have been 
+described via the \acs{FGDC} clearinghouse. Unfortunately there is currently
+no way to link these descriptions with the datasets themselves via the
+\ac{das}.
+
+\emph{Status 24 February 2002} -- No action.
+
+\item \emph{Servers to Support Individual Investigators} -- Two data servers
+have been built for \ac{PI} datasets: FreeForm and \acs{JGOFS}. Neither of
+these works well for certain classes of ``simple'' datasets. 
+
+\emph{Status 24 February 2002} -- No action.
+
+\item \emph{\ac{GIS}: Toolbox} -- Building \acs{URL}s can be difficult.
+Tools that build \acs{URL}s for some of the more popular subsets may be
+needed.
+
+\emph{Status 24 February 2002} -- No action. We believe that this is
+ultimately coupled with item~\#1.
+
+\item \emph{Client Toolbox, including GUI-ettes} -- In addition to \acs{URL}
+builders, returned data may require transformation to be in a consistent
+set of geophysical units or variable names may require transformation. 
+Routines that perform these functions for existing clients: MATLAB, IDL,
+Ferret, etc. would make the data significantly more useful.
+
+\emph{Status 24 February 2002} -- No action. We believe that this is
+ultimately coupled with item~\#1.
+
+\item \emph{Web Crawler} -- This task would be better termed \emph{site
+crawler} in that it refers to an inventory of all datasets at a given
+site once the site is known.
+
+\emph{Status 24 February 2002} -- A prototype site crawler has been developed.
+This crawler does not however differentiate between files in a dataset and
+datasets. No action has been taken on addressing the latter.
+
+\item \emph{Multi-URL Protocol}
+
+\emph{Status 24 February 2002} -- 
+
+\item \emph{Provide DODS-dir with Dataset list}  -- 
+
+\emph{Status 24 February 2002} -- Done.
+
+\item \emph{Grid() Server-side function}  -- Datasets that consist of
+arrays with map vectors should be subsettable using the maps rather than
+only by array subscript.
+
+\emph{Status 24 February 2002} -- This server-side function has been developed
+and is available in release 3.2. The function is however simple in that it 
+does not know about axes that repeat such as longitude.
+
+\item \emph{Control Access to DODS-served Datasets}  -- Password protection.
+
+\emph{Status 24 February 2002} -- Is available in release 3.2.
+
+\item \emph{Design NVODS to handle: maps, graphs, images and animations}
+-- The \ac{ExCom} felt that this should be done via related \acs{URL}s
+rather than modifying the \ac{DAP}. This is seen as an NVODS issue probably 
+to be handled by judicious use of placement of metadata 
+images/maps/graphs/annimations.
+
+\emph{Status 24 February 2002} -- No action.
+
+\item \emph{Concatenation of Modulo Requests} -- Maps of arrays that
+repeat are special cases of map vectors. Making this information 
+available to clients would be useful
+
+\emph{Status 24 February 2002} -- No action. It is assumed that this
+information is in the \ac{das} (or can be added to the \ac{das}) or
+is obvious such as in the case of longitude when the geophysical 
+meaning of the independent variable is clear.
+
+THE FOLLOWING ITEMS ARE NOT RANKED WITHIN THEIR PRIORITIES:
+(Items 26-31 are second priority, Items after 31 are third priority.)
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Server of GIS data into the NVODS system.
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Provide Unique Dataset Tags.
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Allow for more projection types on the Earth's Surface.
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Fileserver Interface
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Point Aggregation Server for non-gridded data. 
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Interface for standardized representations  of independent variables 
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Support a swath data type (NGrid?).
+
+\emph{Status 24 February 2002} -- Modifications to the \emph{grid} data
+type may support swath data directly.
+
+\item Display a Disclaimer on access to certain datasets. 
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Enable Push serving data into NVODS. 
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item BUFR Server
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Develop an ESML-based server. (See: Independent Investigator Server)
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Develop an NVODS Variable-Name Controlled Vocabulary. 
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Mirror Servers
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item IDL GUI
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item MATLAB GUI
+
+\emph{Status 24 February 2002} -- An updated MATLAB GUI is currently
+available in (beta) test form and is scheduled for full release by
+15 March 2002.
+
+\item HDF API -- Client Library
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Develop Depth interfaces Similar to Time
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Macintosh OS-X
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item CORBA Gateway
+
+\emph{Status 24 February 2002} -- No Action.
+
+\item Data Quality Specification
+
+\emph{Status 24 February 2002} -- No Action.
+
+\end{enumerate}
+
+\T\newpage
+\section{Formation of \ac{OPeNDAP}}
+\label{OPENDAP}
+
+In response to the \ac{ExCom} recommendation for the formation of a 
+separate entity to handle the \ac{DAP} used by \ac{NVODS}, 
+a non-profit corporation with 501~(c)(3) 
+status called \acl{OPeNDAP} has been formed. The goal of this corporation 
+is to develop and promote software that facilitates access to data via 
+the network. The \ac{OPeNDAP} Data Access Protocol, OPeNDAP$^2$, forms 
+the core of the \ac{OPeNDAP} effort. The \ac{DODS} \ac{DAP} will become 
+OPeNDAP$^2$. \ac{OPeNDAP} is not affiliated with a particular discipline 
+data system such as \ac{NVODS}; it is envisioned as a generic data exchange 
+mechanism that lies at the core of a variety of discipline data systems. 
+The evolution of \ac{OPeNDAP} will be guided by input from a variety of 
+discipline data systems. \ac{OPeNDAP} software will be open source. 
+\ac{OPeNDAP} will seek funding independently of discipline data systems. 
+
+\noindent Replacing \ac{DODS} with OPeNDAP$^2$ underlines the following:
+
+\begin{itemize}
+\item The discipline-independent nature of the \ac{DAP} $\Rightarrow$
+\emph{oceanographic} has been removed from the name,
+\item The focus on only one part of an end-to-end system, $\Rightarrow$,
+\emph{system} has been removed from the name, and
+\item The open source nature of the effort. 
+\end{itemize}
+
+\noindent \ac{OPeNDAP} should also facilitate the hiring of computer 
+programmers and systems developers when compared with hiring in a 
+university setting where hiring is now severely hampered by salary 
+constraints.
+
+A for-profit organization is envisioned to work in concert with
+the non-profit consortium, to develop products from the NVODS capabilities 
+that would be of use to specific user communities.  The combination of the
+two corporations would provide the maximum continued expansion and 
+development of the NVODS system.
+
+\T\newpage
+\section{\ac{DODS}-Tech Meeting }
+\label{DODS-TECH}
+
+A gathering of those involved in the development of the \ac{DODS} 
+\ac{DAP}, associated clients and servers and data discovery tools,
+took place in Boulder CO at \ac{UCAR} facilities on 9--11 January
+2002. This meeting is referred to as the \ac{DODS}-Tech meeting.
+The proceedings of this meeting will be available on CD-ROM from
+Unidata shortly. Requests for the CD-ROM may be made from the 
+\ac{DODS} home page. 
+
+In addition to a number of interesting presentations, the meeting
+also involved a session in which the following issues related to 
+weaknesses in the current implementation of the system or areas for 
+future development were raised:
+
+\begin{itemize}
+\item \emph{Inventory access for datasets consisting of a large number of
+elements of different size.} -- This problem relates to datasets such
+as profile data bases, ship cruises, mooring records, etc. There is
+at present no consistent way of dealing with such data bases and there
+exist a significant number of such datasets that are of great interest
+to the oceanographic and meteorological communities. This is an area 
+that will be pursued initially via the \ac{DODS} e-mail list and then 
+possibly by a focus group.
+
+\item \emph{\ac{XML} representations of the \ac{dds} and \ac{das}} -- 
+It became increasingly clear at the workshop that at a minimum the
+\ac{dds} and \ac{das} must be represented in \ac{XML}. This issue
+will be pursued by the core group (and the \ac{PMEL} group) with 
+NOAA funding.
+
+\item \emph{Caching} -- Concern was raised with regard to caching
+by the core. Beyond raising the issue, no decision was made on how
+to proceed with this one.
+ 
+\item \emph{Evolution of the core} -- Two issues were raised with
+regard to the core and how it is implemented:
+
+\begin{enumerate}
+\item \emph{Performance} -- Although the \ac{DAP} as implemented
+works well for small to moderate sized datasets, it may not be
+as efficient as needed for very high volume transfers. \ac{HAO}
+with funding from the Earth System Grid project will investigate
+options for a more efficient encoding of the transport protocol
+for high data rate (grid) transfers.
+
+\item \emph{Modularity} -- A concern was raised about the monolithic
+nature of the core which makes it hard to maintain and to modify.
+Beyond raising the issue, no decision was made on how to proceed with 
+this one.
+\end{enumerate}
+
+\item \emph{Services Discovery} -- As servers become more sophisticated,
+the need to identify services provided by or at these servers, becomes
+more pressing. This is an area that will be pursued initially via the 
+\ac{DODS} e-mail list and then possibly by a focus group.
+
+\item \emph{Synthetic Variables} -- This relates to variable that are
+created from existing variables in a dataset by a server. It is in fact
+a subset of the \emph{Services Discovery} in that the creation of new
+variables can be viewed as a server-side service.
+
+\item \emph{Support for the \ac{DRDS}} -- The server provides each
+Table in the Database as a separate dataset. 
+\end{itemize}
+
+\T\newpage
+\section{Current Status}
+\label{STATUS}
+
+While this section is intended to give the status of the \ac{NVODS} project
+at the end of the first year (August 2001),  some additional progress is
+included as of this writing (February 2002).  
+        
+\subsection{Current Data Providers}
+
+Over 250 datasets from 24 sites already are served into the \ac{NVODS}
+system.  The datasets range from \ac{GLOBEC} cruise data to mooring data
+to large collections of satellite data which are continuously updated,
+including sea surface temperature, height, and winds. For a list of the 
+known datasets provided via \ac{DODS}, see the ``Datasets'' list on the 
+\ac{DODS} web-site:
+
+\begin{center}
+http://unidata.ucar.edu/packages/dods/
+\end{center}
+
+\subsection{Data Discovery}
+
+There exist several data discovery mechanisms within the \ac{NVODS}
+effort:
+
+\begin{itemize}
+
+\item \emph{The Data Set List} -- This is a manually maintained 
+web-site list
+of \ac{DODS}-accessible data sets. The list is only searchable by
+words in the data set name. It is organized by data provider.
+
+\item \emph{The \ac{DODS} Portal of the \acl{GCMD}} -- This is a
+specialized view of the data holdings in the \ac{GCMD}. It allows
+the user to search for \ac{DODS}-accessible data sets meeting user 
+defined criteria. Approximately two thirds of all known \ac{DODS}-accessible
+data sets are described in the GCMD. The remainder lack the metadata 
+required by the \ac{GCMD} for data discovery.
+
+\item \emph{The Matlab \ac{GUI}} -- This Matlab \ac{GUI} provides
+a graphically searchable list of data sets that are \ac{DODS}-accessible.
+This list comprises only a small fraction of all \ac{DODS}-accessible
+data sets.
+\end{itemize}
+
+\subsection{Data Servers}
+
+Standard OPeNDAP$^2$ data servers exist for: \acs{netCDF}, \acs{HDF}-4,
+\acs{HDF}-5, \acs{HDF}-\acs{EOS}, Matlab, DSP, \ac{JGOFS} and FreeForm.
+In addition, an JDBC server exists for relational data bases.
+
+Two specialized servers have also been developed: the \acl{AS} and
+the \acl{GDS}. The \ac{AS} provides a single view of multi-file 
+datasets of arrays. Three types of aggregation have been defined:
+\begin{enumerate}
+
+\item Aggregation of arrays where all of the arrays are projected
+on the same n-dimensional space. Aggregation is on a dimension not
+represented in the original n dimensions; the dimensionality of
+the resulting array is increased by one.
+
+\item Aggregation of arrays that represent different variables.
+In this case m n-dimensional arrays, each representing a different
+parameter are assembled in one dataset, but not into one array.
+
+\item Aggregation of arrays for in which the aggregated dimension
+already exists. In this case the dimensionality of the aggregated
+array is the same as that of the input arrays, one of the dimensions
+is simply larger, the sum across all files that are to be aggregated
+of the elements in the dimension that is to be aggregated.
+\end{enumerate}
+
+The \ac{GDS} was developed by the \ac{COLA} group to facilitate 
+internal data transfers within the project. At the same time, this
+server provides in two areas added functionality for the \ac{NVODS} 
+effort:
+
+\begin{enumerate}
+\item Because \ac{GrADS} reads \ac{GRIB} datasets, the \ac{GDS}
+adds \ac{GRIB} to the data types that may be served via 
+OPeNDAP$^2$.
+
+\item The \ac{GDS} also allows for analysis at the server; any
+\ac{GrADS} function may be applied to datasets accessible to
+the \ac{GDS} prior to the data being delivered to the OPeNDAP$^2$
+client.
+\end{enumerate}
+
+\subsection{Data Clients}
+
+OPeNDAP$^2$ clients have been written for Matlab and IDL. In addition,
+an OPeNDAP$^2$ client library has been written for the \Cpp\ 
+implementation of \acs{netCDF}. This means in that any application
+that makes use of the \Cpp\ \acs{netCDF} library may be relinked with
+the OPeNDAP$^2$ \acs{netCDF} client and the application is then
+OPeNDAP$^2$-enabled. Ferret and GrADS have been relinked this way.
+The Java version of the \acs{netCDF} library has been
+OPeNDAP$^2$-enabled at Unidata, the developers of \acs{netCDF}. This
+means that any application that makes use of this library is
+automatically an OPeNDAP$^2$ client.  Two such clients that we are
+aware of are ncBrowse and VisAD.  Finally, Excel can import data via
+\acs{http} if it is comma-delimited.  In that most OPeNDAP$^2$ servers
+have associated with them an ascii service that provides
+comma-delimited output, all of these OPeNDAP$^2$-accessible data sets
+are also accessible to Excel.
+
+\end{document}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

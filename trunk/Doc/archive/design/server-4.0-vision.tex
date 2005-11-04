@@ -1,0 +1,229 @@
+% This is the start of the server vision document.
+
+\documentclass[justify]{dods-paper}
+\usepackage{longtable}
+\usepackage{acronym}
+\usepackage{xspace}
+\usepackage{gloss}
+\usepackage{changebar}
+\rcsInfo $Id$
+
+\include{../../boiler/dods-def}
+
+% Note: to get the glossary to work, run bibtex on the *.gls.aux file,
+% then latex the file, then bibtex *.gls, then latex again. Also, make
+% sure to set your BST and BIBINPUTS environment variables so that the
+% BST and BIB files will be found.
+% \makegloss
+
+\title{Server 4.0 Overview}
+\author{James Gallagher\thanks{OPeNDAP, Inc.
+    jgallagher@opendap.org}}
+\date{Printed: \today \\ Revision: \rcsInfoRevision}
+
+\begin{document}
+
+\maketitle
+
+\section* {Change History}
+
+\begin{verbatim}
+
+$Log: server-4.0-vision.tex,v $
+Revision 1.4  2004/12/07 00:28:11  ndp
+*** empty log message ***
+
+Revision 1.3  2004/12/01 21:55:30  jimg
+Ripped out most of the features (section 5); this needs work. Get
+input from Nathan.
+
+
+Revision 1.1  2004/11/30 04:01:30  jimg
+Added
+
+
+\end{verbatim}
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%% Introduction %%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+
+This document provides a placeholder for an initial set of discussions within our group to determine if a specific development effort will meet the needs of one or more of our proposals. It describes the features needed to satisfy the goals of the proposal(s) as well as other features included by the development team.
+
+\subsection{Definitions, Acronyms and Abbreviations}
+
+\subsection{References}
+
+\bibliographystyle{plain}
+\raggedright
+% Edit this path once in DODS-doc jhrg 11/23/04
+\bibliography{../../boiler/dods}
+
+\section{Positioning} % section 2
+\subsection{Problem Statement}
+
+\begin{table}[htbp]
+\label{problem-statement}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+The problem of & 
+\parbox{4in}{finding data sources on a server} \\ \hline
+affects &
+\parbox{4in}{the usability of the servers, making it harder to find data within systems (e.g., NVODS) that use our software} \\ \hline
+the impact of which is &
+\parbox{4in}{that data systems which use our software are not as useful as they could be; people often cannot find data. In addition, building catalogs which describe the entirety of a data system's holdings (spanning several machines) is virtually impossible.} \\ \hline
+A successful solution would be  &
+\parbox{4in}{customizable so that catalogs would not be tied to the physical layout of files on a server and distributed so that a 'master' catalog could reference catalogs for several servers on different machines.} \\ \hline
+\end{tabular} 
+\end{center}
+\end{table}
+
+\subsection{Product Position Statement}
+
+The resultant solution will be targeted as follows:
+
+\begin{table}[htbp]
+\label{product-position-statement}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+For & 
+\parbox{4in}{people that serve data using our software} \\ \hline
+who &
+\parbox{4in}{need better data cataloging} \\ \hline
+Server4.0 is a &
+\parbox{4in}{platform which provides data source catalogs} \\ \hline
+that  &
+\parbox{4in}{are separate from the file system and provide a logical organization which make it possible to exclude files and/or data sources from the catalog,} \\ \hline
+unlike  &
+\parbox{4in}{a relational data base or other ad hoc catalog,} \\ \hline
+our product  &
+\parbox{4in}{will be much easier to set up and maintain and can build distributed catalogs where several different servers can be linked together to form a \emph{virtual} catalog.} \\ \hline
+\end{tabular} 
+\end{center}
+\end{table}
+
+\section{Stakeholder and User Descriptions}
+\subsection{Market Demographics}
+Government labs, university labs, companies. Any place that runs one of our servers.
+
+\subsection{Stakeholder Summary}
+\begin{table}[htbp]
+\label{stakeholder-summary}
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\tblhd{Name} & \tblhd{Represents} & \tblhd{Role} \\ \hline 
+
+\parbox{2in}{Peter Cornillon} & 
+\parbox{2in}{University data providers\\
+Client writers} & 
+\parbox{2in}{Install and run a server\\
+Write clients which use the catalogs and data} \\ \hline
+
+\parbox{2in}{Steve Hankin} & 
+\parbox{2in}{Government lab data providers\\
+Client writers} & 
+\parbox{2in}{Install and run a server\\
+Write clients which use THREDDS catalogs and \opendap data} \\ \hline
+
+%\parbox{2in}{Frew} & 
+%\parbox{2in}{Data catalogers} & 
+%\parbox{2in}{Write clients which use the catalogs} \\ \hline
+
+\end{tabular} 
+\end{center}
+\end{table}
+
+\subsection{User Summary}
+\begin{table}[htbp]
+\label{user-summary}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\tblhd{Name} & \tblhd{Description} \\ \hline 
+
+\parbox{2in}{Data providers} & 
+\parbox{2in}{People who install and run servers} \\ \hline
+
+\parbox{2in}{Client writers} & 
+\parbox{2in}{People who write client applications} \\ \hline
+
+\end{tabular} 
+\end{center}
+\end{table}
+
+\subsection{User Environment}
+
+Unix (Linux, Solaris, Irix, OSF), maybe win32.
+Tomcat/Apache.
+
+\section{Product Overview}
+\subsection{Cost and Pricing}
+
+Open source
+
+\subsection{Licensing and Installation}
+
+GPL or NASA Open Source License. We should look at the NASA OS license and why they went with something other than GPL. 
+
+\section{Product Features}
+
+The most important feature of Server4.0 is to integrate THREDDS catalogs into the OPeNDAP server framework. However, there are other features which address long term goals \opendap.
+
+Those goals are:
+\begin{enumerate}
+\item The server will integrate the Java and C++ DAP servers.
+\item The server will eliminate some redundancy (both the C++/Perl server and Java server currently implement the ASCII data conversion filter).
+\item This design will provide a way to integrate high-performance work done at HAO back into our main body of source code.
+\end{enumerate}
+
+The server must satisfy the following criteria:
+\begin{enumerate}
+\item The server must be secure (define?).
+\item The server must exhibit faster response times than the \Cpp/Perl server for small requests ($<500$ bytes retreived from a data store in $<10^{-2}$ seconds).
+\item The response time for large requests (anything bigger than a small resquest must not be worse than the current \Cpp/Perl server.
+\end{enumerate}
+
+\subsection{THREDDS}
+
+Just about any site that serves data serves more than one data source. THREDDS catalogs are hierarchical like a file system (so they fit easily into most situations where our servers already run) but are not tied explicitly to the server's file system. Data providers will be able to customize them to list only relevant files, they will provide a way to collapse directories (hiding a hierarchy when it's better for remote users) and provide a way to make data bases served using the DAP behave just like files.
+
+Additionally, the THREDDS implementation from Unidata includes the DAP Aggregation Server (AS), so bundling THREDDS into Server4.0 will likely mean that all those servers will be able to aggregate. The AS uses THREDDS catalogs to specify the aggregation.
+
+A future benefit to using THREDDS is that its multi-protocol support may provide an entree into multiple protocol support in our servers and, conversely, may provide an entree to data sources currently served only by other protocols.
+
+\subsubsection{Cataloging Data Sources}
+
+If a data provider does not define a specific set of catalogs, the server shall automatically generate a default catalog. The data provider can use the default catalog as a basis for building a specific catalog for the server. 
+
+The default THREDDS catalogs should be editable so they can serve as a starting point for data providers.
+
+We don't need a special editor in the initial version of the server.
+
+There should be some way to update the catalogs automatically.
+
+\section{Applicable Standards}
+
+\begin{enumerate}
+\item WAR files (not sure if that is  standard, but it is de-facto a standard).
+\item XML
+\item DAP 2.0 (Standard?)
+\item THREDDS 1.0 (Eventual standard?)
+\end{enumerate}
+
+\section{Documentation Requirements}
+
+\subsection{On-line Help}
+
+Minimal; we can use the default HTML page that the WAR files include.
+
+\subsection{Installation Guides, Configuration and README File}
+
+Yes, we will need a manual for this, plus we'll need to update existing documentation (the User's Guide). The Server Installation Guide will likely need a complete rewrite.
+
+\end{document}
+

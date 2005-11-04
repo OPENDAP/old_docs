@@ -1,0 +1,159 @@
+
+% $Id$
+%
+% Written by Glenn Flierl in early 1994. jhrg
+
+\magnification=\magstep1
+\raggedbottom
+\def\title#1{\bigskip\goodbreak\centerline{\bf #1}\medskip}
+\def\section#1{\medskip\goodbreak\noindent{\bf #1}\medskip}
+\def\subsection#1{\medskip\goodbreak\noindent{\sl #1}\medskip}
+\def\references{\narrower\parindent=-20pt}
+\def\jour#1#2{{\sl #1}, {\bf #2}}
+\def\ni{\noindent}
+\def\nobox{\special{ps::/v{pop pop pop pop}def}}
+
+\title{DODS --- Data Delivery}
+
+After some discussion, Jim and I recommend a data delivery system
+which combines aspects of the RPC[remote procedure call]--based model
+and the virtual file system [database] model. We'll describe each of
+these, pointing out the advantages we wish to retain.
+
+\section{Virtual file system}
+
+In this model, the DODS data system would appear to the users as a file
+system, with familiar ``path'' specification for the information they
+wish to retrieve. The concept of a path would be extended in three
+ways: 
+\item{(1)} permit specifying the final form the data is to appear in
+(netCDF, HDF, ascii, image, ...)  
+\item{(2)} permit specifying machine names [note: the virtual
+directory allows one to hide the remote machine name within an alias
+or abbreviation].
+\item{(3)} permit specifying parameters for database operations,
+especially ``selection'' and ``projection'' to be applied to restrict
+the information being returned.
+
+\ni We feel these additions can be made while retaining the advantages
+of a virtual file system:
+\item{(4)} Directory structure/ files provide a familiar and natural
+structure for organizing and retrieving information.
+\item{(5)} Most programs, written by scientists, or freeware, or
+commercial, deal with files. Configuring the virtual data system so
+that it is able to present the information as files permits these
+programs to gather information directly and naturally from the data
+system.\footnote{${}^1$}{We may not be be able to have commercial
+programs interfacing as directly until we build a true virtual file
+system --- which certainly won't happen in the first round.}
+
+\ni What is wrong with a pure virtual file/ database system?
+Essentially, the realization we came to was that translators could
+become virtually impossible to build. We would be asking the
+equivalent of byte--by--byte transformation of the information with
+almost no knowledge of the structure of the information. At times,
+this could require reading a large mass of information across the
+network when all the user might want is a few values.
+
+\section{RPC--based system}
+
+In the RPC model, a particular data structure is defined by an
+application program interface [API]. A user program is linked with
+this API library and all data is gathered by calls to the various
+subroutines. When this library is implemented with RPC's, the
+required information -- what is required and how to transfer it is
+passed back and forth over the network. Thus a call like
+
+\smallskip
+{\tt okflag=readvar(float\_buffer, varnum, begin\_element, end\_element)}
+\smallskip
+
+\ni would result in the integers {\tt varnum, begin\_element,
+end\_element} being transferred to the remote machine, which would
+read the selected stuff from the file and pass it back as floating
+point numbers to be placed in the array {\tt float\_buffer}. In
+addition, it would pass back the result {\tt okflag} to indicate
+whether there was a problem (e.g., end of file) during the read.
+
+Thus a translator program would essentially have subroutine entry
+points corresponding to the API of the target system ({\sl e.g.}
+netCDF) and, from these entry points, make calls with the source
+system's API's ({\sl e.g.} JGOFS). Since there is a lot of
+information embedded in the set of API calls --- and many of them will
+be rather similar from system to system --- the translation job is
+much more straightforward and indeed possible. (Of course, complete
+translation will presumably not be possible in all cases, but
+certainly much of the information can be passed through successfully.)
+
+Figure 1 shows the types of configurations envisioned: In the upper
+panel we show a user program calling an API corresponding to protocol
+1, communicating with a server speaking protocol 1 and serving data
+stored in the corresponding form --- a native mode server. In the
+middle panel, we show a case in which the user program cannot
+communicate with the native server --- the user program speaks
+protocol 2 --- but the data provider has a alternate server which
+speaks protocol 2. The server does whatever translation may be needed.
+The final panel shows the generic case in which the user program and
+the set of data servers made available by the provider have no common
+languages: a translator is interposed in the stream of calls and
+responses. It accepts the RPC calls from the program and makes
+suitable RPC calls to the server. Note that there is a lot of
+similarity between a translator and a non--native mode server.
+
+\section{RPC/VFS system}
+
+How do we combine the advantages of the RPC--based system with the
+properties 4--5 of the VFS? Well, the standard interface to the I/O
+system is a particularly simple API, consisting of {\tt open}, {\tt
+read}, {\tt close}, and perhaps {\tt seek}. Replacing these with a
+DODS RPC version means linking programs to a different {\tt stdio}
+library. However, the information about data structure is not built in
+to these low--level calls (that's the problem with translators in a
+pure VFS system). So we need to pass two more pieces to the {\tt open}
+call: 
+\item{(6)} One to indicate that the DODS system should take interest in the
+call.
+\item{(7)} A second to indicate the desired output format: this piece
+of information also seems important, since some programs, such as {\tt
+more} would prefer to see the data in some kind of ascii listing,
+while {\tt MATLAB} would prefer a particular floating point
+representation. Or {\tt ghostscript} might like a PostScript
+representation.
+
+\ni Putting these requirements together with 1--3 suggests a
+``filename'' syntax of the form 
+
+\smallskip
+{\tt dods://dcz.uri.gso/woce/cruise1/ctd(station=3\&press<100).asc}
+\smallskip
+
+\ni where the {\tt dods:} indicates the DODS protocol is in effect and
+the server should negotiate to find the possible techniques for
+exchanging information [requirement \$6 above], the {\tt //} prefaces
+a machine name [\#2], the {\tt /woce/cruise1/ctd} is information that
+the DODS server on {\tt dcz} will use to find the list of appropriate
+servers [\#4]. The parameters in parentheses {\tt
+(station=3\&press<100)} pass data system selection parameters [\#2].
+Finally the {\tt .asc} specifies the output format [\#1, \#7] ---
+which translator should be invoked.\footnote{${}^2$}{We still have not
+fully decided on the ``virtual'' aspect, but expect that one will be
+able to form links so that a complicated ``filename'' such as the one
+above could be referred to by a shorthand of some kind.} 
+
+When using one of the API's, specification of the form of the output
+would be unnecessary; indeed, it would probably not be required to
+specify the {\tt dods:} prefix either.
+
+\section{Next steps:}
+
+The plan is to implement the above procedures for data delivery. This
+involves building examples for various pieces:
+\item{(A)} {\sl User program API's:} NetCDF, JGOFS, stdio, ...
+\item{(B)} {\sl Translators:} NetCDF $\rightarrow$ JGOFS, JGOFS
+$\rightarrow$ NetCDF, NetCDF $\rightarrow$ ascii, ...
+\item{(C)} {\sl Servers:} NetCDF with NetCDF data, JGOFS with NetCDF
+data, JGOFS with various formats for which methods already exist, ...
+\item{(C)} {\sl User programs:} more, cat, cp; ncdump, ferret; list, pl
+and other JGOFS routines, ...
+
+\end

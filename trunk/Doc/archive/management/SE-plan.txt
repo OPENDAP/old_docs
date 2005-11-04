@@ -1,0 +1,159 @@
+-*-Mode: Outline-*-
+
+$Id$
+
+* Software Engineering Plan for the Distributed Oceanographic Data System
+
+** Introduction
+
+This is a short description of the software engineering approach to be taken
+by the DODS development team. The purpose of this document is to layout a
+simple software engineering (SE) plan which will help us avoid some of the
+problems that xbrowse encountered while not burdening the DODS development
+with bureaucracy. Failure to use any formal SE often produces software that
+either does not work reliably or software that does not do what was
+originally intended. However, it is possible to `over engineer' small or
+medium sized software projects by adhering blindly to SE methods meant for
+much larger projects. If this happens the result can be just as bad as
+spending too little attension to SE. As the DODS development effort
+continues, this plan can be altered to suit our needs.
+
+We have a small collection of SE tools here at GSO. While they would not
+replace CASE software for large development efforts, they are satisfactory for
+small projects like DODS. These include revision/version management
+systems, graphical editors for charts (structure, flow, ...), GUI
+prototypers, and debugging and testing tools. A listing of these tools is in
+the file SE-tools.txt.
+
+I see software engineering's primary contributions to DODS as:
+
+    Requirements
+    	Are the requirements correct?
+    	Does the proposed design satisfy the requirements?
+    Design
+    	Break the design into hierarchical layers
+	Document the design
+    Testing
+    	Module testing    	
+    	System tests
+    Maintenance
+    	Tracking technical faults
+    	Adding new features
+    User Documentation
+        Technical and descriptive documentation
+
+** Requirements
+
+The workshop minutes and report will be used as the basis for the DODS
+requirements document. The individual requirements will be entered into a
+database which will help find lingering problems with them as well as help in
+mapping those requirements to a system design.
+
+It is important to produce a distinct set of requirements for the DODS as
+separate from the workshop minutes. The requirements document will be
+distributed as part of the workshop report. This will ensure that it is
+absolutely clear to workshop participants and the system developers what
+software is to be developed.
+
+The requirements specification produced by the workshop is not intended to be
+an inflexible document -- few such specifications remain unchanged throughout
+the life of a project. It is intended to form a baseline set of requirements
+which can be updated as the project progresses.
+
+** Design
+
+We will prepare a formal design for the DODS based on the requirements. The
+design will be expressed using techniques that seem most suitable based on
+the requirements. We will relate elements of the design to the requirements
+using the requirements database. Each requirement will be mapped to part of
+the design using the database.
+
+A formal design for a given piece of software does not mean a mathematically
+rigorous description of the software. Rather it means a document or set of
+documents that describe at some level all the functions that a system should
+perform. For complex systems a design document often contains descriptions at
+several levels of detail. This allows the design to be developed as the
+product of iterations over the requirements specification.
+
+The design lays the floor plan for coding the system. It not only describes
+how the system will be built, but provides a means to measure how much effort
+will be required for that build. This in turn may be the basis for modifying
+the requirements -- once part of the design is complete it may be obvious
+that some of the requirements were overly ambitious.
+
+A formal design streamlines external review. While I do not see the DODS work
+requiring a formal external review, the design document provides a good
+structure on which others can base a discussion of the system we intend to
+build.
+
+Once completed, the design documents greatly simplify maintenance of the
+system. This is particularly important when the original developers are not
+be around to fix problems as they pop up.
+
+** Testing
+
+Testing the DODS will be divided into three phases: module and unit testing,
+local system testing and remote system testing. Module and unit testing will
+verify that individual functions and complete modules work as expected. We
+will look at using a coverage tool for those modules that will benefit from
+it. Local system testing will test the function of the system at URI and
+remote system testing will involve other sites in testing the system.
+
+The requirements/design database will be used to record module test results. 
+
+All test code (module and system) will be part of the system (i.e., it will
+not be thrown away after it is used).
+
+** Maintenance
+
+Maintenance of the DODS will be simpler than the maintenance of other
+projects because the development documentation (i.e., requirements spec,
+design and test information) describe how the system was built and why it was
+built that way. This will ease transferring the responsibility for
+maintenance of the DODS outside of URI/GSO or to others within URI/GSO.
+
+** User Documentation
+
+Documentation will be developed and managed as an integral part of the
+DODS. We will produce both technical documentation intended for system
+maintainers and descriptive documentation for users. User documentation will
+have tutorial and overview sections as well as a reference section. While we
+will produce a UNIX man-page, it will be for reference only. The primary
+documentation will be printed.
+
+* Revision log
+
+$Log: SE-plan.txt,v $
+Revision 1.1  1998/02/11 19:03:21  tom
+moved to archive branch
+
+Revision 1.3  1997/03/25 22:59:34  jimg
+*** empty log message ***
+
+# Revision 1.2  1994/04/27  20:08:46  jimg
+# Fixed some mistakes.
+# Added information about Mosaic as an interface.
+# Added links to postscript files for the online docs.
+#
+# Revision 1.1  1993/12/17  18:44:03  jimg
+# Software Engineering and management docs for the DODS
+#
+Revision 1.5  1993/10/07  19:16:19  jimg
+Fixed emacs outline mode regex; I was using `+' while the default value emacs
+provides is `*'. I changed each of teh DODS/doc outline-mode files so that
+`*' was used.
+
+Revision 1.4  1993/09/28  19:06:08  jimg
+Added to documentation section. Added to requirements section.
+
+Revision 1.3  1993/09/17  15:46:18  george
+Wordsmithing corrections
+
+Revision 1.2  1993/09/17  15:24:27  george
+Added section on User Documentation
+
+Revision 1.1.1.1  1993/09/16  15:11:24  jimg
+Initial copy of documents for DODS development.
+
+Revision 1.1  1993/09/15  19:48:30  jimg
+Initial revision

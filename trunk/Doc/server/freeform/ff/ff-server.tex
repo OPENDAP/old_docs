@@ -1,0 +1,238 @@
+
+% This document describes the DODS FreeForm ND Server
+
+% $Id$
+%
+% $Log: ff-server.tex,v $
+% Revision 1.1  2000/11/28 21:43:41  tom
+% moved the freeform books to the DODS-doc/server/freeform directory
+%
+% Revision 1.1  1999/08/30 15:50:09  tom
+% added parallel book for DODS Freeform server.  See ff/README for details.
+%
+% Revision 1.2  1999/03/22 21:26:22  tom
+% converted original book source to LaTeX, put into CVS
+%
+% Revision 1.1  1998/11/16 20:32:20  tom
+% First draft checked in.
+%
+%
+
+\chapter{The \ffs}
+\label{ff,ff-server}
+
+The \ffs\ is a DODS server that uses \ffnd\ to convert and serve data
+in formats that are not directly supported by DODS servers.  Bringing
+\ffnd 's data conversion capacity into the DODS world widens data
+access for DODS clients, since any format that can be described in
+\ffnd\ can now be served by DODS.
+
+Like all DODS servers, the \ffs\ responds to client requests for data
+by returning either data values or information about the data.  It
+differs from other DODS servers because it invokes \ffnd\ to read the
+data from disk before serving it to the client.
+
+The following sequence of steps illustrates how the \ffs\ works:
+
+\begin{enumerate}
+\item A DODS client sends a request for data to a \ffs .  The request
+  must include the name of the file that contains the data, and may
+  include a constraint expression to sample the data.
+\item The \ffs\ looks in its path for two files: a data file with the
+  name sent by the client, and a format definition file to use with
+  the data file.  The format definition file contains a description of
+  the data format, constructed according to the \ffnd\ syntax.
+\item The server uses both files in invoking the \ffnd\ engine.  The
+  \ffnd\ engine reads the data file and the format file, using the
+  instructions in the latter to convert the former into data which is
+  then passed back to the \ffs .
+\item On receiving the converted data, the \ffs\ converts the data
+  into the DODS transmission format.  The conversion may involve some
+  adjustment of data types; these are listed in
+  \sectionref{sec,convert}.  The server also applies any constraint
+  expressions the client sent along with the URL.
+\item The server then constructs DDS and DAS files based on the format
+  of the converted data.  If the server has access to DDS and DAS
+  files that describe the data, it applies those definition before
+  sending them back to the client.
+\item Finally, the server sends the DDS, DAS, and converted data back
+  to the client.
+\end{enumerate}
+
+For information about how to write a \ffnd\ data description, refer to
+the \chapterref{ff,tblfmt} for sequence data and
+\chapterref{ff,arrayfmt} for array data. 
+
+For an introduction to DODS, please refer to \DODSuser . 
+
+%\section{About \ffnd\ }
+%\label{sec,about}
+
+%\ffnd\ is a data description and conversion toolkit, originally
+%developed by NOAA's NGDC, that has been adapted for use with DODS.
+
+%Rather than define its conversions internally, \ffnd\ uses an external
+%format definition file, which describes the format of the input data
+%and the desired format of the output data. \ffnd\ users write the format
+%definition files, so the data conversion capabilities are limited only
+%by the syntax of the format definition, and a user's ability to
+%describe the format of the data.  The format definition file can
+%describe data files that are arranged in either tabular form (rows and
+%columns) or array form (elements of variable size). \ffnd\ can read data
+%in ASCII, binary, and dBASE file formats.
+
+%\ffnd\ includes utilities for performing and verifying file-to-file
+%conversions, and libraries for writing applications that make use of
+%its conversion capabilities.  See the \chapterref{a} for a complete
+%description of the format definition language, and instructions for
+%preparing a format definition file.
+
+
+\section{Differences between \ffnd\ and the \ffs}
+\label{sec,advanced}
+
+The \ffs\ is based on the same libraries used to make the \ffnd\
+utilities.  However, there are some important differences in the
+resulting software:
+
+\begin{itemize}
+\item The \ffs\ is a \ffnd\ application that converts data \emph{on
+    receiving a client request for that data}, and not before.  Data
+  served by the \ffs\ remains in its original format.
+\item The \ffs\ does not produce an output file containing the
+  converted data, but serves it directly over the network to the DODS
+  client.  Therefore, the \ffs\ ignores the output section of the
+  format definition file.
+\item To sample a data file, you do not write format definitions that
+  cause the \ffnd\ engine to sample the data file.  Instead, you add a 
+  DODS ``constraint expression'' to the URL that the client sends to
+  the \ffs .
+\item The \ffs\ performs data conversion on the fly.  Conversion only
+  takes place when the client sends a URL requesting data from the
+  \ffs . 
+\item Unlike \ffnd , there is no static file created by the conversion.
+  (If you wish to create or work with such a file, use the \ffnd\
+  utilities, such as \lit{newform}.) 
+\end{itemize}
+
+
+\section{Data Type Conversions}
+\label{sec,convert}
+
+The \ffs\ performs data conversions, based on the data it receives
+from the \ffnd\ engine.  Note that DODS does not recommend the use of
+\lit{int64} and \lit{uint64} in the format definition file.
+
+\begin{table}[htb]
+  \caption{DODS Data Type Conversions}
+  \begin{center}
+    \begin{tabular}{|l|l|}\hline
+      \textbf{\ffnd}  & \textbf{DODS} \\ \hline \hline
+      \lit{text} & \lit{String} \\ \hline
+      \lit{int8} & \lit{Byte}  \\ \hline
+      \lit{int16}, \lit{int32}, \lit{int64}        & \lit{Int32}  \\ \hline
+      \lit{uint8}, \lit{uint16}, \lit{uint32}, \lit{uint64} & \lit{UInt32}  \\ \hline
+      \lit{float32}, \lit{float64}, \lit{enote} & \lit{Float64} \\ \hline
+    \end{tabular}
+    \caption{Basic Data Type Conversions}
+    \label{tab,dods-convert}
+  \end{center}
+\end{table}
+
+
+\subsection{Conversion Examples}
+\label{sec,examples}
+
+The examples show how the \ffs\ treats data received from the \ffnd\
+engine.  Please see the \ffs\ distribution for more test data and
+format definition files, and the \chapterref{a} for more information on
+writing format definitions.
+
+
+\subsubsection{Arrays}
+
+If you define a variable as an array in the \ffnd\ format definition
+file, the \ffs\ produces an array of variables with matching types.
+
+For exmple, this entry in the format definition file:
+
+\begin{vcode}{ib}
+binary_input_data "array"
+fvar1 1 4 ARRAY["records" 1 to 101] of int32 0
+\end{vcode}
+
+in converted by the \ffs\ to:
+
+\begin{vcode}{ib}
+Int32 fvar1[records = 101]
+\end{vcode}
+
+
+\subsubsection{Collections of Variables}
+
+If you define several variables in the format definition file, the
+\ffs\ produces a Sequence of variables with matching types.
+
+For example, this entry in the format definition file:
+
+\begin{vcode}{ib}
+ASCII_input_data "ASCII_data"
+fvar1   1 10  int32 2
+svar1  13 18  int16 0
+usvar1 21 26 uint16 1
+lvar1  29 39  int32 0
+ulvar1 42 52 uint32 4
+\end{vcode}
+
+is converted by the \ffs\ to:
+
+\begin{vcode}{ib}
+Sequence {
+  Int32 fvar1;
+  Int32 svar1;
+  ...
+} ASCII_data;
+\end{vcode}
+
+
+\subsubsection{Multiple Arrays}
+
+If you define a collection of arrays in the format definition file, as
+you would expect, the \ffs\ produces a dataset containing multiple
+arrays.
+
+For example, this entry in the format definition file:
+
+\begin{vcode}{ib}
+binary_input_data "arrays"
+fvar1 1 4 ARRAY["records" 1 to 101] of int32 0
+fvar2 1 4 ARRAY["records" 1 to 101] of int32 0
+\end{vcode}
+
+is converted by the \ffs\ to:
+
+\begin{vcode}{ib}
+Dataset {
+  Int32 fvar1[records=101]
+  Int32 fvar2[records=101]
+};
+\end{vcode}
+
+
+
+\tbd{Correct service name in readme file (not nph-nc, but nph-ff)}
+\tbd{Can reuse same format def file, if you give it the naem ext.fmt,
+  where ext is the extension used for each of the data files you want
+  to convert.  e.g. for one file you would have Apple.dat and the
+  corres. Apple.fmt.  But for a set you would have Empire.apple,
+  Cortland.apple, Rome.apple, and the format def file would be
+  apple.fmt.}
+
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

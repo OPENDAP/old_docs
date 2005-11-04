@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Process and Module Configuration</TITLE>
+<META NAME="description" CONTENT="Process and Module Configuration">
+<META NAME="keywords" CONTENT="api">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="api.css">
+
+<LINK REL="next" HREF="node7.html">
+<LINK REL="previous" HREF="node5.html">
+<LINK REL="up" HREF="node5.html">
+<LINK REL="next" HREF="node7.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html149"
+  HREF="node7.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html145"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html139"
+  HREF="node5.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html147"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html150"
+  HREF="node7.html">The Data Model</A>
+<B> Up:</B> <A NAME="tex2html146"
+  HREF="node5.html">Design</A>
+<B> Previous:</B> <A NAME="tex2html140"
+  HREF="node5.html">Design</A>
+ &nbsp; <B>  <A NAME="tex2html148"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00051000000000000000"></A>
+<A NAME="process"></A>
+<BR>
+Process and Module Configuration
+</H2>
+
+<P>
+The set of processes and modules needed to access a data set is shown in
+Figure&nbsp;<A HREF="#fig:structure"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>. In the figure two processes are shown. Process 1
+contains the user program, a surrogate library implementation of the data
+access API used by that program, and translator component which uses the DODS
+DAP to request data used to satisfy calls from the user-program API calls.
+This process, called the <EM>user process</EM> communicates with the second
+process, the <EM>translating server</EM> process.  The translating server
+contains two modules--one to recast the incoming DODS DAP calls into calls
+in the the data set's API and a second module that implements that API. In
+the figure all data is transmitted over the network using the DODS DAP
+regardless of the API used by the user program or used to store the data,
+even if the APIs are the same.
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:structure"></A><A NAME="856"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+Two processes are used to translate API Y calls from the user
+  program to API X calls for the data set. These same two processes are the
+  client and server in a distributed data system. Note that DODS does not
+  supply either the complete client or the complete server--rather DODS
+  software consists of modules that can be combined with existing software
+  (user programs, third party libraries) to build distributed systems. In
+  this figure, <EM>Module</EM> refers to a conceptual unit (e.g., a library),
+  not just a compile-time unit.</CAPTION>
+<TR><TD><IMG
+ WIDTH="272" HEIGHT="15" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=structure.ps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+The DODS DAP's main function is to facilitate translation between two
+different data access APIs. In order to read data stored in API X as in
+Figure&nbsp;<A HREF="#fig:structure"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> a server which provides access using the DAP can
+use the native implementation of API X to read information from the data set.
+
+<P>
+In addition to the data accessible via the native API, each data set will
+contain ancillary data. These data will be directly accessed by some of the
+DAP calls. It will be used by both the local implementation of the DAP to aid
+in translating the DAP calls into the data set's native API calls and by
+the remote translation process.
+
+<P>
+In order to effectively translate the user program API calls into DODS DAP
+calls, the translator module must have some knowledge of the source data set's
+structure. This structural information will comprise part of the ancillary
+data that is accessed directly by the DODS DAP. Based on this information,
+which can be accessed using DAP calls, the translator can choose how to best
+translate the user programs data-access calls. In effect, the translator must
+map one data access API onto a data model to which it may not be well suited
+(either because the implementors of the user program or the data set have
+chosen an inappropriate interface).
+
+<P>
+Finally, in order to be useful by many user programs, particularly those
+written by a third party development team for a group of users, the
+translator must have some additional information about the representation of
+certain data objects expected by the user program. This information, called
+<EM>Usage Data</EM> in Figure&nbsp;<A HREF="#fig:structure"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>, will allow the user to
+specify the format of dates and similar information which has many different
+common forms but no universally accepted format. It is stored in a file
+created by the user or developers of the <EM>user program</EM>. This
+information is defined by DODS outside of the definition of API Y and will be
+used by the translator module when data requests are made by the user program
+or when data is returned to the user program in response to one of those
+requests.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html149"
+  HREF="node7.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html145"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html139"
+  HREF="node5.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html147"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html150"
+  HREF="node7.html">The Data Model</A>
+<B> Up:</B> <A NAME="tex2html146"
+  HREF="node5.html">Design</A>
+<B> Previous:</B> <A NAME="tex2html140"
+  HREF="node5.html">Design</A>
+ &nbsp; <B>  <A NAME="tex2html148"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

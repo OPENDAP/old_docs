@@ -1,0 +1,258 @@
+\documentclass{article}
+
+\begin{document}
+
+\title{Management of DODS}
+\maketitle
+
+\section*{Project Goal}
+
+The primary goal of the DODS project is to provide an infrastructure
+for interoperability at the data level that \emph{will be used} 
+by the oceanographic community for their data exchange needs.
+
+A secondary objective is to become the data interoperability layer 
+for the NASA ESIP Federation.
+
+\begin{quote}
+  To meet both objectives, we have to extend our servers so that 
+  they provide `ease of use' services in addition to `ease of 
+  access'. Simultaneously, we will develop a simple data location 
+  tool to which others can add value and a comprehensive suite of 
+  client programs. 
+
+  In addition, to meet the primary objective, we will have to
+  seed the system with a suite of general interest oceanographic
+  data sets and build a cadre of users who will either entrain
+  others into using the system and/or become data providers in
+  the future.
+\end{quote}
+
+\section*{Management}
+\subsection*{Strategic Management}
+The strategic position of the project will be reviewed by the steering
+committee\footnote{Historically this has been called the Gang of Four.}
+(Glenn Fleirl, Peter Cornillon, James Gallagher, and Dan Holloway with
+Richard Chinman \emph{ex officio}) every 6 months at an in-person meeting.
+  
+\subsection*{Project Lead}
+Overall organization and direction will be provided by Peter Cornillon. His
+responsibilities are:
+\begin{enumerate}
+
+  \item Establish the overall direction of the project and evaluate our 
+  progress toward it. 
+
+  \begin{enumerate}
+    \item Use DODS. Problems found should be fixed, but deficiencies cannot
+    necessarily be addressed right away. Resist the urge to adopt quick fixes.
+
+    \item Evaluate new tasks in light of our goal(s). Does the proposed thing
+    really further our objective(s) or does it just look cool? The evaluation
+    must balance the research nature of our group (which excels at developing
+    prototypes of new ideas) with the long-term needs of developing a stable
+    system. 
+  \end{enumerate}
+
+  \item Identify and pursue funding for the continuation of the project. 
+
+  \item Define the oceanographic (and possible meteorological) data sets
+  that we will pursue to achieve a critical mass in the seeding of the 
+  system.
+
+  \item Same for non-oceanographic Federation data sets. In order for
+  DODS to become the interoperable layer, a number of Federation data 
+  sets will have to be served via DODS. Peter will identify which ones
+  to pursue.
+
+  \item Work within the oceanographic community to promote the use of
+  DODS and its population.
+
+  \item Work with the non-oceanographic community to promote the use of
+  DODS and its population --- As we have seen, when other groups adopt
+  DODS, it increases our visibility which facilitates the acquisition 
+  of future funding and it brings new resources to the project in the
+  form of developed tools and of ideas. 
+
+\end{enumerate}
+  
+\subsection*{Project Manager}
+Management for DODS will be provided by Richard Chinman. His responsibilities
+are: 
+\begin{enumerate}
+
+\item Coordinate communication within the DODS project
+
+  \begin{itemize}
+  \item Organize telephone conferences
+  \item Organize semi-annual developer's meetings
+  \end{itemize}
+
+\item Track the progress on project tasks
+
+  \begin{itemize}
+  \item Organize and maintain a list of tasks (web, project)
+  \item Organize meetings (telecons and in-person).
+  \end{itemize}
+
+\item Track expenditures of funds received in a gross sense
+
+  \begin{itemize}
+  \item Encumber expenditures for subcontracts and salaries
+  \item Identify the rate of spending in general: Do we have extra \$s for x?
+  \end{itemize}
+
+\item Monitor system usability, especially WRT UIs
+
+  \begin{itemize}
+  \item Is the software and documentation easy to get?
+  \item Are obvious flaws reported?
+  \end{itemize}
+
+\item Interact with the Federation
+
+  \begin{itemize}
+  \item Metrics
+  \item Clusters - ours and others
+  \item Meetings
+  \end{itemize}
+        
+\item Organize our participation at AGU meetings - the face that we
+  present at these meetings (posters, booth, handouts, demos)
+
+\item Monitor compliance with funding
+
+  \begin{itemize}
+  \item Track the milestones in the proposals
+  \item Submit reports, etc. to funding agencies
+  \end{itemize}
+
+\end{enumerate}
+
+\subsection*{Technical Management}
+  DODS will divide itself into two main groups: The Core, or system, software
+  group and the Clients and Data group. The core group will be lead by James
+  Gallagher and the Clients and Data group will be lead by Dan Holloway.
+  
+  The overall technical coordination of the project will be James'
+  responsibility. This means choosing which goals should be addressed by
+  software and, of those, how they fit in with the rest of the system. In
+  addition, this will include choosing when to support new technology.
+  
+  Dan will be responsible for overseeing design and implementation of those
+  parts of the project that fall under the Client and Data umbrella.
+  Similarly, James will oversee those parts of the project that are part of
+  the system's infrastructure (which we have called the `core').  Their
+  responsibilities will include assigning people to work on, and scheduling
+  of, various parts of the project. However, the Client/Data and Core parts of
+  the project will not be two completely separate entities; there will be
+  considerable crosstalk between the two groups.
+  
+  When there's a question as to where a particular thing falls, Dan and James
+  will assign it to one of the two groups, even though the assignment might
+  be arbitrary.
+
+  The two main groups will each meet via teleconference every two weeks.
+  
+  Some people will be in both the Core and Clients and Data groups.
+
+\subsubsection*{Technical Groups}
+Each member of the the project staff is part of either the UI/Data or Core
+groups, or both. This grouping simplifies coordination of tasks within the
+project; it is not meant to limit what any staff member does or the parts of
+the project they work on. In Table~\ref{table:staff} the current (\today)
+associations within the staff are shown. Rob Morris will work on the PC
+port until the end of the year at which time he will move to the IDL 
+GUI hence his membership in both groups. Ethan Davis' functions consist
+of builds, metrics and user services. The first two of these are Core
+functions, the last one associates him with the UI/Data group. Tom
+Sgouros will document the core as well as server installation.
+
+\begin{table}
+\caption{Staff group associations within the DODS project}
+\label{table:staff}
+\begin{center}
+\begin{tabular}{|l|c|c|} \hline
+Staff           & UI/Data & Core \\ \hline
+Brent Baker     &       & *     \\           
+Deirdre Byrne   & *     &       \\
+Ethan Davis     & *     & *     \\
+James Gallagher &       & Lead  \\
+Jose Garcia     &       & *     \\
+Paul Hemenway   & *     &       \\
+Dan Holloway    & Lead  &       \\
+Kwoklin Lee     & *     &       \\
+Rob Morris      & *     & *     \\
+Chris Mulhearn  &       & *     \\
+Reza Nekovei    &       & *     \\
+Ruth Platner    & *     &       \\
+Nathan Potter   &       & *     \\
+Ton Sgouros     & *     & *     \\ 
+Pippin Wolfe    & *     &       \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\section*{Policy}
+\subsection*{Project direction}
+The project direction will be defined by a steering committee which will
+consist of the Project Lead, Technical Leads and one or more advisors with
+the Project Manager \emph{ex officio}. The members of the steering committee
+must spelled out in the Management section of this document.
+
+\begin{itemize}
+\item This must be an in-person meeting
+\item Duration: about a day
+\end{itemize}
+
+\subsection*{Other groups}
+When interacting with other groups, solidify the relation with a Memorandum
+of Understanding (MOU).
+\begin{itemize}
+\item Always involve both technical and management in a MOU
+\item Consider the impacts on other efforts
+\end{itemize}
+
+\subsection*{Time estimates}
+Make realistic time assessments of activities.
+\begin{itemize}
+\item The people doing work should provide an estimate of the time required.
+\begin{quote}
+  Before we start a new task, there should be an estimate of the time it will
+  require. This estimate should be made by the person(s) who will actually do
+  the task. The estimate should also define exactly what will be included in
+  the `first version' or what it means to `complete' this task. In the former
+  case, what will/should be included in follow on versions should also be
+  described, albeit more briefly than the initial version's description. If
+  this to be an on-going process, there should be a description of the
+  continued work needed.
+\end{quote}
+
+\item The estimate should be broken into small blocks of time
+\begin{quote}  
+  The estimate should break the problem into small things that will take
+  no more than two weeks to do. If that's not possible (and in some cases it
+  is really not) then we should understand that there is a high degree of
+  variability in the estimate. That's OK, so long as we know and accept that.
+\end{quote}
+
+\item Tie the estimation to the work description
+\begin{quote}  
+  Breaking the estimate down into small pieces will help flesh out ideas
+  which appear simple but are, in fact, quite complicated.
+\end{quote}
+
+\item Estimates should be written down
+\begin{quote}  
+  Time estimates are very hard to get correct, and this is exacerbated when
+  the thing you're estimating has never been done before. However, by writing
+  down an estimate so that it can be reviewed later, it is possible to build
+  up skill in estimation and build up knowledge about the types of problems
+  that appear over and over again in a particular project. Put another way,
+  you can learn estimation. It is important to make sure people feel
+  comfortable (or minimally uncomfortable) with this since it can feel as if
+  people are being graded.
+\end{quote}
+\end{itemize}
+
+\end{document}

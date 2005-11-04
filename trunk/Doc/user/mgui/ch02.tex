@@ -1,0 +1,756 @@
+% Chapter to the Matlab GUI User Guide
+%
+% $Id$
+%
+%
+
+\chapter{The DODS GUI Menu Reference}
+\label{gui,ref}
+
+This chapter contains a description of each of the menus and
+buttons that make up the \GUI. They are arranged by function, and by
+containing menu.  The buttons and menus are also referenced in the
+index. 
+
+%% Make ``index'' above into a link, make the index file have a
+%% permanent name, fix refs below so that the spaces don't appear in
+%% the labels.  They don't appear, to, thoguh.  So review the hlx use
+%% of labels and refs, because we're confused.
+
+\newcommand{\button}[1]{\item[\but{#1}]\label{gui,bref,#1}%
+                        \indc{#1!button}\indc{button!#1}}
+\newcommand{\menudesc}[1]{\subsection{#1}\label{gui,mref,#1}%
+                          \indc{#1!menu}\indc{menu!#1}}
+\newcommand{\submenudesc}[1]{\subsubsection{#1}\label{gui,smref,#1}%
+                          \indc{#1!menu}\indc{menu!#1}}
+
+\section{The Buttons}
+
+The following buttons are available on the main screen of the \GUI .
+(See \figureref{gui,intro,mainwin}.) They are roughly arranged by
+function.
+
+\begin{description}
+
+\button{Set Data Range}
+
+Before a query can be made to a dataset, the dataset and variables
+must be selected, and a range must be selected in space and time. If
+you are looking at the graphical view, you can click this button, and
+then select an area in any of the selection windows (global location,
+time, and depth) by clicking and dragging the left mouse button.
+
+You can also enter the boundaries of the selected range by
+hand. Simply switch to the text view with the \but{View Text} button,
+and enter the values in the entry windows provided. 
+
+\button{Zoom}
+
+Use this button to examine any of the displayed axes more closely.
+When the zoom operation is in effect, the left mouse button zooms in
+to a closer view, while the right mouse button zooms out to a more
+distant view. If you click and drag, the enclosed area will be
+enlarged to fill the selection window. (This is the standard Matlab
+``zoom'' function.)  \indc{zoom!usage}
+
+\note{Zooming in on the map, time line, or depth line does not select
+a region. In order to submit a request for data, you must select a
+range with the \but{Set Data Range} button.}
+
+\button{Get Details}
+
+Once you have selected a dataset, variables, and range, you can click
+the \but{Get Details} button for information about the volume and
+location of the data in the dataset. For example, if you select the
+Reynolds Weekly Sea Surface Temperature dataset, \but{Get Details}
+will produce an asterisk at each time within the selected time range
+where there is data. If you zoom in on these asterisks, you will see
+one of them every seven days. If multiple asterisks appear in the
+range you have selected, you might choose to refine your range to make
+a smaller request before you submit the data request. Of course, you
+can request data from several times, in which case there will be
+multiple accesses to the remote dataset. Each request will be interned
+separately into the Matlab workspace.
+
+\button{Get Data}
+
+Use this button to submit a request for data from the remote server.
+If your data range contains several data points, your data may be
+returned in several Matlab arrays, or in a multi-dimensional array
+that will need to be subsampled to display. A message box will
+announce the names under which the data are to be stored.
+
+For very large requests, a warning window may appear to remind you
+that the request you are about to make is a large one. Press ``OK'' to
+confirm you still want the request to be submitted.  See
+\pagexref{gui,bref,Get Data Threshold} for more information.
+
+\button{Next Plot}
+
+This button only appears when you've plotted many variables at once.
+You can use this button to flip through the plots, one at a time,
+until the end.
+
+\button{Acknowledgements}
+
+Selecting this button displays a text window containing text
+describing the source and authors of the dataset currently selected.
+You can use this text to cite the source of the data, should you end
+up using it in a context where this is appropriate, such as a
+publication.  If you make data products available to other scientists
+using this data, it is also considered good form to include this
+citation with that data in some way.
+
+\button{View Text}
+
+The text version of the main GUI window allows you to type the
+boundaries of the data range, and displays the dataset comments, which
+contain detailed descriptions of the datasets.
+
+Press this button if you are looking at the graphic version of the
+main window and you want to be looking at the text version. 
+
+\button{View Plot}
+
+The graphic version of the main GUI window allows you to select the
+search boundaries by pointing and dragging with the mouse. This is
+also where you can see the displayed results of a search. 
+
+Press this button if you are looking at the text version of the main
+window and you want to be looking at the graphic version. 
+
+\button{Clear Selection}
+
+This button clears all the selections you have made: data range,
+variable and dataset. The \pdmenu{Datasets} and \pdmenu{Variables} menu
+windows are restored to their initial conditions.
+
+\button{Quit}
+
+This button terminates the browser. Matlab continues running after the
+browser finishes; you have to type \kbd{quit} at the Matlab prompt to
+end your Matlab session. 
+
+\end{description}
+
+\section{The Menus}
+
+The menu bar over the matlab main window (\figureref{gui,ref,menubar})
+contains drop-down menus with several useful functions.
+The functions in the \GUI\ menus allow you to select the datasets and
+variables to search for and display, to control many aspects of how
+the data are displayed, and to adjust the overall appearance of the
+main window.
+
+\figureplace{The GUI Menubar}{htb}{gui,ref,menubar}%
+{menubar.ps}{menubar.gif}{}
+
+\menudesc{Data}
+
+The \pdmenu{Data} menu (\figureref{gui,ref,datamenu}) contains buttons
+that manage aspects of the data bookmarks and downloaded data.
+
+\figureplace{The Data Menu}{htb}{gui,ref,datamenu}
+{datamenu.ps}{datamenu.gif}{}
+
+\submenudesc{Show Data Bookmarks}
+
+This button causes a list of the data bookmarks and the variable
+browser window to appear.  You must select a dataset from the
+bookmarks window, as well as a variable, in order to submit a data
+request. 
+
+If you click on one of the variable names in the variable browser
+window, the \pdmenu{Datasets} menu window will only display the
+datasets that contain that variable.  Similarly, if you have already
+made a selection of a dataset or a range, the \pdmenu{Variables} menu
+only displays the variables of datasets still on the dataset menu.
+
+The \pdmenu{Variables} menu is persistent; after you have displayed
+it, it will remain on your screen until you close it. Sometimes the
+menu will seem to disappear; this is because your window manager
+software causes the browser window to cover over the new
+\pdmenu{Variables} menu.
+
+\submenudesc{Edit Bookmarks}
+
+Clicking this button invokes the bookmark editor.  You can use this to
+edit items in the list of dataset bookmarks offered in the bookmark
+window, or you can add your own.  See \sectionref{gui,mref,Bookmarks}
+for a description of the bookmark editor menus, and see
+\sectionref{gui,intro,editbook} for an introduction to the operation
+of the editor.
+
+If you want to add a bookmark, you should probably look at
+Chapter~\ref{gui,adding}. 
+
+\submenudesc{Open Bookmarks File}
+
+The \GUI\ supports having multiple files of bookmarks.  Use this
+button to change the bookmark file currently in use.
+
+
+\submenudesc{Plot Acquired Rxx}
+
+\indc{window!Data Display}\indc{dialog!Data Display}
+If you want to replot data you've already downloaded, use this option,
+and you'll see the plot dialog you originally saw when you downloaded
+the data in the first place.  See section~\ref{mgui,data-disp} for
+more information about plotting.
+
+
+\submenudesc{Clear Rxx_ from workspace}
+
+Selecting this option causes all Matlab variables with names like
+R20\_Pressure that have been created during the current browse session
+to be deleted. Effectively, this clears all variables created by
+remote data requests. Of course, if an Rxx variable has been copied to
+a variable of a different name, the new variable will not be deleted.
+
+\submenudesc{Find}
+
+\indc{text!search}\indc{search!text}
+You can use this button to search for a text string.  You can search
+the dataset names in the bookmark file, the variables made available
+by any of those datasets, the dataset descriptions, or the
+acknowledgements attached to each dataset.  The searcher returns the
+first result it finds, displaying the associated dataset in the Text
+view.  Click \but{Find Next} to see the next match.
+
+\figureplace{The (Text) Search Dialog Menu}{htb}{gui,ref,finddlg}
+{finddlg.ps}{finddlg.gif}{}
+
+\submenudesc{Update Bookmarks}
+
+\indc{MANIFEST@\lit{MANIFEST}}
+\indc{updating!bookmark list}\indc{bookmark list!updating}
+\indc{updating!local bookmark list}\indc{bookmark list!updating local}
+\indc{local bookmark list!updating}
+\indc{updating!dataset list}\indc{dataset list!updating}
+\indc{updating!local dataset list}\indc{dataset list!updating local}
+\indc{local dataset list!updating}
+The archive M-files that come with the \GUI\ are kept up-to-date in a
+central location on the DODS \GUI\ server, currently at
+  URI.  You can update your
+copies of these files at any time with this button. (See
+\sectionref{gui,intro,update}) Clicking this button pops up the
+\pdmenu{Update} menu, which gives you further instructions.
+
+\menudesc{Resolution}
+
+This menu allows you to select the ``resolution'' at
+which you wish to see a dataset displayed. The resolutions used
+indicate (roughly) the distance between adjacent values of latitude,
+in kilometers. Of course, this only applies to data lying on a
+rectangular grid.  \note{The resolution applies equally to the X and Y
+  directions.  However, the browser expresses resolution in units of
+  distance, which (for a dataset whose locations are recorded in
+  longitude and latitude) only remains constant in the North-South
+  direction.}
+
+\figureplace{The Resolution Menu}{htb}{gui,ref,resolution}
+{resolution.ps}{resolution.gif}{}
+
+The resolution choices for the Reynolds Weekly mean dataset are shown
+in \figureref{gui,ref,resolution}.  This dataset is recorded on a
+global one-degree grid, so the bottom choice (111 km) approximately
+corresponds to one-degree of latitude.  Through the browser, the
+resolutions available are the following multiples of the fundamental
+resolution of the dataset: 2,3,4,8,12,16,24, and 36.  (This can be
+adjusted by editing the saved preferences file.  See
+\sectionref{gui,ref,options}.) 
+
+The resolution corresponds directly to the ``stride'' value you use in
+requesting gridded data with DODS.  (Refer to \DODSuser\ for more
+information about grids, stride values, and how they fit together.)
+Therefore, if the available resolutions are not what you need, you can
+use \lit{loaddods} to request a different resolution.  See
+\pagexref{gui,intro,loaddods} for more information about that program.
+
+\menudesc{Display}
+
+This menu, shown in \figureref{gui,ref,displaymenu}, contains various
+options that allow you control the way data are displayed, if at all.
+
+\figureplace{Display Menu}{htb}{gui,ref,displaymenu}%
+{dispmenu.ps}{dispmenu.gif}{}
+
+It contains several buttons:
+
+\begin{description}
+
+\button{Zoom Out}
+
+If you've zoomed in on some part of the world map, this button
+restores the map to cover the whole world.  It also restores the time
+line and the depth range to their original values.
+
+\button{Clear Display}
+
+This button erases the displayed data from the browser main window.
+
+\button{Reset Display}
+
+Erases the displayed data from the browser main window, and zooms out
+to view the whole world, the complete time line, and all depths.
+
+\button{Start Longitude}
+
+This changes the display map longitude boundaries. Start the longitude
+at 180W (the international date line) if you want to see the Atlantic,
+but start at 0E (the greenwich meridian) if you want to see the
+Pacific entire. This is a toggle switch.
+
+\end{description}
+
+\menudesc{Preferences}
+
+The preferences menu is shown in \figureref{gui,ref,prefs}.
+
+\figureplace{Preferences Menu}{htb!}{gui,ref,prefs}%
+{prefmenu.ps}{prefmenu.gif}{}
+
+\begin{description}
+
+\button{Time}
+
+The date can be displayed as Year/Month/Day triples, or as the
+year and the ordinal number of the day for that year. This is a
+toggle switch.
+
+\button{Messages} 
+
+Messages to the user can be directed either to pop-up windows
+(``Messages to Pop-up Window'') or to the \matlab\ command-line
+interface (``Messages to Workspace'').  This is a toggle switch, click
+it to change its value.
+
+\button{Get Data Threshold}
+
+\label{gui,ref,threshold-desc}
+This button calls up a dialog box that controls the data request
+threshold. (See \figureref{gui,ref,threshold}.)
+
+This threshold marks the maximum size of data file that the Matlab
+DODS browser will fetch without prompting the user for confirmation.
+For example, if the threshold is set at 1 megabyte of data, the user
+will be prompted for confirmation of any data request likely to return
+more than 1 megabyte of data. Because the \GUI\ cannot know exactly
+how big a dataset is until it has actually downloaded the entire data
+request, this threshold works with estimates.
+
+\figureplace[The Data Threshold Dialog]{The Data Threshold Dialog.
+  Use this dialog to control the \emph{estimated} size of the data
+  request.}{htb!}{gui,ref,threshold}{threshld.ps}{threshld.gif}{}
+
+\note{A further problem with this threshold is that the estimates are
+  about how much memory the data will occupy in Matlab memory,
+  \emph{not} the size of the the transmitted information. The memory
+  occupied by data in Matlab can be much larger than the amount of
+  data transmitted.  Any number in Matlab occupies eight bytes of
+  storage space. Many DODS data---especially satellite data---are
+  transmitted as single byte numbers. Further, the \GUI\ has no way to
+  know whether the transmitted data were compressed or not.  This can
+  increase the size of this discrepancy.  In other words, this
+  threshold is meant to be a guide to an informed user, not a precise
+  prediction.}
+
+\button{Fontsize}
+
+This button pops up a submenu you can use to select the size of the font
+used to display titles, legends, and so on.
+
+\button{Color}
+
+This button pops up a submenu you can use to select the colors of
+various browser features.  See \figureref{gui,ref,colordlg}.
+
+\figureplace{Color Menu}{htb!}{gui,ref,colordlg}%
+{clrmenu.ps}{clrmenu.gif}{}
+
+\button{Save}
+
+Save the preferences to the file from which they were loaded.  See
+\pagexref{gui,bref,Save As}.
+
+\button{Load Palette}
+
+Opens a dialog allowing you to load a palette for mapping.  See
+\figureref{gui,ref,clrpalet}. 
+
+\figureplace{Color Palette Dialog}{htb!}{gui,ref,clrpalet}%
+{clrpalet.ps}{clrpalet.gif}{}
+
+The colormap is an ASCII file containing a standard Matlab RGB
+colormap.  This is a 3-column matrix with values between 0 and
+1. The columns represent the relative strength of the red, green,
+and blue components, respectively. Matlab also has a number of built-in
+colormaps (type \kbd{help colormap} at the Matlab prompt for more
+information). These can be specified from the Matlab command line.
+
+The \lit{avhrrpal.pal} file (the default color palette) consists of
+255 lines like this:
+
+\begin{vcode}{ib}
+...
+0.2000 0.0000 0.3000
+0.3700 0.0000 0.5000
+0.4516 0.0000 0.7000
+0.4548 0.0323 0.8710
+0.4548 0.2323 1.0000
+...
+\end{vcode}
+
+The file represents a $255x3$ array.  You can think of it as a list of
+255 colors, each of which is specified as a combination of red, green,
+and blue values (from left to right).  Each value represents the
+fraction of intensity, with 1.0 equal to full intensity of that color
+component. 
+
+\indc{colormap!changing default}
+\indc{avhrr.pal@\lit{avhrr.pal}!changing} 
+To use one of the colormaps that come with Matlab, you can create a
+palette in an external file with the following steps:
+
+\begin{enumerate}
+\item Create a color map with the following command:
+
+\begin{example}
+>> newpalette = hsv(256);
+\end{example}
+
+Any of the following could substitute for the \lit{hsv} in the above
+example.  They are all colormaps supplied with Matlab:
+
+\begin{description}
+\item[hsv] Hue-saturation-value color map.
+\item[hot] Black-red-yellow-white color map.
+\item[gray] Linear gray-scale color map.
+\item[bone] Gray-scale with tinge of blue color map.
+\item[copper] Linear copper-tone color map.
+\item[pink] Pastel shades of pink color map.
+\item[white] All white color map.
+\item[flag] Alternating red, white, blue, and black color map.
+\item[lines] Color map with the line colors.
+\item[colorcube] Enhanced color-cube color map.
+\item[jet] Variant of HSV.
+\item[prism] Prism color map.
+\item[cool] Shades of cyan and magenta color map.
+\item[autumn] Shades of red and yellow color map.
+\item[spring] Shades of magenta and yellow color map.
+\item[winter] Shades of blue and green color map.
+\item[summer] Shades of green and yellow color map.
+\end{description}
+
+\item Save the result into an ASCII file:
+
+\begin{vcode}{ib}
+>> fid = fopen('newpalette.pal');
+>> fprintf(fid,'%g %g %g\n',newpalette');
+>> fclose(fid);
+\end{vcode}
+
+\end{enumerate}
+
+
+
+\button{Set GUI Server}
+
+You can use the dialog summoned by this button (see
+\figureref{gui,intro,guiserver}) to update your master list of
+datasets from some other source than the DODS central archive.
+
+\button{Save As}
+\label{gui,ref,saveopt-desc}
+
+If you have changed preferences such as color, font, threshold or
+anything else, you can save these values by selecting this option.
+When the \GUI\ is next started, these same values will be read from
+the startup file, by default called \lit{browsopt.m}.  You can control
+the name with the Save As dialog box.  To reload a preference file,
+use the \but{Preferences,Load Prefs File} button.  Browser preference files
+are simple Matlab scripts and may be edited by hand.
+
+The browser options saved with this command are described in
+\sectionref{gui,ref,options}.
+
+\button{Load Prefs File}
+
+This button allows you to load a set of user preferences saved from a
+previous browser session.  Clicking the button brings up the dialog..
+The browser will execute the given preferences file, expecting it to
+be a file such as are saved by the \but{Save Preferences} command.
+Note that the preferences file \emph{must} be somewhere on your Matlab
+path.  If you are unsure, type \lit{path} at the Matlab prompt and
+examine the result.
+
+The browser preferences loaded with this command are described in
+\sectionref{gui,ref,options}.
+Saves the current preferences in a file of your choosing.
+
+\button{Use Defaults}
+
+Selecting this option will restore to their default values:
+
+\begin{itemize}
+
+\item
+The size and screen position of the browse windows
+\item
+The resolution factors (multiples of the dataset stride 
+available through the \but{Resolution} menu)
+\item
+The font size
+\item
+The color scheme for the user display
+\item
+The time format (this is year/month/day)
+\item
+The axis limits
+\item
+The data size threshold (1Mb)
+\item
+The color limits (0 255)
+\item
+The color palette.
+\item
+The limits of the four browser axes  (time, depth, latitude, longitude).
+\end{itemize}
+
+Clicking this button also clears the ranges, dataset and variable
+selections.  See \sectionref{gui,ref,options} for more information
+about the options.
+
+\end{description}
+
+\menudesc{DODS Help}
+
+This menu allows you to see several short hints addressing frequently
+asked questions. You can also select \but{DODS GUI User Manual}, which
+will start an html browser on your system, reading a hypertext version
+of this document. Your Matlab file, \lit{docopt.m} must be properly
+configured to use the appropriate browser. See your system
+administrator if it is not set correctly. Similarly, you can edit the
+\lit{browsopt.m} file (part of the \GUI) to control the URL submitted
+to the browser. The default is to read the copy of the documentation
+\xlink{on the DODS server}[: \lit{\footnotesize\DODSmguiUrl}]{\DODSmguiUrl}. 
+
+If you have a local copy of the hypertext documentation, you may want
+to refer to that copy instead, to make browsing the text faster.
+
+
+
+\menudesc{Display Data}
+
+The data display dialog is described in Section~\ref{mgui,data-disp}.
+
+
+There are two pull-down menus on the data display dialog:
+
+\subsubsection{Edit}
+
+This menu contains three buttons:
+
+\begin{description}
+\button{Add New Plot} Create a new, empty, plot window.
+\button{Delete Plot} Delete one of the existing plots.
+\button{Delete All Plots} Delete all the existing plots.
+\end{description}
+
+\submenudesc{Apply to All}
+
+If you have a set of plots and wish to operate on them all
+simultaneously, you can change some aspect of the Display Dialog, and
+then select the appropriate button on this menu, and that aspect of
+all the plots will be updated.
+
+\menudesc{Bookmarks}
+
+The bookmark editor looks like the bookmark selection window, but with
+a different menu bar.  The menu bar has three pull-down menus,
+\pdmenu{File}, \pdmenu{Edit} and \pdmenu{View}.
+
+\submenudesc{File}
+
+\figureplace{Bookmarks \pdmenu{File} Menu}{htb!}{gui,ref,filemenu}%
+{edit-fmenu.ps}{edit-fmenu.gif}{}
+
+The bookmarks \pdmenu{File} menu looks like
+\figureref{gui,ref,filemenu}.  Use it to manage the bookmarks file
+itself.  It has the following buttons:
+
+\begin{description}
+
+\button{Open Bookmarks File} Select a different bookmarks file to
+edit.
+\button{Save As} Save this bookmark file under a different name.
+\button{Reset to Master List} Restore the current bookmarks to the
+``default'' state, which is defined by the current version of the
+master list downloaded from the GUI server.  (See
+\sectionref{gui,intro,update}.) 
+\button{Apply to GUI} Apply the changes to the \GUI, but don't close
+the bookmark edit window.
+\button{Apply and Close} Apply the changes to the \GUI, and close
+the bookmark edit window.
+\button{Cancel} Close the bookmark edit window without applying
+the bookmark changes to the \GUI.
+\end{description}
+
+\submenudesc{Edit}
+
+\figureplace{Bookmarks \pdmenu{Edit} Menu}{htb!}{gui,ref,editmenu}%
+{edit-emenu.ps}{edit-emenu.gif}{}
+
+The bookmarks \pdmenu{File} menu looks like
+\figureref{gui,ref,editmenu}.  Use it to manage the bookmarks file
+itself.  It has the following buttons:
+
+
+\begin{description}
+\button{Undo} Allows you to undo bookmark edits.  You can undo either
+the last change you made, or all the changes since you last applied
+changes to the \GUI.
+\button{Cut} Cut the selected bookmark or range of bookmarks.  Store
+them in an invisible buffer, to be pasted if desired.
+\button{Copy} Copy the selected bookmark or range of bookmarks to an
+invisible buffer, to be pasted if desired.
+\button{Paste} Copy any contents of the invisible copy buffer to the
+bookmark list.
+\button{Select All} Select all the bookmarks in the list.
+\button{Properties} Display the properties of the highlighted
+bookmark.  See \figureref{gui,intro,bookprop}.
+\button{Insert New} Insert a new bookmark or bookmark folder into the
+bookmark list.  See \sectionref{gui,intro,editbook}.
+\end{description}
+
+\submenudesc{View}
+
+There is only one option under the \pdmenu{View} menu, which is
+\but{Master List}.  Selecting this button provides a view of the
+current version of the master list, from which entries can be copied
+and pasted.
+
+\section{Browser Preferences}
+\label{gui,ref,options}
+
+The \GUI\ uses a set of preferences to control several aspects of its
+use, including selection ranges, font sizes, colors and so on.  These
+preferences can be loaded with the \but{Preferences,Load File}
+button, and saved with the \but{Preferences,Save} or \but{Preferences,
+  Save As} buttons
+(See \pagexref{gui,ref,saveopt-desc}).  These commands load and save a
+Matlab script whose function is to define the values of the various
+preferences.  You may find it convenient to edit the file by hand; it
+is only an ASCII file of Matlab commands.
+
+If the preferences file is called \lit{browsopt.m}, and is stored
+somewhere in the Matlab path, it will be loaded automatically when the
+browser starts up.
+
+Following is a list of all the options a preference file may contain.
+
+\begin{description}
+\item[\lit{timetoggle}] This option (controlled with the
+  \but{Display,Time} button) controls whether times are displayed as
+  Year/Month/Day or as the Year/Yearday, where Yearday is the ordinal
+  number of the day of that year.
+\item[\lit{dods\_colors}] This is the set of colors, expressed in RGB
+  values in a $10\times3$ array, used to display various aspects of
+  the browser window.  The colors are used as follows:
+\begin{description}
+\item[\lit{dods\_colors[1]}] Default button color.
+\item[\lit{dods\_colors[2]}] Axis and window background.
+\item[\lit{dods\_colors[3]}] Axis and window foreground.
+\item[\lit{dods\_colors[4]}] Non-interactive window and axis text. 
+\item[\lit{dods\_colors[5]}] Edit boxes, where users may type.
+\item[\lit{dods\_colors[6]}] Edit box text and button labels.
+\item[\lit{dods\_colors[7]}] The \but{Get Data!} button.
+\item[\lit{dods\_colors[8]}] Text and axis lines that change.
+\item[\lit{dods\_colors[9]}] The ``whizzo'' color, used for drawing
+  attention to special options.  The \pdmenu{Help} is displayed in
+  this color, among others.
+\item[\lit{dods\_colors[10]}] The selection range box color.
+\end{description}
+\item[\lit{fontsize}] The point size of the displayed type.
+\item[\lit{figsizes}] The default size and position of the browser
+  window, expressed in the pixel locations of the upper left and lower
+  right corners.
+\item[\lit{axes\_vals}] The starting axis values for the displayed
+  axes, expressed four pairs of minimum and maximum values for (in
+  this order), longitude, latitude, depth, and time:
+
+\begin{vcode}{xib}
+axes_vals=[minLon maxLon minLat maxLat minDepth maxDepth minTime maxTime]    
+\end{vcode}
+
+\item[\lit{ranges}] Specifies the default selection ranges, in the
+  same manner as the \lit{axes\_vals} preference.
+\item[\lit{num_rang}] An eight element vector of ones and zeros,
+  indicating which of the selection ranges have been set by the user.
+  A one means the corresponding item in the \lit{ranges} variable has
+  been set by the user.  If not all the ranges are set, you can't `get
+  data' or `get details'.  If a dataset is selected, and the depth or
+  geographic ranges have not been set, these are set to those of the
+  dataset.
+\item[\lit{color\_limits}] A two element vector indicating the data
+  values to assign to the top and bottom colors in the data palette.
+\item[\lit{palettefile}] The name of a file containing the data
+  palette.  This file must be in the Matlab path.
+\item[\lit{check\_level}] This is the number of megabytes for the
+  ``Get Data'' threshold. (Set with the \but{Preferences,Get Data
+    Threshold} button, see \pagexref{gui,ref,threshold-desc} for more
+  information.)
+\item[\lit{available\_resolutions}] This is a vector containing the
+  available resolutions offered with the \pdmenu{Resolutions} menu,
+  expressed as multiples of the dataset's basic resolution.  The
+  default value is:
+
+\begin{vcode}{sib}
+available_resolutions = [32 24 16 12 8 4 3 2 1];
+\end{vcode}
+  
+  This option is not changable through the browser, but you can edit
+  the preferences file directly to change it.
+\item[\lit{manURL}] The URL of the \GUI\ manual.  By default, this
+  points to \xlink{\lit{\footnotesize\DODSmguiUrl}}{\DODSmguiUrl}.  If
+  you have a local copy of the manual served, you can substitute that
+  URL.
+
+\item[\lit{guiserver}] The URL to use for updates to the dataset
+  metadata files.
+
+\item[\lit{userlist_file}] The name and location (on the local file
+  system) of the user's bookmarks file.
+
+\end{description}
+
+
+% $Log: ch02.tex,v $
+% Revision 1.8  2004/12/09 03:04:14  tomfool
+% updated for GUI 6
+%
+% Revision 1.7  2002/02/10 02:59:47  tom
+% updated for GUI version 5 and dods-book2 templates
+%
+% Revision 1.6  2000/10/04 15:01:37  tom
+% changed \figureplace definition
+%
+% Revision 1.5  1999/05/25 20:47:46  tom
+% modifications for DODS release 3.0
+%
+% Revision 1.4  1999/02/04 17:42:13  tom
+% modified to use dods-book.cls and Hyperlatex
+%
+% Revision 1.3  1999/01/20 15:18:39  tom
+% updated, and changed for dods-book.cls and hyperlatex
+%
+% Revision 1.2  1998/12/07 15:41:15  tom
+% updated for DODS v2.19 and GUIv0.7
+%
+% Revision 1.1  1998/02/12 18:10:41  tom
+% added to CVS archive
+%
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

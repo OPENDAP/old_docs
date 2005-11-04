@@ -1,0 +1,347 @@
+This is TeXk, Version 3.14159 (Web2C 7.4.5) (format=latex 2004.3.22)  20 APR 2004 15:02
+ %&-line parsing enabled.
+**quick.tex
+(./quick.tex
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+(/home/jimg/DODS-doc/latex/dods-book2.cls
+DODS Book Class -- Tom Sgouros - 1999
+(/usr/share/texmf/tex/latex/base/book.cls
+Document Class: book 2001/04/21 v1.4e Standard LaTeX document class
+(/usr/share/texmf/tex/latex/base/bk11.clo
+File: bk11.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@chapter=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/home/jimg/DODS-doc/latex/hyperlatex.sty
+Package: hyperlatex 2000/03/29 v2.5 LaTeX2e package for Hyperlatex mode
+
+Package: 'hyperlatex' v2.5 Otfried Cheong
+(/usr/share/texmf/tex/latex/tools/verbatim.sty
+Package: verbatim 2001/03/12 v1.5p LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks14
+\verbatim@line=\toks15
+\verbatim@in@stream=\read1
+)
+\c@htmldepth=\count88
+\c@htmlautomenu=\count89
+)
+(/usr/share/texmf/tex/generic/misc/psfig.sty
+\@unused=\write3
+\ps@stream=\read2
+\p@intvaluex=\dimen103
+\p@intvaluey=\dimen104
+
+psfig/tex 1.10-dvips
+) (/usr/share/texmf/tex/latex/base/makeidx.sty
+Package: makeidx 2000/03/29 v1.0m Standard LaTeX package
+)
+(/usr/share/texmf/tex/latex/fancyhdr/fancyhdr.sty
+\headwidth=\dimen105
+)
+(/home/jimg/DODS-doc/latex/vcode.sty
+Style-option: `vcode' (George Ferguson & Tom Sgouros)
+Package: vcode 1999/01/31 v1.0 LaTeX2e package for source code
+\vcodeindent=\skip43
+\c@CodeLineNo=\count90
+\vc@CodeLineFlag=\count91
+\vc@indent=\skip44
+\vc@testwidth=\skip45
+\vc@adjustmargin=\skip46
+) (/usr/share/texmf/tex/latex/psnfss/pifont.sty
+Package: pifont 2002/09/08 PSNFSS-v9.0a Pi font support (SPQR) 
+LaTeX Font Info:    Try loading font information for U+pzd on input line 62.
+
+(/usr/share/texmf/tex/latex/psnfss/upzd.fd
+File: upzd.fd 2001/06/04 font definitions for U/pzd.
+)
+LaTeX Font Info:    Try loading font information for U+psy on input line 63.
+
+(/usr/share/texmf/tex/latex/psnfss/upsy.fd
+File: upsy.fd 2001/06/04 font definitions for U/psy.
+))
+(/usr/share/texmf/tex/latex/misc/mparhack.sty
+Package: mparhack 2002/12/20 v1.3 (T. Sgouros and S. Ulrich)
+)
+\exampleindent=\skip47
+\chapKern=\skip48
+\chapHeadWidth=\skip49
+\figadjust=\skip50
+\emphBoxWidth=\skip51
+\emphBoxHeight=\skip52
+\emphBoxRef=\skip53
+\rulewidth=\skip54
+\ruledist=\skip55
+)
+\@input{../boiler/layout.aux}
+\openout2 = `../boiler/layout.aux'.
+
+(../boiler/layout.tex)
+\@input{../boiler/dods-def.aux}
+\openout2 = `../boiler/dods-def.aux'.
+
+(../boiler/dods-def.tex)
+\@input{quick/quick-def.aux}
+\openout2 = `quick/quick-def.aux'.
+
+(./quick/quick-def.tex)
+\@indexfile=\write4
+\openout4 = `quick.idx'.
+
+
+Writing index file quick.idx
+(./quick.aux)
+\openout1 = `quick.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 21.
+ (/usr/share/texmf/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 26.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 26.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 26.
+ [1
+
+
+
+
+
+
+
+
+]
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 28.
+
+(/usr/share/texmf/tex/latex/psnfss/omsptm.fd
+File: omsptm.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <8> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 28.
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 34.
+
+(/usr/share/texmf/tex/latex/psnfss/ot1phv.fd
+File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
+)
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 34.
+ [2]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <24.88> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 34.
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <24.88> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 34.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 34.
+
+Overfull \hbox (71.9989pt too wide) in paragraph at lines 34--34
+[]$[]$ 
+ []
+
+(./quick.toc)
+\tf@toc=\write5
+\openout5 = `quick.toc'.
+
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 35.
+ (./quick.lof)
+\tf@lof=\write6
+\openout6 = `quick.lof'.
+
+ [3
+
+] [4]
+Chapter 1.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <100> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 51.
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <100> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 51.
+
+Overfull \hbox (123.0pt too wide) in paragraph at lines 51--51
+[]$[]$  
+ []
+
+
+Overfull \hbox (28.49661pt too wide) in paragraph at lines 81--82
+[]  
+ []
+
+
+Overfull \vbox (14.0pt too high) detected at line 101
+ []
+
+[1
+
+
+]
+LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <10> not available
+(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 103.
+
+psfig: searching quick/figs/reynolds-dds.ps for bounding box
+psfig: including quick/figs/reynolds-dds.ps 
+[2]
+psfig: searching quick/figs/gridpts.ps for bounding box
+psfig: including quick/figs/gridpts.ps 
+psfig: searching quick/figs/reynolds-das.ps for bounding box
+psfig: including quick/figs/reynolds-das.ps 
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \vbox (14.0pt too high) detected at line 173
+ []
+
+[3]
+Overfull \hbox (70.49625pt too wide) in paragraph at lines 185--186
+[]  
+ []
+
+[4]
+Overfull \hbox (54.74638pt too wide) in paragraph at lines 222--223
+[]  
+ []
+
+psfig: searching quick/figs/timevec.ps for bounding box
+psfig: including quick/figs/timevec.ps 
+psfig: searching quick/figs/mask.ps for bounding box
+psfig: including quick/figs/mask.ps 
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[5]
+psfig: searching quick/figs/sst.ps for bounding box
+psfig: including quick/figs/sst.ps 
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[6]
+psfig: searching quick/figs/rlctd-das.ps for bounding box
+psfig: including quick/figs/rlctd-das.ps 
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+psfig: searching quick/figs/rlctd-dds.ps for bounding box
+psfig: including quick/figs/rlctd-dds.ps 
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+psfig: searching quick/figs/rlctd-cov.ps for bounding box
+psfig: including quick/figs/rlctd-cov.ps 
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \hbox (17.9967pt too wide) in paragraph at lines 399--400
+[]  
+ []
+
+[7]
+psfig: searching quick/figs/ifh.ps for bounding box
+psfig: including quick/figs/ifh.ps 
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[8]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 483.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 483.
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <9> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 483.
+ [9]
+Overfull \vbox (14.0pt too high) detected at line 492
+ []
+
+psfig: searching quick/figs/ifh-buttons.ps for bounding box
+psfig: including quick/figs/ifh-buttons.ps 
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+psfig: searching quick/figs/ifh-seq.ps for bounding box
+psfig: including quick/figs/ifh-seq.ps 
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \vbox (14.0pt too high) detected at line 541
+ []
+
+[10] [11] [12]
+Chapter 2.
+
+Overfull \hbox (123.0pt too wide) in paragraph at lines 544--544
+[]$[]$  
+ []
+
+
+Underfull \hbox (badness 1424) in paragraph at lines 572--572
+[]\OT1/phv/m/sl/10 The DODS project sup-
+ []
+
+[13
+
+]
+Overfull \hbox (54.74638pt too wide) in paragraph at lines 590--591
+[]  
+ []
+
+psfig: searching quick/figs/ifh-dir.ps for bounding box
+psfig: including quick/figs/ifh-dir.ps 
+
+Overfull \vbox (14.0pt too high) detected at line 617
+ []
+
+[14] [15] [16
+
+]
+Chapter 3.
+
+Overfull \hbox (123.0pt too wide) in paragraph at lines 660--660
+[]$[]$  
+ []
+
+[17] (./quick.ind [18]
+Overfull \hbox (71.9989pt too wide) in paragraph at lines 1--1
+[]$[]$
+ []
+
+[19
+
+] [20] [21
+
+]) (./quick.aux) ) 
+Here is how much of TeX's memory you used:
+ 1256 strings out of 20847
+ 13972 string characters out of 195948
+ 66867 words of memory out of 350001
+ 4172 multiletter control sequences out of 10000+15000
+ 20304 words of font info for 52 fonts, out of 400000 for 1000
+ 14 hyphenation exceptions out of 10000
+ 33i,11n,46p,259b,488s stack positions out of 3000i,100n,1500p,50000b,4000s
+
+Output written on quick.dvi (25 pages, 46256 bytes).

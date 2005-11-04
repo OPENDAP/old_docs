@@ -1,0 +1,33 @@
+\begin{vcode}{i}
+Attributes {
+    lat {
+        String units "degrees_north";
+        String long_name "latitude";
+    }
+    lon {
+        String units "degrees_east";
+        String long_name "longitude";
+    }
+    dsp_band_1 {
+        Byte dsp_PixelType 1;
+        Byte dsp_PixelSize 1;
+        Int32 dsp_Flag 0;
+        Int32 dsp_nBits 8;
+        Int32 dsp_LineSize 0;
+        String dsp_cal_name "Temperature";
+        String units "Temp";
+        Int32 dsp_cal_eqnNumber 2;
+        Int32 dsp_cal_CoeffsLength 8;
+        Float64 dsp_cal_coeffs 0.125, -2.;
+        Float64 scale_factor 0.125;
+        Float64 add_off -2.;
+    }
+    NC_GLOBAL {
+        Int32 dsp_SubImageId 0;
+        Int32 dsp_ModificationDate 19990104;
+        .
+        .
+        .
+    }
+}
+\end{vcode}

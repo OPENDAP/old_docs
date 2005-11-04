@@ -1,0 +1,72 @@
+%% $Id$
+%%
+%% $Log: dods-paper.ins,v $
+%% Revision 1.2  2002/03/11 14:51:44  tom
+%% forgot to add CVS ID
+%%
+
+%% --------------- start of docstrip commands ------------------
+%%
+\def\batchfile{dods-paper.ins}
+\input docstrip.tex
+\keepsilent
+\preamble
+
+Use the dods-paper style for miscellaneous text that might turn into 
+something larger.
+
+\endpreamble
+
+\generateFile{dods-paper.cls}{n}{%
+  \from{dods-paper.dtx}{cls}}
+\generateFile{dods-paper.hlx}{n}{%
+  \from{dods-paper.dtx}{hlx}}
+\generateFile{dods-paper.ist}{n}{%
+  \from{dods-paper.dtx}{ist}}
+\usepreamble\empty
+\usepostamble\empty
+\generateFile{mktextex}{n}{%
+  \from{dods-paper.dtx}{mktex}}
+\generateFile{dods-paper.css}{n}{%
+  \from{dods-paper.dtx}{css}}
+\generateFile{dods-ex.tex}{n}{%
+  \from{dods-paper.dtx}{example}}
+
+\ifToplevel{
+\Msg{***********************************************************}
+\Msg{* To finish the installation you have to move the following}
+\Msg{* files into a directory searched by TeX (or reset the }
+\Msg{* variable to point here):}
+\Msg{*}
+\Msg{* \space\space dods-paper.cls}
+\Msg{*}
+\Msg{* And then move the following files into a directory} 
+\Msg{* searched by Hyperlatex:}
+\Msg{*}
+\Msg{* \space\space dods-paper.hlx}
+\Msg{*}
+\Msg{* Move the following file to somewhere on the PATH:} 
+\Msg{*}
+\Msg{* \space\space mktextex}
+\Msg{*}
+\Msg{* Edit out comments, then move the following file to }
+\Msg{*  a CSS serve location:} 
+\Msg{*}
+\Msg{* \space\space dods-paper.css}
+\Msg{*}
+\Msg{* You can test the package by running LaTeX and hyperlatex}
+\Msg{*  on the following file:} 
+\Msg{*}
+\Msg{* \space\space dods-ex.tex}
+\Msg{*}
+\Msg{* To produce the documentation run the file `dods-paper.dtx' }
+\Msg{* through LaTeX.}
+\Msg{*}
+\Msg{***********************************************************}
+}
+
+\endinput
+
+
+
+

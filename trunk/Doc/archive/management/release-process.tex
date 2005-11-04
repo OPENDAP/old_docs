@@ -1,0 +1,523 @@
+
+% Notes on the release process.
+%
+
+% Add a software roadmap. What's in the various directories, what
+% it does. This should make it easy to find documentation files so that we can
+% make sure to update them when code changes. Maybe what we really need is a
+% list of documentation and a check list of stuff to go over when changes are
+% made.
+
+\documentclass{dods-paper} 
+
+\rcsInfo $Id$
+
+\T\setcounter{secnumdepth}{4}     % Put \paragraph in TOC
+\T\setcounter{tocdepth}{4}
+
+\W\newcommand{\*}{*}
+
+\title{OPeNDAP Software Release Process}
+\author{James Gallagher\thanks{jgallagher@opendap.org} 
+  \and Dan Holloway\thanks{dholloway@opendap.org}
+  \and Ethan Davis\thanks{edavis@ucar.edu}}
+\date{\rcsInfoDate, Revision: \rcsInfoRevision}
+\htmladdress{James Gallagher <jgallagher@gso.uri.edu>, 
+  \rcsInfoDate, Revision: \rcsInfoRevision}
+\htmldirectory{rel-html}
+\htmlname{rel}
+\figpath{.}
+
+\begin{document}
+
+\maketitle
+
+%% \begin{abstract}
+%%   This describes the release process for OPeNDAP software. It includes
+%%   checklists for generating successive Release Candidates and for common CVS
+%%   operations. It also contains an explanation of the meaning of version
+%%   numbers.
+%% \end{abstract}
+
+% \T\pagebreak
+
+\T\tableofcontents
+
+\section{Introduction}
+
+Deciding when to release software is hard. The choices depend on the
+long-term goals of the group doing the work and which features they think
+should be bundled together. However, this paper is not about choosing which
+features go in which release. This paper describes a process that starts once
+the features have been determined and are implemented in the software. Once
+we decide to release, we will follow the process described here.
+
+\section{Release Checklists}
+
+This section contains some checklists that we have developed over time to
+help make the process of releasing software more predictable. Collecting these
+lists in one place should help co\"ordinate our group and also make it easier
+to fix broken parts of, or add missing parts to, the process. 
+
+All the OPeNDAP software is held in one CVS module. Even so, each discrete
+piece of software (a server, the library of common code, {\it et c.} is in
+its own directory. Each source directory has its own version number. With the
+exception of the server dispatch software (which is in \texttt{DODS/etc}) all
+of the software is held in directories under \texttt{DODS/src} and each of
+those directories contains a separate deliverable.
+
+In practice, we release the OPeNDAP software mostly {\it en masse}. However,
+if a fix for a particular component really needs to be released quickly, we
+can increment just that component's version number and release it alone. That
+is, suppose the current release is version 2.1 and we add an important fix to
+\texttt{asciival} which is at version 2.1.6. We can bump the version number of
+\texttt{asciival} to 2.1.7 and put that in the 2.1 release. We don't need to
+release all the other components.
+
+When we decide to there are enough new features and/or fixes for a new
+release, the version number of the release as a whole is increased.
+Appendix~\ref{version-numbers} has information on version numbering.
+
+\subsection{Making a new release}
+
+Making a new software release can be roughly divided into two parts. In the
+first part we start making Release Candidates (essentially beta releases). As
+problems are found in these, we fix those problems and produce a successive
+candidate. This iterative process continues until the current Release
+Candidate has no major problems and can be made a formal release.
+
+Here are the steps used to iterate over making release candidates toward
+making a formal release:
+
+\begin{enumerate}
+
+\item Create a release branch in CVS
+\item Start documentation efforts:
+  \begin{enumerate}
+  \item Gather information needed for documentation (web pages,
+    README/INSTALL docs, and formal manuals):
+    \begin{itemize}
+    \item the new features and major bug fixes (this information
+      should be part of the ChangeLog files).
+    \item the system requirements.
+    \item compatibility with previous versions.
+    \item the list of the systems on which the code has
+      been built (include compiler version information).
+    \end{itemize}
+    This list will be the rough draft of the release notes.
+  \item Create web pages for this release.
+  \item Create release notes.  (Take the list made above, and check it
+    into the documentation DODS CVS tree at DODS-doc/notes.)  The
+    release notes will eventually consist of a list of the important
+    changes, followed by a list of explanations for each change.
+    Here's an example from release 3.4:
+    \begin{vcode}{ix}
+      Code changes
+      1.  Using libcurl instead of libwww.
+      2.  URL dereferencing done with curl instead of Perl.
+      ...
+
+      CODE CHANGES
+      1. The DODS core now links to libcurl instead of libwww for WWW
+      functions.  The libcurl library is smaller than libwww, is being
+      actively developed, and is MT-safe.
+
+      2. The server dispatch scripts no longer use the Perl HTTP, MIME and
+      LWP classes.  Instead, URL dereferencing is done with curl, a
+      freestanding binary that is part of the libcurl build.
+      ...
+    \end{vcode}
+  \item Start the process of adding that information to the Guides.
+  \end{enumerate}
+  It's important to get started on these tasks early because they are
+  complicated and, unlike a build or a test suite, there's no automated way to
+  determine when they are `ready.'
+\item Iterate through the Release Candidates until no major bugs remain. See
+  Section~\ref{release-candidate} for the steps involved in making individual
+  release candidates.
+\item Evaluate the software (See Section~\ref{full-release}) to determine if
+  there are issues with the source not yet addressed by the process of
+  release candidate preparation.
+\item Mark the branch as a formal release
+  (e.g., \texttt{cvs tag release-3-4-3FCS}). NB: I prefer to do this
+  \emph{after} making the source files. If you use this ordering of
+  the steps and find a problem, make sure to re-tag the branch (see
+  \texttt{cvs tag -h} for information about moving (or forcing) a tag.
+\item Make source and binary distribution files. See Section~\ref{source-files}
+\item Place source and binary on \texttt{ftp} site
+\item Update web pages for formal release
+
+\end{enumerate}
+
+\subsubsection{Making release candidates}
+\label{release-candidate}
+
+\begin{enumerate}
+
+\item Prepare the code to be a Release Candidate (see
+  Section~\ref{cvs-prepare}). 
+\item Run nightly builds until the tests are clean.
+\item Update all \texttt{version.h} files.
+\item Tag CVS branch as a release candidate (e.g., \texttt{cvs tag
+  release-3-4RC1}).
+\item Make source tar files (see Section~\ref{source-files})
+\item Put source distribution files on the \texttt{ftp} site
+\item Check that web site is up-to-date (i.e., so that people can get the
+  release candidate).
+\item Announce release candidate source code.
+\item Tag and merge the branch (see Section~\ref{cvs-tag-merge}).
+\item \[Optional\] Make binary builds; release.
+\item If there are major bugs, fix them and redo this list.
+\item If there are no major bugs, we are done making release candidates
+
+\end{enumerate}
+
+Note that the Release Candidate process concerns the source code and binary
+builds only. Once we've decided to make a formal release, There are other
+things that must be done {\em before} it is ready to become a formal
+release. See Section~\ref{full-release} for details on the steps
+required before a formal release can be made.
+
+\subsubsection{Before making a formal release}
+\label{full-release}
+
+Think about each of the following questions before moving on from release
+candidates to a formal release:
+\begin{itemize}
+\item Do we have binaries for all the platforms we support?
+\item Double check information needed for documentation:
+  \begin{itemize}
+  \item new features and major bug fixes.
+  \item system requirements.
+  \item compatibility with previous versions.
+  \item the list of the systems on which the code has been built.
+  \end{itemize}
+\item Is the documentation sufficient? Check README and INSTALL files in the
+  \texttt{src}, \texttt{etc} and \texttt{docs} directories and the NEWS file
+  in the top-level directory. The text documentation files in \texttt{docs}
+  are used when making binary distributions, the ones in the \texttt{src}
+  directories are included with the source distributions and the ones in
+  \texttt{etc} are included in both.
+\item Do the formal manuals need to be updated? If so, this process should be
+  started (however, in general the release should not wait on the manuals).
+\item Is the web-site current?
+\item Can we all answer questions about the installation and use of the
+  software? Do we all understand the software's limitations?
+\end{itemize}
+
+\subsubsection{Making source and binary distribution files for a formal release}
+\label{source-files}
+
+\begin{enumerate}
+
+\item Check out a clean copy of the release branch using CVS's
+  \texttt{export} command (e.g., \texttt{cvs export -r release-3-4RC3 -d
+    DODS-3.4 DODS}).
+\item Remove any source/directories that we don't intend to include in this
+  release. Since the trunk often contains more software than we are actually
+  releasing, this is an important step. 
+\item Verify that this software builds: \texttt{./configure},
+  \texttt{make World}, \texttt{make tar}\\
+  NB: It's often a good idea to see
+  the build as it happens and to get a log. To do that, use \texttt{tee} as
+  in: \texttt{make World 2>\&1 | tee World.log}. If you're using \texttt{csh}
+  change \texttt{2>\&1 |} to \texttt{|\&}.
+  \begin{itemize}
+  \item Build binaries and run tests.
+  \item Build binary distribution files (\texttt{make binary-tar})
+  \item Remove the binaries: \texttt{make distclean}
+  \item Add the version numbers to the directory names: \texttt{make
+    update-version}
+  \item Make the source code tar files: \texttt{make source-tar} (at the
+    top-level) or \texttt{make tar} in a \texttt{DODS/src/{\em component}}
+    directory.
+  \item Test both the source and binary distributions!
+    \begin{enumerate}
+    \item Expand all the binary distribution files to make sure they
+      hold software that works.
+    \item Expand the source distribution files and verify they build.
+    \end{enumerate}
+  \end{itemize}
+
+\end{enumerate}
+
+\section{CVS Checklists}
+
+Using CVS can be complicated. This section contains some short checklists for
+common CVS operations.
+
+\subsection{Prepare the code to be a Release Candidate}
+\label{cvs-prepare}
+
+\note{For the DAP software, some of these steps must be done in the
+  \texttt{DODS\_ROOT} and \texttt{DODS\_ROOT/etc} directories in addition to
+  \texttt{DODS\_ROOT/src/dap}. For the other software, follow these in just
+  the \texttt{DODS/src/{\em component}} directory.}
+
+\begin{enumerate}
+\item Check that the \texttt{configure} script is up-to-date WRT
+  \texttt{etc/aclocal.m4}. Use \texttt{make configure}.
+
+\item Rebuild the dependencies using \texttt{make depend}.
+
+\item Examine the directory for files that should have been removed or are
+  leftover from development/testing and remove those by hand. In some cases
+  files will need to be removed from CVS also (\texttt{cvs rm -f {\em
+      files}}).
+
+\item Run the tests. Do this starting from a clean set of sources
+  (\texttt{make clean; make check}).
+
+\item Update release number in \texttt{version.h}. Use the three part version
+  numbers. Check this file in and add today's date as the log entry. This
+  makes figuring out when a particular version was made simpler (although
+  there are other ways). See Appendix~\ref{version-numbers} for information
+  about version numbers.
+
+\item Update the \texttt{ChangeLog}. Scan changed log files using
+  \texttt{cvsdate ">{\em date of last version}"}.\footnote{\texttt{cvsdate} is
+    short command that runs \texttt{cvs log} and parses the output. A copy
+    should be in \texttt{DODS/etc}.}
+
+\item Make sure that all files in the directory are checked into CVS. Use
+  \texttt{cvs ci}. Use the \texttt{-l} flag with \texttt{cvs ci} in
+  \texttt{DODS\_ROOT} to check in only that directory and avoid recurring
+  through all the software.
+
+\item Examine the INSTALL and README files. Are they correct? Anything new
+  missing?
+
+\item Look at the README/INSTALL files in DODS/etc {\em and} DODS/docs. Are
+  they correct? The first set of README/INSTALL files are sent with both
+  source and binaries, the second set are bundled into the binary
+  distributions only.
+\end{enumerate}
+
+\subsection{Tag and merge the branch}
+\label{cvs-tag-merge}
+
+\begin{enumerate}
+\item Go to the CVS directory that holds the release code and tag it with the
+  same release number as is in the version.h file.
+
+\item Merge back into the trunk. To merge the changes made in the branch
+  software back to the trunk, do the following: 
+  \begin{enumerate}
+  \item Go to the CVS directory that holds the trunk software.
+  \item Use \texttt{cvs update -j {\em release-branch-tag}} for the first
+    merge
+  \item Use \texttt{cvs update -j {\em previous-merge-tag} -j {\em
+      release-branch-tag}} for subsequent merges\footnote{There's an argument you
+    can pass to \texttt{cvs update} that will suppress expansion of
+    \texttt{\$Id\$} and \texttt{\$Log\$} symbols. Using this will cut down on
+    spurious conflicts (but you don't get those symbols expanded). You can
+    resolve the conflicts by hand or use the \texttt{resolve\_conflicts.pl}
+    script.}
+  \end{enumerate}
+  See Appendix~\ref{version-numbers} for an explanation of the relation
+  between version numbers and CVS tags.
+
+\item In the \lit{ChangeLog} file in the trunk software, record the cvs command
+  used to do the merge and the arguments to \texttt{-j} that should be used
+  for the next merge.
+
+\item To test for conflicts use: 
+
+  \begin{vcode}{ti}
+    alias conflict='grep -l "<<<<<<" `find ! -type d ! -name *.cft`'
+  \end{vcode}
+
+  and run the results through the
+  \texttt{resolve\_conflicts.pl} script. Some files get munged by this so
+  examine the result.\footnote{\texttt{resolve\_conflicts.pl} keeps a copy
+    of the original file in \texttt{{\em filename}.cft}.}
+  
+\item After merging each directory, add a note in ChangeLog and check in the
+  code using \texttt{Merged with \texttt{release-<rev>}} as the log entry.
+
+\item Save and check in the changes that result from the merge.
+
+\item Try to compile the newly merged code. Resolve problems introduced by
+  the merge.
+\end{enumerate}
+
+\T\appendix
+
+\section{Version Numbers}
+\label{version-numbers}
+
+Version/revision numbers in DODS are formed from two or three numbers
+separated by a dot. Here's how to interpret the version numbers:
+\begin{quote}
+  x.y.z
+\end{quote}
+
+where 
+\begin{itemize}
+\item x: This is the major version number. Two different major versions are
+  almost certain to be incompatible. This is used to indicate a big
+  change in the way the software works.
+
+\item y: This is the minor version number. This indicates an important change
+  in the software. Two different minor versions maybe incompatible in some
+  ways but mostly work together.
+
+  Each minor version has a corresponding tag in CVS {\em that is a branch}.
+    That is, you can checkout/update using \texttt{-r release-x-y} and get
+    the latest code for that \lit{major.minor} release number. Fixes for the
+    release should get checked in on the appropriate branch.
+
+\item z: This is the sub-minor version number. These are used to indicate
+  that problems with a particular version of the software have been
+  found and fixed. Different sub-minor versions should work together
+  except that a problem fixed might cause slightly different behavior.
+\end{itemize}
+
+\section{Version Numbers and CVS Tags}
+
+Each sub-minor version number corresponds to a real release of software.
+Each has a tag that looks like \texttt{release-x-y-z}. However, this tag is
+{\em not} a branch. This might seem confusing at first, but it makes
+working with CVS simpler. Here's an example. Lets say we have made a
+release of version 3.1.0 and some problems have been found. We can commit
+changes to that release until we are happy with the fixes. At that time we
+then tag {\em that point} on the 3-1 branch as 3-1-1 and make the source
+code tar files for version 3.1.1. See Figure~\ref{fig:cvs-branching}.
+
+\figureplace{CVS branching}{htbp}{fig:cvs-branching}{cvs-branch.eps,width=3in}%
+	    {cvs-branch.gif}{}
+
+Why make the non-branch tags? Because what we really need are place holders
+for merging the changes back onto the trunk. See the Using CVS paper for a
+discussion of CVS merging strategy. While we work on the 3.1 code, fixing
+bugs and tweaking features, other completely new features are added to the
+trunk code.
+
+\section{Targets in the Makefiles}
+
+Listed here are targets in the Makefiles that are used to help make releases.
+
+\begin{description}
+\item[\texttt{Makefile}] If the \lit{Makefile.in} has changed, rebuild the
+  \lit{Makefile} either by running \lit{config.status} or \lit{configure}. In
+  source code that has just been exported from CVS, you will need to run
+  \lit{configure} to build the \lit{Makefile}.
+
+\item[\texttt{depend}] (Re)build the dependencies. This target rebuilds the
+  dependencies in the \lit{Makefile.in}. You should not have to use this
+  target with code that's been exported from CVS; if you do, then it is a
+  sign that something is wrong with the \lit{Makefile.in} that is in CVS.
+  You'll need to go back to code that is in CVS, run make depend and then
+  check in the resulting \lit{Makefile.in}.
+
+\item[\texttt{check-version}] Check that the version number in the
+  \lit{Makefile} matches the version number in the version.h file. If this
+  returns an error, you need to go back to code in CVS, re-run
+  \lit{configure} and then export the code.
+
+\item[\texttt{update-version}] Read the current version from the
+  \lit{version.h} file and append it to the CWD's name (i.e., \lit{jg-dods}
+  becomes \lit{jg-dods-3.1.2}). Don't run this in the directories under CVS
+  control (those that have the `CVS' subdirs in them). Only run this in an
+  exported directory.
+
+\item[\texttt{all}] Build all the main programs in the directory. 
+
+\item[\texttt{check}] Run the tests for this this software. In some cases,
+  you have to install the software (using the install target) before this
+  does anything except return an obscure error. Bummer. This should have
+  been run by the nightly build, so running it when making the source or
+  binary tars is not completely necessary\ldots
+
+\item[\texttt{install}] Copy the binaries from this directory into the
+  \lit{bin}, \lit{lib}, \lit{etc} and \lit{include} directories.
+
+\item[\texttt{binary-tar}] Build a tarball that contains the binaries built
+  by `all' and installed by `install'. The binaries are tarred in the
+  directories where they are installed, not where they are built.
+
+\item[\texttt{clean}] Remove most generated files (i.e., executables, object
+  files, core files, emacs backup files, ...).
+
+\item[\texttt{distclean}] Remove all generated files except grammar files,
+  the \lit{Makefile} and \lit{configure}.
+
+\item[\texttt{tar}] Make a source code tarball. Run distclean before using
+  this target to make the source tar balls. Note that in the top-level
+  \lit{Makefile} this is called \lit{source-tar}.
+\end{description}
+
+If all goes well, the targets should be run in the following order after
+running \lit{configure}: \texttt{check-version} (should return OK),
+\texttt{update-version} (should set the directory name so that the source tar
+balls have the correct names), \texttt{all} (builds the code),
+\texttt{install} (installs it), \texttt{binary-tar} (creates the binary
+distributions for this platform), \texttt{distclean} (gets rid of the same
+before making the source tar balls), \texttt{tar} (makes the source code tar
+balls).
+
+\section{ChangeLog}
+
+\begin{vcode}{it}
+  $Log: release-process.tex,v $
+  Revision 1.18  2004/01/09 20:32:51  jimg
+  Fixed a latex-typo.
+
+  Revision 1.17  2004/01/09 20:16:55  jimg
+  Editing...
+
+  Revision 1.16  2004/01/08 18:34:00  jimg
+  Added info about NEWS files.
+
+  Revision 1.15  2004/01/08 00:37:07  jimg
+  Minor formatting changes.
+
+  Revision 1.14  2004/01/06 23:01:47  jimg
+  Added an item about testing the distribution files.
+
+  Revision 1.13  2004/01/06 22:03:49  jimg
+  I added some additional information to the check lists and tried to tie them
+  together a bit more.
+
+  Revision 1.12  2003/12/08 16:41:02  tom
+  added information about release notes, fixed some typos.
+
+  Revision 1.11  2003/12/04 22:42:08  jimg
+  Fixed an error in the merge recipe!
+
+  Revision 1.10  2003/09/24 22:28:18  edavis
+  Added some details to the "Making release candidates" and the "Making
+  source tar files" sections.
+
+  Revision 1.9  2003/06/30 23:07:19  edavis
+  Added examples of commands for several steps. Added some detail
+  to the documentation requirements.
+
+  Revision 1.8  2003/06/26 15:26:41  tom
+  fixed \figureplace usage (added \figpath)
+
+  Revision 1.7  2003/06/24 23:25:57  jimg
+  Added figure; changed to \figureplace. Latex works but the figure is big,
+  hyperlatex almost works. The web pages have a snazzy new look about them...
+
+  Revision 1.6  2003/06/24 22:39:09  tom
+  put it into dods-paper class. other little adjustments
+
+  Revision 1.5  2003/06/24 21:56:05  jimg
+  I added some hypelatex stuff, but I'm really pretty clueless about it all.
+
+  Revision 1.4  2003/06/20 18:02:35  jimg
+  Changes. I'm done with this for a while even though it could use more work...
+
+  Revision 1.3  2003/06/19 01:47:46  jimg
+  Added hyperlatex (but not tested) and a short abstract.
+
+  Revision 1.2  2003/06/19 01:40:43  jimg
+  First pass at formatting.
+
+  Revision 1.1  2003/06/19 00:55:25  jimg
+  Initial version
+
+\end{vcode}
+
+\end{document}

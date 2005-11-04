@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>User Programs and DODS Client Libraries</TITLE>
+<META NAME="description" CONTENT="User Programs and DODS Client Libraries">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="next" HREF="node20.html">
+<LINK REL="previous" HREF="node5.html">
+<LINK REL="up" HREF="data-delivery-design.html">
+<LINK REL="next" HREF="node14.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html266"
+  HREF="node14.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html262"
+  HREF="data-delivery-design.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html256"
+  HREF="node12.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html264"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html267"
+  HREF="node14.html">Client Library Functions</A>
+<B> Up:</B> <A NAME="tex2html263"
+  HREF="data-delivery-design.html">DODS Data Delivery Design</A>
+<B> Previous:</B> <A NAME="tex2html257"
+  HREF="node12.html">Using the DDS object</A>
+ &nbsp; <B>  <A NAME="tex2html265"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00040000000000000000"></A>
+<A NAME="ddd:client"></A>
+<BR>
+User Programs and DODS Client Libraries
+</H1>
+
+<P>
+Most client/server systems are built around a fixed set of client and server
+programs. Often, the designers of such a system specify a communication
+protocol to be used by the two processes and then design a server and a
+client program. Because the communication protocol used by the system is
+documented, it is fairly easy for a third party to build new clients (or
+servers, although that is less common) for the system. An example of such a
+system is the <A NAME="tex2html56"
+  HREF="http://www.w3.org/hypertext/WWW/TheProject.html">World Wide Web</A> designed initially at the <A NAME="tex2html57"
+  HREF="http://www.cern.ch/">European Laboratory for Particle Physics</A>. Subsequent to the Web's
+appearance, many new client programs have been introduced by third parties.
+In fact, the DODS client libraries are a type of WWW client program.
+
+<P>
+However, the DODS client libraries are different from most WWW browsers
+because they are themselves used to build programs. The DODS netCDF library,
+for example, can be used to add network connectivity to any program which
+uses netCDF. Even though the DODS client libraries contain all the software
+needed to be full-fledged WWW clients, they are <EM>not</EM> intended to be
+stand alone programs themselves; instead they are tools which can be used to
+add network I/O capability to programs which already use one of the DODS
+supported APIs. 
+
+<P>
+Because the DODS client libraries are designed to be complete <EM>  replacements</EM> for existing libraries, they must be written so as to
+faithfully emulate the original implementation's behavior. If the client
+library meets this criterion, then it can be used with existing programs
+without requiring those programs be modified in any way. This is the
+fundamental requirement which any DODS client library must meet.
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html268"
+  HREF="node14.html">Client Library Functions</A>
+<UL>
+<LI><A NAME="tex2html269"
+  HREF="node15.html">Rewriting the Open and Close Functions</A>
+<LI><A NAME="tex2html270"
+  HREF="node16.html">Getting Information about Variables</A>
+<LI><A NAME="tex2html271"
+  HREF="node17.html">Reading the Values of Variables from a Data Set</A>
+<LI><A NAME="tex2html272"
+  HREF="node18.html">Functions that Write to Data Sets</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html273"
+  HREF="node19.html">Adding Local Access to a DODS Client Library</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html266"
+  HREF="node14.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html262"
+  HREF="data-delivery-design.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html256"
+  HREF="node12.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html264"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html267"
+  HREF="node14.html">Client Library Functions</A>
+<B> Up:</B> <A NAME="tex2html263"
+  HREF="data-delivery-design.html">DODS Data Delivery Design</A>
+<B> Previous:</B> <A NAME="tex2html257"
+  HREF="node12.html">Using the DDS object</A>
+ &nbsp; <B>  <A NAME="tex2html265"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

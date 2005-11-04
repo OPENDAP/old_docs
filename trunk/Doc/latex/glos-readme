@@ -1,0 +1,112 @@
+Gloss, (yet) another way of making glossaries
+=============================================
+(c) 1998 Jose Luis Diaz
+
+
+Gloss is a package which allows the creation of glossaries using BibTeX.
+
+Several approaches have been tried for automating the creation of
+glossaries. Some of these approaches developped its own tool for the
+sorting and formatting of the glossary (glotex, glosstex), some other
+tried to use an existing tool (typically Makeindex).
+
+This new approach uses BibTeX for the sorting and formatting of the
+glossary. That is, the user writes a database of terms and definitions
+using a file format much like the bibliographic databases. Then he
+inserts in the latex document a command (\gloss{key}) for selecting
+which entries he wants to appear in the glossary. These keys are
+written in an auxiliar file when latex is run on the document. Then,
+running bibtex these entries are extracted from the database and
+collected in alphabetical order in a file. The next run of latex read
+this file and inserts it in the appropiate point of the document,
+typesetting the desired glossary. 
+
+The process is much like the mechanism for including the bibliographic
+references. This approach has several advantages but also some
+disadvantages. The obvious advantages are:
+
+ * There are a lot of tools for managing bibtex databases.
+ * It is possible to write different .bst (bibliographic styles) for
+generating differents styles of glossaries.
+ * There exists a version of BibTeX (called bibtex-8) which is able to
+manage alphabets with 8-bit encoding. This is the main raison for
+which I developped the package, since the other approaches I tried did
+not manage properly the latin1 encoding.
+
+The main disadvantage is that BibTeX assumes some extensions for the
+file names, and don't allows to specify different ones. For example,
+the file with the citations has to be named '*.aux', the file with the
+database has to be named '*.bib' and the file which itself writes
+always is named '*.bbl'. In order to use in the same document a
+glossary and a bibliography, the solution adopted for Gloss was to
+generate the glossary citations in a file named '*.glo.aux', store the
+definitions in a database named '*.gdf.bib' and use for the formatted
+glossary file the name '*.glo.bbl'. The use of the 'double extension'
+in the file names disallows the use of this package to MS-DOS users.
+
+INSTALLATION:
+------------
+
+Run:
+
+ latex gloss.ins
+
+And you'll obtain the files:
+
+  gloss.sty        (the package)
+  gloss.bst        (the "bibliographic" style which allows BibTeX to
+                   create the glossary. Thanks to Oren Patashnik)
+  sample.tex       (a sample document)
+  sample.gdf.bib   (a glossary database example)
+
+
+You have to copy the .sty file to a directory where LaTeX can find it,
+and the .bst to a directory where bibtex can find it.
+
+DOCUMENTATION AND EXAMPLES:
+--------------------------
+Run:
+
+  latex gloss.dtx 
+
+(twice) for obtaining the documentation.
+
+The documentation and the samples are written in spanish. The only
+english documentation at the moment is the 00readme file that you are
+reading. In addition, the file gloss.dtx uses the latin1 encoding, and
+this will cause trouble in the generation of the sample files on most
+of TeX implementations, because TeX tends to write the 8-bit characters
+in "hexadecimal form", that is, for example, instead of "ñ" it
+outputs "^^f1". Since the sample files are created by TeX (when you
+run "latex gloss.ins"), they will be full of these funny sequences. If
+you want to "recode" these files for obtaining "ñ" instead of "^^f1",
+you can use the utility texto8.awk distributed with this package.
+The use is (assuming a unix-like operating system):
+
+$ gawk -f texto8.awk < sample.tex > s.tex
+$ gawk -f texto8.awk < sample.gdf.bib > s.gdf.bib
+$ mv s.tex sample.tex
+$ mv s.gdf.bib sample.gdf.bib
+
+(Obviously, you'll need the GNU tool "gawk")
+
+Then, for typesetting the sample, you can type:
+
+$ latex sample
+$ bibtex8 -c 88591lat sample.glo
+$ latex sample
+$ latex sample
+
+If you don't have bibtex8 you can use bibtex, but then the glossary
+entries will not be correctly ordered (because the sample files use
+8-bit encoding).
+
+This software is still in beta-testing phase. If you find a bug or
+want to make any comment, you're welcome at:
+
+jdiaz@etsiig.uniovi.es
+
+Enjoy it!
+
+
+PD: Sorry for my english ;)

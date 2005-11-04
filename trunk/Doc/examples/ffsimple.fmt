@@ -1,0 +1,20 @@
+ASCII_file_header "Latitude/Longitude Limits"
+minmax_title 1 24 char 0
+latitude_min 25 36 double 6
+latitude_max 37 46 double 6
+longitude_min 47 59 double 6
+longitude_max 60 70 double 6
+
+ASCII_data "lat/lon"
+latitude 1 10 double 6
+longitude 12 22 double 6
+temp 24 30 double 4
+salt 32 38 double 4
+
+ASCII_output_data "output"
+latitude 1 10 double 3
+longitude_deg 11 15 short 0
+longitude_min 16 19 short 0
+longitude_sec 20 23 short 0
+salt 31 40 double 2
+temp 41 50 double 2

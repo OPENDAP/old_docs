@@ -1,0 +1,1150 @@
+% A guide to installing an OPeNDAP aggregation server.
+%
+\documentclass{dods-book}
+\usepackage{acronym}
+\usepackage{xspace}
+
+% TODO: giftext.pl doesn't work on the laptop
+%       check versions of hyperlatex.el for the if statement in
+%           hyperlatex-forw-node.  This seemed to be missing in my
+%           copy of version 2.6 for some reason.
+%       check into CVS
+%       the hyperlatex index still isn't so great
+%
+%  other laptop chores: Install Fink vsn of Gimp, check perlmagick
+
+%\renewcommand{\subj}[1]{}
+
+\rcsInfo $Id$
+\newcommand{\DOCversion}{Version \rcsInfoRevision}
+
+\include{../boiler/layout}
+\include{../boiler/dods-def}
+\include{agg/agg-def}  % This contains software name and version number.
+
+\figpath{agg/figs}
+\htmldirectory{agg-html}
+\htmltitle{OPeNDAP Aggregation Server Guide}
+
+\makeindex
+
+\begin{document}
+%------------------------------------front matter
+\title{OPeNDAP Aggregation Server Guide\\\DOCversion}
+\author{John Caron\\Tom Sgouros}
+\date{\rcsInfoDate}
+\pagenumbering{arabic}
+\maketitle
+
+\copyrightmatter
+
+\W\pslink{http://www.opendap.org/pdf/agg.pdf}
+
+\include{agg/preface}
+
+\tableofcontents
+\listoffigures
+%\listoftables
+
+\clearemptydoublepage
+%------------------------------------book body
+
+%  Outline of this book:
+%
+%
+%  How to install an OPeNDAP server.
+%
+%    What an OPeNDAP server is.
+%      httpd server equipped with a special set of CGI scripts and
+%      access to data to be served.
+%    How to set one up.
+%      Start by putting the scripts and perl modules in the cgi
+
+\chapter{Theory}
+
+The \AggServer\ is an \opendap\ server that creates virtual datasets
+from collections of other \opendap\ datasets or from NetCDF files. It can
+also serve single NetCDF files as (non-aggregated) \opendap\ datasets. It
+uses \thredds\ catalogs to specify what datasets it serves, and how to
+aggregate them.  The specification is formatted as an XML document.
+
+\subj{\opendap\ data is accessed by files, but that's not always the
+  way users want it.}  The \acf{OPeNDAP} is organized around the
+concept that the relevant unit of data storage is a disk file.  In
+order to get or retrieve data, you must know what file the desired
+data is in.  To allow users to identify specific files, data providers
+create lists of files, or catalogs, that may be browsed or searched.
+This approach makes certain aspects of data management simpler, and is
+a natural consequence of several popular data storage APIs which work
+the same way.  However, many users may perceive it as a burden to have
+to keep track of file names, which are not always chosen to be easy to
+remember.  What's worse, it becomes quite awkward if the slice of data
+you happen to be interested in spans many files.  Looking for a time
+series in an archive of satellite data, for example, might require
+thousands of requests to individual data files.
+
+The \AggServer\ is designed to accommodate these problems, providing a
+single point of entry to collections of many files.  Conceptually, it
+consists of two components: a catalog of data files, and the smarts
+necessary to determine how to use those data files to satisfy user
+requests.  The files in question may be either local files, existing
+on the same computer as the server, or they may be remote files,
+specified with an \opendap\ URL.  The catalog is a file of XML
+declarations which identify how individual data files can be aggregated
+to look like single larger files.
+
+\subj{To the end-user, aggregated data looks the same as other data.}
+In operation, the \aggser\ accepts a query from a user, and determines
+how to use the data files listed in its catalog to fulfill that query.
+After making this determination, the \aggser\ makes the subsidiary
+queries necessary to satisfy the original request, aggregates this
+data into the form expected by the user who initiated the request, and
+returns the result to that user.  The user need not even know that the
+result is an aggregation.  Though a complex aggregation will obviously
+take longer than a simple \opendap\ data request, there should be no
+other differences in the user interaction.
+
+\figureplace{JoinNew aggregation}{ht}
+{JoinNew,fig}{JoinNew.ps}{JoinNew.gif}{}
+
+\section{Methods of Aggregation}
+
+\subj{Aggregated data is data that should belong together.}
+Any data can be included in a given data catalog, but not all data can
+be (or should be) aggregated.  Two data files that can (usefully)
+appear joined together in an \aggser\ might be records of the same kinds of
+data on different dates, or different kinds of data at the same
+location, or data at adjoining locations at the same time.  That is,
+the data to be aggregated must share some common features to be worth
+the trouble to aggregate them.  If you can't imagine a user wanting to
+make the same query to two different data files, they probably aren't
+worth aggregating.
+
+Even though two data files are not aggregated, they may still be
+included as part of the same data catalog.  The catalog can help users
+find data, even though it isn't aggregated.
+
+The \AggServer\ can handle three different forms of aggregation.  We
+call these three \class{JoinNew}, \class{JoinExisting}, and \class{Union}.
+We'll examine each of these in turn.  
+
+\note{As of version \aggversion\ of the \aggser , only Grid and Array
+  data types can be aggregated.}
+
+
+\paragraph{JoinNew}
+The \class{JoinNew} form of aggregation is used to join datasets along
+a new dimension.  For example, if you have a set of measurements taken
+of the same spatial area at different dates, you could arrange these
+\subj{JoinNew is used to aggregate data along a data type not in any
+file.}in order by time to create a time series of measurements.  If a user
+wanted to see the time evolution of a measurement at a subsection of
+the larger measured area, the situation might look sort of like what's
+pictured in \figureref{JoinNew,fig}.
+
+Here, A, B, and C represent sets of measurements in the X and Y
+dimensions.  The three sets are aggregated along the Z axis.  This
+means that none of A, B, or C have a Z variable in those sets, but
+they all contain (or represent) a single Z value.  In our example
+above, X and Y are spatial dimensions, and Z would be time.  
+
+\figureplace{JoinExisting aggregation}{hbt}
+{JoinExisting,fig}{JoinExist.ps}{JoinExist.gif}{}
+
+\paragraph{JoinExisting} If you
+have several datasets that consist of data in adjoining regions of
+space or time, you may be able to aggregate them with the
+\class{JoinExisting} form of aggregation.  For example, if you have a
+time series that begins right after another one ends, you can combine
+\subj{JoinExisting is used to combine two adjoining datasets.}  
+these two along the time axis.  Similarly, if you have two spatial
+grids, whose edges adjoin, you might be able to join them along the
+dimension orthogonal to the common edge.  Something of this nature is
+shown in \figureref{JoinExisting,fig}, where three datasets, each of
+which contain independent variables X, Y, and Z, are joined on the Z
+axis.
+
+\figureplace{Union aggregation}{!hbtp}
+{Union,fig}{Union.ps}{Union.gif}{}
+
+\paragraph{Union}  If you need to aggregate datasets that cover
+the same space and time areas, but consist of different data types,
+you can use the \class{Union} aggregation to join them.  
+\subj{Union is used to combine datasets consisting of
+  different data types.} 
+For example,
+you might have a grid of satellite sea surface temperature values, and
+another grid of wind speed observations.  You can use the
+\class{Union} aggregation to combine the two into one dataset
+containing both temperature and wind speed.
+
+Now that you have the idea of what is meant by aggregation, the next
+section will show how to specify the method and parameters for
+aggegration using the necessary XML syntax.  The following chapter
+will explain how to install the server.  \chapterref{aggser,configure}
+describes how to configure the aggregation server so it will show your
+data in the way you want.
+
+
+\section{A little more detail}
+
+\indc{\acs{DDS} (\acl{DDS})}\indc{\acs{DAS} (\acl{DAS})}
+Here are some worked-out examples of aggregation types.  If you don't
+know what the elements of an \opendap\ \dds\ mean, or aren't familiar
+with the basic \opendap\ data types, please refer to \DODSuser .
+
+\subsection{JoinNew Aggregation}
+\label{agg,joinnew}
+
+
+\indc{JoinNew!aggregation type}\indc{aggregation type!JoinNew}
+\indc{adding a dimension!JoinNew}\indc{dimension!adding}
+\indc{variable!adding}\indc{time, adding |see{JoinNew}}
+The \tag{JoinNew} aggregation type joins variables along a new
+dimension. The dimension and a coordinate variable are created and
+values for the coordinates are specified in the \element{aggregation}
+element: 
+
+\begin{vcode}{sib}
+<aggregation serviceName="ISCCP" aggType="JoinNew" 
+             varName="time">
+  <fileAccess urlPath="cldfrc/isccp.8501.bin" coord="Jan"/>
+  <fileAccess urlPath="cldfrc/isccp.8502.bin" coord="Feb"/>
+  <variable name="cldfrc"/>
+</aggregation>
+\end{vcode}
+
+This XML fragment will combine these two datasets:
+
+\begin{vcode}{sib}
+Dataset {
+  Float32 cldfrc[lat = 180][lon = 360];
+} isccp_c2;
+
+Dataset {
+  Float32 cldfrc[lat = 180][lon = 360];
+} isccp_c2;
+\end{vcode}
+
+into this one:
+
+\begin{vcode}{sib}
+Dataset {
+  String time[time = 2];
+  Float32 cldfrc[time = 2][lat = 180][lon = 360];
+} ISCCP/cldfrc;
+\end{vcode}
+
+The coordinate variable \lit{time} has been assigned the values
+``Jan'' for dataset 8501 and ``Feb'' for dataset 8502, as specified in
+the \element{aggregation} tag.
+
+\note{\class{JoinNew} aggregations will automatically join all
+  variables of type \class{Grid}.  Variables of type \class{Array} may
+  also be joined, but must be explicitly listed in a
+  \element{variable} element. In the example here, the
+  \element{variable} element specified that all arrays called
+  \lit{cldfrc} were to be joined.}
+
+
+There are several options for assigning values to the coordinate
+variable of the joined dimension of \class{JoinNew} aggregations; see
+a description of the \tag{varType} and \tag{varUnit} attributes of the
+\element{aggregation} element. The most common use of \class{JoinNew}
+aggregations is to add a time dimension. The \tag{dateFormat}
+attribute is used to convert date/time strings into other units. In
+the following example:
+
+\begin{vcode}{sib}
+<aggregation aggType="JoinNew" varName="time" varType="int" 
+    varUnit="days since 0000-01-01 00:00:00" 
+    dateFormat="yy/M/d:HH:mm:ss z">
+<fileAccess 
+    urlPath="20020101.dat" coord="2002/1/1:00:00:00 GMT"/>
+<fileAccess 
+    urlPath="20020102.dat" coord="2002/1/2:00:00:00 GMT"/>
+<fileAccess 
+    urlPath="20020103.dat" coord="2002/1/3:00:00:00 GMT"/>
+</aggregation>
+\end{vcode}
+
+\ind{The} time data strings are read in using the \class{SimpleDateFormat}
+string \lit{yyyy/M/d:HH:mm:ss z}, then converted to the unit specified
+with the \tag{varUnit} attribute:
+
+\begin{vcode}{sib}
+  days since 0000-01-01 00:00:00
+\end{vcode}
+
+using the \class{ucar.units} package and stored in the dataset as an
+\lit{int32}, so the time coordinate values will look like:
+
+\begin{vcode}{sib}
+time[3]
+0, 1, 2
+\end{vcode}
+
+
+\subsection{JoinExisting Aggregation}
+\label{agg,joinexist}
+
+\indc{JoinExisting!aggregation type}\indc{aggregation type!JoinExisting}
+\indc{extending a dimension!JoinExisting}\indc{dimension!extending}
+\indc{variable!extending}\indc{time, extending |see{JoinExisting}}
+The \class{JoinExisting} aggregation type joins variables along an
+existing dimension. The dimension must have a coordinate variable and
+is named in the \element{aggregation} element:
+
+\begin{vcode}{sib}
+<aggregation serviceName="local" varName="time" 
+    aggType="JoinExisting">
+  <fileAccess urlPath="cdc/air.1948.nc"/>
+  <fileAccess urlPath="cdc/air.1949.nc"/>
+</aggregation>
+\end{vcode}
+
+The above aggregation declaration joins these two datasets:
+
+\begin{vcode}{sib}
+Dataset {
+  Float32 level[level = 17];
+  Float32 lat[lat = 73];
+  Float32 lon[lon = 144];
+  Float64 time[time = 366];
+  Grid {
+    ARRAY:
+      Int16 air[time = 366][level = 17][lat = 73][lon = 144];
+    MAPS:
+      Float64 time[time = 366];
+      Float32 level[level = 17];
+      Float32 lat[lat = 73];
+      Float32 lon[lon = 144];
+  } air;
+} cdc/air.1948.nc;
+
+Dataset {
+  Float32 level[level = 17];
+  Float32 lat[lat = 73];
+  Float32 lon[lon = 144];
+  Float64 time[time = 365];
+  Grid {
+    ARRAY:
+      Int16 air[time = 365][level = 17][lat = 73][lon = 144];
+    MAPS:
+      Float64 time[time = 365];
+      Float32 level[level = 17];
+      Float32 lat[lat = 73];
+      Float32 lon[lon = 144];
+  } air;
+} cdc/air.1949.nc;
+\end{vcode}
+
+The resulting \dds\ is shown below in \exampleref{ex10}.  Notice the
+\lit{time} dimension of the \lit{air} grid.  In this case, all
+variables of type \class{Array} or \class{Grid }with the specified
+outermost dimension are joined into a single variable in the
+aggregated dataset.  All other non-joined variables, and all
+attributes are taken from the first of the joined datasets.
+
+\examplelabel{ex10}
+\begin{vcode}{sib}
+Dataset {
+  Float32 level[level = 17];
+  Float32 lat[lat = 73];
+  Float32 lon[lon = 144];
+  Float64 time[time = 731];
+  Grid {
+    ARRAY:
+      Int16 air[time = 731][level = 17][lat = 73][lon = 144];
+    MAPS:
+      Float64 time[time = 731];
+      Float32 level[level = 17];
+      Float32 lat[lat = 73];
+      Float32 lon[lon = 144];
+  } air;
+} local/MeanAir;
+\end{vcode}
+
+\subsection{Union Aggregation}
+\label{agg,union}
+
+\indc{Union!aggregation type}\indc{aggregation type!Union}
+\indc{collection, variables |see{Union}}
+A \class{Union} aggregation type creates the union of all the
+variables in the component datasets.  Assume we have two datasets,
+with the following two \dds 's:
+
+\begin{vcode}{sib}
+Dataset {
+  Float32 lat[lat = 21];
+  Float32 lon[lon = 360];
+  Grid {
+    ARRAY:
+      Int16 cldc[lat = 21][lon = 360];
+    MAPS:
+      Float32 lat[lat = 21];
+      Float32 lon[lon = 360];
+  } cldc;
+} coads/cldc.mean.nc;
+
+Dataset {
+  Float32 lat[lat = 21];
+  Float32 lon[lon = 360];
+  Grid {
+    ARRAY:
+      Int16 lflx[lat = 21][lon = 360];
+    MAPS:
+      Float32 lat[lat = 21];
+      Float32 lon[lon = 360];
+  } lflx;
+} coads/lflx.mean.nc;
+\end{vcode}
+
+Using the following XML fragment to specify the aggregation creates a
+\dds\ like the one in \exampleref{ex9}.
+
+\begin{vcode}{sib}
+<aggregation serviceName="COADS" aggType="Union">
+ <fileAccess urlPath="cldc.mean.nc"/>
+ <fileAccess urlPath="lflx.mean.nc"/>
+</aggregation>
+\end{vcode}
+
+The resulting \dds\ (and the accompanying \das ) is the union of all the
+individual files' \dds . The first time a variable is encountered it is
+added to the combined \dds , subsequent variables with the same name are
+ignored. In the above example, the top level variables \lit{lat}
+and \lit{lon} are therefore taken from the
+\lit{cldc.mean.nc} dataset.  See \figureref{Union,fig}.
+
+\examplelabel{ex9}
+\begin{vcode}{sib}
+Dataset {
+  Float32 lat[lat = 21];
+  Float32 lon[lon = 360];
+  Grid {
+    ARRAY:
+      Int16 cldc[lat = 21][lon = 360];
+    MAPS:
+      Float32 lat[lat = 21];
+      Float32 lon[lon = 360];
+   } cldc;
+  Grid {
+    ARRAY:
+      Int16 lflx[lat = 21][lon = 360];
+    MAPS:
+      Float32 lat[lat = 21];
+      Float32 lon[lon = 360];
+  } lflx;
+} local/coads;
+\end{vcode}
+
+\chapter{Practice I: Installing the \AggServer}
+\label{aggser,install}
+
+\indc{\aggser!installing}\indc{installing!\aggser}
+\indc{Java!required version}\indc{system requirements!Java}
+\indc{servlet!\aggser}
+The \aggser\ is a Java servlet that implements an \opendap\ server both
+for  netCDF files and for ``aggregation'' datasets.  Version 0.6 and
+after requires Java 1.4.  
+
+\section{Install Jakarta-Tomcat Server}
+\label{aggser,installinstruct}
+
+\indc{Tomcat servlet engine!installing}\indc{installing!Tomcat servlet
+  engine}\indc{tomcat.conf}\indc{server.xml}\indc{XML configuration!Tomcat}
+
+To begin installation, you must install the Tomcat servlet engine.
+The \aggser\ will work under either Tomcat 3.3 or 4.0.  Install Tomcat
+in standalone mode.  This is the default configuration, using
+port 8080 and the default tomcat.conf and server.xml files.
+\subj{The \aggser\ requires the Tomcat servlet engine.}
+
+Here is an example installation, assuming that the Aggregation Server
+name is dodsC, so that all URLS start with \emph{server}\lit{/dodsC},
+where \emph{server} is whatever the name of your machine is.
+
+
+\begin{enumerate}
+\item Edit \lit{\$TOMCAT\_HOME/bin/startup.sh} and make sure it
+  contains the equivalent of the following:
+
+\begin{vcode}{sib}
+export TOMCAT_HOME=/usr/local/jakarta-tomcat
+export JAVA_HOME=/usr/local/jdk1.4
+\end{vcode}
+
+Of course you may use different pathnames, depending on where you've
+installed Tomcat or Java.
+
+\item For expected heavy loads, you might want to increase the memory
+  given to the server. If so, edit \lit{\$TOMCAT\_HOME/bin/tomcat.sh}
+  and set the desired amount of memory, for example:
+
+\begin{vcode}{sib}
+TOMCAT_OPTS = "-Xmx512m"
+\end{vcode}
+
+\item Edit \lit{\$TOMCAT\_HOME/conf/server.xml} and add the following:
+
+\begin{vcode}{sib}
+<Context path="/dodsC"
+         docBase="webapps/dodsC"
+         crossContext="false"
+         debug="0"
+         reloadable="false" >
+</Context>
+\end{vcode}
+
+
+\item Create the directory \lit{\$TOMCAT\_HOME/webapps/dodsC}, and copy
+\xlink{dodsC.war}[ (find it at ftp://ftp.unidata.ucar.edu/pub/thredds/dodsC.war)]{ftp://ftp.unidata.ucar.edu/pub/thredds/dodsC.war}
+into it. 
+
+\item Unpack dodsC.war:
+
+\begin{vcode}{sib}
+cd $TOMCAT_HOME/webapps/dodsC
+jar -xf dodsC.war
+\end{vcode}
+%$
+
+\indc{web.xml}\indc{XML configuration!web.xml}
+\item Default server values are in the web.xml file, located in 
+  \lit{\$TOMCAT\_HOME/webapps/dodsC/WEB-INF/}. You might want
+  to change one or more of the \lit{init-param} values, but it should
+  work correctly right out of the box. In particular, runtime debug
+  flags can be set with an init-param name of \lit{DebugOn}, and a
+  value of (space delimited) debug flag names. Currently only the
+  \lit{showRequests} flag is useful to the user. This will log each
+  request received by Tomcat to the server console.
+
+\indc{web.xml!example}
+Here's an excerpt from an example \lit{web.xml} file:
+
+\label{agg,webxmlex}
+\begin{vcode}{xib}
+<web-app>
+  <display-name> OPeNDAP Catalog/Aggregation Server</display-name>
+  <description>
+    OPeNDAP Catalog Aggregation Server - for netCDF and 
+    Aggregation datasets.
+  </description>
+  <servlet>
+    <servlet-name> dodsC </servlet-name>
+    <servlet-class> 
+      dods.servers.agg.CatalogServlet 
+    </servlet-class>
+    <init-param>
+      <param-name>displayName</param-name>
+      <param-value>OPeNDAP Aggregation Server</param-value>
+    </init-param>
+    <init-param>
+      <param-name>serverConfig</param-name>
+      <param-value>
+        file:///../webapps/dodsC/AggServerConfig.xml
+      </param-value>
+    </init-param>
+    <init-param>
+      <param-name>maxDODSDatasetsCached</param-name>
+      <param-value>0</param-value>
+    </init-param>
+    <init-param>
+      <param-name>maxNetcdfFilesCached</param-name>
+      <param-value>100</param-value>
+    </init-param>
+    <load-on-startup/>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>dodsC</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+  <session-config>
+    <session-timeout>30</session-timeout>
+    <!-- 30 minutes -->
+  </session-config>
+</web-app>
+\end{vcode}
+
+\end{enumerate}
+
+\section{Locating the Configuration File}
+
+\indc{XML configuration!locating the catalog}\indc{catalog!where to
+  put it}\indc{configuration file!installing}
+
+If you've successfully completed the steps above, the aggregation
+server is now installed.  However, though you've successfully
+configured the Tomcat servlet engine to run the \aggser , you haven't
+yet configured the \aggser\ itself.  \subj{Now you have an
+  \aggser .  But it won't work until you configure it.} To do that,
+you need to create 
+and install a configuration file.  There is an example configuration
+file, \lit{AggServerConfig.xml}, provided in the \aggser\ 
+distribution.  Look for it in
+\lit{\$TOMCAT\_HOME/webapps/dodsC/WEB-INF/} (it comes in the
+\lit{dodsC.war} archive file).  Copy this file up to
+\lit{\$TOMCAT\_HOME/webapps/dodsC} then modify it for your datasets.
+\chapterref{aggser,configure} contains instructions for comfiguring
+your server.
+
+\indc{web.xml!points to \aggser\ catalog}
+If you want to keep the configuration file somewhere else (in a
+different directory or on a different machine, you must
+modify Tomcat's \lit{web.xml} file.  The \aggser\ configuration file
+location is specified by the \lit{serverConfig} parameter.  For
+example, the following XML code specifies that the configuration file
+may be found at \lit{http://www.opendap.net/aggser.xml}
+
+\begin{vcode}{xib}
+<init-param>
+  <param-name>serverConfig</param-name>
+  <param-value>http://www.opendap.net/aggser.xml</param-value>
+</init-param>
+\end{vcode}
+
+You can also use an absolute path to locate the configuration file on
+your local machine.  Write it like this for a Win machine:
+
+\begin{vcode}{xib}
+<init-param>
+  <param-name>serverConfig</param-name>
+  <param-value>file://E:/dev/dodsAS/aggser.xml</param-value>
+</init-param>
+\end{vcode}
+
+Or like this for a Unix machine:
+
+\begin{vcode}{xib}
+<init-param>
+  <param-name>serverConfig</param-name>
+  <param-value>file:///usr/local/dodsAS/aggser.xml</param-value>
+</init-param>
+\end{vcode}
+
+
+\section{Setting Cache Sizes}
+
+% Doesn't this belong in the configuration chapter?  And precisely how
+% are the cache sizes set?
+
+\indc{cache size!choosing}\indc{configuration!cache size}
+\indc{performance!\aggser}\indc{tuning!\aggser}\indc{\aggser!tuning}
+\indc{\aggser!performance}
+The \AggServer\ uses two independent caches.  One is for serving local
+netCDF files, and the other is used in the process of aggregating
+remote files.
+
+If your \aggser\ serves a small number of files, it will work fine
+with the default settings.  If you plan on serving large number of files,
+you must deal with this issue.
+
+There are two independent caches, one for local netCDF files, and one
+for remote \opendap\ files that you are aggregating. Generally,
+\opendap\ files take up memory, but no system resources. The default
+is to set this size to zero, which means there is no limit to the
+cache.  A netCDF file uses a system file handle, so you are limited by
+maximum number of open files possible on your system. The default is
+100.
+
+Set the cache size by adjusting parameters in Tomcat's
+\lit{web.xml} configuration file (see \link{the web.xml example}[on
+\pageref{agg,webxmlex}]{agg,webxmlex}).  The file contains a couple of
+parameter initializations like this:
+
+\begin{vcode}{sib}
+<init-param>
+  <param-name>maxDODSDatasetsCached</param-name>
+  <param-value>0</param-value>
+</init-param>
+<init-param>
+  <param-name>maxNetcdfFilesCached</param-name>
+  <param-value>100</param-value>
+</init-param>
+\end{vcode}
+
+Here are some tips for selecting an appropriate size for your cache:
+
+\begin{itemize}
+  
+\item The larger the cache the better for performance. Resources are
+  only used if needed.
+
+\item Cache size must be at least as large as the largest number of
+  datasets in a \class{JoinExisting} aggregation.
+  
+\item Setting the cache size at least as large as the largest number
+  of datasets in a \class{JoinNew} or \class{Union} aggregation helps
+  performance, but is not necessary.
+\end{itemize}
+
+
+\chapter{Practice II: Configuring the \AggServer}
+\label{aggser,configure}
+
+Now that you've set up your \aggser , you need to
+configure it to handle your data.  All configuration is done with the
+XML catalog file described in \chapterref{aggser,install}.  This
+chapter describes what goes into that file.
+
+Before reading this chapter, you should be familiar with basic XML
+concepts, such as elements, attributes, and \dtd 's.  
+%There are
+%hundreds of books and resources out there.  Go find one.
+
+\section{How it works}
+
+The \AggServer\ is configured by adding \element{metadata} elements of
+type \element{aggregation} to catalog \element{dataset} elements.  In
+the example catalog fragment below (\exampleref{ex1}), a dataset named
+``NCEP-RUC Model Output'' is defined. It will have a relative URL of
+``NCEP/RUC''.  That is, if the \aggser\ at \lit{http://opendap.org}
+has a catalog with these entries in it, the aggregated data
+represented by the \element{dataset} element will be at
+\lit{http://opendap.org/NCEP/RUC}.  The data a client sees there will
+be created by joining three NetCDF files along the existing
+\lit{valtime} dimension, specified in the \tag{variable} attribute of
+the \element{aggregation} element. The NetCDF files will be found at
+\lit{E:/data/070516.nc} and so on.
+\subj{Specify datasets to be aggregated with XML aggregation elements.}
+\indc{JoinExisting!example}\indc{configuration!JoinExisting example}
+
+\examplelabel{ex1}
+\begin{vcode}{sib}
+<dataset name="NCEP RUC Model Output" urlPath="NCEP/RUC">
+  <service name="localGrids" serviceType="NetCDF" 
+    base="file:///E:/data/"/>
+  <metadata metadataType="Aggregation">
+    <aggregation serviceName="localGrids" 
+        variable="valtime" type="JoinExisting">
+      <fileAccess urlPath="070516.nc"/>
+      <fileAccess urlPath="070517.nc"/>
+      <fileAccess urlPath="070518.nc"/>
+    </aggregation>
+  </metadata>
+</dataset>
+\end{vcode}
+
+The \aggser\ can also aggregate files from other \opendap\ servers. In 
+the following example, the aggregation dataset called ``Example
+JoinNew'' is created from files that live on the ``GSO'' \opendap\ 
+server. The datasets are joined by creating a new dimension called
+\lit{time}. The data values of that dimension are specified in the
+\tag{fileAccess} elements. The \opendap\ datasets out of which this
+aggregate dataset is constructed have URLs like this:
+\subj{The aggregated datasets can be remote ones, too.}
+\lit{http://opendap.org/cgi/nph-dsp/htnsst/k2828.htn}.
+\indc{JoinNew!example}\indc{configuration JoinNew example}
+
+\examplelabel{ex2}
+\begin{vcode}{xib}
+<dataset name="Example JoinNew" urlPath="htn_sst_decloud">
+  <service name="GSO" serviceType="DODS" 
+      base="http://opendap.org/cgi/nph-dsp/"/>
+  <metadata metadataType="Aggregation">
+    <aggregation serviceName="GSO" variable="time" 
+      type="JoinNew" dateFormat="yyyy/M/d:HH:mm:ss z">
+      <fileAccess urlPath="htnsst/k2828.htn" coord="1985/1/1:18:28:28 GMT"/>
+      <fileAccess urlPath="htnsst/k1750.htn" coord="1985/1/2:18:17:50 GMT"/>
+      <fileAccess urlPath="htnsst/k0718.htn" coord="1985/1/3:18:07:18 GMT"/>
+    </aggregation>
+  </metadata>
+</dataset>
+\end{vcode}
+
+\indc{netCDF!serving un-aggregated}\indc{DODS server!using \aggser\ as}
+The \aggser\ is also an \opendap\ server for non-aggregated NetCDF
+files. The following shows a collection of \opendap\ datasets. Since
+they don't have an aggregation \element{metadata} element
+(\lit{metadataType=''Aggregation''}, they refer to
+NetCDF files that are served as \opendap\ datasets by this \aggser .
+\subj{You can use the \aggser\ to serve simple netCDF files, too.}
+There is more detail about this in \sectionref{agg,simplenetcdf}.
+
+\examplelabel{ex3}
+\begin{vcode}{sib}
+<dataset name="Non-Aggregated Netcdf Files" serviceName="this">
+   <property name="internalService" value="local"/>
+   <dataset name="RUC/01070516" urlPath="01070516_ruc.nc"/>
+   <dataset name="RUC/01070517" urlPath="01070517_ruc.nc"/>
+   <dataset name="RUC/01070518" urlPath="01070518_ruc.nc"/>
+ </dataset>
+\end{vcode}
+
+Note here that the \lit{this} service needs no \element{service}
+element to define it.
+
+\section{Dataset URLs}
+\label{agg,dataseturls}
+
+The \new{Dataset URL}is the URL that clients use to access an \aggser\ 
+dataset.  This would be \lit{http://opendap.org:8080/RUC/01070516} in
+\exampleref{ex3} (assuming that Tomcat is listening to port 8080).
+For those who are familiar with the operation of other \opendap\ 
+servers, note that in the \aggser\ catalog, you do not use the usual
+\opendap\ suffixes (\lit{.dds}, \lit{.das}, \lit{.info}, \lit{.html},
+and so on). These are automatically added by the \aggser\ when
+constructing html pages, and by \thredds\ clients when they read the
+\lit{catalog.xml} file directly.
+
+In general, \thredds\ catalogs can specify Datasets that may come from
+multiple \opendap\ (and even non-\opendap ) servers. For \aggser\ 
+catalogs, typically we want to specify just Datasets that are served
+by \lit{this} \aggser . The following fragment shows how a typical
+\aggser\ catalog begins:
+
+\examplelabel{ex4}
+\begin{vcode}{sib}
+<catalog name="Example Agg Server Catalog" version="0.6" >
+<dataset name="Top level" dataType="Grid" serviceName="this">
+  <service name="this" serviceType="DODS" base=""/>
+     ...
+    <dataset name="NCEP RUC Model Output" urlPath="NCEP/RUC">
+    ...
+    </dataset>
+</dataset>
+</catalog>
+\end{vcode}
+
+The first line shows the root \element{catalog} element. A
+\element{catalog} element always has exactly one dataset element,
+sometimes known as the "top-level" dataset, shown on the second line.
+The third line defines the \opendap\ \element{service} that is the
+\aggser\ itself.  By convention, the \aggser\ in its own catalog is
+called \lit{this}. The top-level dataset element makes \lit{this}
+service the default service for all datasets in the catalog. Notice
+that \lit{this} service has a base consisting of an empty string.
+
+One thing about \aggser\ catalogs that may be slightly confusing is
+that a \element{dataset} element may define an \opendap\ dataset, or
+it may just be a container for other dataset elements. In
+\exampleref{ex4}, the dataset element called ``Top level'' is just a
+container, because it doesn't have a \tag{urlPath} attribute or
+contained \tag{access} elements. The dataset element called "NCEP RUC
+Model Output" does define an \opendap\ dataset, because it has a
+\tag{urlPath} of \lit{NCEP/RUC}. In this document, we use ``Dataset'' to
+mean an \opendap\ dataset, and ``dataset element'' to mean an element in
+the XML document.
+
+\indc{Dataset URL}\indc{URL!Dataset}\indc{finding!your data's URL}
+The Dataset URL is constructed by concatenating the service \new{base} and 
+the dataset \tag{urlPath}:
+
+\begin{vcode}{i}
+Dataset URL = service.base + dataset.urlPath
+\end{vcode}
+
+Dataset \tag{urlPaths} should thus be relative to the service, and
+typically  \emph{not} be absolute URLs. By leaving the \aggser\
+\lit{this} service \tag{base} empty, the Dataset URLs become relative to
+the catalog XML doc itself. The \aggser\ relies on this, so it's a
+very good idea for you to follow this convention.  The important
+things to remember are: 
+
+\begin{enumerate}
+\item Dataset \tag{urlPaths} should be relative, 
+\item dataset \tag{urlPaths} must be unique within an \aggser\
+  catalog, and
+\item dataset \tag{urlPaths} for aggregated datasets are arbitrary,
+  since the \aggser\ is mapping these to the actual files specified in
+  the \tag{aggregation} element. You should use meaningful names
+  however, since the \tag{urlPath} shows up as the dataset name in the
+  \dds .
+\end{enumerate}
+
+
+\section{Mapping Datasets to Internal Files}
+\label{agg,mapping}
+
+\indc{Dataset URL}\indc{URL!Dataset}
+The Dataset URL specifies the external name of an \opendap\ dataset.
+These are mapped to internal datasets specified in the
+\element{fileAccess} elements, which may be other \opendap\ datasets, or
+files internally accessible to the \aggser . (For \aggversion\ these must be
+NetCDF files, but the \aggser\ could be extended to handle other types
+of files.) We will call these internal datasets and files
+\new{internal files}, (even though they are not always files)
+to avoid overloading the word ``datasets'' any further. The service that the
+\aggser\ uses to access these internal files is called the
+\new{internal service}, to distinguish from the external
+service, which is the \aggser\ itself.
+
+The internal file location is specified by the concatenation of the
+internal service base and the \tag{fileAccess} \tag{urlPath}:
+
+\begin{vcode}{sib}
+internal file URL = internalService.base + fileAccess.urlPath
+\end{vcode}
+
+The internal service is specified by the \tag{serviceName} attribute
+of the \tag{aggregation} or \tag{fileAccess} element, as in
+\exampleref{ex5}.  The service elements can be placed in any parent
+dataset, including the top-level dataset:
+
+\examplelabel{ex5}
+\begin{vcode}{xib}
+<dataset name="JoinNew Example" urlPath="htnsst">
+  <service name="GSO" serviceType="DODS" 
+      base="http://opendap.org/cgi-bin/nph-dsp/"/>
+  <service name="GSO-derived" serviceType="NetCDF" 
+      base="file:///E:/data/grids/GSO/"/>
+  <metadata metadataType="Aggregation">
+    <aggregation serviceName="GSO" variable="time" type="JoinNew" 
+        dateFormat="yyyy/M/d:HH:mm:ss z">
+      <fileAccess urlPath="htnsst/1985/k2828.htn" 
+          coord="1985/1/1:18:28:28 GMT"/>
+      <fileAccess urlPath="htnsst/1985/k1750.htn_d.Z" 
+          coord="1985/1/2:18:17:50 GMT"/>
+      <fileAccess serviceName="GSO-derived" 
+          urlPath="1985/k85003180718.nc" 
+          coord="1985/1/3:18:07:18 GMT"/>
+    </aggregation>
+  </metadata>
+</dataset>
+\end{vcode}
+
+In \exampleref{ex5}, the first two internal files of the aggregation
+come from the ``GSO'' \opendap\ service, and the third from the
+``GSO-derived'' NetCDF service.
+
+\section{Using the \aggser\ as a NetCDF server}
+\label{agg,simplenetcdf}
+
+\indc{netCDF!serving un-aggregated}\indc{DODS server!using \aggser\
+  as}\indc{server!netCDF files (un-aggregated)}
+The \aggser\ can also serve NetCDF files as \opendap\ datasets without
+aggregating them.  In this case, specifying the internal service is
+harder because we don't have an \tag{aggregation} or \tag{fileAccess}
+element to specify the \tag{serviceName}, and putting a
+\tag{serviceName} attribute on the dataset element would change the
+Dataset URL, not the internal file location.  To specify a local
+NetCDF file, use a \element{property} element whose
+name is \lit{internalService} and whose value is the name of the internal
+service to use, as in \exampleref{ex6}.
+
+\examplelabel{ex6}
+\begin{vcode}{sib}
+...
+<service name="local" serviceType="NetCDF" 
+    base="file:///E:/data/grids/GSO-derived/"/>
+<service name="loco" serviceType="NetCDF" 
+    base="file:///E:/data/grids/UFO-derived/"/>
+<dataset name="Non-Aggregated Netcdf Files" serviceName="this">
+  <property name="internalService" value="local"/>
+  <dataset name="RUC/516" urlPath="516_ruc.nc"/>
+  <dataset name="RUC/517" urlPath="517_ruc.nc"/>
+  <dataset name="RUC/518" urlPath="518_ruc.nc">
+    <property name="internalService" value="loco"/>
+  </dataset>
+</dataset>
+\end{vcode}
+
+In \exampleref{ex6}, the first \element{property} element sets up a
+default value for the datasets, while the second \element{property}
+tag specifies an exception to the default.  The result is that the
+first two internal files of the dataset come from the ``local''
+NetCDF service, and the third from the ``loco'' NetCDF service.  The
+only real difference is the base path in which the \aggser\ looks for
+the files.  Setting up a default in this manner is not essential, but
+it can save you some typing.
+
+\note{When the \aggser\ is used to serve non-aggregated netCDF files,
+  the \tag{urlPath} of the dataset is used in both the external
+  Dataset URL \emph{and} the internal File URL.  Therefore
+  \emph{dataset URLs for NetCDF files are not arbitrary}, since they
+  must map to real files accessible to the \aggser . However the
+  \tag{urlPath} must still be unique within the catalog.}
+
+\examplelabel{ex7}
+\begin{vcode}{sib}
+<catalog name="Example OPeNDAP Aggregation Server Catalog" version="0.6" >
+  <dataset name="Top level dataset" dataType="Grid" serviceName="this">
+    <service name="local" serviceType="NetCDF" base="file:///MyDataPath"/>
+    <property name="internalService" value="local"/>
+    ...
+  </dataset>
+</catalog>
+\end{vcode}
+
+\section{Dataset Aliases}
+
+If you want to refer to the same dataset in more than one place in the
+catalog, use an \tag{alias} attribute, so that you don't have to
+maintain the aggregation element in more than one place, as in
+\exampleref{ex8}: 
+
+\examplelabel{ex8}
+\begin{vcode}{sib}
+<dataset name="NCEP RUC Model Output" urlPath="NCEP/RUC" ID="NCEP-RUC">
+  <service name="localGrids" serviceType="NetCDF" 
+    base="file:///E:/data/grids/"/>
+  <metadata metadataType="Aggregation">
+    <aggregation serviceName="localGrids" varName="valtime" 
+        aggType="JoinExisting">
+      <fileAccess urlPath="01070516_ruc.nc"/>
+      <fileAccess urlPath="01070517_ruc.nc"/>
+      <fileAccess urlPath="01070518_ruc.nc"/>
+    </aggregation>
+  </metadata>
+</dataset>      
+...
+<dataset name="Another way to sort the datasets>
+  <dataset name="NCEP RUC Model Output" alias="NCEP-RUC"/>      
+  ..
+</dataset>
+\end{vcode}
+
+\section{Multiple Aggregation elements}
+
+\indc{DDS!aggregating}\indc{DAS!aggregating}
+A dataset can contain multiple \element{aggregation} elements. The \aggser\ 
+creates a single \dds\ and \das\ by adding the elements of the individual
+aggregation's \dds\ and \das , in the order that they are specified. If a
+variable or attribute with the same name already exists, then the
+duplicate is not added. While this does not allow general dataset
+restructuring, it is useful for simple cases of combining datasets.
+In the following example:
+
+\begin{vcode}{sib}
+<dataset name="Combine Type 2 and Type 3:" urlPath="Type2and3testCombine">
+<metadata metadataType="Aggregation">
+<aggregation serviceName="local" varName="time" aggType="JoinExisting">
+<fileAccess urlPath="cdc/air.1948.nc"/>
+<fileAccess urlPath="cdc/air.1949.nc"/>
+<fileAccess urlPath="cdc/air.1950.nc"/>
+</aggregation>
+<aggregation serviceName="local" aggType="Union">
+<fileAccess urlPath="cdc/sst.mnmean.nc"/>
+</aggregation>
+</metadata>
+</dataset>
+\end{vcode}
+
+A \class{JoinExisting} aggregation that has this \dds :
+
+\begin{vcode}{xib}
+Dataset {
+  Float32 level[level = 17];
+  Float32 lat[lat = 73];
+  Float32 lon[lon = 144];
+  Float64 time[time = 1096];
+  Grid {
+    ARRAY:
+      Int16 air[time = 1096][level = 17][lat = 73][lon = 144];
+    MAPS:
+      Float64 time[time = 1096];
+      Float32 level[level = 17];
+      Float32 lat[lat = 73];
+      Float32 lon[lon = 144];
+  } air;
+} local/MeanAir;
+\end{vcode}
+
+and another dataset with this \dds :
+
+\begin{vcode}{xib}
+Dataset {
+  Float32 lat[lat = 180];
+  Float32 lon[lon = 360];
+  Float64 time[time = 233];
+  Grid {
+    ARRAY:
+      Int16 sst[time = 233][lat = 180][lon = 360];
+    MAPS:
+      Float64 time[time = 233];
+      Float32 lat[lat = 180];
+      Float32 lon[lon = 360];
+  } sst;
+} SST;
+\end{vcode}
+
+are joined to create the following \dds :
+
+\begin{vcode}{xib}
+Dataset {
+  Float32 level[level = 17];
+  Float32 lat[lat = 73];
+  Float32 lon[lon = 144];
+  Float64 time[time = 1096];
+  Grid {
+    ARRAY:
+      Int16 air[time = 1096][level = 17][lat = 73][lon = 144];
+    MAPS:
+      Float64 time[time = 1096];
+      Float32 level[level = 17];
+      Float32 lat[lat = 73];
+      Float32 lon[lon = 144];
+  } air;
+  Grid {
+    ARRAY:
+      Int16 sst[time = 233][lat = 180][lon = 360];
+    MAPS:
+      Float64 time[time = 233];
+      Float32 lat[lat = 180];
+      Float32 lon[lon = 360];
+  } sst;
+} Type2and3testCombine;
+\end{vcode}
+
+Note that the sst \class{Grid} (and maps) are added to the combined
+dataset, but the top-level variables \lit{lat}, \lit{lon}, and
+\lit{time} are all taken only from the \class{JoinNew} dataset, since
+it was specified first.
+
+\include{agg/agg-dtd}
+
+\appendix
+\chapter{Acronyms}
+
+These acronyms are used frequently in this manual.
+
+\begin{acronym}
+  \acro{DAS}{Data Attribute Structure} A description of the
+  ``metadata'' attributes for an \opendap\ dataset.  See DODS.
+  \acro{DDS}{Data Descriptor Structure} A description of the data
+  types and sizes of data in an \opendap\ dataset.  See DODS.
+  \acro{DODS}{Distributed Oceanographic Data System} The ancestor to
+  \opendap .  See
+  \xlink{unidata.ucar.edu/packages/dods}{http://unidata.ucar.edu/packages/dods}
+  for information.
+  \acro{DTD}{Document Type Definition} This is the set of definitions
+  that make up an XML specification.
+  \acro{OPeNDAP}{Open Source Project for Network Data Access Protocol}
+  A network protocol for transmitting data across the internet.
+  Though appropriate for many kinds of data, the system was designed
+  with scientific data in mind.  See
+  \xlink{www.nvods.org}{http://www.nvods.org} for information about
+  the group that has developed \opendap\ and
+  \xlink{unidata.ucar.edu/packages/dods}{http://unidata.ucar.edu/packages/dods}
+  for information about \opendap 's progenitor, DODS.
+  \acro{THREDDS}{Thematic Realtime Environmental Data Distributed
+  Services}  A project of Unidata to create ways to establish useful
+  collections of earth science data.  See
+  \xlink{unidata.ucar.edu/projects/THREDDS}{http://unidata.ucar.edu/projects/THREDDS}
+  for more information.
+\end{acronym}
+
+\printindex
+
+\end{document}
+
+%% $Log: agg.tex,v $
+%% Revision 1.5  2004/07/07 22:50:46  jimg
+%% Switched to dods-book, rcsInfoDate and updated PDF link.
+%%
+%% Revision 1.4  2004/04/24 21:37:23  jimg
+%% I added every directory in preparation for adding everyting. This is
+%% part of getting the opendap web pages going...
+%%
+%% Revision 1.3  2003/12/28 21:27:02  tom
+%% added hlx material
+%%
+%% Revision 1.2  2003/12/28 21:23:43  tom
+%% added log
+%%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

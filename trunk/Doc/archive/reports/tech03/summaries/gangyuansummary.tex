@@ -1,0 +1,39 @@
+The Asian Pacific Data Research Center (APDRC) is designed to provide
+one-stop shopping of climate data for a wide variety of users.  The
+APRDC is running OPeNDAP, EPIC, LAS, and Catalog/Aggregation (CAS) servers.
+The main problems with serving in-situ data are the irregularities
+of data formats, and the volume of data files.  Their solutions are
+to store the data in NetCDF, and use the EPIC System developed by
+NOAA/PMEL.  Gang gave an overview of the data that are served, and
+examples of the acquisiton and analysis of served data using EPIC.
+Then he outlined accessing data via OPeNDAP.  The problem with OPeNDAP
+is that it is difficult to locate an individual data file, and only
+one file is accessed by a single URL.  Their solution is to configure
+OPeNDAP into EPIC by exporting an APDRC/OPeNDAP pointer file to
+serve numerous in-situ data files.  Gang showed how to access data using
+this modified system, and gave a MATLAB comparison between WOCE CTD
+and GFDL model data.  
+
+WISH LIST:  
+
+\begin{itemize}
+\item  Ability to access a sequence of in-situ data files
+\item  Ability to aggregate a bunch of in-situ profiles.
+\end{itemize}
+
+
+% $Id$
+%
+% $Log: gangyuansummary.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

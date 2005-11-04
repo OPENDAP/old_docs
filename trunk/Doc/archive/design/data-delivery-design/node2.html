@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Introduction</TITLE>
+<META NAME="description" CONTENT="Introduction">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="next" HREF="node5.html">
+<LINK REL="previous" HREF="node1.html">
+<LINK REL="up" HREF="data-delivery-design.html">
+<LINK REL="next" HREF="node3.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html129"
+  HREF="node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html125"
+  HREF="data-delivery-design.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html119"
+  HREF="node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html127"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html130"
+  HREF="node3.html">Process Configuration</A>
+<B> Up:</B> <A NAME="tex2html126"
+  HREF="data-delivery-design.html">DODS Data Delivery Design</A>
+<B> Previous:</B> <A NAME="tex2html120"
+  HREF="node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html128"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00020000000000000000">
+Introduction</A>
+</H1>
+
+<P>
+This document describes the design and construction of the data delivery
+components of the <A NAME="tex2html13"
+  HREF="http://www.unidata.ucar.edu/packages/dods/">Distributed Oceanographic Data System</A> (DODS). The architecture of DODS is described in
+detail in ``<A NAME="tex2html14"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-arch/data-delivery-arch.html">DODS--Data Delivery Architecture</A>''.  DODS is a client-server system which differs from the
+conventional notion of such a system, such as <TT>ftp</TT>, because it has many
+different clients, not just one.  Instead of the implementor(s) of DODS
+building a single client program to read and display data, they build
+replacements for existing data access application programmer interfaces
+(API). These replacement, or surrogate, API implementations are then linked
+to any data access, display or analysis software which uses that API to
+access data. The surrogate API implementations use the DODS tool kit, in
+conjunction with the <A NAME="tex2html15"
+  HREF="http://hoohoo.ncsa.uiuc.edu/docs/Overview.html">HTTPD</A>, to access data stored on remote computers which
+have installed DODS data servers.  Because the reimplemented APIs can access
+data over the network using DODS data servers, application programs linked
+with them can also access such data, even though the API calls they make are
+unchanged.
+
+<P>
+In addition to the remote access of data sets, DODS provides a limited degree
+of API transparency. The DODS data servers transmit information using the
+<A NAME="tex2html16"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">Data Access Protocol</A> (DAP).  The DODS surrogate libraries issue requests and read data using
+the DAP, while the DODS data servers answer requests and provide information
+using the DAP as well. Both the surrogate libraries and the data servers can
+be said to <EM>translate</EM> the native access mode of a API or storage
+format into or out of the DAP. Because a single transmission/access protocol
+is used to move all information within DODS, any surrogate library can, in
+principle, access data from any of the data servers, regardless of the
+storage format of the data accessed by that server. Thus, for example, data
+stored in <A NAME="tex2html17"
+  HREF="http://www.unidata.ucar.edu/packages/netcdf/guide.txn_toc.html">NetCDF</A> files can be read using software designed to work with the
+<A NAME="tex2html18"
+  HREF="http://www1.whoi.edu/jgofs.html">JGOFS</A> system.
+
+<P>
+Using the <A NAME="tex2html19"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A> has a price. Servers must translate calls in the DAP to calls
+in the data set API or, if the data set has no associated API, to various
+reads which get information from the data set. Either way the data server
+must translate the DAP accesses into the appropriate accesses for the data
+set. Section&nbsp;<A HREF="node5.html#ddd:data-servers"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> describes the design and construction of
+these data servers. In addition, the surrogate libraries must translate calls
+from the API they replace to calls in the DAP. Section&nbsp;<A HREF="node13.html#ddd:client"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>
+describes how these surrogate libraries are built.
+
+<P>
+Several designs were considered for the data delivery mechanism of DODS.
+They were socket-based peer-to-peer communications, RPC-based peer-to-peer
+communications, virtual file systems and HTTP/CGI-based client/server
+systems. The first three of these different designs are compared in: <A NAME="tex2html20"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/reports/workshop1/section3.13.html">Report on the First Workshop for the
+    Distributed Oceanographic Data System, Proposed System Architectures</A>
+and ``<A NAME="tex2html21"
+  HREF="http://lake.mit.edu/dods-dir/dods-dd.html">DODS--Data Delivery</A>'', which presents our rationale behind prototyping the RPC-based
+design for DODS. However, as a result of those prototypes and the development
+of HTTP as a <EM>de facto</EM> data communications standard, we changed the
+data delivery design to an HTTP/CGI-based system.
+
+<P>
+By using HTTP as a transport protocol, we are able to tap into a large base
+of existing software which will likely evolve along with the Internet as a
+whole. Because the development of large-scale distributed systems is
+relatively new<A NAME="tex2html12"
+  HREF="footnode.html#foot453"><SUP>1</SUP></A> there are many problems which must still be addressed
+for these systems to be robust. These problems include naming resources
+independently of their physical location, and choosing between two objects
+which appear to be the same but which differ in terms of quality. These are
+general problems which are hard to solve because they will be solved
+effectively only when the Internet community reaches a consensus on which of
+the available solutions are best. HTTP, because it is so widely accepted,
+provides a reasonable base for such solutions. This view is supported by the
+recent <A NAME="tex2html22"
+  HREF="http://www.ietf.cnri.reston.va.us/home.html">Internet Engineering Task Force
+(IETF)</A>
+work on extending the
+<A NAME="tex2html23"
+  HREF="http://www.w3.org/hypertext/WWW/Protocols/HTTP/HTTP2.html">HyperText Transfer Protocol</A> and standards.
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html131"
+  HREF="node3.html">Process Configuration</A>
+<LI><A NAME="tex2html132"
+  HREF="node4.html">Client/Server and Program/Library Interfaces</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html129"
+  HREF="node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html125"
+  HREF="data-delivery-design.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html119"
+  HREF="node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html127"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html130"
+  HREF="node3.html">Process Configuration</A>
+<B> Up:</B> <A NAME="tex2html126"
+  HREF="data-delivery-design.html">DODS Data Delivery Design</A>
+<B> Previous:</B> <A NAME="tex2html120"
+  HREF="node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html128"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

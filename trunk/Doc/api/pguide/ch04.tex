@@ -1,0 +1,1109 @@
+% Chapter to the DODS Programmer's Guide
+%
+% $Id$
+%
+% $Log: ch04.tex,v $
+% Revision 1.6  2004/02/18 06:38:48  jimg
+% Various changes, mostly for the DODS --> OPD macros.
+%
+% Revision 1.5  2000/10/04 15:00:23  tom
+% changed \figureplace definition, cleaning up...
+%
+% Revision 1.4  1999/07/22 18:54:56  tom
+% fixed errors
+%
+% Revision 1.3  1999/02/04 17:46:05  tom
+% Modified for dods-book.cls and Hyperlatex
+%
+% Revision 1.2  1998/12/07 15:51:33  tom
+% updated for DODSv2.19
+%
+% Revision 1.1  1998/03/13 20:50:03  tom
+% created API manual from James's Toolkit document
+%
+%
+
+\chapter{Using the Toolkit}
+\label{pguide,using}
+\label{tk,using}
+
+This chapter describes how to use the toolkit software to build new
+client libraries and data servers. Before beginning to build either
+part of a new DODS application, it is very important to be intimate
+with the details of the API to be replaced.  
+
+\indc{client library}\indc{API!implementing}
+To create a client library that can \emph{replace} the original API
+implementation at \emph{link time} means that the client library must
+present exactly the same interface as the original library. This
+includes, to the extent that they are widely used, any undocumented
+features of the original implementation that manifest themselves as
+symbols that require link-time resolution. Building a client-library
+requires great understanding of the existing implementation as well as
+current use of the target API.
+
+\indc{data model}\indc{translation!data model}
+To build a good data server for files or data sets encoded using an
+API it is important to understand the data model(s) the API supports
+and how they relate to the DODS data models. Each of the various data
+types that the API supports must be translated into a DODS data type
+(i.e., one of the DODS classes that descend from \class{BaseType}).
+However, there is often not a one-to-one match between the API's types
+and the DODS types. Thus, the data server author must decide how to
+best translate the API's types into DODS types so as to preserve as
+much of the data set author's intent. This is exacerbated by the use
+of various conventions that (implicitly) bind several variables
+together with a data set. When this pattern shows up (as it does with
+NetCDF) you must decide whether to lump all variables together that
+\emph{appear} to use the convention (and thus falsely group some
+variables) or to group only those which actually are explicitly
+grouped using whatever the API provides. If you choose the latter then
+any data sets which follow the convention will lose information. When
+building the data server it is important to keep such tradeoffs in
+mind.
+
+The following sections discuss the specifics of building a data server
+and a client library. The existing NetCDF server and client library
+are used as examples. Many APIs are very similar in their overall
+organization. The source code used for these examples can be found in
+\lit{\$(DODS\_ROOT)/src/nc-dods/}. Much of the NetCDF example will be
+relevant to your task, even if your target API is significantly
+different. The \lit{\$(DODS\_ROOT)/src/jg-dods/} directory contains
+both a data server and client library for the \JGOFS\ relational data
+system.
+
+\section{Data Servers}
+\label{tk,servers}
+
+\indc{dispatch CGI}\indc{CGI!dispatch}\indc{filter CGI}\indc{CGI!filter}
+The DODS data server consists of a \new{dispatch} program and a set of
+\new{filter} programs.  The dispatch program reads the incoming URL
+and decides which of the filter programs to run based on the URL
+suffix.
+
+\indc{.ver|see(ver)}\indc{ver!URL suffix}\indc{URL suffix!ver}
+\indc{URL suffix}
+A typical DODS data request uses three filters: one to return the
+\class{DAS} (\lit{.das}), one for the \class{DDS} (\lit{.dds}), and
+the third for the data (\lit{.dods}).  A client can also request ASCII
+data (\lit{.asc} or \lit{.ascii}), usage information about the server
+(\lit{.info}), or version information about the server and the data
+(\lit{.ver}).
+
+The task of building a DODS server can then be separated into the
+following steps:
+
+\indc{server!building}
+\begin{enumerate}
+\item Create concrete classes of the entire \class{BaseType}
+  hierarchy, with \lit{read} functions for each data type.  Certain
+  APIs cannot handle certain DODS types.  For these types, there must
+  still be a concrete class, but it can have a \lit{read} method with
+  a null body.
+  
+\item Write functions that use the native API to extract from the
+  dataset the information needed to build the DODS \class{DAS} and
+  \class{DDS} objects, and then build them with the methods those
+  classes provide.  
+
+\note{This step has nothing at all to do with
+  DODS.  This is between you and your data.  DODS makes no demands on
+  how these structures are created.  That is, for example, if all the
+  data to be served has the same DDS, feel free to cheat.  The only
+  thing that is important is that the structures accurately reflect
+  the relationships of the data.}
+
+\item Create filter programs to return the \class{DAS}, \class{DDS},
+  data, and server usage and version information.
+
+\item Create a dispatch program to parse an incoming URL and invoke
+  the correct filter program.
+\end{enumerate}
+
+To install the finished server, put the filter programs into a web
+server's CGI directory, and put the datasets to be served somewhere
+they can be seen by those filter programs.  Refer to the \OPDuser\
+for more details about installing a server.
+
+\subsection{The Dispatch CGI}
+\label{tk,cgi}
+
+\indc{dispatch!CGI}\indc{CGI!dispatch}
+The DODS dispatch CGI program receives a data request from the DODS
+client, and dispatches the request to one of several filter programs.
+The dispatch CGI is stored in a CGI directory on the host machine.
+Its name is an important detail of its operation.  The name should
+begin with \lit{nph-}, and end with the letters that distinguish data
+files containing data formatted with that API from other
+files.\footnote{The \lit{nph-} is a relic, dating from the misty
+  dawn of the World Wide Web and the first http standards.  It stands
+  for ``Non-Parsing Header'' (See the CGI 1.1 Standard for more
+  information.), and is the only way to pass data through many httpd
+  servers unparsed.}  So,
+for example, \netcdf data files are called \var{foo}\lit{.nc}, so the
+\netcdf dispatch CGI is called \lit{nph-nc}.
+\indc{non-parsing header}\indc{nph-|see(non-parsing header)}
+\indc{CGI 1.1 standard}
+
+The dispatch CGI's job is to parse the incoming URL and execute the
+appropriate filter programs with the arguments enclosed in the URL.
+The dispatch CGI is also be responsible for the first level of error
+information that must be returned to the user.  These tasks are easily
+accomplished in any scripting language.  On the off chance you wish to
+use Perl, DODS provides a Perl class designed to make writing the CGI
+a simple task.
+
+
+\indc{Perl!dispatch class}\indc{DODS\_Dispatch}
+The file \lit{DODS\_Dispatch.pm} contains the definitions of the
+\class{DODS\_Dispatch} class.  This class provides several methods
+used to parse the incoming URL, and one method for delivering error
+messages to the client.  The \class{DODS\_Dispatch} provides the
+following methods:
+
+\begin{description}
+\indc{command!DODS\_Dispatch method}
+\item[\lit{command()}] Returns the command string implied by the input
+  URL.  The command string looks like:
+
+  \var{command} \var{filename} \lit{-e} \var{query-string}.
+  
+  Where \var{command} is the DODS filter program to be run,
+  \var{filename} is the absolute filename of the dataset on which to
+  run it, and \var{query-string} is the constraint expression that was
+  enclosed in the URL. Of the \class{DODS\_dispatch} methods, many
+  dispatch CGI scripts may only need to use this one and
+  \lit{print\_error\_msg}.  See \figureref{fig,cgi}
+  
+\indc{query!DODS\_Dispatch method}
+\item[\lit{query()}] Returns the query string from the URL.  This is
+  the DODS constraint expression.
+  
+\indc{filename!DODS\_Dispatch method}
+\item[\lit{filename()}] Returns the absolute filename corresponding to
+  the requested dataset.
+  
+\indc{extension!DODS\_Dispatch method}
+\item[\lit{extension()}] Returns the extension on the end of the URL.
+  For DODS, this will be \lit{das}, \lit{dds}, \lit{dods}, \lit{info},
+  or \lit{ver}.
+  
+\indc{cgi-dir!DODS\_Dispatch method}
+\item[\lit{cgi-dir()}] Returns the absolute pathname of the directory
+  in which the dispatch CGI is stored.  This is generally the same as
+  the directory in which the DODS filter programs are stored.
+  
+\indc{script!DODS\_Dispatch method}
+\item[\lit{script()}] Returns the name of the dispatch CGI, minus the
+  \lit{nph-}, and any suffixes used for a secure server.
+
+\indc{print\_error\_message!DODS\_Dispatch method}
+\item[\lit{print\_error\_message(}\var{ver}\lit{)}] This returns an error
+  message to the client, explaining how to use the server.  The
+  \var{ver} argument should be a string containing the version of the
+  server software.  The error message returned is encoded in the
+  \lit{DODS\_Dispatch.pm} file. 
+
+\indc{print\_help\_message!DODS\_Dispatch method}
+\item[\lit{print\_help\_message()}] This returns a help message to the
+  client.  This can be issued in response to a confusing or inadequate
+  URL. The help message returned is encoded in the
+  \lit{DODS\_Dispatch.pm} file. 
+\end{description}
+
+\indc{dispatch!CGI example}\indc{CGI!example dispatch}
+A sample (simple) DODS dispatch CGI is shown in \figureref{fig,cgi}.
+This is a Perl script using the \class{DODS\_Dispatch} methods.  This
+script assumes that all data is rooted in the http document directory
+subtree.\footnote{You can use this even if you want to access files
+  outside that subtree.  Simply use a symbolic link and make sure that
+  your server is set to follow symbolic links.}
+
+
+\begin{figure}[htb]
+\W\label{fig,cgi}
+\begin{vcode}{cb}
+#!/usr/local/bin/perl
+
+use Env;
+use DODS_Dispatch;
+
+$dispatch = new DODS_Dispatch;
+
+$command = $dispatch->command();
+
+if ($command ne "") {           # if no error...
+    exec($command);
+} else {
+    my $script_rev = '$Revision$ ';
+    $script_rev =~ s@\$([A-z]*): (.*) \$@$2@;
+
+    $dispatch->print_error_msg($script_rev);
+}
+
+\end{vcode}
+\caption{A simple DODS data server dispatch CGI.}
+\T\label{fig,cgi}
+\end{figure}
+
+
+\subsection{The \class{DAS} and \class{DDS} filter programs}
+
+\indc{DAS filter!CGI}\indc{DAS filter!CGI}
+\indc{DDS filter!CGI}\indc{DDS filter!CGI}
+\indc{filter!writing}\indc{writing!filter}
+\indc{filter!CGI example}\indc{CGI!example filter}
+\indc{netCDF filter}\indc{filter!netCDF}
+The simplest way to learn about creating a new filter program to
+return a dataset's \class{DAS} or \class{DDS} is to examine the
+existing filter programs.  In this section, we will examine the
+\netcdf\ servers.
+
+The source code for the \class{DAS} filter program distributed with
+the \netcdf server software is shown in \figureref{fig,das-filter}. The
+\class{DAS} and \class{DDS} filters are very similar, so only the
+\class{DAS} filter will be discussed here. The important
+differences between the two will be pointed out.
+
+The CGI dispatch program makes heavy use of commonly used
+functions collected in the \class{DODS\_Dispatch} class.  In the same
+way, the \class{DODSFilter} class collects several commonly used
+functions for the construction of filter programs.  The example
+program uses several methods of that class.  Other useful utility
+functions are in the \lit{cgi-util} collection.
+\indc{DODSFilter Class}\indc{cgi-util functions}
+
+The filter program in \figureref{fig,das-filter} can be separated into
+the following steps:
+
+\begin{description}
+  
+\item[line 16] Step 1: The \class{DODSFilter} class provides a
+  constructor that parses the argument list to create the data.  You
+  can use the \lit{OK} method to check that the list was parsed
+  properly.  Any errors here indicate a mistake in the dispatch CGI
+  itself.  This is why the \lit{print\_usage} function prints its
+  message to the WWW server log file when it returns an error object
+  to the client.
+  
+\item[line 21] Step 2: If the user has only requested version
+  information from the server, it is provided here.
+  
+\item[line 26] Step 3: The \lit{read\_variables} function performs the
+  real work of this program.  This involves scanning the dataset
+  itself for data variable attributes and using the \class{DAS} method
+  functions to assemble the corresponding \class{DAS}.  This operation
+  is specific to the data access API in use, so does not make a good
+  example.
+  
+\item[line 29] Step 4: Each of the filter programs must create a
+  \MIME\ document to hold its return value. The \class{DAS} and
+  \class{DDS} filters return a text MIME document; they set up the
+  MIME headers using the utility function \lit{set\_mime\_text}.
+  
+\item[line 34] Step 5: Once the data set has been read and the
+  attribute table built, the \class{DAS} ancillary file is loaded. The
+  example filter looks for a file with the same root name as the data
+  set and an extension of \lit{.das}. If such a file exists, it is
+  read in using the \class{DAS} member function \lit{DAS::parse} and
+  the information it contains is merged with the \class{DAS} built
+  from the dataset.
+  
+\item[line 37] Step 6: Finally the \class{DAS} member function
+  \lit{print} is used to send the textual representation of the
+  \class{DAS} to the client.  When it is invoked by the \lit{httpd}
+  daemon, the dispatch CGI's standard input and output are a socket
+  connected to the remote client process.  This means that since the
+  filter is invoked by the dispatch script, its output goes directly
+  to the client.  The \class{DODSFilter} \lit{send\_das} method looks
+  something like this:
+
+\begin{vcode}{ib}
+DODSFilter::send_das(DAS &das)
+{
+    set_mime_text(dods_das);
+    das.print();
+
+    return true;
+}
+\end{vcode}
+
+\end{description}
+
+\begin{figure}[htbp]
+\begin{vcode}{cbn}
+#include <iostream.h>
+
+#include "DAS.h"
+#include "cgi_util.h"
+#include "DODSFilter.h"
+
+extern bool read_variables(DAS &das, 
+        const char *filename, String *error);
+
+int 
+main(int argc, char *argv[])
+{
+    DAS das;
+    DODSFilter df(argc, argv);
+
+    if (!df.OK()) {
+        df.print_usage();
+        return 1;
+    }
+
+    if (df.version()) {
+        df.send_version_info();
+        return 0;
+    }
+
+    String errMsg;
+    if(!read_variables(das, df.get_dataset_name(), &errMsg)){
+      Error e(no_such_file, errMsg);
+      set_mime_text(dods_error);
+      e.print();
+      return 1;
+    }
+
+    if (!df.read_ancillary_das(das))
+        return 1;
+
+    if (!df.send_das(das))
+        return 1;
+
+    return 0;
+}
+\end{vcode}
+\caption{The DAS filter program.}
+\label{fig,das-filter}
+\end{figure}
+
+Note that the example filter in \figureref{fig,das-filter} does not
+use any caching. It is possible to build a more sophisticated filter
+program that saves the generated DAS to a text file and then uses that
+file without first interrogating the data set, thus saving on access.
+It is also possible to write a DAS by hand and \emph{always} use that
+if the data set does not contain any of the type of information that
+the DAS has.
+
+\pagebreak
+\subsubsection{Caching \class{DAS} and \class{DDS} Objects}
+
+\indc{cache!objects}\indc{objects!cache}\indc{cache!DDS}\indc{DDS!cache}
+Because the construction of the DAS and DDS objects requires that an
+entire data set be scanned, it can become very inefficient to
+continually rebuild these objects. Because the \class{DAS} and
+\class{DDS} filter programs use a text representation for transmission
+from the server to the client, it is simple to store both the
+\class{DAS} and \class{DDS} objects once they have been created.
+Subsequent accesses to these objects can be accomplished by reading
+and transmitting the textual representation without actually building
+the binary data object.
+
+When taking advantage of this optimization, it is important that the
+server check the date stamp of the \class{DAS}/\class{DDS} text
+objects and compare it to the latest modification date of the data
+set. For any dataset to which new data is periodically added, the
+\class{DAS}/\class{DDS} text object must clearly be updated so that
+the cached text object matches exactly the object that would be
+created if the object were built by querying the data set.
+
+The update of the \class{DAS}/\class{DDS} text object can itself be
+optimized significantly.  It is not actually necessary to completely
+re-read the entire data set.  Because the software used to build both
+the \class{DAS} and the \class{DDS} binary objects work incrementally,
+it is possible to read text version of the \class{DAS}/\class{DDS}
+object, and then read only the new parts of the data set. The binary
+object will be added to as needed.
+
+\note{The \class{DAS}/\class{DDS} software may not properly update
+  \emph{changed} data (data that was present in a previous version of
+  the data set, but is now different) nor is it straightforward to
+  remove data which is no longer present in the data set.  In these
+  cases it is usually better to regenerate the \class{DAS}/\class{DDS}
+  from scratch.} 
+
+\subsection{The Data filter}
+
+\indc{data!filter}\indc{filter!data}\indc{CGI!data}\indc{data!CGI}
+The data filter program is structured similarly to both the
+\class{DAS} and \class{DDS} filters except that it returns a binary
+MIME document rather than text and that it takes two arguments instead
+of just one. In addition to the data set or file name (argument 1) it
+also takes the DODS constraint expression (argument 2, which was
+enclosed in the URL's \emph{query}).
+
+The \netcdf\ data filter is all but identical to the \class{DDS}
+filter.  The only difference is that it calls the \lit{send\_data}
+method of \class{DODSFilter} to send the binary data over the network.
+This function calls the \class{DDS} \lit{send} method.
+
+If for some reason you cannot use the \lit{send} member function of
+\class{DDS}, then you must ensure that the the \emph{read}, \emph{CE
+  evaluation} and the \emph{serialize} operations are all carried out
+in the correct order.  Furthermore, you must ensure that the return
+value of the data filter is a binary MIME document with a text prefix
+(currently, DODS does not use the multi-part MIME standard); that is a
+regular binary MIME document with a section at the start that is text.
+This text is the \class{DDS} generated after evaluating the projection
+clauses of the constraint expression. The text part is separated from
+the data by the keyword ``Data:'' at the start of the
+line.\footnote{The ``Data:'' keyword is not in the scope of the text
+  \class{DDS} so it is possible to have the text \lit{Data:} in the
+  \class{DDS}.}
+
+
+\subsubsection{The ASCII Data Filter}
+\indc{ASCII data}\indc{asciival}
+\indc{asc!URL suffix}\indc{URL suffix!asc}
+\indc{ASCII!CGI}\indc{CGI!ASCII}\indc{ascii|see(asc)}\indc{.asc(ii)|see(asc)}
+DODS is packaged with a filter to translate a DODS data stream into an
+ASCII data file.  Clients can request ASCII data by appending
+\lit{.asc} or \lit{.ascii} to their URL instead of \lit{.dods}.  The
+\lit{asciival} program is useful as a standalone client (see
+\OPDuser), but may also be used by a server to provide ASCII data.
+
+A request for ASCII data is processed as any other request for data,
+but the final output of the data filter is  piped into the \lit{asciival}
+program and the result returned to the client:
+
+\begin{vcode}{ib}
+nc_dods Data.nc | asciival -m -- -
+\end{vcode}
+
+\noindent
+The \lit{DODS\_Dispatch} class takes care of this step automatically,
+when it encounters a request using \lit{.asc} or \lit{.ascii}.
+
+
+\subsection{The Usage Filter}
+\label{sec,usage}
+
+\indc{CGI!usage}\indc{usage!CGI}\indc{suffix!.info}\indc{.info|see(info)}
+\indc{info!URL suffix}\indc{URL suffix!info}
+Client requests containing a \lit{.info} suffix should return to the
+client HTML text containing documentation of both the server usage and
+the dataset named in the query.  DODS provides a \lit{usage} filter
+that can be used for this purpose.  The \lit{DODS\_Dispatch} class
+invokes this filter.
+
+The DODS-provided \lit{usage} filter accepts two arguments, the data
+file name requested and the name of the CGI script (the dispatch CGI)
+in use:
+
+\begin{example}
+\lit{usage} \var{filename} \var{CGI-name}
+\end{example}
+
+\noindent
+The \lit{usage} filter looks in the dataset directory for a file
+called \var{filename}\lit{.html}, and in the directory specified in
+the \var{CGI-name} argument for a file called
+\var{CGI-name}\lit{.html}.  These two files must contain HTML, but
+without the 
+\W\lit{<html>}, \lit{<head>} or \lit{<body>} 
+\T$<$\lit{html}$>$, $<$\lit{head}$>$, or $<$\lit{body}$>$
+tags.
+
+For example, suppose a dispatch CGI using the \lit{DODS\_Dispatch}
+class receives a URL like this:
+
+\begin{vcode}{ib}
+http://dods/cgi-bin/nph-nc/data.info
+\end{vcode}
+
+\noindent
+In this case, the \lit{usage} filter looks for two files:
+\lit{cgi-bin/nph-nc.html} and \lit{data.html} (the htdocs directory is
+assumed in the second case).  The contents of these two files are
+concatenated with an HTML representation of the \class{DAS} and
+\class{DDS} for the \lit{data.nc} file, and the whole thing is
+returned to the client.  If the HTML files are not found, the returned
+document contains only the \class{DAS} and \class{DDS}.
+
+
+\subsection{Documenting Your Work}
+\label{sec,documentation}
+
+If you do write a server, and intend to circulate it beyond your own
+site, here are some guidelines for documenting that server that will
+help others use it.  
+\indc{server!documentation!how to write}
+\indc{documentation!how to write}
+
+Since there are two sets of ``users'' for a data server program, there
+are two sets of instructions that need to be prepared for a given
+server. One set will be read by the person who installs and maintains
+the server on the host platform. The other set is designed to be read
+by people who intend to request data from that server. These users
+will get this documentation by submitting queries to the Info
+Service, in rather the same way that many UNIX commands have a
+\lit{-usage} option.
+
+In addition to these two documents, all servers should include a set
+of text files in their distribution directory.
+
+
+\subsubsection{The README File}
+
+The \lit{README} file should contain the following information:
+
+\tbd{Add to this list.}
+
+\begin{itemize}
+
+\item A brief overview that describes the purpose and method of
+  operation of the server.
+
+\item The revision level of the server.
+  
+\item Any features the local \lit{httpd} daemon must support to use
+  this server.
+
+\item Any data translations that this data server can do.  If any are
+  done, they should be described in detail, so that users can know
+  what data they get.
+
+\end{itemize}
+
+
+\subsubsection{The ERRORS File}
+
+The \lit{ERRORS} file should contain a complete list of the error messages
+and explanations that might ever be issued by the server.
+
+
+\subsubsection{Installation Notes}
+\indc{installation notes!how to write}
+
+These instructions should be included in a file called \lit{INSTALL} which is
+to be included with the server distribution. At a minimum, they should
+cover the following topics:
+
+\begin{itemize}
+
+\item Configuring and compiling the server code. Ideally, there should be
+a \lit{configure} script included, but detailed instructions on editing
+the \lit{Makefile} will often suffice. Remember to install the
+usage data file somewhere the server can find it.
+
+\item Are there any environment variables that must be defined in order
+to run the server? Are there other programs (e.g. \lit{gzip} that must
+be installed on the host machine?
+
+\item What configuration options are there for the installed server? This
+covers issues like enabling data compression, ancillary data caching,
+and choosing the GUI manager program with which the server will
+communicate. If there are performance trade-offs associated with
+each option, note them here.
+
+\item Ancillary data files:
+
+  \begin{itemize}
+  \item Must the installer prepare ancillary data files by hand, or
+    are these created automatically and cached?
+  \item If they must be created, where ought they be put? 
+  \item If they are cached, where are they kept? 
+  \item Also, if the ancillary data files are cached, what
+    implications are there for updating the data sets served by this
+    server? (i.e. must the ancillary data files be updated also?
+    Deleted and recreated?)
+  \end{itemize}
+
+\item What temporary files will be created by the server? Where will they
+be stored? Under what conditions may (or must they) they be
+erased?
+
+\end{itemize}
+
+\subsubsection{Information Files}
+\label{dods-server:usage}
+\indc{usage service} \indc{usage data!how to write}
+\indc{data!usage}
+\indc{info service@\lit{info} service}
+
+The information files contain the information that remote users of
+this server will use to figure out how to use this server and its
+datasets once it is installed somewhere.  The files are used in
+constructing the HTML page for the \lit{info} server  The \lit{.info}
+results can include information about both the server and the current
+dataset.  (In fact, the results will usually include the DAS and DDS
+of the dataset named in the URL.)
+
+When a user appends \lit{.info} to a URL, the info service is
+activated.  This service collates information about the server and the
+dataset (from the DAS, DDS, lists of global attributes, and variable
+summaries), and assembles that information in an HTML document.  The
+server then looks for additional HTML files created by the server's
+administrator, and appends them the original file, and returns the
+whole document to the client.
+
+Although it is possible merely to rely on the collated data to
+describe a server, we hope that server writers will provide rich,
+human-friendly descriptions of the server's usage and the accompanying
+datasets.  These files can be thought of as ``usage'' or ``README''
+files.  At a minimum, they should cover:
+
+\begin{itemize}
+  
+\item Any special data functions defined by the server that can be
+  used in a constraint expression, and
+  
+\item Any data model translations the server supports, and how they
+  are to be controlled by the user\footnote{Remember that the ``how''
+    is to be answered very specifically, and on the user's level (i.e.
+    ``Do such-and-such, spelled like \emph{this}, to make the array
+    returned be nx5 instead of 5xn.''), and not on the programmer's
+    level (i.e. ``You use the invert method to return an array of 5xn
+    instead of nx5.'')}
+  
+\item A list of the programs a user should have to use certain
+  features of the server. For example, note here that the server
+  expects that the GUI manager is running a Tcl interpreter.
+  
+\item A list of the error messages that the user is apt to see.
+  Include explanations of the conditions that may have caused them,
+  and any steps the user may take to recover from them.
+
+\item The answers to any questions you are frequently asked about this
+  server or its usage.
+
+\end{itemize}
+\indc{Service!Usage}
+
+The usage data file need not be any more elaborate than any man page.
+
+To create information for a server, write an HTML fragment using the
+format given below, and put the HTML file in the same directory as teh
+server.  Name it using the base name of the server; for example, the
+HTML file that describes the netCDF server (made up of \lit{nph-nc},
+and \lit{nc\_das}, \lit{nc\_dods} and so on) is called \lit{nc.html}.
+
+This example shows the correct HTML tagging for server information:
+
+\begin{vcode}{ib}
+<h3>
+Server Function:
+</h3>
+<dl>
+<dt>geolocate(variable, lat1, lat2, lon1, lon2)</dt>
+<dd>Returns the elements of <em>variable</em> that fall 
+within the box created by (<em>lat1</em>,<em>lon1</em>) 
+and (<em>lat2</em>,<em>lon2</em>).</dd>
+<p>
+<dt>time(variable, start_time, stop_time)</dt>
+<dd>Returns the elements of <em>variable</em> that fall 
+within the time interval <em>start_time</em> and 
+<em>stop_time</em>.</dd>
+</dl>
+<p>
+\end{vcode}
+
+For datasets, put the HTML file, tagged using the format given below,
+in the same directory as the datasets.  Name it using the base name of
+the datasets; for example, the HTML file for \lit{fnoc1.nc},
+\lit{fnoc2.nc}, and \lit{fnoc3.nc} might be called \lit{fnoc.html}.
+This example shows the correct HTML for a dataset information file:
+
+\begin{vcode}{ib}
+<h3>
+About the dataset
+</h3>
+This is where the server administrator would supply 
+information about the dataset.  And so on...
+<p>
+\end{vcode}
+
+You may prefer to override this method of creating documentation and
+simply provide a single, complete HTML document that contains general
+information for the server or for a group of datasets.  For example,
+to force the info server to return a particular HTML document for all
+its datasets, you would create a complete HTML document and give it
+the name \var{dataset}\lit{.ovr}, where \var{dataset} is the dataset
+name.  The HTML file in this case would look like this:
+
+\begin{vcode}{ib}
+<html>
+<head>
+<title>Override document</title>
+</head>
+<body>
+<h2>
+Test dataset
+</h2>
+This is where the server administrator would supply 
+information about the dataset(s) and what-have-you.
+</body>
+</html>
+\end{vcode}
+
+Remember to ensure that the installation instructions cover installing the
+usage data file in a place where the server can find it.
+
+\section{Client Libraries}
+
+\indc{client library!building}
+The goal of building a client library is to provide a drop-in
+replacement for an existing API so that user programs written for that
+API can switch to the DODS version and access remote DODS data. The
+user programs should not require any modification to change over to
+the DODS client library version of the API. However, the API will
+clearly need substantial changes to its current implementation.
+
+In order to build the DODS client library for a particular API, it is
+useful to divide the API to be re-implemented into five categories of
+functions:
+
+\begin{itemize}
+\item Open or connect
+\item Variable information read
+\item Data read
+\item Write 
+\item Close or disconnect
+\end{itemize}
+
+\subsection{Rewriting the Open and Close Functions}
+\label{tk,client-lib-open}
+
+\indc{client library!close}\indc{close!client library}
+\indc{client library!open}\indc{open!client library}
+The functions that perform the dataset ``open'' and ``close''
+operations must be implemented so that information about the data set
+can be retrieved from the data server. These functions must store the
+necessary state information so that subsequent accesses for variable
+information or data reads can be satisfied. This state information
+will, in almost every case, be the dataset's \class{DAS} and
+\class{DDS}.
+
+The open function for a DODS client library version of a given
+API must first determine if the data object (typically a file) is
+local to the user program making the open call or is a remote data
+object to be accessed through DODS. It is possible to access DODS
+objects which are local to a user program, but there is little reason
+to do so if the data object can also be accessed through the original
+API. In any case, the distinction of local or remote is made on the
+basis whether a URL is used to reference the data object, or a local
+filename.
+
+\tbd{Figure here?}
+
+\indc{Connect class}
+If the data object is remote, then the open function must build a
+structure which can hold the \class{DAS} and \class{DDS} objects which
+describe the named data set.  This is the \class{Connect} class
+object.  Once this object is built, the open function must map this
+structure to a file identifier or pointer which can be passed back to
+the user program as the return value of the open function. You add
+this data to the \class{Connect} objects when you sub-class them for a
+particular API.  Subsequent accesses to the data set will include this
+identifier (or pointer), and each function that is a member of the API
+can be modified to use it to gain access to the state information
+stored by the open function.
+
+The close function should use the state information accessible with
+the file identifier or pointer returned by the open function to
+determine if the dataset is local or remote. In the case of a local
+data set, the original implementation's close function must be
+called. In the case of a remote data set, the locally stored state
+information must be freed.  You can do this by destroying the
+\class{Connect} object.
+
+See \sectionref{tk,subclass-netio} for an example of a recoded open
+function and a description of its use.  (The example uses the \netcdf\
+API.) 
+
+\subsection{Getting Information about Variables}
+
+\indc{DAS class}\indc{DDS class}\indc{variable information!client
+  library}\indc{client library!variable information}
+Most APIs for self-describing data sets include functions which return
+information about the variables that comprise a data set. These
+functions return information about the type and shape of variables in
+a form that can be used by a program as well as attribute information
+about the variables that is more often than not intended for use by
+humans. Each of these functions must be rewritten so that to the
+extent possible, information present in the \class{DAS} and
+\class{DDS} is used to satisfy them.
+
+While many `self-describing' APIs may have dozens of
+these functions, the basic structure of the re-implemented code is the same
+for each one. If the data set is local, use the original implementation,
+otherwise use the locally stored state information (\class{DAS} and
+\class{DDS}) to answer the request for data.
+
+Rewriting these functions can be the most labor intensive part of
+re-imple\-menting a given API. This is typically the largest group of
+functions in the API and the information stored in the \class{DAS} and
+\class{DDS} must often be `massaged' before it fulfills the
+specifications of the API. Thus the rewritten functions must not only
+get the necessary information from the \class{DAS} and \class{DDS}
+objects, but they must also transform the types of the objects used to
+return that information to the user program into the data types the
+program expects.
+
+\subsection{Reading the Values of Variables from a Dataset}
+
+\indc{client library!read}\indc{read!client library}
+To read data values from a dataset using a typical data access API, a
+user would submit to some API function the name of the variable to be
+read.  The DODS client library version of this same function must take
+that variable name and use it to construct a constraint expression.
+(See Section~\ref{tk,using-constraints} for more information on using
+constraint expressions to access data.)  The constraint expression
+must then be appended to the dataset URL (with the suffix
+\lit{.dods}), and the resulting URL sent out into the internet.
+
+For example, to get a variable called \lit{var} from a dataset at:
+
+\begin{vcode}{ib}
+http://blah/cgi-bin/nph-nc/weekly.nc.dods
+\end{vcode}
+
+\noindent~you would use the URL:
+
+\begin{vcode}{ib}
+http://blah/cgi-bin/nph-nc/weekly.nc.dods?var
+\end{vcode}
+
+\indc{Connect class!request\_data}\indc{request\_data}
+The \class{Connect} class contains a member function,
+\lit{request\_data} that performs this task. It takes the constraint
+expression and the suffix to use for requesting data, appends them to
+the \class{Connect} URL, and sends the entire string off to retrieve
+its corresponding data.
+
+The \lit{request\_data} function returns a pointer to a \class{DDS}
+object, which contains the data as well as the structure description
+corresponding to the data request.
+
+\indc{deserialize}
+Once the \lit{request\_data} member function has returned, the client
+library must still call the \lit{deserialize} member function (which
+is part of the DODS Type Classes) for each returned variable. The
+client library should use the variable objects contained in the
+\class{DDS} object returned by \lit{request\_data} to invoke the
+\lit{deserialize} member function. Once that is done, the data values
+are stored in the internal buffers of the variable objects in the new
+\class{DDS}\footnote{For the \class{Sequence} data type, the
+  \class{DDS} contains only the current instance of the data.
+  Repeated calls to the \class{Sequence}'s \lit{deserialize} function
+  are required to return successive instances of the sequence.}. The
+client library should store this new \class{DDS}, along with the
+constraint expression passed to \lit{request\_data} so that future
+requests by the user program for the same information can be handled
+without accessing the remote data server.
+
+\indc{buf2val}  
+The data values of variables in a DDS are accessed using the
+\lit{buf2val} member function for the cardinal and vector types and by
+accessing the values of fields for constructor types.
+
+\subsubsection{Translation}
+
+\indc{translation!data model}\indc{data model!translation}
+For a DODS client library to be robust, it may have to be equipped to
+deal with data types it was not designed to use.  For example, the
+\netcdf\ software cannot manipulate a DODS Sequence.  But a user can
+use the DODS version of the \netcdf\ library to request data from a
+server that provides Sequence data.  When cases like this arise (and
+they arise farily often), the author of the client library must choose
+an appropriate data type into which the served data is to be
+translated, and implement functions to do that translation.
+
+Often, translation from one data type to another is a simple
+task. Translating an Array into Sequence format is fairly
+straightforward, although there are several ways to do it. (The
+author of the client library should choose one, and document that
+choice in a README file.)  
+\indc{Sequence!translation}
+
+Other translations are more complex, and may even require that the
+client library violate the semantics of the original API, or of one of
+the DODS data types.  For example, translating a Sequence to an Array
+in \netcdf\ requires that the client know in advance the length of the
+Sequence, which is not necessarily known. 
+
+\subsection{Functions that Write to Data Sets}
+
+\indc{client library!write}\indc{write!client library}
+DODS is a read-only data system. While it is not technically
+inconceivable, a system which allows modification of remote data sets
+would be operationally much more complex than DODS. Thus, functions
+that write data are rewritten so that they call the original
+implementation in the case of a local access or return an error code
+in the case of a remote access. The error code should indicate a
+recoverable error so that programs which perform both reads and writes
+can recover if their logic permits.
+
+\subsection{Adding Local Access to a DODS Client Library}
+
+\indc{local access}
+In order to ensure that programs, once they have been re-linked with
+DODS client libraries, can still access local data files it is
+necessary to add software to read those local data to the functions in
+the re-implemented library. Typically in each function in the new
+library the state information accessed by the identifier passed to the
+function is used to determine if the call is to access local or remote
+data. In the former case, the function must do exactly what the
+original implementation of the API would have done to satisfy the
+function call.
+
+It is wasteful to completely recode the entire API just to achieve
+local access.  However, it is also not possible to simply link the
+user program with both the DODS client library and the original
+library. because both libraries must \emph{define the same external
+  symbols}. Linking with both libraries will produce link-time
+conflicts on most computers or result in an incorrectly linked binary
+image.
+
+In order to use the original implementation of the library, you must
+rename all of its external symbols that will appear in user programs.
+For example, if an API defines four functions (\lit{open},
+\lit{close}, \lit{read} and \lit{write}) and one global variable
+(\lit{errno}), then each of those must be renamed to some new symbol
+(e.g., \lit{orig\_open}, \lit{orig\_close}, \ldots). These source
+modules can then be added to the set of object modules used to build
+the DODS client library. Of course the DODS client library must also
+include the original external symbol names; one approach is to recode
+each of the APIs external symbols as a function which either calls the
+DODS-replacement or the original function (now renamed so that the
+symbols do not conflict) depending on whether the access is local or
+remote.
+
+\section{Using Constraints}
+\label{tk,constraints}
+
+\indc{constraint expression}\indc{expression!constraint}
+Constraint expressions are an important part of DODS, providing a
+powerful way to control how data is accessed without forcing the \Dap\ 
+to support a lot of different messages. Constraint expressions are
+used to select which variables will be extracted from a data set by
+both the user and by the client library.  The constraint expression
+syntax is described in detail in the \OPDuser.
+
+\subsection{How Constraint Expressions are Evaluated}
+\label{tk,ce-evaluation}
+
+\indc{constraint expression!evaluation}
+The server-side constraint expressions are evaluated using a two step
+process. Every constraint expression has two parts, the projection and
+the selection subexpressions. The projection part of a constraint
+expression tells which variables to include in any return document
+describing the data set and the selection subexpression limits the
+returned data to variables with values that satisfy a set of
+relational expressions.  The projection subexpression is evaluated
+when the entire constraint expression is parsed; at parse-time the
+server's copy of the data set's \class{DDS} is marked with the
+variables included in the projection. The selection subexpression,
+however, is not evaluated until values are read from the data set. One
+way to classify the projection and selection subexpressions is that
+projections depend solely on the logical structure of a data set,
+while selections depend on the values of particular variables within
+that data set.
+
+\subsection{Different Ways of Using Constraint Expressions}
+\label{tk,using-constraints}
+
+There are two different ways that constraint expressions can be used.
+One is by the client library and the other is by the user. When
+writing a client library that has features for selecting variables or
+parts of variables, try to code the replacements to those calls so
+that they build up DODS constraint expressions that will request only
+the data the user wants. Then read the data from the returned DDS and
+store it in the variable(s) passed to the API call by the user. This
+is a much better solution than requesting the entire variable from the
+data set and then throwing away parts of it.
+
+Suppose that the user program (via the APIs functional interface) asks
+for the data in variable \var{X}. The constraint expression that will
+retrieve \var{X} is simply `\var{X}'. Suppose, given the following
+\class{DDS}that the user program requests the two variables \var{u}
+and \var{v} from the embedded structure. 
+
+\begin{vcode}{ib}
+Dataset {
+    Int32 u[time_a = 16][lat = 17][lon = 21];
+    Int32 v[time_a = 16][lat = 17][lon = 21];
+    Float64 lat[lat = 17];
+    Float64 lon[lon = 21];
+    Float64 time[time = 16];
+} fnoc1;
+\end{vcode}
+
+\indc{constraint expression!example}
+A constraint expression that would project just those variables would
+be \lit{fnoc1.u,fnoc1.v}. To restrict the arrays \var{u} and \var{v}
+to only the first two dimensions (\lit{time} and \lit{lat}), the
+projection subexpression would be:
+\indc{projection!constraint expression}
+\indc{selection!constraint expression}
+
+\begin{vcode}{ib}
+fnoc1.u[0:15][0:16],fnoc1.v[0:15][0:16]
+\end{vcode}
+
+\noindent~Both of these
+constraint expressions have null selection subexpressions. Note that
+the comma operator separates the two clauses of the projection
+subexpression. Also note that whitespace is ignored by the constraint
+expression parser. See the grammar for CEs in the \OPDuser\ for more
+information about constraint expression grammar and the kind of things
+that can be done with the projection subexpression.
+
+The user program may have an interface that provides the user with a
+way to request only certain values be returned. This is particularly
+true for APIs such as JGOFS that support access to relational data
+sets. Suppose the following \class{DDS} describes a relational data
+set:
+
+\begin{vcode}{ib}
+Dataset {
+    Sequence {
+        Int32 id;
+        Float64 lat;
+        Float64 lon;
+        Sequence {
+            Float64 depth;
+            Float64 temperature;
+        } xbt;
+    } site;
+} cruise;
+\end{vcode}
+
+\noindent To request data with a certain range of latitude
+and longitude values, you can use a selection subexpression like
+this: 
+
+\begin{vcode}{ib}
+& lat>=10.0 & lat<=20.0 & long>=5.5 & long<=7.5
+\end{vcode}
+
+Note that each clause of the selection subexpression begins with a
+\emph{\&\/} and that the clauses are combined using a boolean
+\emph{and}.  Finally, using the previous \class{DDS}, if a user
+requested only depth and temperature given the above latitude and
+longitude range (i.e., the user program requests that only the depth
+and temperature values be returned given a certain latitude and
+longitude range) the client library would use the following constraint
+expression:
+
+\begin{vcode}{ib}
+site.xbt.depth, site.xbt.temp & lat>=10.0 & lat<=20.0 & 
+   long>=5.5 & long<=7.5
+\end{vcode}
+
+A second way that constraint expressions can be used is that users may
+specify an initial URL with a constraint expression already attached.
+In this case the \lit{request\_data} member function will append the
+constraint expression built by the client library to the one supplied
+by the user and request data constrained by both expressions.  From
+the standpoint of a client library (or a data server, for that matter)
+there is no difference between a URL supplied with an initial
+constraint and one supplied without one.
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../pguide.tex"
+%%% End: 

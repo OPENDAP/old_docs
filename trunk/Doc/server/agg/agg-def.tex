@@ -1,0 +1,61 @@
+%
+% $Id$
+%
+\htmldirectory{agg-html}
+\htmlname{agg}
+\htmltitle{DODS Aggregation Server Guide}
+\htmladdress{Tom Sgouros, \rcsInfoDate}
+\htmlcss{/resources/dods-book.css}
+\W\renewcommand{\HlxIcons}[1]{/icons/}
+
+\newcounter{exampleno}
+\setcounter{exampleno}{0}
+\newcounter{examplerefno}
+\setcounter{examplerefno}{0}
+\newcommand{\examplelabel}[1]{\refstepcounter{exampleno}\label{#1}%
+  \begin{center}Example \theexampleno\end{center}}
+\newcommand{\exampleref}[1]{\texorhtml{Example \ref{#1}%
+    \refstepcounter{examplerefno}\label{exref\theexamplerefno}%
+    % This is a test whether r@exref... is defined.  If not, skip
+    % anything with the \pageref macro.
+    \expandafter\ifx\csname r@exref\theexamplerefno\endcsname\relax\else%
+    \bgroup\count100=\pageref{exref\theexamplerefno}%
+    \count101=\pageref{#1}\ifnum\count100=\count101\else~%
+    on page~\pageref{#1}\fi\egroup\fi}
+  {\link{Example \ref{#1}}{#1}}}
+
+\newcommand{\tag}[1]{\emph{#1}}
+\newcommand{\element}[1]{\link{\tag{#1}}{agg,xml,#1}}
+
+\newcommand{\currentelement}{}
+\newcommand{\ELEMENT}[1]{\renewcommand{\currentelement}{#1 element}%
+  \subsection{#1}\label{agg,xml,#1}\indc{\currentelement}%
+  \indc{catalog tag!#1}\indc{aggregation tag!#1}%
+  \indc{XML!#1 element}}
+\newcommand{\ATTRIBUTE}[1]{\item{#1}\indc{\currentelement!#1}
+    \indc{#1 attribute!of \currentelement}%
+    \indc{XML!#1 attribute}}
+
+% OPeNDAP is defined in dods-def.tex
+\newcommand{\AggServer}{\opendap\ Catalog/Aggregation Server}
+\newcommand{\aggser}{Aggregation Server}
+\newcommand{\aggversion}{0.6}
+\newcommand{\thredds}{\ac{THREDDS}}
+\newcommand{\dtd}{\ac{DTD}}
+\newcommand{\dds}{\ac{DDS}}
+\newcommand{\das}{\ac{DAS}}
+
+% $Log: agg-def.tex,v $
+% Revision 1.2  2004/07/07 22:51:23  jimg
+% Updated icons and switched to dods-book.css
+%
+% Revision 1.1  2002/12/02 04:28:25  tom
+% added aggregation server documentation to tree
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% TeX-master: t
+%%% End: 

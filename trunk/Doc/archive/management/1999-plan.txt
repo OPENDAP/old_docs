@@ -1,0 +1,56 @@
+
+	$Id$
+
+The plan of action has four parts:
+
+    1. Stabilize the core software
+        a. Ameliorate the build(s), including SGI
+	a'. Repair WWW Interface (see also #3).
+	b. Complete/Repair loaddods (both ML and IDL)
+	c. Identify problems with the FreeForm server and fix
+
+    2. Stabilize the existing datasets
+        a. Propagate 3.1.x servers to existing data sites
+	b. Build an end-to-end dataset tester (in ML, maybe elsewhere).
+	   Suggestions include scripts to test ASCII output, Perl-netCDF.
+
+    Numbers 1 and 2 must be done right away. Some of numbers 3 and 4 overlap,
+    but other parts do not. Numbers 3 and 4 are activities we can expect to
+    work on until the end of the project.
+
+    3. Broaden the UI suite
+	- Metadata (use information?): define, test, propagate
+	- Reexamine Glenn's UI (metadata) ideas (tertiary MD sites)
+
+	- Complete/Repair WWW form service
+	- Complete/Repair WWW directory service
+	- Java GUI interface
+
+	- Complete/Repair loaddods (both ML and IDL; also listed under #1)
+	- Provide some sort of directory access
+	- Form-based client for ML and IDL
+	- Fix obviously broken parts of the ML GUI
+	- Generalize the ML GUI architecture to use server-side information
+	- Generalization of get-functions in ML GUI: use outside of GUI
+	- IDL GUI: direction?
+
+    3'. Infrastructure development
+        - Develop a List of Datasets
+	- Develop a web robot which uses the directory feature of the 3.1+
+	  servers. 
+        - Support XML encoding
+	- Translation: complete first version, test, release
+	- Provide some sort of directory access for the netCDF clients
+	- File server: complete first version, test, release
+	- Identify and fix design and implementation flaws in the C++ DAP
+	- Support for IDL save files (a server)
+
+    4. Populate (create new data sites)
+
+	The management plan overlaps here the most since we need to keep
+	the effort started going but limit its scope so as to not choke off
+	the rest of the project. It is a delicate balance since effort in the
+	develop of the system benefits population, but sometimes in ways that
+	are not obvious and in ways that are rarely instantaneous.
+
+	- Collect metrics

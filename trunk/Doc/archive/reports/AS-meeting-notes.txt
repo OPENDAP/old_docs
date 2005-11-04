@@ -1,0 +1,296 @@
+Notes from the Aggregation server meeting held at Unidata on 14 March 2001.
+
+I've added editorial comments in []s along with initials.
+
+Agenda for the meeting:
+
+0. Logistics
+
+I. Outline some specific datasets which will serve as examples of the
+problem and for the solution.
+
+  These should fall into one of the three classes Peter, et al. have
+discussed so far:
+
+  1) Image data sets that typically comprise one image per file (with one or
+  more variables). Most of our [jhrg: URI-GSO] satellite data sets look like
+  this.
+
+  [jc: The defining characteristic of type 1 is that the axis of aggregation
+  has to be created.]
+
+  [jhrg: This implies that the interface requirements for this type of
+  aggregation will differ from type three. Specifically, when configuring the
+  AS a new variable will have to be defined. When aggregating type three data
+  sets existing variables can be combined.]
+
+  [rs: ... Creating an aggregation of Type 1 requires the synthesis of a new
+  dimension that most likely does not exist in the individual files. For
+  example, the indication of which time step the file belongs to may be
+  encoded in the file names, or it may be stored in an attribute. None the
+  less, this type of aggregation requires creating a new dimension out of
+  thin air, type 3 does not.
+
+  There is a special case of type 1 where each individual file has a record
+  dimension with only one record per file where it would be a direct subset
+  of type 3.]
+
+  2) n-dimensional arrays/grids where which have been broken up by
+  variable; i.e., different variables are in different files, but
+  each file consists of an n-dimensional array. Model output can
+  be found in this form.
+
+  [jc: One might say that the main reason to aggregate type 2 is to exploit
+  commonalities in the coordinate systems of the variables.]
+
+  [pc: The way that I would look at this is that the reason to aggregate is
+  that users will on occasion want to use several of the variables from the
+  data set together.]
+
+  [jhrg: At the meeting we narrowed this type down to data sets with
+  variables that share relational information, specifically Grid map
+  vectors.] 
+
+  3) n-dimensional cubes where the cube is broken down by year; e.g.,
+  4-d structure for 1990, another one with the same axes for 1991,...
+
+  [jc: The defining characteristic of type 3 is concatenation along an
+  existing axis. For version 0, we can assume its a time axis. Version 1
+  should deal with tiled spatial axes.]
+
+II. Choose one or more datasets to serve as testbeds. For this item we
+should probably list important aspects of the problem presented by each
+of the datasets in item I. This could blow up it we're not careful, so
+we'll need to keep the list to critical points.
+
+III. Develop a rough design for a DODS server that can aggregate the
+datasets in item II. This should have enough substance that we can talk
+about parts of the work as it progresses and resolve questions when/if
+they arise. I don't think it needs to be `complete' but just enough to
+start development.
+
+[jhrg: Steve provided the following definitions that we used to frame our
+discussion.] 
+
+Definitions:
+
+   * DODS Catalog
+     a list of DODS URLs augmented by a finite, known list of parameters whose
+     values differentiate the individual URLs in the catalog
+   * DODS File Server
+     the current (2001) implementation of a "DODS catalog" which is in all
+     cases
+       1. a list of
+             + DODS URL
+             + time step
+       2. accessible to clients as a DODS URL
+             + Sequence(string URL, int timeStep)
+   * DODS Data Set
+     a URL that can be accessed via the DODS protocol
+   * DODS Aggregated Data Set
+       1. a single DODS data set (URL)
+       2. groups together multiple individual DODS URLs
+       3. creates "virtual variables" (drawn from multiple individual URLs)
+	  that appear as concrete DODS variables
+
+Notes from the meeting:
+
+Logistics
+
+- metapps: John Caron added DODS support to the Java-NetCDF library. This
+  should enable metapps to read data from DODS servers.
+
+- John has also developed a catalog to simplify users choosing of datasets.
+
+  [jhrg: Ted Haberman pointed out on Thursday that there are a number of
+  existing catalog `systems' and we could/should look into using those.
+  That's a good idea but it may be that most of those are more general than
+  we need right away and thus more complicated, so John's system might get us
+  moving on the AS faster.] 
+
+- The AS development will be done in Java.
+
+- Unidata must think about its own needs and will tell the DODS project what
+  level of effort it can commit to building this software.
+
+Specific datasets:
+
+  [jhrg: In the agenda I've added a number of comments that further define
+  what we mean by type one, two and three aggregations. Some of these were
+  made at the meeting and others were made after the fact in emails.]
+
+- URI: URI-GSO has many type one datasets (as described in the agenda above).
+  Here's the DODS URL for the Hatteras-to-Nova-Scotia dataset:
+  http://dods.gso.uri.edu/cgi-bin/nph-dsp/htn_sst_decloud/. Note that this is
+  a multifile dataset and that this URL points to the root of the directories
+  which hold the dataset's files. There's a file server for the dataset at:
+  http://dods.gso.uri.edu/cgi-bin/nph-ff/catalog2/htn.catalog.ascii
+  ?DODS_URL,DODS_Date_Time(HTN_Avhrr)). 
+
+  [jhrg: Dan Holloway has written a dataset list where datasets at an
+  institution can be found. That's how I got this URL. That list, which
+  should become part of the DODS home page, can currently be found at:
+  http://fwiffo.gso.uri.edu/dodshome/home/cgitools/datasets.cgi#parent18
+  ?xmlfilename=datasets.xml&expand=+18]
+
+- In the URI datasets we will encounter some attributes which vary from DODS
+  URL to DODS URL. These attributes will propagate out of the attribute space
+  of the discrete URLs into the variable space of the aggregate. Vector
+  attributes present a problem when they propagate in this way; we might
+  delete those in the first version(s) of the software. 
+
+  [jhrg: Tom Sgouros wrote quite a bit about this over two years ago when he
+  produced a rough design for an AS.]
+
+- In general we're going to defer aggregations that result in Sequences to a
+  later date. The first version will look at aggregations that produce Grids.
+
+- CDC: COADS. Type two aggregation.
+
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/coads/1degree/equatorial/enh/
+
+This is the URL of the directory of the files to be aggregated.  The
+spatial/time grid is the same for each file.  The file names are of the
+form variable_name.statistic.nc.  Inside the netCDF file the netCDF
+variable name is the same for all of the files of a particular parameter.
+For example, the file air.stddev.nc contains the standard deviation, but
+the netCDF variable name is 'air'.  The statistic attribute for the
+variable distinguished the different files.
+
+The netCDF variable name in the aggregation should be specified in the
+configuration file.
+
+- CDC: NCEP reanalysis.
+
+(What we are calling a Type 3 aggregation)
+
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/pressure/
+
+This URL is the directory level for these data.  The files to be
+aggregated are of the form variable_name.YEAR.nc.
+
+All of the metadata *should* be the same from file to file, expect for
+some ranges which apply only to the particular file.  Replacement ranges
+should be given in the configuration file that applies to the aggregation.
+There are some attributes look like they should be propagated into
+variables space.  In the first cut, the attributes should be replaced by
+attributes in the configuration.
+
+These URLs was generated by me knowing where to surf at our site.  I will
+examine the list Dan made for URI and work on improving our file servers
+"real soon now".
+
+ JPL: Atlas SSMI. Some attributes will have to be discarded (e.g., stuff
+  that's meant to be used as plot titles). These files are an example of a
+  type three aggregation.
+
+  [jhrg: Steve sent the following URLs and commentary.]
+
+  The dods-dir URL for the JPL Atlas SSMI directory is
+  http://dods.jpl.nasa.gov/cgi-bin/nph-hdf/pub/ocean_wind/ssmi/atlas_ssmi/
+  hdf/data/level3.5_5day/
+
+  A specific URL for (say) 1996:
+  http://dods.jpl.nasa.gov/cgi-bin/nph-hdf/pub/ocean_wind/ssmi/atlas_ssmi/
+  hdf/data/level3.5_5day/1996/atlas.ssmi.ver02.level3.5_5day.s960103.hdf.dds
+
+  You can see an immediate application for aggregation in the NOPP LAS at
+  http://ferret.wrc.noaa.gov/nopp. See NASA Jet Propulsion Lab / Atlas SSMI
+  5-day ocean winds on the left. You'll note that both "type 2" and "type 3"
+  aggregation are involved.
+
+Rough Design
+
+- The initial version will be written in Java and may be a stand-alone server
+  (rather than a servlet).
+
+- Initially (at least) the AS will use a XML document that contains a
+  complete list of all the URLs to be aggregated. That is, there will be no
+  automatic discovery of the URLs in the first version(s) of the AS.
+
+- Things we need consider to perform aggregation of DODS URLs:
+
+  * URLs to aggregate
+
+    [sh: We also noted that for performance reasons beyond version 0 we will
+    need to consider a mechanism by which local filesystem paths could be
+    used instead of (or in addition to) DODS URLs.]
+
+  * Axis of aggregation
+    o Version 0, always synthesize this. Later versions can get fancier.
+    o Provide name and data type.
+    o Generate using: supply in a configuration file, point to a variable in
+      a granule, point to an attribute in a granule or use an algorithm
+  * Attributes
+    o Could define using a static file.
+    o Could ignore propagation issue at first.
+
+  [jhrg: Steve added the following point.]
+
+  * We identified 4 types of attribute behavior to accomodate (beyond version
+    0):
+    1. aggregation to define a new attribute
+        o mandatory attribute equivalent to
+          DODSArrgegation = "<URL of aggregation XML file>"
+    2. aggregation to delete an existing attribute
+        o combination of create and delete provides "over-ride"
+    3. aggregation to leave attribute unchanged
+        o value to be drawn from some particular (or any?) file within the ag.
+    4. aggregation to "promote" attribute to a variable
+        o AS might be allowed to choke if data type or vector length (as
+	mentioned above) of attribute was not constant throughout aggregation
+	components
+        o need to insert missing_values where attribute is absent
+
+
+  [jhrg: John Caron added the following three points.]
+
+- An AG looks like a DODS Server to a client (i.e. is transparent). Version
+  0 will restrict itself to getting its data from existing DODS URLs, i.e.
+  other DODS servers. We can later look at efficiency around this.
+
+- My initial idea is to overload an "inventory catalog" with aggregation
+  info. The reason is because you have to give the AG a list of datasets
+  (and their underlying URLS) anyway, which is pretty much an inventory
+  catalog. After prototyping, we can see if this helps or hinders.
+
+- Version 0 will punt whenever it hits a hard problem and expect the
+  hand-generated XML to solve it. Then we add features and automation as
+  cost/benefits dictate.
+
+  [jhrg: Ethan added the following point.]
+
+- The AS needs to match up the incoming URL requests with the URLs it needs
+  to aggregate. I guess this is pretty obvious but during the meeting we
+  didn't mention it as required info in the list above. Seems like the
+  overloaded "inventory catalog" John mentions below can handle this pretty
+  easily.
+
+About the GrADS-DODS server:
+
+- Aggregates GRIB files automatically.
+
+- Does not handle human-mediated aggregation (GRIB files almost always must
+  be aggregated to be useful).
+
+Web Crawlers:
+
+- Must deal with the XML from the AS. We won't do anything special to
+  accommodate web crawlers
+  
+  [jhrg: John adds:]
+
+- Special purpose Web Crawlers should be able to do good stuff with our XML
+  when the semantic tags settle down. Also I expect it to be easy to provide
+  standard HTML from the XML (probably using XSLT).
+
+
+Action items:
+
+- Sample dataset URLs
+
+- Refine notes
+
+- Continue to evolve design on the dods-tech list
+
+$Id$

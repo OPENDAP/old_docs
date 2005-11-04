@@ -1,0 +1,87 @@
+Meeting at MEDS with  Ron Wilson, Bob Keeley and Howard Edel
+
+February 3,1994  Ottawa, Canada
+
+Meeting highlights:
+	Update on the status of DODS
+	Details of the MEDS data management operations
+	Discussion of MEDS participation in DODS
+
+	I informed Ron, Bob and Howard of the completion of the DODS report
+and its distribution.  I spoke briefly on the current design and  server
+development activities and talked about our reviewing virtual file systems and
+RPCs within the context of implementation approaches.  I told them that we
+are posting development documentation for community review and would send
+them the reference to access it.  I emphasized our desire to have input from
+others on the documentation and invited Bob and Ron to review them and give
+us feedback.
+
+   Ron and Bob discussed the types of data that they manage.  This includes
+bottle, CTD, STD sea height, wave spectra and various types of time series
+data such as drifting buoys and temperature records.  They receive daily
+updates for some of these data sets on an operational basis and are set up to
+handle rapid intake, quality registration and ingest into their data system
+(for one data set they receive 1100 separate field measurements per day).
+Currently all of their different data sets are in one of three data formats
+or more precisely data structures.  These data structures are the GTSPP
+(Global Temperature-Salinity Pilot Project) for their station data, a
+time-series data structure and a spectral data data structure.  One of the
+interesting things about the MEDS data management system is that for
+each data type , all of the data is stored in a single file in the
+appropriate data structure and is on-line.  The data files are on the order
+of 1 Gbyte and are indexed so that accessing them via one of 3 keys is very
+fast. Time, lat/lon and ship or station ID are the 3 indexes I believe (I'm
+sure of time and location but not the index).  All of the data that comes
+into the facility is transformed into one of the three data structures.  He
+mentioned that they have had to deal with over 50 different data formats from
+incoming data files and that they have been able to convert all of them to
+the data structures that they support.  
+
+    MEDS quality registers all of the incoming data files prior to its
+loading them into its data management system.  It also checks for redundancy
+or whether to update data sets.  Of interest to me was the fact that MEDS
+offers a QC service to researchers who can submit raw data to MEDS who runs
+it through their QC operations and returns the cleaned up data.  They have
+distributed their QC system to Bedford Institute of Oceanography for them to
+use operationally.
+
+    I informed them of the current and hoped for funding support for DODS
+including the Workshop Project, the NASA/Directory Service project, the
+NOAA/CGCP NODC server proposal and the NASA/Joint server development
+proposal which is planned for submittal.  Ron asked how might MEDS
+participate in the DODS program.  I suggested three ways that MEDS could make
+valuable contributions:
+
+	 1/ Active participation in the ongoing design and development
+	    activities of the DODS.  I strongly encouraged them to provide us
+	    with feedback on the design documents.
+
+	 2/ Provide us with documentation on their data structures.  I
+	    received a description of the GTSPP data structure and will be
+	    forwarded documents on the time series and spectral data formats.
+
+
+	 3/ Developing servers for their data structures.  I said that this
+	    particular effort would best be coordinated with our work with
+	    NOAA/CGCP or the joint server development proposal should they be
+	    funded.  Should neither of these be funded we would revisit this
+	    question.  To begin work on this now I felt would be premature.
+
+    MEDS is very willing to participate in the DODS at this point in an
+informal way.  
+
+
+Points of particular relevance:
+
+      1- 3 data structures, on-line, keyed access is fast.
+
+      2- All data held by MEDS is quality registered.
+
+      3- They already possess a number of data translators which could
+         conceivably form the basis for a translator library.
+
+      4- As a data center MEDS provides QC services to the research
+         community.  This could be integrated with the DODS as part of its
+	 available services.
+
+George-

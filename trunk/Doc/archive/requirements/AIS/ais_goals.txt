@@ -1,0 +1,86 @@
+
+Goals for the Ancillary Information Service (AIS)
+
+AIS Goal: Level 3 interoperability at the data level in 
+    the DODS environment.
+
+Definitions: 
+
+Level 3 interoperability: semantically meaningful machine-to-machine
+interoperability. 
+
+Data Level: related to the use of data as opposed to the discovery of
+datasets. 
+
+DODS environment: distributed, heterogeneous data sets on the network
+accessed via the DODS DAP.
+
+Plain dataset: A dataset that contains only information in the original
+datafile(s) or database.
+
+Network server: A daemon process that listens for requests using one or more
+sockets. 
+
+Attributes: Members of a DAS object.
+
+Variables: Members of a DDS object.
+
+[ These assumptions are really part of the Goal, they are not the kind of
+assumptions that drive design. I put them in Scope (Section 1.2) of the SRS.
+]
+
+Assumptions: 
+
+1) Complete and consistent syntactic and semantic use 
+   metadata are required to achieve Level 3 interoperability.
+
+2) We will not be able to achieve complete and consistent
+   semantic use metadata by adding information at only data server locations.
+
+[ I moved this to Product Functions (Section 2.2) of the SRS. ]
+Functional Requirements:
+
+1) MUST provide a way to change for consistency or to add
+   for completeness Attributes (translational use metadata)
+   of or to existing datasets.
+
+2) MUST provide a way to add for completeness (independent)
+   Variables to existing datasets. 
+
+3) MUST support making these changes on the computer serving
+   the data, on the client computer or on any other computer 
+   on the network.
+
+3a) SHOULD support users making those changes without running 
+   a network server.
+
+4) Access to an augmented dataset MUST not be logically different 
+   from a plain dataset. Clients should be able to use URLs which 
+   reference both types of datasets interchangeably.
+
+5) The user MUST be allowed to make use of any combination of 
+   AIS DDSs and/or DASs to modify the DDS and/or DAS of a 
+   requested data set.
+
+6) There MUST be a way to associate public sites providing 
+   additions/changes to a given dataset. 
+
+[ I moved this into the Constraints (Section 2.4) of the SRS. ]
+
+Performance Requirements:
+
+1) Performance should be comparable to plain access. Response time 
+   increase should be minimal. [To determine if this is the case, 
+   we should measure the performance of candidate architectures.]
+
+Constraints:
+
+Changes to the current URL syntax should be limited or we should plan on
+building a service that hides additional complexity in the URLs.
+
+The AIS should use as much of the WWW/HTTP infrastructure as possible,
+building its own infrastructure only when necessary. This will lead to a
+system that is first and foremost `document based,' which will make
+deployment and testing simpler.
+
+$Id$

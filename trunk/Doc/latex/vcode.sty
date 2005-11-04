@@ -1,0 +1,74 @@
+%%
+%% This is file `vcode.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% vcode.dtx  (with options: `sty')
+%% 
+%% Use these styles to format DODS documentation...
+%% 
+\typeout{Style-option: `vcode' (George Ferguson & Tom Sgouros)}
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{vcode}
+        [1999/01/31 v1.0
+   LaTeX2e package for source code%
+                   ]
+\@ifundefined{verbatim@processline}{\RequirePackage{verbatim}}{}
+
+\newlength{\vcodeindent}
+\setlength{\vcodeindent}{\parindent}
+\newcounter{CodeLineNo}
+\newcount\vc@CodeLineFlag
+\newlength{\vc@indent}
+\newlength{\vc@testwidth}
+\newlength{\vc@adjustmargin}
+\def\vc@flushleft#1{\hskip 0pt minus\parindent \hbox{#1}\hfill}
+\def\vc@flushright#1{\hfill\hbox{#1}}
+\def\vc@centered#1{\ \hfill\hbox{#1}\hfill\ }
+\def\vc@indented#1{\hskip\vc@indent\hbox{#1}}
+\def\vc@noop#1{#1}
+\newenvironment{vcode}[2][]{%
+\gdef\verbatim@font{\tt}%
+\newcommand{\CodeFont}[1]{\textrm{\textit{\footnotesize ##1}}}%
+\def\verbatim@processline{%
+  \stepcounter{CodeLineNo}%
+  {\setbox1=\hbox{\ifnum\vc@CodeLineFlag=1 \CodeFont{%
+      \theCodeLineNo}\ \fi\the\verbatim@line}%
+   \hsize=\ifdim\wd1>\@totalleftmargin\wd1\else\@totalleftmargin\fi%
+   \hskip-\@totalleftmargin\unhbox1\par}}%
+  \global\let\vc@hadjust\vc@flushleft%
+  \global\let\vc@frame\mbox%
+  \global\let\vc@vadjust\vbox%
+  \setlength{\vc@testwidth}{\linewidth}%
+  \@tfor \vc@char :=#2\do%
+    {\if\vc@char c\global\let\vc@hadjust\vc@centered\fi%
+     \if\vc@char l\global\let\vc@hadjust\vc@flushleft\fi%
+     \if\vc@char r\global\let\vc@hadjust\vc@flushright\fi%
+     \if\vc@char i\global\let\vc@hadjust\vc@indented\fi%
+     \if\vc@char t\global\let\vc@vadjust\vtop\fi%
+     \if\vc@char b\global\let\vc@vadjust\vbox\fi%
+     \if\vc@char f\global\let\vc@frame\fbox\fi%
+     \if\vc@char s\gdef\verbatim@font{\small\tt}\fi%
+     \if\vc@char x\gdef\verbatim@font{\footnotesize\tt}\fi%
+     \if\vc@char z\gdef\verbatim@font{\scriptsize\tt}\fi%
+     \if\vc@char n\global\vc@CodeLineFlag=1\setcounter{CodeLineNo}{0}\fi%
+    }%
+  \bgroup \setlength{\vc@indent}{\vcodeindent}%
+  \@minipagetrue \@tempswatrue%
+  \setbox0=\vc@vadjust \bgroup \verbatim}%
+{%
+  \endverbatim%
+  \unskip\setbox0=\lastbox% get rid of the last (empty) box.
+  \egroup % close the box.
+  \ifx\vc@hadjust\vc@indented\addtolength{\vc@testwidth}{-\vc@indent}\fi%
+  \ifnum\wd0>\vc@testwidth\vskip-2\parsep\fi%
+  \vc@hadjust{\vc@frame{\box0}}%
+  \global\vc@CodeLineFlag=0%
+  \egroup%
+}
+
+
+\endinput
+%%
+%% End of file `vcode.sty'.

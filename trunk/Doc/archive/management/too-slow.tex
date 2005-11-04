@@ -1,0 +1,558 @@
+% Record of an exchange between james and peter, 9/99
+
+% $Id$
+
+\documentclass[10pt]{article}
+\usepackage{hyperlatex}
+\T\usepackage{Vmargin}
+\W\usepackage{sequential}
+
+\begin{document}
+
+\htmltitle{DODS Progress}
+\htmladdress{tomss@ids.net}
+\htmldirectory{too-slow}
+\htmlname{ts}
+
+\W\newcommand{\textsf}{\textit}
+\T\setlength{\parindent}{0pt}
+\T\setlength{\parskip}{\medskipamount}
+\T\renewcommand{\rmdefault}{ptm}
+\T\renewcommand{\sfdefault}{phv}
+\T\renewcommand{\ttdefault}{cmtt}
+\T\setmarginsrb{1in}{1in}{1in}{1.5in}{0pt}{0mm}{0pt}{0mm}
+
+\title{DODS Progress}
+\author{}
+\date{as of \today}
+
+\maketitle
+
+\T\tableofcontents
+
+\section{PROJECT STATUS (Where are we?)}
+
+Since the end of the last developers' meeting:
+
+\begin{itemize}
+\item Minor Matlab GUI improvements, including about 80 or so datasets
+  in the ML GUI (50? new since last meeting), one half of which are
+  GLOBEC and about a third large area coverage;
+\item DODS has been incorporated into Ferret and been released;
+\item New numeric datatypes have been added to the core\footnote{This
+    work is better described as fully supporting the netCDF/ferret
+    users.};
+\item Many bug fixes and minor feature advancements;
+\item More datasets served, though not all accessible from Matlab GUI.
+\end{itemize}
+
+In progress:
+
+\begin{itemize}
+  \item Linked DODS to GrADS and are working toward its release;
+  \item IDL command line client;
+  \item IDL GUI;
+  \item Port to Windows;
+  \item WWW Interface (IFH);
+  \item Improvements in the release process;
+  \item The catalog server;
+  \item Core implementation in Java;
+  \item Translation of sequences to array;
+  \item Definition of  DODS metadata standard.
+\end{itemize}
+
+
+\section{DIAGNOSIS (Why are we where we are?)}
+
+While there are several reasons to feel pleased at the progress of the
+DODS project, there are also several reasons for concern.  Even though
+we are $1/2$ way through the CAN, done with the NOAA funding and $3/4$
+of the way through our NSF funding we do not have a significant user
+base.
+
+Some smaller problems also continue to plague the project.  For
+example, the release process is not worked out well, and the project
+has been unable to assimilate appropriate new technology as it has
+become available and popular (e.g. XML and CORBA).
+
+\subsection{Too few clients}
+
+Right now we have only one client that can access most DODS data and
+that in a limited way.  This is the Matlab GUI, and it cannot access
+n-dimensional data, and, as we've seen, adding datasets to it is a
+tedious and labor-intensive process.  The situation is analogous to
+building the Web so that Netscape has to install every web server
+\emph{and} modify their browser for every server they add.
+
+The other clients have difficulties as well.  Without implementation
+of translation, the Ferret and GrADS clients can't see data served as
+sequences.  The IFH works, but does so partly by limiting the scope of
+its ambition.
+
+The \emph{only} way we can get out from under this is to refocus the
+client development effort to emphasize other clients besides the
+Matlab GUI.
+
+\W\textit{
+\T\begin{center}
+\T\fbox{\begin{minipage}{5in}
+\textsf{\textbf{Note:} In order to make this into a white paper,
+  expressing a single point of view, the points in this section need
+  to be clarified and agreed upon.  For example, what does ``emphasize
+  other clients'' mean?
+  \begin{itemize}
+  \item Create simple IDL and Matlab clients to emulate the IFH?
+    (With which development resources?  That is, who does it, and what
+    don't they do at the same time?)
+  \item Making the Matlab GUI getxxx functions easier to use by
+    themselves without the graphics overhead of the rest of the GUI?
+  \item Intense focus on the Matlab GUI to achieve a stable state, and
+    then suspend work on it while other clients are developed?
+  \item Abandon the development of the Matlab GUI?
+  \item Something else?
+  \end{itemize}}
+\T\end{minipage}}
+\T\end{center}
+\W}
+
+\subsection{Not enough datasets}
+
+There seem to be two reasons for this:
+
+\begin{enumerate}
+\item Servers aren't getting installed fast enough, and 
+\item It takes too long to write the \texttt{getxxx} functions and
+  archive \texttt{.m} files necessary for the Matlab GUI to use these
+  datasets.
+\end{enumerate}
+
+The second problem may be the more important, since it has consumed by
+far the most time.  Adding data servers is only half of the problem
+since right now the project only supports one client, and it can't
+deal with datasets without the getxxx function and archive .m files.
+In other words, in the absence of clients that can deal with data
+directly from a server, installing such a server is \emph{a completely
+  useless gesture} unless one also writes the necessary Matlab
+scripts.  
+
+There are a number of major data suppliers who have expressed an
+interest in serving their data via DODS. This is exactly what we want
+and need. Although we would prefer that they do most of the adding, we
+have to help. But we won't have the resources for several months. The
+extraordinary list of potential suppliers is:
+
+\begin{enumerate}
+  \item IFREMER
+  \item NODC
+  \item GMU+
+  \item Goddard DAAC
+  \item U Hawaii
+  \item JPL
+    \begin{enumerate}
+      \item Zlotnicki
+      \item Liu
+    \end{enumerate}
+  \item Rutgers
+  \item WHOI
+  \item Townsend's group
+  \item AGU
+\end{enumerate}
+
+Nonetheless, with 2.5 full time people working on the problem since
+the last meeting, we have only been able to add 80+ datasets.  That
+translates to about one dataset per week per person, or another way of
+looking at it, it costs on the order of \$2k to add a dataset to DODS,
+and this is with someone who is familiar with the system. Admittedly a
+lot of the work put in by the project has been to fix up other
+people's datasets, and to deal with problems introduced by datasets
+with which we are not familiar or bugs in the server software.
+
+\section{PRESCRIPTION (Where do we go from here?)}
+
+\W\textit{
+\T\begin{center}
+\T\fbox{\begin{minipage}{5in}
+\textsf{\textbf{Note:} Again, before this section can be completed,
+  agreement must be reached on the earlier note.  The tasks to be
+  completed depend on a decision there.}
+\T\end{minipage}}
+\T\end{center}
+\W}
+\subsection{Tasks}
+
+Software development tasks:
+
+\begin{itemize}
+\item Complete translation
+
+\item Complete SQL access
+
+\item Complete PC port
+
+\item Incorporate CS into IFH?
+
+\end{itemize}
+
+Data incorporation tasks:
+
+?
+
+\subsection{Organization}
+
+Some of what the project needs is a clearer definition of people's
+responsibilities.  Part of doing might be to separate data team from
+software development.  There are, of course, overlaps (Nathan's major
+task, for example, is software driven by the needs of a data
+provider.)
+
+Within software development, a further clear division between core and
+UI development should be considered.
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+%\section{Where are we?}
+
+%It seems that we are stalled; we are moving forward but very slowly,
+%at least on the surface.  My impression is that since the end of the
+%last Developer's Meeting all that we really have to show is:
+
+%\begin{itemize}
+%  \item Minor Matlab GUI improvements;
+%  \item About 80 or so datasets in the ML GUI (50? new since last
+%    meeting), one half of which are GLOBEC and about a third large
+%    area coverage;
+%  \item DODS has been incorporated into Ferret and been released and I
+%    think that it is seeing users;
+%  \item New numeric datatypes have been added to the
+%    core\footnote{This work is better described as fully supporting
+%      the netCDF/ferret users.};
+%  \item Many bug fixes and minor feature advancements;
+%  \item More datasets served, though not all accessible from Matlab GUI.
+%\end{itemize}
+
+%  These are the visible things that have been added and
+%they are good! In progress:
+
+%\begin{itemize}
+%  \item Linked DODS to GrADS and are working toward its release;
+%  \item IDL command line client;
+%  \item IDL GUI;
+%  \item WWW Interface (IFH);
+%  \item The release process;
+%  \item The catalog server.
+
+%\end{itemize}
+
+%All of these things sort of work, but they are not things that we are
+%ready to flash up in front of the public with the exception of GrADS.
+%In addition to these things numerous little problems have been
+%addressed, some only partially: we have changed the way we handle
+%releases, made progress on the catalog services, etc.
+ 
+%In other words, we have made progress on a lot of things that are not
+%very visible, but we have not made a lot of progress in the major
+%ones. Even though we are $1/2$ way through the CAN, done with the NOAA
+%funding and $3/4$ of the way through our NSF funding we do not have a
+%significant user base.
+
+%The list of partial progress items tells an interesting story.
+%Of the six items, four are user interfaces; that is our project's
+%real weakness (and the Achilles heel of all distributed systems).
+
+%The catalog server relates to our attempts to make datasets easier to
+%add to the system.  Actually they will become a little harder to add
+%(but only if you want them to be compliant with the DODS data
+%standard-in-progress), since the overhead involved in maintaining the
+%catalog and the metadata is significant.  However, the hope is that
+%the datasets in the system will be readily usable by more clients than
+%is currently the case.  Basically, we're putting more of a burden on
+%each server installation so that the clients (\emph{all} of them) can
+%do more.
+
+
+%The release process problems are noise in the sense that they say
+%nothing special about DODS since all projects have these problems.
+%That does not mean we can ignore them, just that we can do what
+%everybody else does in this respect (which we are) and assume it
+%will get better over time.  On the other hand, recent breakdowns in
+%the release process have produced unreasonably long delays in making
+%bug fixes available.
+
+%On the bright side, DODS is receiving a \emph{lot} of attention; there
+%seems to be general agreement that this is the way to go and that we
+%are far along the path.\footnote{Part of this perception is due to the
+%  fact that no one really knows how small our user base is.}
+
+%\subsection{Datasets to add}
+
+%I am particularly concerned because I don't see an
+%end in sight to the software fixes/additions that will allow us to add
+%datasets quickly.  The idea of making these datasets COARDS+ compliant
+%is so that they can be added to the system quickly.  We already have
+%ALL of the metadata needed, it's just a question of putting it in the
+%right form.
+
+%In the meantime we have a number of major suppliers
+%who have expressed an interest in serving their data via DODS. This is
+%exactly what we want and need. Although we would prefer that they do
+%the adding, I think that we have to help. But we don't have the
+%resources for several months. The potential suppliers are:
+
+%\begin{enumerate}
+%\item IFREMER
+%\item NODC (they may be willing to install a server)
+%\item GMU+ (ready to go I think)
+%\item Goddard DAAC (need a little push but are there)
+%\item U Hawaii (You've seen my e-mail on this one.)
+%\item JPL
+%  \begin{enumerate}
+%  \item Zlotnicki (I think that all we need to do is follow 
+%     up here)
+%   \item Liu (Same as a; he'll go if we pursue him I think.)
+%  \end{enumerate}
+%\item Rutgers (They have installed servers, we just haven't 
+%   coordinated with them.)
+%\item WHOI (same as 6.1)
+%\item Townsend's group (they will install servers when we
+%   contact them.)
+%\item AGU (ready to go I think)
+%\end{enumerate}
+
+%I am sure that there are more, but this gives an idea of 
+%where we are. This is quite an amazing list. Think of where
+%we would be if we could get servers at all of these sites.
+%Most of these sites are ready to go, but they will not do 
+%anything until we give them a push. 
+
+%\section{Why?}
+
+%Why do we have so few users with so many potential users? My take on
+%this is that: (1) we do not have enough datasets accessible via DODS
+%and (2) we do not have enough clients. Let's examine each of these:
+
+%\subsection{Not enough datasets}
+
+%Why don't we have enough datasets? After all, we have an
+%extraordinary list of potential providers, we have had 
+%2.5 full time people working on the problem since the last
+%meeting and yet we have only been able to add 80+ datasets. 
+%That translates to about one dataset per week per person, or 
+%another way of looking at it, it costs on the order of \$2k
+%to add a dataset to DODS, and this is with someone who is
+%familiar with the system. Admittedly a lot of the work put
+%in by Paul, Kwok-Lin and Ruth has been to fix up other peoples 
+%datasets, learn to deal with problems introduced by datasets
+%with which we are not familiar or problems associated with 
+%bugs in the server software. 
+
+%Another part of the problem has been the 
+%time required to add the dataset to the GUI. In fact this
+%has consumed by far the most time. I'll get back to this 
+%below.
+
+
+%\subsection{Not enough clients} 
+
+%Right now we have only one client that can access most DODS data and
+%that in a limited way.  This is the Matlab GUI, and it cannot access
+%n-dimensional data, and, as we've seen, adding datasets to it is a
+%tedious and labor-intensive process.  It really is a problem with the
+%ML GUI and having that drive our project (which it does to a great
+%extent). The situation is analogous to building the Web so that
+%Netscape has to install every web server \emph{and} modify their
+%browser for every server they add.
+
+%The other clients have difficulties as well.  Without implementation
+%of translation, the Ferret client can't see data serverd as sequences.
+%The status of the GrADS and IDL clients are, at this writing,
+%uncertain.
+
+%The \emph{only} way we can get out from under this is to change the
+%focus of the project away from the ML GUI by adding more clients.
+%That's why it is important to emphasize the NetCDF library and the
+%IFH.  We should expand and improve the IFH, as well as introduce
+%simpler Matlab and IDL clients.
+
+
+%\subsection{Several unfinished tasks}
+
+%Another important problem is that we don't seem to finish the
+%many tasks that we have in a timely fashion. We have a 
+%large list of tasks partly done:
+
+%\begin{itemize}
+%\item Internal translation from sequence to array
+%\item IDL client
+%\item IFH
+%\item IDL GUI
+%\item addition of PC access
+%\item definition of a DODS metadata standard
+%\end{itemize}
+
+%\section{What to do about it}
+
+%James has suggested that we reallocate our resources. If I understand
+%properly, he was/is thinking of making a more formal division between
+%the population effort and software development. It seems that we
+%already have that to a large extent though and we are still
+%struggling. I have an alternative to suggest.
+
+%First, let me lay out the goals. They are:
+
+%\begin{enumerate}
+%\item To work with the groups that I have listed above to add
+%   DODS servers; and 
+%\item To add more clients, and/or make our clients more 
+%   functional.
+%\end{enumerate}
+
+%I think that we should freeze all software development that does not
+%move us toward these two objectives. In particular, I think that we
+%should back off of the catalog services until we have cleaned up some
+%of the stuff that is hanging around.  I also think that we have to be
+%more specific about who does what, especially with regard to those
+%working on population.
+
+%\textsf{\paragraph{James:} Installing servers should be separate
+%  from adding datasets to the ML GUI. That's why we need to broaden
+%  our client base. My idea behind stressing the metadata stuff
+%  (catalog services) was to shorten the time required to add datasets
+%  to the ML GUI. Once we're free from that as a constraint, we're free
+%  in a lot of ways.
+%}
+
+%\subsection{Proposed Tasks}
+
+%Here are the proposed highest priority tasks:
+
+%\begin{enumerate}
+  
+%\item Reza to continue on sequence to array translation. We need a
+%  firm completion date for this. Reza will also continue to work on
+%  bug fixes for FreeForm and NetCDF.
+
+%\item Nathan to continue the work that he is doing on SQL access, if
+%  possible to move the completion date forward.
+  
+%\item Rob to finish the PC job; i.e., to move this to where we can use
+%  it. Then he should move on to the IDL client and GUI problems.
+%  Perhaps find someone else at JPL to add servers.\footnote{A problem
+%    at JPL is that they have not integrated DODS into the
+%    PO-DAAC. The servers seem to sit on Rob's machine. That doesn't
+%    make sense. They should not sit on a developer's machine but
+%    on one of the PO-DAAC servers. This concerns me for two reasons:
+%    (1) every time Rob moves (sneezes) the servers go down, and more
+%    importantly (2) it shows a lack of commitment on the PO-DAAC's
+%    part.}
+  
+%\item Kwok-Lin to working on the regional data sets, focussing on the
+%  necessary metadata. In the meantime she can continue work on the
+%  long time series data sets.  She could also put together a data set
+%  tester for data sets in the ML GUI. The idea is simple. Using the
+%  GUI she begins by making a simple request of a small amount of data
+%  from each data set. She then saves this session(s).  Then she writes
+%  a Matlab script that simply issues each of the URL's and does a
+%  compare on what comes back and what she got earlier.  This would
+%  serve two purposes. First, it would alert us to problems with
+%  specific data sets. Second, it would allow us to build a data base
+%  of data set availability. Both would be VERY valuable.
+
+  
+%\item Ruth to continue with the data sets that she is currently adding
+%  to the system.
+
+
+%\item Deirdre come up with an outline of what the new GUI would
+%look like. We have a meeting with James, Glenn, Deirdre, me
+%and a Matlab consultant whom we hire for this 2 day meeting.
+%The idea of the meeting is to hammer out the specs for this
+%interface (which includes the geographic and nongeographic
+%interface). These specs to be completed by 1 November. 
+
+
+%\item Ethan to continue getting the current release out. Then he
+%  should focus on the metrics. The status outlined above is based on
+%  NO information re the real number of users.  We need this
+%  information.  This is more important than the federation metrics.
+
+
+%\item James continue to guide the technical aspects of the
+%project, but also to complete the IFH and the Matlab
+%n-dimensional client. Time frame? IFH ~ 2 weeks; Matlab
+%client ~ 3 weeks? James also to write a GIF generator for
+%DODS array data. (2 weeks?) I think that this could add
+%a very large number of users to the system, basically
+%everyone who uses a web browser to look at one of our
+%SST images becomes a DODS users! The same is true of
+%other data sets. We can easily put together simple
+%specialized interfaces for some of our data sets such
+%as our SST fields. James also to work with Ethan
+%on making it easier for others to build DODS on their
+%machines.
+
+
+%\end{enumerate}
+
+%\subsection{A New Proposal}
+
+%To address some of the functional difficulties with using the Matlab
+%GUI, I suggest: 
+
+%\begin{enumerate}
+  
+%\item adding a FreeForm server at the GCMD that would provide a list
+%  of data set titles and URLs in response to a query to the GCMD. The
+%  query would be based on a free text search of all DODS data sets. If
+%  a variable was specified and the variables of the data set are
+%  unknown, then it is returned with an unknown flag;
+  
+%\item adding a non-geographic search capability to the Matlab GUI. The
+%  idea here is that the user obtains a list of possible data sets from
+%  the GCMD and here with a GUI that mimics the IFH builds a URL within
+%  Matlab and requests data;
+  
+%\item n-d capability be added to the GUI.
+%\end{enumerate}
+
+%I am sure that there are problems with what I have suggested, but we
+%have to start the discussion somewhere and I am convinced that we need
+%the discussion. James has been emphasizing the addition of new tools
+%to make things easier in the future, but my impression is that too
+%much effort is going into that now. I know that I have crammed a lot
+%of stuff here, but these are the things that I think need to be done
+%for us to take off. We are already working in this general direction,
+%but I don't see the unified picture. This is an attempt to put it
+%together.
+
+%The bottom line is that we need:
+
+%\begin{enumerate}
+%\item Easy access to a list of ALL DODS URLs;
+%\item A way to access any of these datasets in Matlab (later
+%in IDL);
+%\item Ferret completely functional;
+%\item A basic web GUI that will get at any DODS dataset;
+%\item GrADS completely functional;
+%\item Matlab to handle n-dimensional datasets;
+%\item An IDL GUI; and
+%\item MANY MORE DATASETS.
+%\end{enumerate}
+
+%and eventually a geographic Web GUI.
+
+
+
+
+
+
+

@@ -1,0 +1,114 @@
+
+	$Id$
+
+This is an overview of server-side caching in DODS.
+
+I. The Problem
+
+There are two things that a DODS server needs to cache. The first are
+generated objects; the DAS and DDS. These are built by interrogating a file
+or database. In multi-file datasets, there is one DAS & DDS for each file in
+the dataset. The second thing servers need to cache are decompressed files,
+again most likely part of a multi-file dataset.
+
+One server might be used for several datasets and the files in two datasets
+might have the same filename (but necessarily not the same pathname), file
+caching must hash based on pathnames, not filenames.
+
+Because two or more clients might make simultaneous requests of a single file
+from a server, there should be a locking mechanism for the cache. Imagine a
+large dataset which gets new data every day. Suppose most users want the new
+data. If many users access this dataset there is a chance that two or more
+users will ask for the same file at more or less the same time. If one
+(server) process is almost done writing the file at the instant another
+creates and writes the same filename, the first process will be left with a
+corrupted file. 
+
+II. Solution
+
+Build an object to manage the cache. This object does not have to return
+cached things, just references to them within the computer's file system. So,
+it could return pathnames to the cached things.
+
+The cache manager should be smart enough to decompress files, and save
+objects by catenating strings to pathnames.
+
+The cache should be confined to a single directory. Pathnames can be turned
+into unique filenames using Jake's/Emacs' scheme of translating `/'s into
+`#'s. (NB: I think that Jake suggested using `.' first but if filenames
+contain lots of dots that will make it impossible to tell which parts of the
+munged pathname are directories and which are simply part of the file's name.
+jhrg. Nobody uses `#' in a filename since it is the shell's comment
+character.)
+
+Advisory locking is an acceptable solution for mutual exclusion of cache
+updates.
+
+The cache should be self-purging using a default size that can be changed
+based on a runtime parameter.
+
+III. Implementation
+
+Here is a C++ class that defines the cache Manager object. This is a quick
+first take at such a class. I'm not sure whether to use one function for
+adding, one from accessing, etc. and use constants/enums to say `I want the
+DAS', or to use separate member functions for each type of thing we cache. 
+
+We can change DODSFilter so that it contains an instance of CacheManager, or
+we can sublcass DODSFilter to make CachingDODSFilter and have that subclass
+either implement these methods or contain an instance of CacheManager.
+
+enum Type {
+     DAS,
+     DDS,
+     File
+};
+
+class CacheManager {
+      /** Gets the full pathname of the directory this process is using as
+          the cache. 
+	  
+	  @return A string containing the directory pathname. */
+      string getCacheDirectory();
+
+      /** Sets this object so that directory is used to store the cached
+          things. 
+
+	  @return FALSE if an error is detected, otherwise TRUE. */
+      bool setCacheDirectory(string directory);
+
+      /** Lock the cache. This blocks if another process is currently using
+	  the cache and returns when it is this process' turn. If the caller
+	  of this member function crashes the lock must be released. See
+	  lockf(3). 
+
+	  @return FALSE if an error is detected, otherwise TRUE. */
+      bool lockCache();
+
+      /** Unlock the cache. 
+
+          @return FALSE if an error is detected, otherwise TRUE. */
+      bool unlockCache();
+
+      /** Returns TRUE if the thing with pathname is in the cache. For a file
+          /usr/local/file.nc this would be true if #usr#local#file.nc was in
+          the cache directory. If thing was DAS, then this member function
+          would look for #usr#local#file.nc.das. */
+      bool isCached(string pathname, enum type);
+
+      /** Gets the pathname to the cached object. The caller has to know what
+	  to do to read the cached object from the file it is stored in. */
+      string getCachedObject(string pathname, enum type);
+
+      /** Cache the thing. If type is DAS or DDS, thing points to the
+	  instance to cache. If type if FILE, then this member function
+	  decompresses it if it is compressed and stores the decompressed
+	  file in the cache. IF it is not compressed it copied the file into
+	  the cache (some datasets serve generated files and we'd like to
+	  cache those even though they don't need to be decompressed). 
+
+	  This member function is responsible for purging old entries from the
+	  cache. */
+      bool addCachedObject(string pathname, enum type, void *thing);
+};
+

@@ -1,0 +1,374 @@
+%CHAPTER 2       
+%
+% $Id$
+%
+
+\chapter{Quick Tour of FreeForm ND}
+\label{ff,quick}
+
+This chapter provides you a quick introduction to writing format
+descriptions and using several FreeForm ND programs. You will look at
+a format description file, convert data from one format to another,
+read the data in a binary file, and create summary files. This chapter
+introduces only tabular format data (arranged in rows and columns).
+See \chapterref{ff,arrayfmt} for information on handling data in
+non-tabular formats.
+
+\section{Writing Format Descriptions}
+
+\indc{format descriptions}\indc{descriptions!format}
+You can easily create FreeForm ND format description files that
+describe the formats of input and output data and headers. FreeForm
+ND-based programs then use these files to correctly access and
+manipulate data in various formats. An example format description file
+is shown and described below.
+
+For complete information about writing format descriptions, see the
+next two chapters.
+
+Here is a format description file, included in the sample file set,
+called \lit{latlon.fmt}:
+
+\begin{vcode}{sib}
+/ This is the format description file for data files latlon.bin 
+/ and latlon.dat. Each record in both files contains two fields, 
+/ latitude and longitude.
+
+binary_data "binary format"
+latitude 1 8 double 6
+longitude 9 16 double 6
+
+ASCII_data "ASCII format"
+latitude 1 10 double 6
+longitude 12 22 double 6 
+\end{vcode}
+
+\note{You can display \lit{latlon.fmt} on your screen by changing to
+  the directory containing the FreeForm ND example files and using the
+  appropriate command (\lit{cat} or \lit{more}).  }
+
+This format description file contains two format descriptions. The
+first describes data in the binary data file \lit{latlon.bin} and the
+second describes data in the ASCII data file \lit{latlon.dat}
+(contents shown below).
+
+The binary and ASCII variables both have the same names. The binary
+variables are defined to occupy 8 bytes each (positions 1-8 and 9-16).
+The ASCII variable latitude occupies 10 bytes (positions 1 to 10) and
+longitude occupies 11 bytes (positions 12-22). Both the binary and
+ASCII variables are stored as doubles because they have more than
+seven digits and include a decimal point (see the \lit{latlon.dat}
+listing below). The precision of 6 for all the variables indicates
+that there are six digits to the right of the decimal point.
+
+Here is \lit{latlon.dat}.  Note that the first two lines are included
+as aids, to show what appears in which column of the file.  These two
+lines are not part of the file.
+
+\begin{vcode}{ib}
+         1         2         3         4         5         6
+12345678901234567890123456789012345678901234567890123456789012345
+-47.303545 -176.161101
+ -0.928001    0.777265
+-28.286662   35.591879
+ 12.588231  149.408117
+-83.223548   55.319598
+ 54.118314 -136.940570
+ 38.818812   91.411330
+-34.577065   30.172129
+ 27.331551 -155.233735
+ 11.624981 -113.660611
+ 77.652742  -79.177679
+ 77.883119  -77.505502
+-65.864879  -55.441896
+-63.211962  134.124014
+ 35.130219 -153.543091
+ 29.918847  144.804390
+-69.273601   38.875778
+-63.002874   36.356024
+ 35.086084  -21.643402
+-12.966961   62.152266
+\end{vcode}
+
+\section{Changing Formats}
+
+\indc{changing formats!newform@\lit{newform}}
+\indc{commands!newform@\lit{newform}}
+\indc{FreeForm ND commands!newform@\lit{newform}}
+\indc{newform@\lit{newform}!changing formats}
+\indc{format conversion}\indc{conversion!format!quick intro}
+The FreeForm ND program \lit{newform} is used to convert data from one
+format to another. Format descriptions for all the data (input and
+output) involved in the conversion must be included in a format
+description file.
+
+In this example, you will use \lit{newform} to convert ASCII data in
+the input file \lit{latlon.dat} to binary data in the output file
+\lit{latlon2.bin}. First you need to create a format description file
+like the following that describes the data in these two files.
+
+Here is the file \lit{latlon2.fmt}:
+
+\begin{vcode}{ib}
+/ This is the format description file for data files latlon.dat
+/ and latlon2.bin. Each record in both files contains two fields, 
+/ latitude and longitude.
+
+ASCII_data "ASCII format"
+latitude 1 10 double 6
+longitude 12 22 double 6
+
+binary_data "binary format"
+latitude 1 4 long 6
+longitude 5 8 long 6
+\end{vcode}
+
+The ASCII and binary variables both have the same names. The ASCII
+variable latitude occupies 10 bytes (positions 1-10) and longitude
+occupies 11 bytes (positions 12-22). The ASCII variables are defined
+to be of type double because they have more than seven digits and
+include a decimal point. (See the \lit{latlon.dat} listing above.) The
+binary variables are defined to occupy four bytes each (positions 1-4
+and 5-8) and to be of type long. The precision for all is 6.  To
+convert the ASCII data in \lit{latlon.dat} to binary data, you would:
+
+\begin{enumerate}
+\item Change to the directory that contains the FreeForm ND files. 
+
+\item Enter the following command: 
+
+\begin{example}
+newform latlon.dat -f latlon2.fmt -o latlon2.bin 
+\end{example}
+\end{enumerate}
+
+This command creates a new binary data file called \lit{latlon2.bin}
+with the 20 latitude and longitude values in \lit{latlon.dat} stored
+as binary longs.
+
+For complete information about using \lit{newform}, see
+\chapterref{ff,fmtconv}. 
+
+\section{Viewing Binary Data Files}
+
+\indc{binary files!viewing}
+\indc{binary files!readfile@\lit{readfile}}
+\indc{commands!readfile@\lit{readfile}}
+\indc{FreeForm ND commands!readfile@\lit{readfile}}
+\indc{readfile@\lit{readfile}!binary file}
+The FreeForm ND Data Access System includes an interactive utility
+program, \lit{readfile}, for reading binary files. You can use
+\lit{readfile} to read the binary file \lit{latlon2.bin} and check
+that the data are correct.
+
+To read \lit{latlon2.bin}, you would: 
+
+\begin{enumerate}
+\item Change to the directory that contains the FreeForm ND files. 
+
+\item On the command line, enter readfile \lit{latlon2.bin} 
+
+\item The data are stored as longs, so enter l to view the first value. 
+  
+  The number -47303545, corresponding to the first number in
+  \lit{latlon.dat} (but with implied precision, i.e., without a
+  decimal point), should appear.
+
+\item To check additional numbers, continue to enter l or press Return. 
+  
+  The numbers should correspond to those in \lit{latlon.dat}.
+
+\item When you want to quit \lit{readfile}, enter q. 
+\end{enumerate}
+
+For complete information about using \lit{readfile}, see
+\chapterref{ff,fmtconv}. 
+
+\section{Creating Summary Files}
+
+\indc{creating!summary files}\indc{summary files!creating}
+The FreeForm ND-based utility program \lit{checkvar} creates a summary
+file for each variable in a data file, a list of maximum and minimum
+values, and a summary of processing activity. A variable summary file
+(also called a histogram data file) contains histogram information
+that shows the variable's distribution in the data file. In this
+example, you will use \lit{checkvar} to create a processing summary
+file and variable summary files for the two variables latitude and
+longitude in the file \lit{latlon2.bin}.
+
+\section{Generating the Summaries}
+
+To create summary files for \lit{latlon2.bin}, you would: 
+
+\begin{enumerate}
+\item Change to the directory that contains the FreeForm ND files. 
+
+\item Enter the following command: 
+
+checkvar latlon2.bin -o checkvar.out 
+
+A summary of processing information and the maximum and minimum for each variable are displayed on the screen. The following three files are created: 
+
+\begin{description}
+\item[\lit{checkvar.out}] recaps processing activity, maximums and
+  minimums
+  
+\item[\lit{latitude.lst}] shows distribution of the latitude values in
+  \lit{latlon2.bin}
+  
+\item[\lit{longitude.lst}] shows distribution of the longitude values
+  in \lit{latlon2.bin}
+\end{description}
+
+\item To view the files, use the appropriate command, i.e., \lit{cat}
+  or \lit{more.}
+\end{enumerate}
+
+\section{Interpreting the Summaries}
+
+The three files output by \lit{checkvar} are shown and discussed
+below. To remind yourself of the input values, refer to
+\lit{latlon.dat} since it contains the same values as
+\lit{latlon2.bin} in ASCII representation.
+
+Here is \lit{checkvar.out}:
+
+\begin{vcode}{ib}
+Input file: latlon2.bin
+No requested precision, Approximate number of sorting bins = 100
+
+Input data format       (latlon2.fmt)
+binary_input_data       "binary format"
+The format contains 2 variables; length is 8.
+
+Output data format       (latlon2.fmt)
+ASCII_output_data       "ASCII format"
+The format contains 2 variables; length is 24.
+
+Histogram data precision: 5, Number of sorting bins: 20
+latitude: 20 values read
+minimum: -83.223548 found at record 5
+maximum:  77.883119 found at record 12
+Summary file: latitude.lst
+
+Histogram data precision: 5, Number of sorting bins: 20
+longitude: 20 values read
+minimum: -176.161101 found at record 1
+maximum:  149.408117 found at record 4
+Summary file: longitude.lst
+\end{vcode}
+
+The processing summary file \lit{checkvar.out} first shows the name of
+the input data file (\lit{latlon2.bin}).  Since precision and a
+maximum number of bins were not specified on the command line, No
+requested precision and the default value for sorting bins of 100 are
+shown.
+
+A summary of each format shows the type of format (in this case, Input
+data format and Output data format) and the name of the format file
+containing the format descriptions (\lit{latlon2.fmt} describes both
+the input and output formats; note that \lit{checkvar} ignores output
+formats). Next, you see the format descriptor as resolved by FreeForm
+ND (e.g., \lit{binary\_input\_data}) and the format title (e.g.,
+``binary format''). Then the number of variables in a record and total
+record length are given; for ASCII, record length includes the
+end-of-line character.
+
+A section for each variable processed by \lit{checkvar} indicates the
+histogram precision and actual number of sorting bins. Under some
+circumstances, the precision of values in the histogram file may be
+different than the precision you specified on the command line. No
+precision was specified on the command line in this case, so the
+default maximum precision of 5 is used. The second line shows the name
+of the variable (latitude and longitude) and the number of values in
+the data file for the variable (20 for both latitude and longitude).
+
+The minimum and maximum values for the variable are shown next
+(-83.223548 is the minimum and 77.883119 is the maximum value for
+latitude). The maximum and minimum values are given here with a
+precision of 6, which is the precision specified in the relevant
+format description file. The locations of the maximum and minimum
+values in the input file are indicated. (-83.223548 is the fifth
+latitude value in \lit{latlon2.bin} and 77.883119 is the twelfth).
+
+Finally, the name of the histogram data (or variable summary) file
+generated for each variable is given. The two example histogram files,
+\lit{latitude.lst} and \lit{longitude.lst}, are shown next.
+
+
+\begin{center}
+\begin{tabular}{p{2in}p{2in}}
+\lit{latitude.lst} 
+
+\begin{vcode}{ts}
+-83.22355       1
+-69.27361       1
+-65.86488       1
+-63.21197       1
+-63.00288       1
+-47.30355       1
+-34.57707       1
+-28.28667       1
+-12.96697       1
+ -0.92801       1
+ 11.62498       1
+ 12.58823       1
+ 27.33155       1
+ 29.91884       1
+ 35.08608       1
+ 35.13021       1
+ 38.81881       1
+ 54.11831       1
+ 77.65274       1
+ 77.88311       1 
+\end{vcode}
+
+& 
+\lit{longitude.lst}
+\begin{vcode}{ts}
+-176.16111       1
+-155.23374       1
+-153.54310       1
+-136.94057       1
+-113.66062       1
+ -79.17768       1
+ -77.50551       1
+ -55.44190       1
+ -21.64341       1
+   0.77726       1
+  30.17212       1
+  35.59187       1
+  36.35602       1
+  38.87577       1
+  55.31959       1
+  62.15226       1
+  91.41133       1
+ 134.12401       1
+ 144.80439       1
+ 149.40811       1
+\end{vcode}
+
+\end{tabular}
+\end{center}
+ 
+The histogram files consist of two columns. The first indicates
+boundary values for data bins and the second gives the number of data
+points in each bin. The boundary values are determined dynamically by
+\lit{checkvar} and often do not correspond exactly to data values in
+the input file, even if the \lit{checkvar} and data file precisions
+are the same.
+
+The first data bin in \lit{latitude.lst} contains data points in the
+range -83.22355 (inclusive) to -69.27361 (exclusive). The first bin
+has one data point, -83.223548 (refer to \lit{latlon.dat} on page 7).
+The fifth data bin contains latitude values from -63.00288 (inclusive)
+to -47.30355 (exclusive); the data point in the fourth bin is
+-63.002874.
+
+For complete information about using \lit{checkvar}, see
+\chapterref{ff,datachk}. 
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

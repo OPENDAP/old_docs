@@ -1,0 +1,128 @@
+Structure and Process for Software Development within the OPeNDAP and
+Related Projects.  
+
+James Gallagher and Paul Hemenway
+(and a cast of Thousands)
+
+Draft
+
+19 April 2002
+
+Background:  OPeNDAP (formerly DODS) has included the data access protocol
+(DAP) and related services provided by the software servers to the
+software clients.  The Specification of the core software resided in a 
+collection of documents written over the lifetime (thus far) of the DODS and
+OPeNDAP projects. A more formal specification of the DAP and related
+services was written in early 2001 title 'DRAFT DAP RFC'.
+
+The DODS group has produced two implementations of the DAP and its services
+in parallel: one using C++ and one using JAVA. Both were attempts to
+produce `true' implementations of the DAP and services but both were
+developed before the DRAFT DAP RFC was written. In addition, the Java
+implementation was largely developed using the C++ as a reference, but that
+development spanned several years (and two main developers) of sporadic work.
+During that time, the C++ implementation continued to evolve, most of the
+time without any formal specification. Thus the Java and C++ implementations
+of are compatible in many ways but differ in some important details.
+
+In addition, outside the group people have developed toolkits which use the
+DAP. The lack of a formal specification has impeded these efforts (although
+they have been surprisingly successful in spite of that).
+
+The GOALS of the Structure and Process are to:
+        a) Provide a process which will allow the implementation of
+           the Specifications on any hardware/software computer
+           capable of such an implementation,
+        b) Provide a tracking mechanism to allow feedback from 
+           implementations to the Specification(s), and to each
+           other, about problems/solutions/developments that occur
+           in any one implementation, and
+        c) Provide a mechanism whereby changes in a Specification
+           can be propagated to all related implementations.
+
+The Structure: The "Core" software will be considered here. It is the
+software system covered by the 'DRAFT DAP RFC'. The Core Specification will
+be subdivided into the DAP Specification and several "service"
+Specifications. Each of these Specifications will have implementations (e.g.
+C++ and JAVA implementations). See:
+http://www.po.gso.uri.edu/tracking/opendap/dap/developmentdiagram3.gif (Think
+of this as a flow diagram. The basic objects that make up the DAP are used by
+and for the Services.)
+
+We will add to the bug database a documentation category and components for
+each of the specifications. This will provide us with a way to register bugs
+for the specifications themselves. The project's technical lead will be
+assigned these "specification" bugs. If any bug in one of the specs implies 
+other bugs in implementations, then these other bugs will be added as needed.
+
+The Process:
+
+        I. The Specifications.
+
+                A. Specifications are laid out for the DAP and the Services.
+		   In place of formal goals and requirements documents, this
+		   document will include rationales for key points and
+		   assumptions.
+
+                B. The DAP specification will be developed using the existing
+                   Draft and current practice. Problems and/or flaws with the
+                   Draft and current practice may be addressed by making
+                   minor changes, but the main goal of the initial DAP
+                   Specification is to document current practice in a formal
+                   manor.
+
+                C. The Service Specifications are iterated to be compliant
+                   with the DAP and, where necessary, with each other.
+
+		D. Section III describes how problems with the Specifications
+                   are resolved.
+
+        II. The Implementations.
+
+                A. An implementation ("-side") will declare which
+                        Services it implements.
+                B. An implementation will identify an owner and which
+                        Computer/Operating System and required libraries
+                        it uses for development.
+                C. When the specific implementation of a Specification
+                        is considered "ready" by the owner, that fact
+                        will be communicated to the project community,
+                        so that other developers can incorporate the
+                        source code into their builds.
+        III. Bug Handling.
+                Bugs, when found, will be reported to the bug tracking
+                        software.
+                Each bug will be sent to a 'Bug Czar' for assignment.
+                The bug will be routed to the assignee.
+                The bug will be reviewed for broader implications (impacts
+                        outside the specific implementation in which it
+                        was detected) by the reporter, the Bug Czar,
+                        and the assignee.
+                If anyone sees a potential implication beyond the
+                        specific implementation in which the problem
+                        was identified, the bug will be referred to
+                        a bug committee, so that representatives of
+                        the implementations as well as representatives
+                        of the various Specifications will be aware
+                        of the bug, and can judge whether or not the bug
+                        is a problem outside the area where it was identified.
+                Bugs found to affect various elements (Specifications or
+                        Implementations) will have those elements flagged
+                        and the owners of those elements will be notified.
+                As the bug is addressed in each element, the flags will 
+                        be removed.
+                Whenever a bug's status is changed to "fixed", it will be 
+                        reported to the bug committee for review for broader 
+                        implications as indicated above, because, often, a 
+                        bug's full ramifications are not known until the 
+                        process of fixing the bug is complete, 
+                If a bug reveals a problem with one of the Specifications,
+                        then the bug will be given to the person responsible
+                        for that Specification, whether it is the DAP
+                        Specification or one of the Service Specifications.
+                Then the Specification itself will be reviewed as described 
+                        above.  Then the implementation procedure will be 
+                        undertaken to incorporate the bug fixes into each 
+                        affected implementation.
+
+$Id$

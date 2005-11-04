@@ -1,0 +1,183 @@
+% \iffalse
+%  $Id$
+%
+%  $Log: marginparpatch.dtx,v $
+%  Revision 1.2  1999/06/24 14:32:55  tom
+%  The name of this package has been changed from marginparpatch to mparhack
+%  to reflect the ugliness of the fix it implements.
+%
+%  Revision 1.1  1999/03/22 21:59:03  tom
+%  updated DODS doc tools
+%
+%
+% \fi
+%
+% \MakeShortVerb\|
+%
+% \iffalse
+%    \begin{macrocode}
+%<*driver>
+\documentclass{ltxdoc}
+\EnableCrossrefs         
+ %\DisableCrossrefs % Say \DisableCrossrefs if index is ready
+\CodelineIndex
+\RecordChanges
+\setlength\hfuzz{15pt}
+\hbadness=7000 
+\begin{document}
+   \DocInput{marginparpatch.dtx}
+\end{document}
+%</driver>
+%    \end{macrocode}
+% \fi
+%
+% \GetFileInfo{marginparpatch.sty}
+% \title{Fixing marginpars}
+% \author{Stefan Ulrich and Tom Sgouros}
+% \maketitle
+%
+% \begin{abstract}
+%    This package corrects a persistent problem with marginpars, that
+%    they occasionally show up on the wrong side of a page.  The name 
+%    has been changed, however, and you should use mparhack.sty instead 
+%    of this package in the future.
+% \end{abstract}
+%
+% \changes{1.0}{99/03/02}{Created}
+%
+%\catcode`\<=14
+%<+sty>\typeout{Style-option: `marginparpatch' (Stefan Ulrich)}
+%<+sty>\NeedsTeXFormat{LaTeX2e}
+%<+sty>\ProvidesPackage{marginparpatch}
+%<+sty>        [1999/03/02 v1.0
+%<+sty>   LaTeX2e fix for marginpars
+%<+sty>                   ]
+%<+sty>\DeclareOption{twocolumn}{
+%<+sty> \PackageWarningNoLine{marginparpatch}{
+%<+sty>         Sorry, this package won't work correctly\MessageBreak
+%<+sty>          with the `twocolumn' class option}}
+%<+sty>\ProcessOptions*
+%\catcode`\<=12
+%
+%
+% {\parskip 0pt \tableofcontents }
+%
+% \section{Introduction}
+%
+%    A persistent problem with the |\marginpar| command is that the
+%    marginalia produced often show up on the wrong page.  This has
+%    been noted in the \LaTeX\ bugs database.  
+%
+%    The problem most regularly appears when a marginpar appears near
+%    the top of a page.  Presumably it imagines itself to still be on
+%    the previous page at that point.  The problem is exacerbated when
+%    the page break penalties are adjusted so that the page look is
+%    quite ragged.  In cases like this, if there is a deal of white
+%    space on a page, the marginpars on the next page will be on the
+%    wrong side for the same length of the page.
+%
+%    The fix suggested in the bugs database is to insert |\pagebreak|
+%    commands at the places where the page breaks naturally fall, and
+%    then the marginpars appear on the correct side.  However, this is
+%    awkward and unpleasant work for a document that changes
+%    regularly, and seems to fly against the spirit of \LaTeX .
+%
+%    The fix suggested here involves changing the |\@addmarginpar|
+%    macro of \LaTeX .  To determine where a marginpar belongs, we now
+%    leave a |\label| with the marginpar, and use |\pageref| to figure
+%    out whether it is an even or an odd page.
+%
+%    The existing test for the page uses the page counter (|\thepage|)
+%    This seems to be less accurate than the |\pageref| macro, for
+%    reasons that appear entirely unclear to me.
+%
+%    The downside to this approach is that the number of references in
+%    a document that uses marginpars can go up dramatically.  On the
+%    other hand, this doesn't seem to be an operational problem for
+%    many. 
+%
+%    \section{The Code}
+%
+%    The marginpar labels are generated with the |marginparcnt|
+%    counter:
+%
+%    \begin{macrocode}
+%<*sty>
+\newcounter{marginparcnt}
+%</sty>
+%    \end{macrocode}
+%
+%    They take the form |@mp@lab:n|, where |n| is given by the
+%    marginparcnt counter.
+%
+%    \begin{macro}{\@addmarginpar}
+%    The |\@addmarginpar| macro is modified by adding the following
+%    two lines to the beginning of the macro:
+%
+%    \begin{macrocode}
+%<*sty>
+\def\@addmarginpar{
+    \stepcounter{marginparcnt}
+    \label{@mp@lab:\themarginparcnt}
+%</sty>
+%    \end{macrocode}
+%
+%   The macro proceeds as originally written:
+%
+%    \begin{macrocode}
+%<*sty>
+    \@next\@marbox\@currlist{\@cons\@freelist\@marbox
+    \@cons\@freelist\@currbox}\@latexbug\@tempcnta\@ne
+    \if@twocolumn
+        \if@firstcolumn \@tempcnta\m@ne \fi
+    \else
+      \if@mparswitch
+%</sty>
+%    \end{macrocode}
+%
+%    Until this point, where we test to see if the label is defined
+%    yet.  If it is not defined, we use the |page| counter test, as
+%    before.  However, if the label is defined, we use |\pageref| to
+%    determine whether the page is odd or not.
+%
+%    \begin{macrocode}
+%<*sty>
+        \@ifundefined{r@@mp@lab:\themarginparcnt}
+          {\ifodd\c@page \else\@tempcnta\m@ne \fi}
+          {\ifodd\pageref{@mp@lab:\themarginparcnt} 
+            \else\@tempcnta\m@ne \fi}
+      \fi
+%</sty>
+%    \end{macrocode}
+%
+%    The rest of the |\@addmarginpar| macro remains untouched.
+%
+%    Note that the issue of marginpars in twocolumn documents is not
+%    addressed. The |\if@firstcolumn| flag does not appear to be
+%    reliably correct, unlike the |\thepage| counter, which is
+%    reliably correct at the point at which the page is written out. 
+%
+%    \begin{macrocode}
+%<*sty>
+      \if@reversemargin \@tempcnta -\@tempcnta \fi \fi
+      \ifnum\@tempcnta <\z@ \global\setbox\@marbox\box\@currbox \fi
+      \@tempdima\@mparbottom \advance\@tempdima -\@pageht
+      \advance\@tempdima\ht\@marbox \ifdim\@tempdima >\z@
+      \@latex@warning@no@line {Marginpar on page \thepage\space moved}
+      \else \@tempdima\z@ \fi \global\@mparbottom\@pageht
+      \global\advance\@mparbottom\@tempdima
+      \global\advance\@mparbottom\dp\@marbox
+      \global\advance\@mparbottom\marginparpush \advance\@tempdima
+      -\ht\@marbox \global\setbox \@marbox \vbox {\vskip \@tempdima
+        \box \@marbox} \global \ht\@marbox \z@ \global \dp\@marbox \z@
+      \kern -\@pagedp \nointerlineskip \hb@xt@\columnwidth {\ifnum
+        \@tempcnta >\z@ \hskip\columnwidth \hskip\marginparsep \else
+        \hskip -\marginparsep \hskip -\marginparwidth \fi \box\@marbox
+        \hss} \nointerlineskip \hbox{\vrule \@height\z@ \@width\z@
+        \@depth\@pagedp} }
+%</sty>
+%    \end{macrocode}
+%    \end{macro}
+
+% \Finale 
+

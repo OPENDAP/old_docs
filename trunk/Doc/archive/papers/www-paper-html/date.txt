@@ -1,0 +1,8 @@
+
+10/6/95
+
+version 1.1 of `Data Transport Within the Distributed Ocenographic Data
+System' (which was previously titled `The Distributed Ocenographic Data
+System---Accessing Scientific Data Using the World Wide Web')
+
+

@@ -1,0 +1,99 @@
+
+$Id$
+
+After a server as been installed, and datasets put in place, the
+question often arises, "what is the URL I should use for this
+dataset?" 
+
+The problem is that this can differ for different web servers.  The
+examples that follow are good for the Apache web server
+
+To answer this question, follow these steps, answering each question
+along the way.  At the end, you can use the information from each step
+to construct the proper URL.  
+
+Step 1:
+
+Q What is the internet address of the machine on which the data server
+  lives?  
+
+A This will be a text name like dods.gso.uri.edu or an IP address like
+  192.255.63.156. 
+
+Step 2:
+
+Q Is there an httpd server on the machine, and is it running?  What
+  port is it listening to?
+
+A The default is port 80 for most web servers.  Look in the httpd.conf
+  file for the "Port" setting.
+
+Step 3:
+
+Q Where on the local machine do the CGI scripts reside?
+
+A These generally can be found in a directory called "cgi-bin" near
+  the server's document root.  Look in the srm.conf file of the Apache
+  server to find settings for the "ScriptAlias" setting.  
+
+Step 4:
+
+Q What is the name of the server you are using?
+
+A The server should have a name like "nph-nc" or "nph-jg".  That is,
+  its first four letters should be "nph-" (This stands for "non-parsed
+  headers.")  It should be stored in one of the CGI directories you
+  found above.
+
+Step 5:
+
+Q Where are the data files relative to the server's document root?
+
+A The server's document root is the directory in which the server
+  looks for files specified without a directory name.  For example, if
+  the document root on a machine is /usr/local/etc/httpd/htdocs, than
+  a request for "norman.html" will be changed into a search for the
+  file /usr/local/etc/httpd/htdocs/norman.html.
+
+  The Apache server uses "DocumentRoot" in the srm.conf file to
+  control the setting of the document root directory.
+
+  Your datasets must be in a sub-directory (or a sub-sub-directory and
+  so on) of the document root, or they must be accessible by symbolic
+  links in those directories.  For the Apache server, if you use
+  links, you must set the "FollowSymLinks" setting in access.conf.
+
+Step 6:
+
+Q Now what?
+
+A Take the information you found in the first five steps and arrange
+  it like this:
+
+  http://m:p/c/s/d
+
+  Where:
+
+  m is the machine-name   from step 1
+  p is the port           from step 2
+  c is the CGI directory  from step 3
+  s is the server name    from step 4
+  d is the data file name from step 5
+
+  If the port is 80, you may omit it, and use:
+
+  http://m/c/s/d
+
+Step 7:
+
+Q Can I test this?
+
+A Using Netscape, you can type in one of the following URLs:
+
+  htttp://m/c/s/d.das
+  htttp://m/c/s/d.dds
+
+  The ".dds" and ".das" tell the server to reply with the dataset
+  descriptor structure of the dataset and the data attribute
+  structure, repsectively.  These are text objects, and can be seen
+  in the Netscape display window.

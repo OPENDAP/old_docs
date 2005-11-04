@@ -1,0 +1,275 @@
+OPeNDAP Web Services Design Document
+May 2003
+
+
+
+Introduction<p>
+<p>
+The web approach to building distributed applications has been more rapidly
+and widely adopted than any other approach. A logical extension of this
+success is the development of web services technologies which are more
+loosely coupled than traditional distributed programming models like RPC,
+DCOM and CORBA. Web services create interactions between clients and servers
+which are simple and flexible. At the same time the technology includes the
+structural capability to do object transfers that are not possible under
+plain HTTP. Web services do these transfers by using SOAP messages (as
+opposed to the MIME messages typical of ordinary web applications). This is a
+more data-friendly mechanism for exchanging information over the web and is
+ideal for the purpose of creating a convenient interface to OPeNDAP servers.<p>
+<p>
+The rationale for creating OPeNDAP web services is that it would allow
+programmatic clients to access OPeNDAP servers in a more reliable and
+structured way than the HTTP interface. Web services also make client
+implementations easier because the client developer need only work with
+objects rather than worry about constructing and parsing text messages.
+Traditionally all of the control structures in OPeNDAP have been passed as
+text which both client and server must construct/parse. We have provided
+tools such as the <code>dods.dap</code> package which allow the client to
+parse some of these messages, but this is a non-standard and incomplete
+solution. With web services OPeNDAP has a standard mechanism for reliable
+interfacing and object transfer without parsing.<p>
+<p>
+An important benefit of a web services interface is that it provides the
+basis for directory services via UDDI. Using this technology server sites may
+have the option of publishing information about their content globally or
+locally. This would expand the ability of end users to locate data sources.<p>
+<p>
+Another auxiliary capability of the web services implementation will be to
+provide for the possibility of hosting secure sites--something not possible
+with current incarnations of OPeNDAP. For those users with
+sensitive or restricted data this would allow them to publish that data over
+the web, but still enforce a comprehensive security policy. SOAP supports an
+integrated ability to exchange digital signatures and X.509 credentials in a
+standard way.<p>
+<p>
+Component Areas<p>
+<p>
+Implementing web services involves building and configuring several different
+types of components. Depending on the type of service desired and the nature
+of the underlying application these components can vary. For enabling OPeNDAP
+servers with web services we have focused on the following component areas:<p>
+<p>
+(1) server configuration and dispatching<p>
+(2) services<p>
+(3) WSDL publication<p>
+(4) server-side code enhancement<p>
+(5) client support<p>
+(6) new object design<p>
+(7) directory support<p>
+<p>
+The next section of this document details the additions to an OPeNDAP server
+that enables web services by treating each of these areas separately.<p>
+<p>
+Component (1) - Server Configuration and Dispatching<p>
+<p>
+Because OPeNDAP Java servers are implemented with Apache and Tomcat we take
+advantage of Apache's integrated SOAP support to dispatch web service
+requests. The current configuration of the OPeNDAP Java server already
+contains most of the elements necessary to add this support. The additional
+steps are:<p>
+<p>
+Deploy Apache SOAP to Tomcat: put the Apache SOAP archive file (soap.war)
+into the %tomcat_home%/webapps directory. Add the libraries <code>mail.jar,
+activation.jar, xerces.jar</code> to the Tomcat library directory
+(%tomcat_home%/common/lib/).<p>
+<p>
+Deploy the service class: the service class<p>
+<code>OPeNDAP.services.ServiceDispatcher.class</code> where the SOAP router
+can find it (%tomcat_home%/webapps/soap/WEB-INF/classes/opendap-services/).<p>
+<p>
+Deploy the service: this can be done by a script executing the following
+command: <code>java org.apache.soap.server.ServiceManagerClient
+http://localhost:8080/soap/servlet/rpcrouter deploy
+DeploymentDescriptor_OPeNDAP_Services.xml</code>. The deployment descriptor
+file in this command is listed in Appendix A.<p>
+<p>
+Once these steps have been completed the new services (described in section 2
+below) will be reachable. In general the approach taken on the server side is
+to use a hard-coded deployment descriptor to instruct Apache how to route
+incoming messages. This may not be as flexible as using dynamic invocation
+with JAX-RPC, for example, but is exactly appropriate for OPeNDAP servers
+which are expected to implement only a few services which will rarely change.<p>
+<p>
+Component (2) - Services<p>
+<p>
+The key feature of the web services design is the envisioned services
+themselves. These are all new interfaces that replace existing internal
+interfaces of the servlet code base with a web services version of the same
+function. The OPeNDAP Java server operates via the servlet
+<code>dods.servlet.DODSServlet</code>. The <code>doGet</code> method of the
+servlet dispatches the client request to one of eleven internal methods:<p>
+<p><pre>
+	Existing Internals     
+	
+	doGetVER
+	doGetHELP
+	doGetDDS
+	doGetDAS
+	doGetDODS
+	doGetDIR
+	doGetASC
+	doGetINFO
+	doGetHTML
+	doGetCatalog
+	doGetStatus
+
+New Web Service Interface (in OPeNDAP.services.ServiceDispatcher)
+
+	serviceVersion  - returns the server version as String
+	serviceDDX      - returns the DDX XML document as a String
+	serviceDataURL  - returns the URL to requested data as a String
+</pre><p>
+The existing servlet dispatcher uses a final extension on the URL to route
+the request. For example, if the client wants the ASCII text of the data it
+appends ".ASC" to the end of the URL file. The web service interface is
+invoked directly by the Apache SOAP routing
+service(<code>org.apache.soap.server.ServiceManagerClient</code>). The four
+service methods are in a new class
+<code>OPeNDAP.services.ServiceDispatcher</code> which is registered via the
+Apache SOAP API. The Apache router determines the destination service by
+examing the body entry in the SOAP envelope from the client and then calls
+that method.<p>
+<p>
+The methods that implement the services can be any normal Java method because
+the simplest method of invocation (plain RPC) is used. The only restriction
+is that the method parameters must be serializable. To comply with this
+restriction and make the parameters of the service methods more
+client-friendly, they differ somewhat from the parameter strategy found in
+the existing methods which use a special "requestState" object which bundles
+the individual parameters:<p>
+<p><pre>
+<code>
+	String serviceVersion( String sDodsURL ) throws SOAPException
+	String serviceDDX( String sDodsURL ) throws SOAPException
+	String serviceDataURL( String sDodsURL, String sConstraint ) throws SOAPException
+</code>
+</pre><p>
+The service methods cannot merely redirect the request to the existing
+internals because the service methods return SOAP envelopes, thus the service
+methods must re-implement the existing code for the new output format.<p>
+<p>
+Component (3) - Server-Side Code Enhancement<p>
+<p>
+To support web services the OPeNDAP server-side code requires certain enhancements beyond adding the service interfaces. One type of new code is required for retrieving and returning the DataDDS. In the existing servlet this is done via a special routine in the <code>dods.dap.Server.CEEvaluator</code> class which generates the octet stream. Instead the service helper needs to just create the <code>dods.dap.DataDDS</code> object itself and return it in its entirety.<p>
+<p>
+In the current design there is no need for serializers/deserializers because the argument and return types are all strings in the interface. If additional interfaces were added that used special types
+(such as DDS, DAS and DataDDS, for example) then serializers would have to be written for those types. The serializers convert these objects to and from XML which allows them to be transferred via SOAP. The serializers do not need to convert each iota of field data into separate XML elements because the protocol allows attachments to the XML document or binary blobs. The XML acts simply as an envelope around the object blob. These classes are used by both the server and the client to work with the special return types of the services.<p>
+<p>
+Component (4) - WSDL Publication<p>
+<p>
+Since different versions of the server may support additional service calls
+or the parameters of those calls might change it is a good idea to publish a
+WSDL (Web Services Description Language) document. This XML document
+specifies the services interface to the server and is generated automatically
+from the code in the <code>ServiceDispatcher</code> class using a separate
+conversion tool. Examples of possible tools are: the IBM Web Services
+Toolkit's wsdlgen, Apache Axis' Java2WSDL tool, and the GLUE platform's
+Java2WSDL tool. Regardless of the tool chosen, the output should be
+relatively the same.<p>
+<p>
+Clients can access the WSDL document from the UDDI directory (see component 7
+below) or alternatively can download from a resource directory at
+OPeNDAP.org. If the latter method is used the client must match up exactly
+the server version with WSDL document to make sure they are compatible.<p>
+<p>
+Sophisticated clients can use the WSDL document to make dynamic calls to the
+OPeNDAP services.<p>
+<p>
+Component (5) - Client Support<p>
+<p>
+To an extent the design for client support has the force of a recommendation
+because outside client programmers ultimately may implement the client action
+in any way they choose and various solutions may be open to them. For the
+OPeNDAP team it is important to have an idealized client implementation to
+ensure workability with the servers and to provide a model for client
+developers. By providing a client package along with example uses a
+programmer can readily implement an OPeNDAP web services client while having
+a minimal knowledge of the underlying protocols such as SOAP.<p>
+<p>
+Component (6) - New Object Design<p>
+<p>
+In the initial web services implementation there are no new data objects, but
+in a future edition additional objects such as an object to contain a
+directory structure may be desirable, for example, if the doGetDir method was
+implemented with a web services equivalent.<p>
+<p>
+Component (7) - Directory Services<p>
+<p>
+Supporting a UDDI server will not be practical for most OPeNDAP hosts because
+of the need to manage a database and other administration requirements. The
+approach taken, therefore, is for OPeNDAP.org to support a central registry
+which the service code can automatically contact and publish its WSDL and
+other information. Each time a given ServerDispatcher is instantiated and an
+expiration period has elapsed, the dispatcher will send a set of UDDI
+messages to the central UDDI registry with its information. The host
+administrator is able to turn this functionality off if they desire.<p>
+<p>
+An important aspect of the UDDI server will be its taxonomy model. The
+standard taxonomy models are entirely commercial in focus so are
+inappropriate for categorizing research data. For this use a custom taxonomy
+is needed. Currently the OGC and related projects such as Digital Earth have
+been working on such taxonomies.<p>
+<p>
+Conclusion<p>
+<p>
+Adding a web services interface to the existing OPeNDAP Java server platform
+offers a range of benefits with little or no additional administrative burden
+on hosting organizations. The web services interface will allow better
+discovery of existing data resouces via UDDI and better programmatic access
+to those resources. This will enhance client support for OPeNDAP with greater
+functionality and reliability.<p>
+<p>
+Appendix A - Apache SOAP Deployment Descriptor<p>
+<p>
+<pre>
+<isd:service xmlns:isd="http://xml.apache.org/xml-soap/deployment"
+	id="urn:opendap-services"
+	<isd:provider 	type="java"
+					scope="Application"
+					methods="	serviceVER
+								serviceDDS
+								serviceDAS
+								serviceData">
+		<isd:java	class="ServiceDispatcher" static="false"/>
+	</isd:provider>
+	<isd:faultListener>org.apache.soap.server.DOMFaultListener</isd:faultListener>
+</isd:service>
+<//pre>
+<p>
+Appendix B - Sample Client<p>
+<p>
+<pre>
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import org.apache.soap.*;
+import org.apache.soap.rpc.*;
+
+public class OPeNDAP_Client_Example {
+
+	public static void main(String[] args) throws Exception {}
+	
+	public static String getVersion( String sOPeNDAPurl ){
+
+		URL url = new URL(sOPeNDAPurl);
+	
+		Call call = new Call();
+		call.setTargetObjectURI("urn:opendap-services");
+		call.setMethodName("serviceVER");
+		call.setEncodingStyleURI(Constants.NS_URI_SOAP_ENC);
+	
+		Response response = call.invoke(url, "" );
+	
+		if( response.generatedFault() ) {
+			Fault fault = response.getFault ();
+			StringBuffer sbError = new StringBuffer();
+			sbError.append("Error: " + fault.getFaultCode() + " " + fault.getFaultString());
+			System.out.println(sbError.toString());
+			return null;
+		else {
+			Parameter result = response.getReturnValue();
+			return (String)result.getValue();
+		}
+	}
+}
+</pre>

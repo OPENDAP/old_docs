@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Operators</TITLE>
+<META NAME="description" CONTENT="Operators">
+<META NAME="keywords" CONTENT="api">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="api.css">
+
+<LINK REL="previous" HREF="node9.html">
+<LINK REL="up" HREF="node7.html">
+<LINK REL="next" HREF="node11.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html198"
+  HREF="node11.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html194"
+  HREF="node7.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html190"
+  HREF="node9.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html196"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html199"
+  HREF="node11.html">The External Representation of</A>
+<B> Up:</B> <A NAME="tex2html195"
+  HREF="node7.html">The Data Model</A>
+<B> Previous:</B> <A NAME="tex2html191"
+  HREF="node9.html">Type Constructor Variables</A>
+ &nbsp; <B>  <A NAME="tex2html197"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00052300000000000000"></A>
+<A NAME="api:operators"></A>
+<BR>
+Operators
+</H3>
+
+<P>
+The principal operation performed on any variable is to access that variable
+and retrieve its value or values.  For a base type variable, access is the
+implied operation and is achieved by passing the name of the variable to a
+data server using the access protocol (see Section&nbsp;<A HREF="node14.html#entry"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>). For an
+instance of a type constructor class, the variable name will access the
+entire object and return it in an array (or C struct)<A NAME="tex2html15"
+  HREF="footnode.html#foot858"><SUP>3</SUP></A>. Fields of type
+constructors may also be accessed using the dot (<TT>.</TT>) operator or the
+virtual file system syntax. If a structure <TT>s</TT> has two fields <TT>time</TT>
+and <TT>temperature</TT>, then those fields may be accessed using <TT>s.time</TT>
+and <TT>s.temperature</TT> or as <TT>s/time</TT> and <TT>s/temperature</TT>.
+
+<P>
+All of the classes listed in section&nbsp;<A HREF="node8.html#base-type-variables"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> are local to
+the data set except the <TT>URL</TT> type. When an object of type URL is
+accessed, the server must open the data set referenced by that URL and read
+its values such that the structure of that referenced data set replaces the
+URL in the current data set. In practice this is most useful in a constraint
+expression when the value of a variable is compared witht he value of another
+variable in a different data set. If the URL cannot be referenced, then the
+type of the URL degrades to <EM>string</EM> and an access to that element of
+the data set returns that string.
+
+<P>
+Access to variables can be modified using selection operators. Each type of
+variable has its own set of selection and projection operators which can be
+used to modify the result of accessing a variable of that type.
+Table&nbsp;<A HREF="#api:tab:class-ops"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> summarizes the types and the operators applicable
+to them. In the table, operators have the meaning defined by ANSI C except as
+follows: the array hyperslab operators are as defined by netCDF[#!netcdf!#]
+(where <TT>a</TT> is the start index, <TT>b</TT> is the stride, and <TT>c</TT> is the
+end index), the string operators are as defined by AWK[#!kern:upe!#], and
+the list operators are as defined by Common Lisp[#!steele:clisp!#].
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER">
+
+<A NAME="api:tab:class-ops"></A>
+<DIV ALIGN="CENTER">
+<A NAME="537"></A>
+<TABLE CELLPADDING=3 BORDER="1">
+<CAPTION><STRONG>Table:</STRONG>
+Classes and operators in the DAP.</CAPTION>
+<TR><TD ALIGN="CENTER" COLSPAN=1>C<SMALL>LASS</SMALL></TD>
+<TD ALIGN="CENTER" COLSPAN=1>O<SMALL>PERATIONS</SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT" COLSPAN=2><EM>Base Type</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>byte</TT>, <TT>int32</TT>, <TT>float64</TT></TD>
+<TD ALIGN="LEFT"><TT>&lt; &gt; = != &lt;= &gt;=</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>string</TT></TD>
+<TD ALIGN="LEFT"><TT>= != </TT> <IMG
+ WIDTH="15" HEIGHT="15" ALIGN="BOTTOM" BORDER="0"
+ SRC="img8.png"
+ ALT="$=\sim$"></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>URL</TT></TD>
+<TD ALIGN="LEFT"><TT>*</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT" COLSPAN=2><EM>Constructor</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>array</TT></TD>
+<TD ALIGN="LEFT"><TT>[start:stop] [start:stride:stop]</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>list</TT></TD>
+<TD ALIGN="LEFT"><TT>length, car, cdr, nth, member</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>structure</TT></TD>
+<TD ALIGN="LEFT"><TT>.</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>sequence</TT></TD>
+<TD ALIGN="LEFT"><TT>.</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>function</TT></TD>
+<TD ALIGN="LEFT"><TT>.</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>grid</TT></TD>
+<TD ALIGN="LEFT"><TT>.</TT></TD>
+</TR>
+</TABLE>
+</DIV>
+</DIV>
+<BR>
+
+<P>
+The hierarchy of the type constructor classes in the DAP is shown in
+Figure&nbsp;<A HREF="#fig:class"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>. 
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:class"></A><A NAME="580"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+The hierarchy of classes in the DAP.</CAPTION>
+<TR><TD><IMG
+ WIDTH="31" HEIGHT="17" BORDER="0"
+ SRC="img9.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=class-hier.ps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html198"
+  HREF="node11.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html194"
+  HREF="node7.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html190"
+  HREF="node9.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html196"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html199"
+  HREF="node11.html">The External Representation of</A>
+<B> Up:</B> <A NAME="tex2html195"
+  HREF="node7.html">The Data Model</A>
+<B> Previous:</B> <A NAME="tex2html191"
+  HREF="node9.html">Type Constructor Variables</A>
+ &nbsp; <B>  <A NAME="tex2html197"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,115 @@
+#  $Id$
+#
+# (This needn't be maintained in CVS.  It's stored there as an example.)
+#
+#  NOT ON RADAR= 0, "nor"
+#  TO DO       = 1, "to do"
+#  IN PROGRESS = 2, "in progress"
+#  DONE        = 3, "done"
+#
+#  "Date" refers to the date on which you change the record.
+#
+#  Use "make" to generate html from this.
+
+Document:       Default
+Lead:           Tom Sgouros
+Date:     1 June 2001
+Concept:        done
+Design:         done
+Implementation: done
+Distribution:   done
+
+
+Document:       DODS Quick Start Guide
+Version:        1.2
+Software:       DODS 3.0 and up
+Concept:        done
+Design:         done
+Implementation: done
+Distribution:   in progress
+
+Document:       Server Installation Guide
+Version:        1.6
+Software:       DODS 3.0 and up
+Concept:        done
+Design:         done
+Implementation: done
+Distribution:   done
+
+Document:       Server Installation Guide (SQL Server)
+Version:        0.1
+Software:       DODS 3.0 and up
+Concept:        in progress
+Design:         in progress
+Implementation: to do
+Distribution:   to do
+Dependencies:   figuring out how it works.
+
+Document:       Server Installation Guide (Catalog Server)
+Version:        1.0
+Software:       DODS 3.0 and up
+Concept:        done
+Design:         done
+Implementation: done
+Distribution:   nor
+Notes:          This is a chapter in the server install book.  When 
+                there's more to write it may get pulled out again into 
+                a new book. 
+
+Document:       DODS Matlab GUI Handbook
+Version:        1.9
+Concept:        done
+Design:         done
+Implementation: in progress
+Distribution:   to do 
+
+Document:       DODS Programmer's Guide
+Version:        2.0
+Software:       Release 3.2 and up
+Concept:        done
+Design:         done
+Implementation: in progress
+Distribution:   to do
+
+Document:       DODS Programmer's Reference
+Version:        2.0
+Software:       Release 3.2 and up
+Concept:        done
+Design:         done
+Implementation: in progress
+Distribution:   to do
+
+Document:       DODS Freeform Server Manual
+Concept:        done
+Design:         done
+Implementation: in progress
+Distribution:   to do
+
+Document:       DODS Regex Introduction
+Software:       DODS 3.2 and beyond
+Concept:        done
+Design:         done
+Implementation: done
+Distribution:   done
+
+Document:       DODS Data Standards Guide
+Concept:        done
+Design:         done
+Implementation: nor
+Distribution:   nor
+Dependencies:   Waiting for project to adopt some.
+
+Document:       DODS DAP RFC
+Concept:        done
+Design:         done
+Implementation: in progress
+Distribution:   to do
+Lead:           James Gallagher
+
+Document:       Release notes
+Software:       DODS release 3.2
+Concept:        done
+Design:         done
+Implementation: done
+Distribution:   to do
+Dependencies:   Official release of 3.2

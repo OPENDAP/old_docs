@@ -1,0 +1,74 @@
+2003-04-23  Dan Holloway <d.holloway@gso.uri.edu>
+
+	* Updated attribute handling to use new get_attr_iter
+	methods in AttrTable, replacing old Pix operations.
+	* Removed dods_next_attr function.
+	* Removed any Pix operations which are no longer required.
+
+	* Problem exists when using the idl_dods.so on systems
+	where the RSI IDL binaries were built with compilers different
+	than GCC.  Even on RedHat the problem remains, though use of
+	gcc-3.2.2 appears to resolve the problem.
+	
+2003-02-03  Dan Holloway <d.holloway@gso.uri.edu>
+
+	* Updated version number to 3.3.  
+	
+2003-01-30  Dan Holloway <d.holloway@gso.uri.edu>
+
+	* Merged with release-3-2-6.
+	
+2002-12-10  Dan Holloway <d.holloway@gso.uri.edu>
+
+	* Removed subclassed types (.i.e, IDLByte, IDLSequence, etc.)
+	since no modifications to the base classes are made in them,
+	and the current DAP changes no longer require these subclasses
+	when they do not modify the base classes.
+
+	* Updated Makefile.in to remove the subclassed types.
+	
+2001-10-13  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with release-3-2-4.
+
+	* Minor fixes to configure and Makefile.in.
+
+	* Updated README and INSTALL.
+
+	* Changed include of export.h (an IDL header file) so that it was
+	included using <> instead of "". This removed it from the
+	dependencies which means others will be able to get the builds to
+	work without running make depend.
+
+2001-09-28  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with 3.2.4.
+
+2001-09-27  James Gallagher  <jimg@dcz.dods.org>
+
+	* Added include of debug.h; a small change but needed to get the
+	code to compile with the latest DAP.
+
+2001-08-27  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with release-3-2-3. The next merge should use -j
+	release-3-2-3 -j release-3-2.
+
+2001-06-19  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with release-3-2 head (tagged release-3-2-2). The next
+	merge should use update -j release-3-2-2 -j release-3-2.
+
+	* Massive changes from Dan and Rich. See the README.
+
+1999-11-08  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with cvs update -j release-3-1, the next merge should use
+	-j release-3-1-1 -j release-3-1
+
+	* Modified the code so that IDL*.cc,h files are used in place of
+	the Client*.cc,h files. The later contain lots of code this client
+	does not need and, as a result, made building harder than it
+	needed to be.
+	
+

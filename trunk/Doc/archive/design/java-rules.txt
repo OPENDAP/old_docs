@@ -1,0 +1,33 @@
+
+	$Id$
+
+This file contains rules for Java development. These rules are for designs
+that are expressed using .java files which describe the interfaces for
+objects.
+
+1. The later stages of a design which will be implemented in Java should
+include .java files which contain all the public methods of the classes in
+the design.
+
+2. Use `get'/`set' and `is' names as per the Beans spec.
+
+3. Write javadoc comments for all public methods, constructors, fields and
+constants as per `How to Write Doc Comments for Javadoc'.
+
+4. Include as a public final String $ Id $ (Spaces added here to supress
+expansion...). 
+
+5. Include a copyright statement in every class.
+
+6. Include a $ Log $ (spaces added...) comment in every class.
+
+7. Should the class implement Cloneable (sic)?
+
+8. Should some methods by synchronized?
+
+9. Should some methods throw exceptions?
+
+10. Check for constructors; including abstract classes.
+
+11. Organize files as: new methods, interface implementations and method
+    overrides. 

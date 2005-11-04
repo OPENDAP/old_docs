@@ -1,0 +1,203 @@
+%CHAPTER 1       
+%
+% $Id$
+%
+
+
+\chapter{Introduction}
+\label{ff,intro}
+
+The FreeForm ND Data Access System is a flexible system for specifying
+data formats to facilitate data access, management, and use. How many
+data sets have you not examined or used because they were not in the
+correct format for your applications? How many others have foregone
+analysis of your data for the same reason? FreeForm ND can save you
+countless hours of changing the formats of data sets prior to
+analyzing them.
+
+The large variety of data formats is a primary obstacle in the way of
+creating flexible data management and analysis software. FreeForm ND
+was conceived, developed, and implemented at the National Geophysical
+Data Center (NGDC) to alleviate the problems that occur when you need
+to use data sets with varying native formats or to write
+format-independent applications.
+
+The most recent version of FreeForm, FreeForm ND, is now supported
+only for use with the Distributed Oceanographic Data System (DODS).
+
+\section{The Format Problem}
+
+Programmers can readily describe a format for a specific data set, but
+a compiled application cannot be used with other data sets until
+either the data or the program is modified. Two possible methods for
+handling data in a variety of formats are to reformat all the data
+into a standard format or to develop programs that can read data in
+many different formats.
+
+\subsection{Standard Formats}
+
+A number of standard formats have been proposed over the years and the
+specifications for these formats have generally improved. However,
+standard formats do not enjoy widespread use, which will probably
+continue to be the case.
+
+Many scientists have large amounts of data on hand in non-standard
+formats. Converting to standard formats is cumbersome and
+time-consuming. In addition, there are so many standard formats that
+format-independent applications are required even if only standard
+formats are used.
+
+\subsection{Smart Programs}
+
+Software developers can create programs that use data in many
+different formats. This approach has several advantages:
+
+\begin{itemize}
+\item The programs are flexible enough to allow the introduction of
+  new data formats.
+  
+\item The scientist collecting the data is not forced to conform to
+  any single data format.
+  
+\item The information contained in the original data is not lost
+  through reformatting.
+\end{itemize}
+
+\subsection{The FreeForm ND Solution}
+
+FreeForm ND uses a variation on the smart program approach. With
+FreeForm ND, you specify formats outside application programs by
+writing text files that describe the formats of your data sets. The
+applications then use these format files as they process data.
+FreeForm ND-based applications are in effect format-independent and
+you do not need to modify the data or the applications.
+
+FreeForm ND provides a mechanism for data description that is flexible
+and easy to use. A set of ready-to-use programs for manipulating a
+wide variety of data in standard and non-standard formats is also
+provided. FreeForm ND lets you concentrate on your specialty rather
+than trying to figure out how to access and manipulate data in
+multiple formats. Additionally, the application programmer can use
+FreeForm ND libraries and data constructs to develop
+format-independent applications.
+
+\section{The FreeForm ND System}
+
+The FreeForm ND Data Access System comprises a format description
+mechanism, a library of C functions, object-oriented constructs for
+data structures, and a set of programs (built using the FreeForm ND
+library and data objects) for manipulating data.
+
+There are two types of FreeForm ND users. Data users and providers
+create format description files and run FreeForm ND programs such as
+\lit{newform}. Programmers use the FreeForm ND library and data
+objects to write data management and analysis applications.
+
+FreeForm ND includes the following programs for accessing and
+manipulating data in various formats:
+
+\begin{description}
+
+\item[\lit{newform}] reformats data.
+
+\item[\lit{chkform}] checks a file format description against a file.
+
+\item[\lit{readfile}] reads binary files.
+
+\item[\lit{checkvar}] creates variable summaries.
+\end{description}
+
+The FreeForm ND data objects provide an interface between application
+and data files.
+
+Programmers use the FreeForm ND library routines to develop
+applications.
+
+Data users and providers write format description files that FreeForm
+ND-based programs use to correctly access data.
+
+\section{FreeForm ND Files}
+
+The FreeForm ND file set is available only through the DODS
+distribution system. You can download the FreeForm ND files from the
+DODS website (http://dods.gso.uri.edu).
+
+\section{About this Guide}
+
+\indc{about this guide}
+This guide provides instructions for writing format descriptions,
+using FreeForm ND programs, and writing your own FreeForm ND-based
+applications. The content of each chapter is outlined below.
+
+This chapter introduces the FreeForm ND Data Access System and
+summarizes typographic conventions and the contents of this guide.
+
+\begin{description}
+\item[\chapterref{ff,quick}] provides a brief
+  introduction to writing format descriptions and using several of the
+  FreeForm ND programs.
+  
+\item[\chapterref{ff,tblfmt}] provides
+  detailed information about writing format descriptions to facilitate
+  access to data in tabular formats.
+  
+\item[\chapterref{ff,arrayfmt}] provides
+  detailed information about writing format descriptions to facilitate
+  access to data in non-tabular (array) formats.
+  
+\item[\chapterref{ff,convs}] presents FreeForm ND
+  file name conventions, the search rules for locating format files,
+  and standard command line arguments for FreeForm ND programs.
+  
+\item[\chapterref{ff,fmtconv}] shows you how to use the
+  FreeForm ND program \lit{newform} to convert data from one format to
+  another and also how to read the data in a binary file.
+  
+\item[\chapterref{ff,convvars}] discusses FreeForm ND
+  conversion variables, which let you translate between a number of
+  representations of space and time values.
+  
+\item[\chapterref{ff,hdrfmt}] tells you how to work with
+  header formats.
+  
+\item[\chapterref{ff,datachk}] discusses the FreeForm ND
+  program \lit{checkvar}, which you can use to check data distribution
+  and quality.
+  
+\item[\chapterref{ff,develop}] summarizes
+  how to use the FreeForm ND Data Access System to build FreeForm
+  ND-based programs.
+
+\item[\chapterref{ff,hdf}] provides explanations for a small selection
+  of tools that will be useful for programmers working with the HDF
+  file format.
+  
+\item[\chapterref{ff,varname}] lists the conversion
+  variable names that FreeForm ND recognizes.
+  
+\item[\chapterref{ff,errors}] presents a list of common
+  FreeForm ND error messages.
+  
+\item[\chapterref{ff,query}] lists the operators, symbols, and
+  functions you can use to construct queries.
+\end{description}
+
+\listconventions
+
+A position box is often used in this book to indicate column position
+of field values in data files. It is shown at the beginning of a data
+list in the documentation, but does not appear in the data file
+itself.  It looks something like this:
+
+\begin{vcode}{sib}
+1         2         3         4         5         6
+012345678901234567890123456789012345678901234567890
+\end{vcode}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% TeX-master: t
+%%% TeX-master: t
+%%% End: 

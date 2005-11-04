@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Introduction</TITLE>
+<META NAME="description" CONTENT="Introduction">
+<META NAME="keywords" CONTENT="urls">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="urls.css">
+
+<LINK REL="next" HREF="node3.html">
+<LINK REL="previous" HREF="node1.html">
+<LINK REL="up" HREF="urls.html">
+<LINK REL="next" HREF="node3.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html75"
+  HREF="node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html71"
+  HREF="urls.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html65"
+  HREF="node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html73"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html76"
+  HREF="node3.html">Structure and Interpretation of</A>
+<B> Up:</B> <A NAME="tex2html72"
+  HREF="urls.html">DODS Uniform Resource Locators</A>
+<B> Previous:</B> <A NAME="tex2html66"
+  HREF="node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html74"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00020000000000000000"></A>
+<A NAME="url:introduction"></A>
+<BR>
+Introduction
+</H1>
+
+<P>
+The <A NAME="tex2html5"
+  HREF="http://www.unidata.ucar.edu/packages/dods/">Distributed Oceanographic Data System</A> (DODS) needs a syntax for names which describe the network
+location for different resources. There are many other systems which must
+solve a similar problem. Three different classes of solution to this problem
+have been implemented in existing systems: (1) The Network File System
+incorporates remote resources directly into the client computer's file system
+where they can be referenced as if they were local files, (2) <TT>ftp</TT>
+prompts the user for an Internet address and then directs all user actions to
+that address until it is told to disconnect and (3) <A NAME="tex2html6"
+  HREF="http://www.w3.org/hypertext/WWW/TheProject.html">World Wide Web</A> (WWW) clients use a
+string, called a  (URL), which combines the protocol, host and pathname.
+We choose the third approach after dismissing the first two as, respectively,
+too complex and too rudimentary.
+
+<P>
+A URL is a generalization of file naming concepts which is already in common
+use on the Internet. A URL extends the filename/pathname concept used to
+refer to files on a computer by adding an Internet address and protocol
+component. A URL specifies the computer and access method (protocol) in
+addition to the filename and thus can be used to refer to files anywhere on a
+network. While they are used in various forms by many different systems,
+URLs, as such, are most closely associated with the WWW project.
+
+<P>
+DODS chose the URL notation in part because it represents an evolving
+standard for resource specification on the Internet. Conforming, at least in
+spirit with this standard, puts DODS in a place to benefit from ongoing work
+to develop more general network resource names with minimal additional work.
+Because the existing definitions of resource locators (by both DODS and the
+WWW) do not adequately address some important issues, compliance with an
+existing <EM>de facto</EM> standard increases the chance that DODS will be
+able to take advantage of emerging solutions to those problems.
+
+<P>
+In addition, the syntax of DODS URLs must match that used by the WWW because
+the <A NAME="tex2html7"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-design/data-delivery-design.html">data delivery design</A> uses the WWW <A NAME="tex2html8"
+  HREF="http://hoohoo.ncsa.uiuc.edu/docs/Overview.html">HTTPD</A> server as its base-communication module. While
+previous designs for the data delivery system outlined the construction of
+special DODS-only data servers using RPC technology, the most recent design
+uses NCSA's <A NAME="tex2html9"
+  HREF="http://hoohoo.ncsa.uiuc.edu/docs/Overview.html">HTTPD</A> for the communication component of all DODS data
+servers. Thus, each URL that refers to a data set must match the syntactical
+requirements of that software (see the documentation on <A NAME="tex2html10"
+  HREF="http://www.w3.org/hypertext/WWW/Protocols/HTTP/HTTP2.html">HyperText Transfer Protocol</A>). 
+
+<P>
+The Common Gateway Interface (CGI) mechanism of HTTPD is flexible enough to
+allow sophisticated specialization of the semantics of WWW URLs without
+requiring a change in URL syntax. DODS can further restrict the WWW syntax
+for its URLs through conventions supported by the DODS server tool kit and by
+forcing all access to take place via the HTTPD's CGI mechanism.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html75"
+  HREF="node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html71"
+  HREF="urls.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html65"
+  HREF="node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html73"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html76"
+  HREF="node3.html">Structure and Interpretation of</A>
+<B> Up:</B> <A NAME="tex2html72"
+  HREF="urls.html">DODS Uniform Resource Locators</A>
+<B> Previous:</B> <A NAME="tex2html66"
+  HREF="node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html74"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

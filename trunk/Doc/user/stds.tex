@@ -1,0 +1,92 @@
+% This is the dods data standards guide, v0.1
+%
+%    begun in earnest 5/24/99, tom sgouros
+%
+%   This should probably wind up as a chapter in the user guide.  But
+%   for now, it is important enough a topic to merit its own book.
+%
+
+% $Log: stds.tex,v $
+% Revision 1.5  2004/07/07 22:37:44  jimg
+% Switched to dods-book and rcsInfoDate. Updated the pdf link.
+%
+% Revision 1.4  1999/10/18 21:38:04  tom
+% updated for newest consensus
+%
+% Revision 1.3  1999/08/30 21:01:39  tom
+% incorporated rcsInfo stuff.
+%
+% Revision 1.2  1999/07/01 16:06:16  tom
+% added example chapter
+%
+% Revision 1.1  1999/06/07 05:09:57  tom
+% added to CVS
+%
+%
+
+\documentclass{dods-book}
+\usepackage{longtable}
+
+\rcsInfo $Id$
+\newcommand{\DOCversion}{Version \rcsInfoRevision}
+
+\include{../boiler/layout}
+\include{../boiler/dods-def}
+
+\htmldirectory{stds-html}
+\htmlname{stds}
+\htmltitle{DODS Data Standards Guide}
+\htmladdress{Tom Sgouros, \rcsInfoDate}
+%% \newcommand{\DODSPrevUrl}{\DODSapiUrl}
+%% \newcommand{\DODSNextUrl}{\DODSmguiUrl}
+%% \newcommand{\DODSPrev}{\DODSapi}
+%% \newcommand{\DODSNext}{\DODSmgui}
+
+\figpath{stds/figs}
+
+\makeindex
+
+\begin{document}
+%------------------------------------front matter
+\title{DODS Data Standards Guide\\\DOCversion}
+\author{Tom Sgouros}
+\date{\rcsInfoDate}
+\pagenumbering{roman}
+\maketitle
+
+\copyrightmatter
+
+\W\pslink{http://www.opendap.org/pdf/stds.pdf}
+
+\include{stds/preface}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\clearemptydoublepage
+%------------------------------------book body
+
+\pagenumbering{arabic}
+
+% Chapter 1 is an overview of the standards problem
+\include{stds/ch01}
+
+% Chapter 2 is a description of the DODS data standard
+\include{stds/ch02}
+
+% Chapter 3 is a worked example of installing attributes for a dataset.
+\include{stds/ch03}
+
+\appendix
+% Appendix A is a list of the 'blessed' DODS names.
+\include{stds/appa}
+
+%\include{guide/glossary}
+
+\printindex
+
+\end{document}
+
+
+

@@ -1,0 +1,233 @@
+\documentstyle[12pt,html,psfig]{article}
+\input{margins.tex}
+% Adding this fixes the top and bottom margin sizes. jhrg
+
+\textheight 8.75in
+
+\newcommand{\postscript}[2]{
+	\par
+	\hbox{
+		\vbox to #1{
+			\vfil
+			\special{ps: plotfile #2.ps}
+		}
+	}
+}
+
+\begin{document}
+
+\LARGE
+\centerline{Meeting to Discuss Possible Collaborative}
+\centerline{Efforts between Hughes ECS Development and}
+\centerline{DODS Development}
+\vskip 6em
+\large  
+\centerline{M.I.T.  22-23 March 1994}
+
+\normalsize
+\bigskip
+      A meeting between members of the Hughes Information Technology Company
+developing the EOSDIS Core System, ECS and the DODS development team was held
+at M.I.T. on 22 and 23 March 1994.  Attending the meeting were, from Hughes,
+Mark Elkington and Ron Williamson and for DODS, James Gallagher, Glen Flierl
+and George Milkowski.  The purpose of the meeting was to learn more about
+each of the systems being developed, (ECS and DODS), determining areas of
+commonality within the system models and discussing where cooperative efforts
+might provide mutual benefit.  
+
+      During the first day of the meeting, technical description of the two
+systems were presented.  The second day consisted of exploring those areas
+were the two groups felt it would be useful to collaborate in either
+developing a common approach or exchanging information. 
+
+\section{Day One}
+
+      Jim and Glenn gave overviews of the the most recent design documents
+related to DODS.  Jim spoke on the Data delivery model and the rational for
+our focus on the API as the basis for the server design.  Glenn presented a
+discussion of the DODS data model that reflected the `theoretical approach'
+which came out of the DODS data model working group meeting.  These two
+presentations were based on DODS documents that are available from the DODS
+Mosaic documentation repository.  
+
+       Mark gave an overview of the ECS program and talked briefly about the
+main drivers which are producing requirements for the development of ECS.  He
+expressed his concern regarding the current volatility within ECS because of
+the recent redesign of the system and the paradigm shift in the approach.
+What was clear from his comments was the fact that ECS has a very full plate
+in terms of what requirements have been specified.  Both Mark and Ron feel
+that over time some requirements will fall away as it becomes clear that
+resources are limited and priorities need to be imposed.  However, at this
+stage they must design with the goal of full requirement implementation.  The
+most fundamental difference between the new ECS and the old ECS is that fact
+that the new ECS will allow users to get on-line data from data providers.
+In terms of what data is going to be provided the primary emphasis is still
+on the EOS satellite data.  Thus while there is a significant level of
+additional complexity that must be built into ECS in order to support users
+getting the data on-line, the main data providers that ECS will be focusing
+on will continue to be the DAACS.  The capability for others to make data
+available through the system is a requirement.  
+
+    Ron detailed the ECS Data Management Component.  He discussed the
+three sub-architectures that make up the Data Management Component, the
+Distributed Information Manager, the Local Information Manager and the Data
+Server sub-architectures.  He also outlined the interaction of the different
+sub-architectures with the client, trader and object request broker components
+during data location.  They are using an objected oriented model as the
+basis for their design approach.  The current design architecture is fairly
+complex and like the DODS parts of it are still be defined.  Mark and Ron's
+presentations were derived from the documentation that they brought to the
+meeting and provided to us for reference.
+
+\section{Day Two}
+
+      The following were felt to be logical areas were collaborating would
+provide mutual benefit;
+
+\begin{enumerate}
+   \item  Definition of Universal Reference, UR.  Both DODS and the ECS will
+   define some kind of Universal Reference Locator similar to that
+   used by Mosaic.  However, both DODS and ECS developers see the need for an
+   extended syntax that goes beyond Mosaic's which would support operator and
+   parameter specification.  Both DODS and ECS would also envision being able
+   to encapsulate the specification of UR within another UR.  It was felt
+   that at a minimum the two systems should be able to recognize the others
+   UR and be able to support some parts of it.  Neither system has settled on
+   a UR definition yet although DODS has a working definition (see DODS
+   documentation on Virtual File Systems/Databases).  Glenn detailed his
+   current thinking on the implementation of a DODS UR and Mark and Ron
+   indicated that it was parallel with theirs.  Jim commented that web
+   parsers already exist and that they can be used to parse a URL like name. 
+
+   \item Protocol Negotiation.  In the DODS model protocol negotiation will
+   be handled by the Protocol Arbitrator.  In the ECS protocol negotiation
+   will be handled by the Object Resource Broker.  For the near future DODS
+   will not be doing much design and development work on the Protocol
+   Arbitrator choosing instead to focus on implementing servers and handling
+   the task of negotiating server-to-server capabilities manually.  ECS
+   developers will be more active in the near term on designing a protocol
+   negotiation model.  They are looking into available applications that
+   support Object protocol negotiation.  There are two important aspects of a
+   protocol negotiation model that ECS will be addressing near term, server
+   definition and client-server mismatch handling.   Hughes recommended that
+   we look at Postgres which has a good object class library and might lend
+   itself to being used for server definition purposes. 
+
+   Parts of the information necessary for protocol negotiation will be
+   distributed within the Data Information Manager, the Local Information
+   Manager and the Data server with the Hughes model.  What is required in
+   order to provide a consistent view of these managers across the system is
+   a formally defined schema for each level.  Hughes sees benefit to
+   following our near term development of a translator for the JGOFS-NetCDF
+   API and the DODS Ancillary Data.  They felt that it would be relevant to
+   the definition of their schemas.
+
+   \item  Location Function.  Hughes is currently researching what approaches
+   are available for supporting the data location function.  They are 
+   in the intermediate stages of this discovery process and are hoping to
+   have some recommendations in the May time frame.  They expressed a
+   willingness to share and coordinate development in this area with us.
+
+   George mentioned that we are funded to pursue development of a location
+   function within DODS in cooperation with with NASA's GCMD and intend to
+   meet with Lola Olsen in the near future to discuss this.  In particular,
+   DODS is interested in discussing how the DIF could be used to support
+   accessing distributed data resources.  Hughes is also interested in
+   coordination with the GCMD but mentioned that the current structure of the
+   DIF and the information that it contains is incomplete from their
+   perspective.  George agreed and stated that one of the issues that needed
+   to be addressed with Lola was the possibility of modifying the DIF to
+   accommodate referencing distributed data sets and systems explicitly.
+
+
+   \item Data Model.  The data model that Glenn has developed was of interest
+   to Mark and Ron.  Hughes does not currently have a well defined
+data model and the methodology that Glenn presented was felt to be a
+useful way of formally defining a data model its structures and operators.  
+
+   \item Error handling was another issue raised.  Jim discussed the
+   ad hoc solution currently implemented with the servers that he is
+   developing (simple error flag) and pointed out the fact that it was
+   not easy to capture and transfer back to the client server side
+   errors and diagnostics.  RPCs do not handle errors well within the
+   framework on many APIs because those APIs rely on global variables
+   and system calls to report errors verbosely. The function calls
+   only tell the calling function that an error occurred, not what
+   error occurred. For that information you need to inspect a global
+   (e.g., UNIX's errno global). When an error occurs it happens in the
+   context of the server process (and thus the server's copy of
+   errno). The client cannot access the server's global variables
+   easily using RPCs. Other IPC technologies like shared memory might
+   facilitate such access.  
+
+   \item The issue of asynchronous communication was also raised.
+   RPCs are not asynchronous. RPCs are based on the procedure call model
+   and it just doesn't support asynchronous behavior without becoming
+   very distorted.  This was considered a significant limitiation to RPCs.
+
+
+   \item  Server development and exchange.  Hughes is developing an HDF
+   'Wrapper'.  This will amount to ECS HDF style (i.e.; API) which defines a
+   subset of the available HDF functions.  DODS will be developing an HDF
+   server pending  acceptance of its NASA MTPE proposal.  It was agreed that
+   we will need to keep each other up-to-date on overlapping work on HDF.  
+
+   Hughes expressed and interest in possibly utilizing the DODS NetCDF server
+   for enveloping EOSDIS V0 datasets.  Mark and Ron will alert those within
+   Hughes working on the V0 to V1 migration of our work.
+
+   Hughes mentioned that there is a possibility of its developing servers for
+   GRIB and BUFR which it would be willing to provide to DODS.
+
+
+\end{enumerate}
+
+
+\section{Future Work}
+
+	At the end of the meeting the following cooperative
+arrangements had been agreed to:
+
+\begin{itemize}  
+  \item DODS and Hughes will work toward a common Universal Reference.  This
+will be accomplished through the following: 
+    \begin{itemize}
+
+      \item  Mark will send us the currently evolving ECS specification for a
+UR for our comment. 
+      \item  We will generate a position paper on our present requirements
+for UR based on the data model that we are developing.  We will provide
+Hughes with a draft for comment.
+      \item One of the DODS developers (Glenn or Jim) was invited to
+participate in a meeting to be held at Hughes in Landover on Protocols for
+CEOS. The time of the meeting has not been decided most likely it will be
+held the week of the 16 May or 23 May.
+
+    \end{itemize}
+
+  \item  DODS and ECS will try to coordinate their activities with regard to
+development of a Locator Service function.  The following activities are
+planned;
+    \begin{itemize}
+      
+      \item DODS is funded to work with the GCMD to develop a Locator Service
+for DODS.  We will be meeting with Lola Olsen in the near future to discuss
+coordination and development.  At that meeting we will be exploring possible
+ways of using the DIF as the basis for Locator Service.  We will be drafting
+a agenda for the meeting and will circulate to Hughes for comment.
+Hughes wondered whether it would be appropriate for them to also work
+from their side to recommend modification to the DIF structure.  It
+was felt that for the time being DODS should take the lead but would
+keep in close touch with Hughes on developments.
+
+     \item Hughes is working on designing a Locator Service using  Object
+Resource Broker, Advertising Service  and Trader components within their
+model.  This work is under development.  Hughes recommended that DODS come to
+Hughes in Landover for a formal presentation and discussion of their design
+in the near future.  The suggestion was made that we piggyback on the May
+CEOS Protocol Meeting.  
+
+    \end{itemize}
+\end{itemize}
+
+\end{document}

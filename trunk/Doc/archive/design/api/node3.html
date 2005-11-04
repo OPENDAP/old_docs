@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Rationale</TITLE>
+<META NAME="description" CONTENT="Rationale">
+<META NAME="keywords" CONTENT="api">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="api.css">
+
+<LINK REL="next" HREF="node4.html">
+<LINK REL="previous" HREF="node2.html">
+<LINK REL="up" HREF="api.html">
+<LINK REL="next" HREF="node4.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html104"
+  HREF="node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html100"
+  HREF="api.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html94"
+  HREF="node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html102"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html105"
+  HREF="node4.html">Requirements</A>
+<B> Up:</B> <A NAME="tex2html101"
+  HREF="api.html">DODS Data Access Protocol</A>
+<B> Previous:</B> <A NAME="tex2html95"
+  HREF="node2.html">Introduction</A>
+ &nbsp; <B>  <A NAME="tex2html103"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00030000000000000000">
+Rationale</A>
+</H1>
+
+<P>
+Most data access APIs are targeted at application writers--they provide
+powerful tools to read, write, and process one specific type of scientific
+data and are typically specialized so that software in one application domain
+is easy to write. In order to fulfill this function, APIs are typically
+`feature rich' (i.e., they provide many ways to perform similar tasks). This
+characteristic causes APIs that maintain this level of flexibility over a
+wide range of data types to become very complex. Because simplicity and
+ease-of-use are two characteristics that make APIs attractive to application
+programmers, most API designers try to limit the scope of an API so that it
+can provide the features application programmers want, at the level of detail
+they want, without becoming excessively large and thus burdensome to use.
+The netCDF and JGOFS APIs are good examples of APIs designed for a specific
+type of application.  Each is used to access earth-science data sets, but
+netCDF is most suited to gridded model data, and JGOFS has direct support
+only for relational data.
+
+<P>
+However, the netCDF API cannot be directly used to access data sets produced
+by the JGOFS API and vice versa. An application using either one of these
+APIs would need to be modified if a user wanted to integrate both netCDF and
+JGOFS compliant data sets. Modifying a program so that the data access API it
+uses matches with the API used to write a data set is an expensive process
+and one which is exacerbated by the fact that more and more users do not
+write their own software. Modifying someone else's software can be very
+complex and costly at best; at worst it is not possible at all.  Moreover,
+when the data sets are remote it may be impossible to convince their
+maintainers to replicate them for another API since this, too, is very
+costly.
+
+<P>
+One alternative to rewriting application software or replicating data is to
+define an intermediate representation which can be used to access data stored
+in any one of a number of APIs.  If the intermediate representation is based
+on a data model that encompasses the abstractions of a certain set of APIs,
+then the intermediate representation can be used to translate between those
+APIs. The implementation of an intermediate representation interface need not
+be an application interface itself; instead it can be a set of tools used to
+build application-level components. These components can then be combined at
+link-time and/or runtime with user-programs to access data.
+
+<P>
+An interface which is to be used as a translation mechanism cannot afford to
+present the rich set of access functions that the individual APIs, which it
+subsumes, present. It must control the size and complexity of its interface by
+removing features while still providing the capability to transparently
+interoperate between several data models.  The DODS DAP is such an interface.
+It is designed to be used in the construction of system components which are
+configured at runtime by users, maintainers or other software components.
+Thus, the DODS DAP is not a separate addition to the set of interfaces formed
+by JGOFS, netCDF, and others.  Instead it is an intermediate representation
+which can be used to translate between those different APIs.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html104"
+  HREF="node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html100"
+  HREF="api.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html94"
+  HREF="node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html102"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html105"
+  HREF="node4.html">Requirements</A>
+<B> Up:</B> <A NAME="tex2html101"
+  HREF="api.html">DODS Data Access Protocol</A>
+<B> Previous:</B> <A NAME="tex2html95"
+  HREF="node2.html">Introduction</A>
+ &nbsp; <B>  <A NAME="tex2html103"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

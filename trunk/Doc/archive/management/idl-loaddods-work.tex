@@ -1,0 +1,181 @@
+
+% Description of the work to be done for the second version of the loaddods
+% command for IDL
+%
+% $Id$
+
+\documentclass[12pt]{article}
+\usepackage{epsfig,html}
+
+\input{../../boiler/html-refs}
+
+\begin{document}
+
+\title{Work~Description: Access~to~DODS~Servers~for~IDL}
+\author{James Gallagher\\
+Richard Chinman}
+\date{\today}
+
+\maketitle
+
+\begin{htmlonly}
+\pslink{http://dcz.cvo.oneworld.com/idl-loaddods-work.ps}
+\end{htmlonly}
+
+\section{Introduction}
+
+The DODS project needs to build a tool which will enable the IDL data
+analysis tool developed by Research Systems, Inc. to read data from DODS
+servers. We have a preliminary tool built by colleagues at JPL, but this needs
+to be enhanced in several ways and may serve only as an example of desired
+functionality. 
+
+In this document we provide some background information on the existing
+IDL-DODS software, describe the work to be done and list, explicitly,
+important requirements for this software.
+
+\section{Background}
+
+The DODS software which enables users of IDL to access data served by DODS
+was written by colleagues at JPL. This software was based on a similar
+program developed for users of Matlab. The software as written does not take
+advantage of many features of IDL. In addition, the developers at JPL used
+IDL 4 and it is our understanding that IDL 5 provides many enhancements which
+will simplify this software and make it more flexible.
+
+In order to understand how the IDL-DODS software got to its current state, we
+need to provide some explanation of the development of our command line
+interface to Matlab. This software was developed under Matlab 4 which
+presented us with two problems: Matlab 4 could not link external commands
+written in \Cpp\ and it could not deal with arrays larger than two
+dimensions.  DODS, however, provided low-level access to the servers using
+only \Cpp \footnote{That has since been changed, we now have a companion Java
+  class library which can be used to access the servers. I'm not sure if that
+  matters here, however. 12/22/98 jhrg} and has N-dimensional arrays. To
+bridge this gap the software was split into two pieces, one that communicated
+with the DODS servers (written in \Cpp\, using our class library) and one
+external command written in C. The external command communicated to the \Cpp\ 
+DODS client using standard UNIX IPC. Further the external command was
+restricted so that it would work only with scalars, vectors and matrices.
+
+Because our colleagues at JPL used this software to build the IDL interface to
+DODS, that software has the same essential architecture even though IDL poses
+none of the above limits. The organization of the current IDL-DODS interface
+is shown in Appendix~\ref{current-arch}.
+
+The design of the current IDL-DODS interface can certainly be changed. The
+current design is an artifact of modifying existing software to get something
+running quickly. We want to be sure that readers of this document understand
+that the existing software does not represent a design we think is best
+suited to the task.
+
+\section{Statement of Work}
+
+There are five deliverables defined by this document:
+
+\begin{enumerate}
+
+\item Submit a preliminary design for review.
+
+\item Submit a design for approval and an implementation schedule including
+  critical milestones if warranted.
+
+\item Deliver the software described in the design along with appropriate
+  documentation. 
+
+\item Provide a suite of tests for the software and work with Unidata/UCAR
+  personnel to test on the following platforms: 
+
+  \begin{itemize}
+    \item Sun/Solaris
+    \item SGI/IRIX
+    \item Dec-Alpha/OSF
+    \item Intel/Linux
+  \end{itemize}
+  
+\item Present a demonstration of the deliverable to Unidata/UCAR and the
+  DODS project manager, Richard Chinman.
+
+\end{enumerate}
+
+\subsection{What will be provided}
+
+\begin{enumerate}
+   \item The current version of the IDL-DODS command line tool code. 
+   \item Any relevant documentation for the IDL-DODS command line tool.
+   \item Test programs.
+   \item A primary and secondary project liaison (technical) and a project
+     monitor.
+   \item \Cpp\ Library to process requests from DODS servers. This includes
+     software to parse incoming data.
+   \item Documentation for the DODS \Cpp\ class library.
+\end{enumerate}
+
+\section{Requirements}
+
+The most important requirements are listed here. There are other features,
+currently present in the IDL-DODS interface, that are desirable but are less
+important. 
+
+\begin{enumerate}
+
+\item N-dimensional arrays: The new version of the IDL-DODS interface should
+  intern arrays of any dimensionality.
+
+\item The new version of the IDL-DODS interface should make use of IDL's
+  data types wherever possible (e.g., Structures).
+
+\item Single program architecture: Unless there is good reason to do
+  otherwise, the two program architecture should be abandoned in favor of a
+  single external command (e.g., dynamically loaded module) written in \Cpp.
+  
+\item Creation of global variables: The IDL-DODS interface should create
+  global variables, structures, etc. when appropriate. The current version of
+  the interface cannot do this.
+
+\item Command options of the current software: The command options of the
+  current software should be supported where appropriate.
+
+\item Help option: There should be a help option which provides a brief
+  explanation of the supported command options.
+
+\end{enumerate}
+
+\section{Ownership}
+
+The DODS project will have sole ownership of IDL-DODS interface. This
+includes, but is not limited to, the right to use, sell or giveaway the
+software. In this section when we say `the software' we mean the source code,
+binary copies and documentation. We reserve the right to attach our copyright
+to the software---we are amenable to acknowledging authorship by a third
+party, but the software must be copyrighted as part of the DODS project based
+at the University of Rhode Island. We forbid any use of the software not
+explicitly described in our copyright statement unless permission from us
+(the DODS project) is obtained in writing.
+
+\section{Support and Maintenance}
+
+The DODS project will be responsible for long-term maintenance and support of
+the IDL-DODS interface. However, for a period of 60 days after delivery we
+should be able to ask the authors of the IDL-DODS interface to fix problems
+which we and the authors agree come under the purview of this description of
+work. 
+
+\appendix
+
+\section{Current Architecture}
+\label{current-arch}
+
+The current architecture of the IDL-DODS interface is shown in
+Figure~\ref{data-flow}. The current external command sends a DODS URL to the
+DODS client. The DODS client dereferences that URL, reads data from the
+server and sends those data back to the external command using a simple
+protocol the two programs share.
+
+\begin{figure}
+\epsfig{file=idl-loaddods-data-flow.eps,width=6in}
+\caption{Data flow of the current IDL-DODS interface.}
+\label{data-flow}
+\end{figure}
+
+\end{document}

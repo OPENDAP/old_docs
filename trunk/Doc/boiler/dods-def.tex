@@ -1,0 +1,294 @@
+%
+% These are html links which are used often enough in writing about DODS to
+% merit an input file.
+% jhrg. 4/17/94
+%
+% File rationalized and updated while writing the DODS User
+% Guide. Also includes other useful abbreviations.
+% tomfool 3/15/96
+%
+% Moved to dods-def.tex so I can remove links to documents that no
+% longer reflect reality.
+% tomfool 2/13/98
+%
+% $Id$
+%
+% Make sure to include layout.tex *before* using this file.
+
+%% NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE 
+%%
+%% If this file causes problems when running latex, you may have to edit your
+%% texmf.cnf file. Here's a meesage from Tom:
+%% > Are these references that use relative addresses (like
+%% > ../boiler/blah.tex)?  If they are, you should look for the texmf.cnf
+%% > file.  (It's often at /usr/share/texmf/web2c/texmf.cnf, and look for
+%% > the openout_any parameter.  Check there anyway; there were some recent
+%% > (i.e. in the early '90's) security fixes to TeX.
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% These are some DODS-specific convenience commands.
+\newcommand{\DODSroot}{\lit{\$DODS\_ROOT}}     
+% $
+
+\newcommand{\opendap}{OPeNDAP\xspace}
+
+%%% The OPD books and reference material
+\newcommand{\OPDDoc}{http://opendap.org/support/docs.html}
+\newcommand{\DODSDoc}{http://opendap.org/support/docs.html}
+
+% \newcommand{\OPDDoc}{http://www.unidata.ucar.edu/packages/dods}
+% \newcommand{\DODSDoc}{http://www.unidata.ucar.edu/packages/dods}
+
+\newcommand{\OPDhomeUrl}%
+  {http://opendap.org}
+\newcommand{\OPDexampleUrl}%
+  {BROKEN--FIX ME!}%\OPDDoc/examples}
+% \newcommand{\OPDftpUrl}%
+%  {ftp://dods.gso.uri.edu/pub/dods}
+\newcommand{\OPDftpUrl}%
+  {ftp://ftp.opendap.org/pub/dods}
+\newcommand{\OPDuserUrl}%
+  {\OPDDoc/user/guide-html/}
+\newcommand{\OPDmguiUrl}%
+  {\OPDDoc/user/mgui-html/}
+\newcommand{\OPDapiUrl}%
+  {\OPDDoc/api/pguide-html/}
+\newcommand{\OPDapirefUrl}%
+  {\OPDDoc/api/pref-html/}
+\newcommand{\OPDffUrl}%
+  {\OPDDoc/user/servers/dff-html/}
+\newcommand{\OPDquickUrl}%
+  {\OPDDoc/user/quick-html/}
+\newcommand{\OPDinstallUrl}%
+  {\OPDDoc/server/install-html}%
+\newcommand{\OPDregexUrl}%
+  {\OPDDoc/user/regex-html}%
+\newcommand{\OPDjavaUrl}%
+  {\OPDDoc/home/swJava1.1/}
+\newcommand{\OPDwclientUrl}%
+  {\OPDDoc/api/wc-html/}
+\newcommand{\OPDwserverUrl}%
+  {\OPDDoc/api/ws-html/}
+\newcommand{\OPDaggUrl}%
+  {\OPDDoc/server/agg-html/}
+
+\newcommand{\OPDhome}{\xlink{OPeNDAP Home page}{\OPDhomeUrl}}
+\newcommand{\OPDjava}{\xlink{OPeNDAP Java home page}{\OPDjavaUrl}}
+\newcommand{\OPDexamples}{\xlink{OPeNDAP examples page}{\OPDexampleUrl}}
+\newcommand{\OPDftp}{\xlink{OPeNDAP ftp site}{\OPDftpUrl}}
+%% Book titles do *not* contain the article.
+\newcommand{\OPDuser}[1][]{\xlink%
+  {\cit{OPeNDAP User Guide}}{\OPDuserUrl{}#1}}
+\newcommand{\OPDmgui}{\xlink%
+  {\cit{OPeNDAP Matlab GUI}}{\OPDmguiUrl}}
+\newcommand{\OPDapi}{\xlink%
+  {\cit{OPeNDAP Toolkit Programmer's Guide}}{\OPDapiUrl}}
+\newcommand{\OPDapiref}{\xlink%
+  {\cit{OPeNDAP Toolkit Reference}}{\OPDapirefUrl}}
+\newcommand{\OPDffbook}{\xlink%
+  {\cit{OPeNDAP Freeform ND Server Manual}}{\OPDffUrl}}
+\newcommand{\OPDquick}{\xlink%
+  {\cit{OPeNDAP Quick Start Guide}}{\OPDquickUrl}}
+\newcommand{\OPDinstall}{\xlink%
+  {\cit{OPeNDAP Server Installation Guide}}{\OPDinstallUrl}}
+\newcommand{\OPDregex}{\xlink%
+  {\cit{Introduction to Regular Expressions}}{\OPDregexUrl}}
+\newcommand{\OPDagg}{\xlink%
+  {\cit{OPeNDAP Aggregation Server Guide}}{\OPDaggUrl}}
+\newcommand{\OPDwclient}{\xlink%
+  {\cit{Writing an OPeNDAP Client}}{\OPDwclientUrl}}
+\newcommand{\OPDwserver}{\xlink%
+  {\cit{Writing an OPeNDAP Server}}{\OPDwclientUrl}}
+
+\newcommand{\OPDffs}{OPeNDAP Freeform ND Server}
+
+%%% Other DODS links.
+\newcommand{\homepage}% For hyperlatex
+  {\OPDDoc/}
+\newcommand{\OPDsupport}{\xlink{support@unidata.ucar.edu}{mailto:support@unidata.ucar.edu}}
+\newcommand{\DODSsupport}{\xlink{support@unidata.ucar.edu}{mailto:support@unidata.ucar.edu}}
+\newcommand{\DODS}{\xlink{Distributed Oceanographic Data System}{\OPDhomeUrl}}
+\newcommand{\OPD}{\xlink{Open Source Project for a Data Access Protocol}{\OPDhomeUrl}}
+\newcommand{\OPDtechList}{\xlink{OPeNDAP Mailing Lists}{\OPDhomeUrl/mailLists/}}
+
+%%% DODS versions
+%% This has been removed.  Documents should not have an automatic
+%% version number, because then it appears as if they have been
+%% updated when they haven't.  Put the relevant version number to
+%% whatever software is being described into each document's preface. 
+
+\newcommand{\ifh}{WWW Interface}
+
+% external refs for DODS documents
+
+\newcommand{\CGI}{\xlink{Common Gateway Interface}
+  {http://hoohoo.ncsa.uiuc.edu/cgi/overview.html}}
+
+\newcommand{\MIME}{\xlink{Multipurpose Internet Mail Extensions}
+  {http://www.cis.ohio-state.edu/htbin/rfc/rfc1590.html}}
+
+\newcommand{\netcdf}{\xlink{NetCDF}
+  {http://www.unidata.ucar.edu/packages/netcdf/guide.txn_toc.html}}
+
+\newcommand{\JGOFS}{\xlink{Joint Geophysical Ocean Flux Study}
+  {http://www1.whoi.edu/jgofs.html}}
+
+\newcommand{\jgofs}{\xlink{JGOFS}
+  {http://www1.whoi.edu/jgofs.html}}
+
+\newcommand{\hdf}{\xlink{HDF}
+  {http://www.ncsa.uiuc.edu/SDG/Software/HDF/HDFIntro.html}}
+
+\newcommand{\ffnd}{FreeForm ND}
+
+\newcommand{\Cpp}{\texorhtml
+  {{\rm {\small C}\raise.5ex\hbox{\footnotesize ++}}}
+  {C\htmlsym{##43}\htmlsym{##43}}}
+
+% Commands
+
+\newcommand{\pslink}[1]{\small
+\begin{quote}
+  A \xlink{PDF version}{#1} of this document is available.
+\end{quote}
+\normalsize
+}
+
+\newcommand{\pdflink}[1]{\small
+\begin{quote}
+  A \xlink{PDF version}{#1} of this document is available.
+\end{quote}
+\normalsize
+}
+
+%%%%%%%%%%%%%% DODS macros
+%
+% These are here so that older latex files will compile. Someday remove these
+% and fix the files. 04/13/04 jhrg
+
+\newcommand{\DODShomeUrl}%
+  {\OPDhomeUrl}
+\newcommand{\DODSexampleUrl}%
+  {\OPDDoc/examples}
+% \newcommand{\OPDftpUrl}%
+%  {ftp://dods.gso.uri.edu/pub/dods}
+\newcommand{\DODSftpUrl}%
+  {ftp://ftp.opendap.org/pub/dods}
+\newcommand{\DODSuserUrl}%
+  {\OPDDoc/user/guide-html/}
+\newcommand{\DODSmguiUrl}%
+  {\OPDDoc/user/mgui-html/}
+\newcommand{\DODSapiUrl}%
+  {\OPDDoc/api/pguide-html/}
+\newcommand{\DODSapirefUrl}%
+  {\OPDDoc/api/pref-html/}
+\newcommand{\DODSffUrl}%
+  {\OPDDoc/user/servers/dff-html/}
+\newcommand{\DODSquickUrl}%
+  {\OPDDoc/user/quick-html/}
+\newcommand{\DODSinstallUrl}%
+  {\OPDDoc/server/install-html}%
+\newcommand{\DODSregexUrl}%
+  {\OPDDoc/user/regex-html}%
+\newcommand{\DODSjavaUrl}%
+  {\OPDDoc/home/swJava1.1/}
+\newcommand{\DODSwclientUrl}%
+  {\OPDDoc/api/wc-html/}
+\newcommand{\DODSwserverUrl}%
+  {\OPDDoc/api/ws-html/}
+\newcommand{\DODSaggUrl}%
+  {\OPDDoc/server/agg-html/}
+
+\newcommand{\DODShome}{\xlink{OPeNDAP Home page}{\DODShomeUrl}}
+\newcommand{\DODSjava}{\xlink{OPeNDAP Java home page}{\DODSjavaUrl}}
+\newcommand{\DODSexamples}{\xlink{OPeNDAP examples page}{\DODSexampleUrl}}
+\newcommand{\DODSftp}{\xlink{OPeNDAP ftp site}{\DODSftpUrl}}
+\newcommand{\DODSuser}[1][]{\xlink%
+  {\cit{The OPeNDAP User Guide}}{\DODSuserUrl{}#1}}
+\newcommand{\DODSmgui}{\xlink%
+  {\cit{The OPeNDAP Matlab GUI}}{\DODSmguiUrl}}
+\newcommand{\DODSapi}{\xlink%
+  {\cit{The DODS Toolkit Programmer's Guide}}{\DODSapiUrl}}
+\newcommand{\DODSapiref}{\xlink%
+  {\cit{The DODS Toolkit Reference}}{\DODSapirefUrl}}
+\newcommand{\DODSffbook}{\xlink%
+  {\cit{The DODS Freeform ND Server Manual}}{\DODSffUrl}}
+\newcommand{\DODSquick}{\xlink%
+  {\cit{The DODS Quick Start Guide}}{\DODSquickUrl}}
+\newcommand{\DODSinstall}{\xlink%
+  {\cit{The DODS Server Installation Guide}}{\DODSinstallUrl}}
+\newcommand{\DODSregex}{\xlink%
+  {\cit{Introduction to Regular Expressions}}{\DODSregexUrl}}
+\newcommand{\DODSagg}{\xlink%
+  {\cit{OPeNDAP Aggregation Server Guide}}{\DODSaggUrl}}
+\newcommand{\DODSwclient}{\xlink%
+  {\cit{Writing an OPeNDAP Client}}{\DODSwclientUrl}}
+\newcommand{\DODSwserver}{\xlink%
+  {\cit{Writing an OPeNDAP Server}}{\DODSwclientUrl}}
+
+\newcommand{\DODSffs}{DODS Freeform ND Server}
+
+% $Log: dods-def.tex,v $
+% Revision 1.24  2004/12/21 22:30:04  jimg
+% Fixed pslink; Added pdflink.
+%
+% Revision 1.23  2004/12/14 05:19:17  tomfool
+% restored fix to pslink
+%
+% Revision 1.22  2004/12/09 21:01:58  tomfool
+% excised test.dods.org
+%
+% Revision 1.21  2004/12/09 18:50:21  tomfool
+% de-dodsifying
+%
+% Revision 1.15  2004/04/24 21:37:22  jimg
+% I added every directory in preparation for adding everyting. This is
+% part of getting the opendap web pages going...
+%
+% Revision 1.14  2004/02/12 16:05:50  jimg
+% Moved the log to the end of the file.
+%
+% Revision 1.13  2004/01/16 18:05:31  jimg
+% Added a note from Tom about setting texmf.cnf to allow \include to process
+% files with ../ in their pathnames. You can also change the include to input,
+% but I think include may offer some advantages for bigger/complex things like
+% the Guides.
+%
+% Revision 1.12  2003/12/28 21:48:22  tom
+% added newer books
+%
+% Revision 1.11  2003/12/08 19:04:43  tom
+% little adjustments for DODS->opendap
+%
+% Revision 1.10  2003/12/08 18:53:30  tom
+% DODS->OPeNDAP
+%
+% Revision 1.9  2002/07/15 17:49:55  tom
+% added \DODSDoc
+%
+% Revision 1.8  2001/05/04 15:07:45  tom
+% fixed pslink to include pdf files
+%
+% Revision 1.7  2001/02/19 20:39:13  tom
+% added links to the new regex intro.
+%
+% Revision 1.6  2000/03/23 18:27:52  tom
+% added abbreviations
+%
+% Revision 1.5  1999/07/01 16:00:19  tom
+% added a couple of web page references
+%
+% Revision 1.4  1999/05/25 20:49:34  tom
+% changed version numbers to 3.0
+%
+% Revision 1.3  1999/02/04 17:27:08  tom
+% adjusted for hyperlatex and dods-book.cls
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% TeX-master: t
+%%% End: 

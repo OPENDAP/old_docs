@@ -1,0 +1,11 @@
+
+AuthUserFile /usr/local/etc/httpd/conf/.htpasswd
+
+Options ExecCGI Indexes FollowSymLinks
+
+<Limit GET>
+order deny,allow
+deny from all
+allow from gso.uri.edu jpl.nasa.gov intcomm.net dcz.cvo.oneworld.com
+</Limit>
+

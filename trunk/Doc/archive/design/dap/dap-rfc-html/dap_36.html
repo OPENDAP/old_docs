@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:12 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- Version</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_37.html"><img alt="ASCII" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_35.html"><img alt="ERROR" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Version</b></td></tr></table>
+<h3>Version</h3>
+
+The <tt>version</tt> response returns information about the DAP version,
+server version and may return information about a dataset's version. The
+response may be requested two ways: by using the string <tt>version</tt>
+as the <tt>dataset&#95;id</tt> or by appending the extension
+<tt>ver</tt> to the dataset name (see Section&nbsp;<a HREF="dap_14.html">*</a>). 
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+abs&#95;path </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> server&#95;path dataset&#95;id "." ext [ "?" query ] </td></tr>
+<tr><td colspan="1" align="LEFT">
+server&#95;path </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> &lt;name of DAP server&gt; </td></tr>
+<tr><td colspan="1" align="LEFT">
+dataset&#95;id </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "version" </td></tr>
+<tr><td colspan="1" align="LEFT">
+ext </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "ver" </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<p>If a DAP server receives a <tt>version</tt> request, it MUST return
+return DAP version version information. If the request is made using the
+<tt>ver</tt> extension to a <tt>dataset&#95;id</tt> then the server MUST return
+the DAP version and server version information. It MAY also return a
+dataset version.
+<p>Version information should be returned as plain text in the payload of the
+response. This version information may be essentially that sane as the
+information in the XDODS-Server header. The intent is to present users and
+system maintainers with information about servers that can be used to track
+down problems or determine if a server can be upgraded to a newer version to
+fix a particular problem.
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+version-response </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> dap-version CRLF server-version </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> </td><td colspan="1" align="LEFT"> [ CRLF dataset-version ] </td></tr>
+<tr><td colspan="1" align="LEFT">
+dap-version </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "Core version:" token "/" version-number </td></tr>
+<tr><td colspan="1" align="LEFT">
+server-version </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "Server version:" token "/" version-number </td></tr>
+<tr><td colspan="1" align="LEFT">
+dataset-version </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "Dataset version:" token "/" version-number </td></tr>
+<tr><td colspan="1" align="LEFT">
+token </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> 1*&lt;any CHAR except CTLs or separators&gt; </td></tr>
+<tr><td colspan="1" align="LEFT">
+version-number </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> 1*DIGIT "." 1*DIGIT "." 1*DIGIT </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_37.html"><img alt="ASCII" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_35.html"><img alt="ERROR" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Version</b></td></tr></table></body></html>

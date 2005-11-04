@@ -1,0 +1,728 @@
+\chapter{Configuration Elements and Attributes Specification}
+
+The \aggser\ \dtd\ is a specialization of the \thredds\ catalog \dtd .
+This chapter contains a a brief summary of the \aggser\ \dtd\ 
+followed by a description of the \thredds\ catalog \dtd .
+
+\section{\aggser\ Configuration Elements}
+\label{agg,xml-elements}
+
+The \aggser\ XML \dtd\ adds four elements to the \thredds\ \dtd : an
+\element{aggregation} element, and the \element{fileAccess}, \element{variable},
+and \element{fileScan} elements it depends on.
+
+These two lines appear at the top of the \aggser\ \dtd\ to include
+the \thredds\ \dtd .
+
+\begin{vcode}{sib}
+<!ENTITY % catalogDTD SYSTEM "InvCatalog.0.6.dtd">
+%catalogDTD;
+\end{vcode}
+
+This is what makes the \aggser\ a specialization of the \thredds\
+catalog server.
+
+
+\ELEMENT{aggregation}
+
+\begin{vcode}{sib}
+<!ENTITY % AggregationType "JoinNew | Union | JoinExisting">
+<!ENTITY % VariableType "byte | short | int | float | double | String">
+
+<!ELEMENT aggregation (fileAccess+, variable*, fileScan?)>
+<!ATTLIST aggregation
+    aggType (%AggregationType;) #REQUIRED
+    serviceName CDATA #IMPLIED
+    varName CDATA #IMPLIED
+    varType (%VariableType;) #IMPLIED
+    varUnit CDATA #IMPLIED
+    dateFormat CDATA #IMPLIED
+>
+\end{vcode}
+
+Use the \element{aggregation} element to define the collections of files
+to be aggregated, and the manner in which it is to be done.
+
+An \element{aggregation} element contains one or more \element{fileAccess}
+elements, followed by 0 or more \element{variable} elements, followed by
+an optional \element{fileScan} element.  (As of \aggser\ version
+\aggversion , you should not use the \element{fileScan} element.)
+
+Unlike \class{Union} and \class{JoinExist}, \class{JoinNew} type
+aggregations must create a new coordinate variable. The variable name
+is specified with the \tag{varName} attribute to the
+\element{aggregation}, and the variable's values must be specified in the
+\tag{coord} attribute of the \element{fileAccess} elements contained in
+this \element{aggregation} element.  The \tag{varType} attribute specifies
+the type of the new coordinate variable, while the \tag{varUnit}
+attribute specifies the unit string which is added as its attribute.
+
+For example, consider three data files containing satellite
+measurements in 1440x720 element arrays.  Aggregating them with the
+following catalog entry:
+
+\begin{vcode}{xib}
+<aggregation serviceName="GSO" aggType="JoinNew" varName="time" 
+    varType="int" varUnit="secs since 0000-01-01 00:00:00" 
+    dateFormat="yyyy/M/d:HH:mm:ss z">
+  <fileAccess urlPath="qscat/01.dat" coord="0000/1/1:00:00:00 GMT"/>
+  <fileAccess urlPath="qscat/02.dat" coord="0000/1/2:00:00:00 GMT"/>
+  <fileAccess urlPath="qscat/03.dat" coord="0000/1/3:00:00:00 GMT"/>
+</aggregation>
+\end{vcode}
+
+will result in this DDS and DAS:
+
+\begin{vcode}{sib}
+Dataset {
+  Int32 time[time = 3];
+  Byte binarydata[time = 3][latitude = 720][longitude = 1440];
+} qscat/bmaps;
+
+Attributes {
+  time {
+    String units "secs since 0000-01-01 00:00:00";
+  }
+}
+\end{vcode}
+
+
+and a query on the time variable returns:
+
+\begin{vcode}{sib}
+time[3]
+0, 86400, 172800
+\end{vcode}
+
+An \element{aggregation} element appears inside \element{metadata}
+elements, which allow content type \lit{ANY}.
+
+These are the possible attributes for an \element{aggregation} element.
+
+\begin{description}
+
+\ATTRIBUTE{aggType}
+
+Required.  One of \class{JoinNew}, \class{JoinExisting}, or
+\class{Union}. 
+
+\ATTRIBUTE{serviceName}
+
+The \tag{serviceName} specifies the internal data service to use.  The
+name is given by the \tag{name} attribute of the \element{service} element.
+It may be overridden by one of the \element{fileAccess} elements (or
+supplied, if it is omitted here).  If it is not present in either this
+element or in the \element{fileAccess} element, the server will issue
+an error.
+
+\ATTRIBUTE{varName}
+
+The \tag{varName} specifies the existing (\class{JoinExisting}) or new
+(\class{JoinNew}) coordinate variable to join the files on. It is not
+used for \class{Union} type aggregations.
+
+\ATTRIBUTE{varType}
+
+The coordinate values specified in the \tag{coord} attribute of the
+\element{fileAccess} elements are converted to the type specified by
+\tag{varType}, which must be one of \class{byte}, \class{short},
+\class{int}, \class{float}, \class{double} or \class{String}. If
+\tag{varType} is not specified, then the coordinates are added as
+\class{Strings}.  This attribute is only used in \class{JoinNew}
+aggregations.
+
+\ATTRIBUTE{varUnit}
+
+A unit string of the added variable (only for \class{JoinNew}).  This
+is added to the DAS of the retrieved data, if possible.
+
+\ATTRIBUTE{dateFormat}
+
+Date-valued coordinates are handled in a special way if the
+\tag{dateFormat} attribute is specified. In this case, the
+\tag{dateFormat} is the format of the date
+coordinate values. This format is defined by
+\class{java.text.SimpleDateFormat}.  The coordinate values are first
+parsed by \class{SimpleDateFormat} according to the \tag{dateFormat}.
+This gives a \lit{long} value in units of ``msecs since Jan 1, 1970''. If
+\tag{varUnit} is specified, this value is converted to it using the
+\lit{ucar.units} package, and the \tag{varUnit} must therefore be
+convertible with "msecs since Jan 1, 1970". If \tag{varUnit} is not
+specified, the value is converted into "secs since Jan 1, 1970". If
+\tag{varType} is specified, the value is converted to that type. If
+not, the value is converted to a double.
+
+
+\end{description}
+
+\ELEMENT{fileAccess}
+
+\begin{vcode}{sib}
+<!ELEMENT fileAccess EMPTY>
+<!ATTLIST fileAccess
+    urlPath CDATA #REQUIRED
+    serviceName CDATA #IMPLIED
+    coord CDATA #IMPLIED
+>
+\end{vcode}
+
+The \element{fileAccess} element specifies a file to be used in this
+aggregation.  The \tag{urlPath} must be specified, and is used with
+the service to create the internal file's URL.  The service is
+specified through the \tag{serviceName} here or in the parent
+aggregation element. See \sectionref{agg,mapping} for more
+information.
+
+The \element{fileAccess} element is analogous to the \element{access} elements
+of the \thredds\ catalogs, except that it specifies netCDF files or
+\opendap\ datasets that are used only internally by the \aggser .
+
+
+The \tag{coord} is used only by \class{JoinNew} aggregations, in order
+to specify the coordinate value that this \element{fileAccess} corresponds
+to.  The variable type, units, and name are specified with the
+\element{aggregation} element.
+
+\begin{description}
+
+\ATTRIBUTE{urlPath}
+
+Relative to the base URL given in the \element{service} element, this is
+the path to the data file in question.
+
+\ATTRIBUTE{serviceName}
+
+Use this attribute to nominate the service which is to supply this
+file.  If this is omitted, use the \tag{serviceName} nominated by the
+\element{aggregation} element.  If that one is missing, use \lit{this}.
+
+\ATTRIBUTE{coord}
+
+The \emph{value} of the coordinate variable defined in the
+\element{aggregation} element.  This is only relevant for \class{JoinNew}
+aggregations. 
+
+\end{description}
+
+
+\ELEMENT{variable}
+
+\begin{vcode}{sib}
+<!ELEMENT variable EMPTY>
+<!ATTLIST variable
+        name CDATA #REQUIRED
+>
+\end{vcode}
+
+In a \class{JoinNew} aggregation, all \class{Grids} will be joined,
+automatically.  Any variables of type \class{Array} will be joined
+only if they are specifically nominated by a \element{variable} element.
+
+\begin{description}
+
+\ATTRIBUTE{name}
+
+The name of the \class{Array} variable to be joined.  See
+\sectionref{agg,joinnew} for an example.
+
+\end{description}
+
+\ELEMENT{fileScan}
+
+\note{Do not use this element.}
+
+\begin{vcode}{sib}
+
+<!ELEMENT fileScan EMPTY>
+<!ATTLIST fileScan
+    urlPath CDATA #REQUIRED
+    scanMin CDATA #IMPLIED
+>
+\end{vcode}
+
+
+\section{\thredds\ Catalog Configuration Elements}
+\label{agg,thredds-elements}
+
+These XML elements are part of the \thredds\ catalog server \dtd .
+They are inherited by the \opendap\ \aggser\ \dtd , which is based on
+the \thredds\ server.
+
+
+\ELEMENT{access}
+
+\begin{vcode}{sib}
+<!ELEMENT access EMPTY>
+<!ATTLIST access
+    urlPath CDATA #REQUIRED
+    serviceName CDATA #IMPLIED
+    serviceType (%ServiceType;) #IMPLIED
+>
+\end{vcode}
+
+An \element{access} element specifies how a dataset can be accessed
+through a data service. It is typically used when there is more than
+one service available for a dataset.
+
+Typically a \tag{serviceName} is specified, which is the name of a
+\element{service} element in a parent element of the same catalog.
+Note it may not refer to a \element{service} in another catalog
+referred to by a \element{catalogRef} element. The dataset URL is then
+formed from the service \tag{base} and the access \tag{urlPath}, and
+optionally the service \tag{suffix} (see \sectionref{agg,dataseturls}).
+
+
+If a \tag{serviceName} is not specified, a \tag{serviceType} must be
+specified, which creates an "anonymous service" of that type. In this
+case the \tag{urlPath} must be absolute.
+
+
+\ELEMENT{catalog}
+
+\begin{vcode}{sib}
+<!ELEMENT catalog (dataset) >
+<!ATTLIST catalog
+    name CDATA #REQUIRED
+    version CDATA #REQUIRED
+    xmlns:xlink CDATA #FIXED "http://www.w3.org/1999/xlink"
+    xmlns CDATA #FIXED "http://www.unidata.ucar.edu/thredds"
+>
+\end{vcode}
+
+This is the top-level element. A \element{catalog} element contains
+exactly one top-level \element{dataset}. The name of the catalog
+should be displayed to the user when selecting among catalogs. The
+\tag{version} allows DTD migration and should be set to \lit{0.6}.
+
+The XLink and default namespaces are declared here, so technically
+they do not have to be declared in the catalog XML itself. However
+Internet Explorer cannot deal with namespaces declared in the DTD, so
+you should add the same two namespace declarations in the catalog
+element in the XML document itself (see \xlink*{this
+  example}[http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6d.xml]{http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6d.xml}
+\htmlonly{This allows you to view the catalog in the IE browser. Netscape
+Navigator cannot yet view XML files (as of version 6.2.1).}
+
+ 
+\ELEMENT{catalogRef}
+
+\begin{vcode}{sib}
+<!ELEMENT catalogRef EMPTY>
+<!ATTLIST catalogRef
+    xlink:type (simple) #FIXED "simple"
+    xlink:href CDATA #REQUIRED
+    xlink:title CDATA #REQUIRED
+>
+\end{vcode}
+
+A \element{catalogRef} element refers to another catalog that becomes
+a \element{dataset} inside this catalog. This is used to seperately
+maintain catalogs and to break up large catalogs. The referenced
+catalog should not be read until the user explicitly requests it, so
+that very large dataset collections can be represented with
+\element{catalogRef} elements without large delays in presenting them
+to the user. The referenced catalog is not textually substituted into
+the containing catalog, but remains a self-contained object.  The
+referenced catalog must be a valid THREDDS catalog, but it does not
+have to match versions with the containing catalog.
+
+The value of \tag{xlink:href} is the URL of the referenced catalog.
+The value of \tag{xlink:title} is displayed as the name of the dataset
+that the user can click on to follow the XLink. Note that the XLink
+has a fixed type of "simple" that is part of the DTD, so does not have
+to be specified in the catalog XML.
+
+The dataset chooser software should seamlessly present a
+\element{catalogRef} to the user, for example by eliminating the
+referenced catalog's top-level dataset in its presentation of the
+catalog when its name matches the title of the catalogRef title
+attribute.
+
+ 
+\ELEMENT{dataset}
+
+\begin{vcode}{sib}
+<!ENTITY % DataType "Grid | Image | Station">
+
+<!ELEMENT dataset (service*, (documentation | metadata | property)*, access*, (dataset | catalogRef)*)>
+<!ATTLIST dataset
+    name CDATA #REQUIRED
+    dataType (%DataType;) #IMPLIED
+    authority CDATA #IMPLIED
+    ID ID #IMPLIED
+    alias IDREF #IMPLIED
+    serviceName CDATA #IMPLIED
+    urlPath CDATA #IMPLIED
+>
+\end{vcode}
+
+A \element{dataset} element represents a logical set of data at a
+level of granularity appropriate for presentation to a user. A dataset
+is \emph{selectable} if it contains at least one access path,
+otherwise it is just a container for nested datasets. If selectable,
+upon selection, an event is sent to the client software.
+
+A \element{dataset} element contains 0 or more \element{service}
+elements followed by 0 or more \element{documentation},
+\element{metadata}, or \element{property} elements in any order,
+followed by 0 or more \element{access} elements, followed by 0 or more
+nested \element{dataset} or \element{catalogRef} elements.  The data
+represented by a nested \element{dataset} element should be a subset,
+a specialization or in some other sense "contained" within the data
+represented by its parent \element{dataset} element.
+
+A dataset must have one or more access paths, specified implicitly
+through a \tag{urlPath} attribute, or explicitly in contained
+\element{access} elements.  An access path should be thought of as a
+URL, but its actually information from which a protocol-aware layer
+can construct URLs.  When there is only one URL, this is typically
+specified in the \element{dataset} element itself. When there are
+multiple URLs, these may be specified in the \element{dataset} element
+and/or in contained \element{access} elements.  Multiple URLs specify
+different services for accessing the dataset.  Choices among these
+different services should be filterered by client software or
+presented to the user for selection.  A URL specified in the dataset
+element itself is the default URL, which should be the preferred URL
+when no filtering or user choice is possible. Also see forming URLs.
+
+A dataset may have a \tag{dataType}, specified within itself or in a
+containing \element{aggregation}, whose value comes from a controlled
+vocabulary.
+
+If a \element{dataset} has an \tag{alias} attribute, the value of the
+attribute must be an ID of another \element{dataset} within the same
+catalog. Note it may not refer to a \element{dataset} in another
+catalog referred to by a \element{catalogRef} element. In this case,
+any other properties of the dataset are ignored, and the dataset to
+which the alias refers is used in its place.
+
+A dataset may have a \tag{authority} specified within itself or in a
+containing \element{aggregation}.  If a dataset has an \tag{ID} and a
+\tag{authority} attribute, then the combination of the two should be
+globally unique for all time. If the same dataset is specified in
+multiple catalogs, then its \tag{authority} - \tag{ID} should be
+identical if possible.
+
+Many of the properties of a dataset become the default for contained
+\element{dataset} elements.  This includes \element{property} elements, and
+\tag{dataType}, \tag{authority} and \tag{serviceName} attributes. Any
+\element{documentation} elements are displayed at the dataset itself
+when presenting the catalog to the user. Any \element{metadata}
+elements apply to all contained datasets.
+
+ 
+\ELEMENT{documentation}
+
+\begin{vcode}{sib}
+<!ELEMENT documentation (#PCDATA)>
+<!ATTLIST documentation
+    xlink:type (simple) #FIXED "simple"
+    xlink:href CDATA #IMPLIED
+    xlink:title CDATA #IMPLIED
+    xlink:show (new | replace | embed) "new"
+>
+\end{vcode}
+
+A \element{documentation} element contains or refers to content that
+should be displayed to an end-user when making selections from the
+catalog. The content may be HTML or plain text. We call this kind of
+content "human readable" information.
+
+The \element{documentation} element may contain arbitrary plain text
+content, which should be displayed inline at the position of the
+\element{aggregation} or the \element{dataset} element that contains
+it.
+
+The \element{documentation} element may also contain an XLink to an
+HTML or plain text web page. This text should be either shown inline
+or displayed when the user activates the XLink, depending on the value
+of the \tag{xlink:show} attribute, whose default is \lit{new}. If the
+value of \tag{xlink:show} is \lit{new}, then the content of the XLink
+should be displayed in a new window when the user selects it. If the
+value of \tag{xlink:show} is \lit{embed}, then the context should be
+displayed inline, as if it was text content in the documentation
+element.  If the value of \tag{xlink:show} is \lit{replace}, the
+content should replace the existing window. The value of
+\tag{xlink:title} is used for \lit{show} and \lit{replace}, and should
+be the displayed as the name that the user can click on to follow the
+XLink. The value of \tag{xlink:show} and \tag{xlink:title} are
+heuristics for the dataset choosing widget, which may not be able to
+fully implement them. These heuristics are intended to follow the
+\xlink{XLink specification}[(see
+http://www.w3.org/TR/xlink/)]{http://www.w3.org/TR/xlink/} as closely
+as possible. Note that the XLink has a fixed type of \lit{simple} that
+is part of the DTD, so does not have to be specified in the XML.
+
+ 
+\ELEMENT{metadata}
+
+\begin{vcode}{sib}
+<!ENTITY % MetadataType "THREDDS | ADN | Aggregation | DublinCore |
+         % DIF | FGDC | LAS | Other">
+
+<!ELEMENT metadata ANY>
+<!ATTLIST metadata
+    xlink:type (simple) #FIXED "simple"
+    xlink:href CDATA #IMPLIED
+    metadataType (%MetadataType;) #REQUIRED
+>
+\end{vcode}
+
+A \element{metadata} element contains or refers to structured
+information about datasets, which is used by client programs to
+properly display or search for the dataset.  Typically, metadata is
+not displayed to an end-user when making selections from the catalog,
+although it may be useful to make it optionally available. We call
+this kind of content "machine readable" information.
+
+The \element{metadata} element must contain a \tag{metadataType}
+attribute whose value comes from a controlled vocabulary. The types
+and formats of the metadata are still being developed, and the current
+list should be considered experimental. Most are currently not
+operational.
+
+\begin{description}
+\item[\thredds] a/k/a ``Dataset Description''
+\item[ADN] Alexandria / DLESE format
+\item[Aggregation] DODS/\opendap\ Aggregation Server
+\item[DublinCore] Dublin Core
+\item[DIF] NASA's Global Change Master Directory (GCMD) format
+\item[FGDC] Federal Geographic Data Committee
+\item[LAS] Live Access Server
+\end{description}
+
+The metadata content may be placed in the \element{metadata} element
+itself, or it may be pointed to through an XLink, but it may not have
+both. Generally when the metadata is referenced by an XLink, the
+information is not read until explicitly requested.
+
+
+\ELEMENT{property}
+
+\begin{vcode}{sib}
+<!ELEMENT property EMPTY>
+<!ATTLIST property
+   name CDATA #REQUIRED
+   value CDATA #REQUIRED
+>
+\end{vcode}
+
+Property elements are arbitrary name/value pairs to associate with a
+dataset, collection or service elements. They will be used to create
+extended semantics, and should be available to client applications,
+but not typically displayed during dataset selection. Currently they
+have no specified semantics.
+
+\ELEMENT{service}
+
+\begin{vcode}{sib}
+<!ENTITY % ServiceType "DODS | ADDE | NetCDF | Catalog | FTP | WMS |
+         % WFS | WCS | WSDL | Compound | Other">
+
+<!ELEMENT service (property*, service*)>
+<!ATTLIST service
+    name CDATA #REQUIRED
+    serviceType (%ServiceType;) #REQUIRED
+    base CDATA #REQUIRED
+    suffix CDATA #IMPLIED
+>
+\end{vcode}
+
+
+A \element{service} element represents a data service. It must contain
+a \tag{name} and a \tag{serviceType} attribute whose value comes from
+a controlled vocabulary. It must contain a \tag{name} unique within
+the catalog (note that catalogs referenced by a \element{catalogRef}
+contain their own \tag{ID} namespaces). It must have a \tag{base}
+attribute and may have an optional \tag{suffix} atribute which are
+used to construct the dataset URL (see constructing URLS). A
+\tag{service} element may contain 0 or more \element{property}
+elements. These property elements are made available to the
+application when a dataset is selected, but are not otherwise used.
+
+The scope of a \element{service} element is its sibling elements and
+their descendents, excluding catalogs referenced by
+\element{catalogRef} elements.  The service \tag{name} should be
+unique within its scope.
+
+A \element{service} element with \tag{serviceType} equal to
+\lit{Compound} must have nested service elements, and services with
+type other than \lit{Compound} may not have nested \element{service}
+elements. Nested \element{service} elements may be used directly by
+\element{dataset} or \element{access} elements. They are at the same
+scoping level as their parent \element{service}.
+
+Each \element{dataset} element must refer to one or more
+\element{service} elements that appear in a parent collection. Since
+typically there will be only a few \element{service} elements in a
+catalog but many \element{dataset} elements, a \element{service}
+element factors out the common properties of the data service for
+efficient representation within the catalog.
+
+
+\begin{comment}
+
+\section{Validation}
+
+<ul>
+<li>
+<b>Dataset (1) <datasetName>: has unknown service named <serviceName></b></li>
+
+<ul>
+<li>
+<datasetName> declares a service <serviceName> that cannot be found.
+(FATAL)</li>
+</ul>
+
+<li>
+<b>Dataset (2) <datasetName>: is selectable but no data type declared
+in it or in a parent element</b></li>
+
+<ul>
+<li>
+no dataType attribute was declared in a selectable dataset element or in
+any parent (WARN)</li>
+</ul>
+
+<li>
+<b>Dataset (3) <datasetName>: is not selectable and does not have nested
+datasets</b></li>
+
+<ul>
+<li>
+this dataset has no use (WARN)</li>
+</ul>
+
+<li>
+<b>Dataset Access (1) <datasetName>: has unknown service named <ServiceName></b></li>
+
+<ul>
+<li>
+cannot find a service of the given name within a parent element (FATAL)</li>
+</ul>
+
+<li>
+<b>Dataset Access (2) <datasetName>: cannot declare service <ServiceName>
+and serviceType <ServiceTypeName></b></li>
+
+<ul>
+<li>
+the ServiceType will be ignored (WARN)</li>
+</ul>
+
+<li>
+<b>Dataset Access (3) <datasetName>: urlPath bad syntax <urlPath></b></li>
+
+<ul>
+<li>
+urlPath could not be parsed as a URI reference (FATAL)</li>
+</ul>
+
+<li>
+<b>Dataset Access (4) <datasetName>: urlPath must be absolute <urlPath></b></li>
+
+<ul>
+<li>
+urlPath must be absolute when you create an "anonymous" service by specifying
+a serviceType but no serviceName (FATAL)</li>
+</ul>
+
+<li>
+<b>Dataset Access (5) <datasetName>: has access <urlPath> with no
+valid service</b></li>
+
+<ul>
+<li>
+no valid service is declared in access element or parent dataset.</li>
+</ul>
+
+<li>
+<b>InvCatalogFactory.readXML (1) MalformedURLException on URL <urlPath>
+<message></b></li>
+
+<ul>
+<li>
+malformed URL</li>
+</ul>
+
+<li>
+<b>InvCatalogFactory.readXML (2) cant open catalog; response = <http
+response code> <message></b></li>
+
+<ul>
+<li>
+URL does not exist</li>
+</ul>
+
+<li>
+<b>InvCatalogFactory.readXML (3) IOException on catalog <message></b></li>
+
+<ul>
+<li>
+probably a network or web server error</li>
+</ul>
+
+<li>
+<b>InvCatalogFactory.readXML (4) cant find 'version' attribute in catalog</b></li>
+
+<ul>
+<li>
+catalog element must have a "version" attribute</li>
+</ul>
+
+<li>
+<b>InvCatalogFactory.readXML (5) No factory for version <version></b></li>
+
+<ul>
+<li>
+library cannot read that version of catalog docs</li>
+</ul>
+
+<li>
+<b>InvCatalogFactory6 catalog DTD is <DTD URL> must be <http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd></b></li>
+
+<ul>
+<li>
+version 6 catalogs must use the named standard DTD</li>
+</ul>
+
+<li>
+<b>Metadata (1)  href = <XLink URL>: MalformedURLException <message></b></li>
+
+<ul>
+<li>
+The specified URL has incorrect syntax</li>
+</ul>
+
+<li>
+<b>Metadata (2)  href = <XLink URL>: IOException <message></b></li>
+
+<ul>
+<li>
+Error reading the specified URL.</li>
+</ul>
+
+<li>
+<b>Service (1) <ServiceName> type COMPOUND must have a nested service</b></li>
+
+<ul>
+<li>
+a compound service cannot be used without nested services.</li>
+</ul>
+
+<li>
+<b>Service (2) <ServiceName> type <ServiceTypeName> may not have
+nested services</b></li>
+
+<ul>
+<li>
+non-compound service cannot have nested services.</li>
+</ul>
+</ul>
+
+\end{comment}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

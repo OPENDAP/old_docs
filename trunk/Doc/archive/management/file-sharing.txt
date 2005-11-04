@@ -1,0 +1,21 @@
+File sharing for software development
+
+CVS uses a single `source repository' to store files. Users that want to edit
+a file or collection of files check those files out from the central
+repository. Edited files are checked in to the repository when they are
+ready for general use. The CVS man page documents the features of this
+system.
+
+You can get CVS from prep.ai.mit.edu. You will also need RCS and gnu diff.
+They may also be found at the `prep' site.
+
+I have set up a CVS repository on dcz.gso.uri.edu in
+/home/cvs-repository. All DODS files are stored in the subdirectory `DODS'
+within the repository. To access these files on other machines
+(e.g. zeno.gso.uri.edu) you should remote mount dcz:/home/cvs-repository to
+some convenient place (e.g., /usr/local/repository). Then in your login file
+(e.g., .bashrc, .login) add the environment variable CVSROOT and set it to
+`/usr/local/repository'.
+
+The CVS man page is a bit long - but it is the best documentation I've found
+on the system (I have a paper, but it is not very useful).

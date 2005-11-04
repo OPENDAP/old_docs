@@ -1,0 +1,77 @@
+\section{Introduction} 
+\label{introduction}
+
+This paper describes the DODS core, or toolkit, software. The toolkit
+software contains one implementation of the \Dap\ and can be used when
+building both DODS data servers and DODS surrogate libraries. The software
+described in this paper is written in \Cpp.
+
+The toolkit software is intended to serve as a foundation on which DODS
+surrogate libraries and data servers can be built. The toolkit software
+consists of two \Cpp\ class libraries and a small C library. Using the
+toolkit software, a data server and surrogate library for a new, previously
+unsupported, API can be built.  Although it is possible to build the client
+and server components from scratch, the toolkit represents a significant body
+of software, and using it can save considerable development time.
+
+The DODS toolkit software is used by specializing classes in both of the \Cpp\
+libraries so that they contain features required for a particular API. The
+two libraries contain classes which implement the \dap and which provide
+network I/O capabilities. The library which contains the DAP software is
+referred to in this document as the `DAP library' while the library which
+caontins the network I/O software is referred to as the `netio library'. 
+
+To use either the DAP library or the netio library, new \Cpp\ classes will
+have to be written. The DAP library is a collection of {\em abstract\/}
+classes\cite{stroustrup:cpp} and as such cannot be directly instantiated. In
+order to be used in any program, each of the abstract classes must be
+specialized. The netio library classes are not abstract, but are designed to
+provide only the bare network I/O capability needed by all DODS servers or
+clients (surrogate libraries). In oder to make effective use of the netio
+libary, it will need to be specialized. 
+
+Specialization of the libraries is straightforward \Cpp\ programming. The dap
+and netio libraries are themselves much larger than the specializations that
+must be written to make a complete surrogate library and/or data server. For
+release 1.x of DODS, the dap and netio libraries contain 3291 and 1188 lines
+of code respectively, while the specializations of the dap and netio
+libraries for NetCDF contain 595 and 178 lines each\footnote{Lines of
+code counts only the actual \Cpp\ statments, not comments and blank
+lines.}\footnote{In order to build a functioning client library and server
+approximately 1200 extra lines of code were required. These were 80% derived
+from the Unidata, inc. NetCDF software distribution}.
+
+The sharing of code by the the client and server reflects the object-oriented
+nature of the toolkit and its data-model centric design. There are three
+basic objects which the system manipulates: a variable which contains data,
+the DDS which describes the logical structure of a data set, and the DAS
+which contains attribute (i.e., auxillary) information about variables in the
+data set.  The DAP bases the translation of supported APIs on a common data
+model used for all APIs. The class hierarchy with {\tt BaseType} at its root
+(See Figure~\ref{fig:basetype-hier}) is the set of classes which form this
+model.  Furthermore, it is a goal of the toolkit software to be as general as
+possible; other classes, such as the DAS and DDS, are also used by both
+clients and servers because they contain member functions which apply to both
+the client and server side of the system. Each of the objects (data variable,
+DAS and DDS) has both a binary representation which can be manipulated by
+\Cpp\ software {\em and\/} a network representation (using MIME) that can be
+transmitted from one machine to another.
+
+In this document it is assumed that the reader is adding complete support for
+a new API to DODS. However, it is possible to build only a DODS server or
+client using the DODS toolkit. In most client-server systems, that would make
+little sense because without a matched client and server there is no
+system. Because the DODS client and server communicate using a prorocol that
+is shared by several clients and servers, there is already a pool of both
+clients and servers which could be used in conjunction with either a new
+server or a new client.
+
+The remainder of this document contains a description of the DAP library (see
+Section~\ref{dap-library}, the netio library (see Section~\ref{netio-library}
+and a general discussion of the construction of DODS data servers and clients
+(surrogate libraries). Unfortunately, there is neither the time nor space
+present to discuss \Cpp, object-oriented programming or client-server
+systems. However, the following references do address those topics:
+\Cpp\cite{stroustrup:cpp}\cite{meyers:cpp}\cite{cargill:cpp}, object-oriented
+programming\cite{meyer:oop}, client-server systems\cite{steven:unp}.
+

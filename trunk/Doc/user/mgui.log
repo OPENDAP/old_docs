@@ -1,0 +1,511 @@
+This is TeXk, Version 3.14159 (Web2C 7.4.5) (format=latex 2004.3.22)  20 APR 2004 15:02
+ %&-line parsing enabled.
+**mgui.tex
+(./mgui.tex
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+(/home/jimg/DODS-doc/latex/dods-book2.cls
+DODS Book Class -- Tom Sgouros - 1999
+(/usr/share/texmf/tex/latex/base/book.cls
+Document Class: book 2001/04/21 v1.4e Standard LaTeX document class
+(/usr/share/texmf/tex/latex/base/bk11.clo
+File: bk11.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@chapter=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/home/jimg/DODS-doc/latex/hyperlatex.sty
+Package: hyperlatex 2000/03/29 v2.5 LaTeX2e package for Hyperlatex mode
+
+Package: 'hyperlatex' v2.5 Otfried Cheong
+(/usr/share/texmf/tex/latex/tools/verbatim.sty
+Package: verbatim 2001/03/12 v1.5p LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks14
+\verbatim@line=\toks15
+\verbatim@in@stream=\read1
+)
+\c@htmldepth=\count88
+\c@htmlautomenu=\count89
+)
+(/usr/share/texmf/tex/generic/misc/psfig.sty
+\@unused=\write3
+\ps@stream=\read2
+\p@intvaluex=\dimen103
+\p@intvaluey=\dimen104
+
+psfig/tex 1.10-dvips
+) (/usr/share/texmf/tex/latex/base/makeidx.sty
+Package: makeidx 2000/03/29 v1.0m Standard LaTeX package
+)
+(/usr/share/texmf/tex/latex/fancyhdr/fancyhdr.sty
+\headwidth=\dimen105
+)
+(/home/jimg/DODS-doc/latex/vcode.sty
+Style-option: `vcode' (George Ferguson & Tom Sgouros)
+Package: vcode 1999/01/31 v1.0 LaTeX2e package for source code
+\vcodeindent=\skip43
+\c@CodeLineNo=\count90
+\vc@CodeLineFlag=\count91
+\vc@indent=\skip44
+\vc@testwidth=\skip45
+\vc@adjustmargin=\skip46
+) (/usr/share/texmf/tex/latex/psnfss/pifont.sty
+Package: pifont 2002/09/08 PSNFSS-v9.0a Pi font support (SPQR) 
+LaTeX Font Info:    Try loading font information for U+pzd on input line 62.
+
+(/usr/share/texmf/tex/latex/psnfss/upzd.fd
+File: upzd.fd 2001/06/04 font definitions for U/pzd.
+)
+LaTeX Font Info:    Try loading font information for U+psy on input line 63.
+
+(/usr/share/texmf/tex/latex/psnfss/upsy.fd
+File: upsy.fd 2001/06/04 font definitions for U/psy.
+))
+(/usr/share/texmf/tex/latex/misc/mparhack.sty
+Package: mparhack 2002/12/20 v1.3 (T. Sgouros and S. Ulrich)
+)
+\exampleindent=\skip47
+\chapKern=\skip48
+\chapHeadWidth=\skip49
+\figadjust=\skip50
+\emphBoxWidth=\skip51
+\emphBoxHeight=\skip52
+\emphBoxRef=\skip53
+\rulewidth=\skip54
+\ruledist=\skip55
+)
+\@input{../boiler/layout.aux}
+\openout2 = `../boiler/layout.aux'.
+
+(../boiler/layout.tex)
+\@input{../boiler/dods-def.aux}
+\openout2 = `../boiler/dods-def.aux'.
+
+(../boiler/dods-def.tex)
+\@input{mgui/mgui-def.aux}
+\openout2 = `mgui/mgui-def.aux'.
+
+(./mgui/mgui-def.tex)
+\@indexfile=\write4
+\openout4 = `mgui.idx'.
+
+
+Writing index file mgui.idx
+(./mgui.aux (./mgui/preface.aux) (./mgui/ch01.aux) (./mgui/ch02.aux)
+(./mgui/ch03.aux) (./mgui/appa.aux))
+\openout1 = `mgui.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 28.
+
+(/usr/share/texmf/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 33.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 33.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 33.
+ [1
+
+
+
+
+
+
+
+
+]
+\openout2 = `mgui/preface.aux'.
+
+ (./mgui/preface.tex
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 6.
+
+(/usr/share/texmf/tex/latex/psnfss/ot1phv.fd
+File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
+)
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 6.
+ [2
+
+
+]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <24.88> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 6.
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <24.88> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 6.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 6.
+
+Overfull \hbox (71.9989pt too wide) in paragraph at lines 6--6
+[]$[]$ 
+ []
+
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 35.
+[3]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 88.
+ [4]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 111.
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <9> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 111.
+) [5] [6
+
+
+]
+Overfull \hbox (71.9989pt too wide) in paragraph at lines 39--39
+[]$[]$ 
+ []
+
+(./mgui.toc [7]
+LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <10.95> not available
+(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 43.
+)
+\tf@toc=\write5
+\openout5 = `mgui.toc'.
+
+ (./mgui.lof)
+\tf@lof=\write6
+\openout6 = `mgui.lof'.
+
+ (./mgui.lot)
+\tf@lot=\write7
+\openout7 = `mgui.lot'.
+
+ [8] [9] [10
+
+]
+\openout2 = `mgui/ch01.aux'.
+
+ (./mgui/ch01.tex
+Chapter 1.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <100> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 6.
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <100> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 6.
+
+Overfull \hbox (123.0pt too wide) in paragraph at lines 6--6
+[]$[]$  
+ []
+
+LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <10> not available
+(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 26.
+
+Underfull \hbox (badness 1867) in paragraph at lines 26--26
+[]\OT1/phv/m/sl/10 Some find it eas-i-est to
+ []
+
+[1
+
+
+]
+psfig: searching mgui/figs/screen.ps for bounding box
+psfig: including mgui/figs/screen.ps 
+
+Overfull \hbox (33.47pt too wide) in paragraph at lines 74--74
+[]  
+ []
+
+psfig: searching mgui/figs/screen-text.ps for bounding box
+psfig: including mgui/figs/screen-text.ps 
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <12> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 83.
+[2] [3] [4]
+psfig: searching mgui/figs/urlmsg.ps for bounding box
+psfig: including mgui/figs/urlmsg.ps 
+
+Underfull \hbox (badness 1331) in paragraph at lines 146--146
+[]\OT1/phv/m/sl/10 The re-quest re-turns the
+ []
+
+psfig: searching mgui/figs/axismap.ps for bounding box
+psfig: including mgui/figs/axismap.ps 
+psfig: searching mgui/figs/dispdlg.ps for bounding box
+psfig: including mgui/figs/dispdlg.ps 
+[5]
+Underfull \hbox (badness 2096) in paragraph at lines 194--194
+\OT1/phv/m/sl/10 Di-a-log to sub-sam-ple or
+ []
+
+[6] [7]
+psfig: searching mgui/figs/dsetmenu.ps for bounding box
+psfig: including mgui/figs/dsetmenu.ps 
+
+Underfull \hbox (badness 10000) in paragraph at lines 261--261
+[]\OT1/phv/m/sl/10 Select the ge-o-graphic
+ []
+
+[8]
+psfig: searching mgui/figs/dispdlg.ps for bounding box
+psfig: including mgui/figs/dispdlg.ps 
+
+Underfull \hbox (badness 1253) in paragraph at lines 304--304
+[]\OT1/phv/m/sl/10 The GUI is just a spe-
+ []
+
+
+Underfull \hbox (badness 2564) in paragraph at lines 304--304
+\OT1/phv/m/sl/10 cial-ized form of a web
+ []
+
+[9] [10]
+psfig: searching mgui/figs/var-menu.ps for bounding box
+psfig: including mgui/figs/var-menu.ps 
+[11] [12]
+Overfull \vbox (14.0pt too high) detected at line 471
+ []
+
+
+Underfull \hbox (badness 3068) in paragraph at lines 481--481
+[]\OT1/phv/m/sl/10 Maintaining your set of
+ []
+
+[13]
+psfig: searching mgui/figs/guiserver.ps for bounding box
+psfig: including mgui/figs/guiserver.ps 
+psfig: searching mgui/figs/update.ps for bounding box
+psfig: including mgui/figs/update.ps 
+[14]
+psfig: searching mgui/figs/edit-book.ps for bounding box
+psfig: including mgui/figs/edit-book.ps 
+psfig: searching mgui/figs/edit-pmenu.ps for bounding box
+psfig: including mgui/figs/edit-pmenu.ps 
+[15] [16]
+psfig: searching mgui/figs/edit-newb.ps for bounding box
+psfig: including mgui/figs/edit-newb.ps 
+) [17]
+\openout2 = `mgui/ch02.aux'.
+
+ (./mgui/ch02.tex [18
+
+
+
+]
+Chapter 2.
+
+Overfull \hbox (123.0pt too wide) in paragraph at lines 7--7
+[]$[]$  
+ []
+
+
+Overfull \vbox (14.0pt too high) detected at line 53
+ []
+
+[19] [20]
+psfig: searching mgui/figs/menubar.ps for bounding box
+psfig: including mgui/figs/menubar.ps 
+psfig: searching mgui/figs/datamenu.ps for bounding box
+psfig: including mgui/figs/datamenu.ps 
+[21]
+Overfull \vbox (14.0pt too high) detected at line 206
+ []
+
+psfig: searching mgui/figs/resolution.ps for bounding box
+psfig: including mgui/figs/resolution.ps 
+[22]
+psfig: searching mgui/figs/dispmenu.ps for bounding box
+psfig: including mgui/figs/dispmenu.ps 
+[23]
+psfig: searching mgui/figs/prefmenu.ps for bounding box
+psfig: including mgui/figs/prefmenu.ps 
+psfig: searching mgui/figs/threshld.ps for bounding box
+psfig: including mgui/figs/threshld.ps 
+
+Overfull \vbox (14.0pt too high) detected at line 313
+ []
+
+[24]
+psfig: searching mgui/figs/clrmenu.ps for bounding box
+psfig: including mgui/figs/clrmenu.ps 
+psfig: searching mgui/figs/clrpalet.ps for bounding box
+psfig: including mgui/figs/clrpalet.ps 
+[25] [26] [27] [28] [29]
+psfig: searching mgui/figs/edit-fmenu.ps for bounding box
+psfig: including mgui/figs/edit-fmenu.ps 
+psfig: searching mgui/figs/edit-emenu.ps for bounding box
+psfig: including mgui/figs/edit-emenu.ps 
+[30] [31]
+Overfull \hbox (12.29605pt too wide) in paragraph at lines 673--674
+[]  
+ []
+
+[32]) [33]
+\openout2 = `mgui/ch03.aux'.
+
+ (./mgui/ch03.tex [34
+
+
+
+]
+Chapter 3.
+
+Overfull \hbox (123.0pt too wide) in paragraph at lines 7--7
+[]$[]$  
+ []
+
+
+Overfull \vbox (14.0pt too high) detected at line 10
+ []
+
+
+Underfull \hbox (badness 5622) in paragraph at lines 20--20
+[]\OT1/phv/m/sl/10 Start with get-ting your
+ []
+
+[35]
+Underfull \hbox (badness 6047) in paragraph at lines 65--65
+[]\OT1/phv/m/sl/10 The archive M-file de-
+ []
+
+[36] [37] [38]
+Overfull \vbox (14.0pt too high) detected at line 235
+ []
+
+
+Overfull \hbox (12.29605pt too wide) in paragraph at lines 272--273
+[]  
+ []
+
+[39]
+Underfull \hbox (badness 6461) in paragraph at lines 286--286
+[]\OT1/phv/m/sl/10 The browser uses the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 286--286
+\OT1/phv/m/n/10 and \OT1/phv/m/sl/10 in-for-ma-tion about
+ []
+
+
+Overfull \vbox (14.0pt too high) detected at line 304
+ []
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/sl' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/sl' tried instead on input line 309.
+[40]
+LaTeX Font Info:    Font shape `OT1/phv/bx/it' in size <12> not available
+(Font)              Font shape `OT1/phv/b/it' tried instead on input line 352.
+LaTeX Font Info:    Font shape `OT1/phv/b/it' in size <12> not available
+(Font)              Font shape `OT1/phv/b/sl' tried instead on input line 352.
+
+Overfull \vbox (14.0pt too high) detected at line 372
+ []
+
+[41]
+Underfull \hbox (badness 10000) in paragraph at lines 438--438
+[]\OT1/phv/m/sl/10 The browser uses
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 438--438
+\OT1/cmtt/m/n/10 datasize \OT1/phv/m/sl/10 mode to
+ []
+
+[42]
+Overfull \vbox (14.0pt too high) detected at line 455
+ []
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <9> on input line 485.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 485.
+[43]
+Overfull \vbox (14.0pt too high) detected at line 512
+ []
+
+
+Overfull \vbox (14.0pt too high) detected at line 537
+ []
+
+[44] [45]
+Overfull \vbox (14.0pt too high) detected at line 627
+ []
+
+
+Overfull \vbox (14.0pt too high) detected at line 689
+ []
+
+[46]
+Overfull \vbox (14.0pt too high) detected at line 716
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 763--763
+[]\OT1/phv/m/sl/10 These func-tions have
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 763--763
+\OT1/phv/m/n/10 Get \OT1/phv/m/sl/10 func-tions pro-vided
+ []
+
+[47] [48]
+Underfull \hbox (badness 3189) in paragraph at lines 833--833
+[]\OT1/phv/m/sl/10 The GUI must be told
+ []
+
+
+Overfull \vbox (14.0pt too high) detected at line 854
+ []
+
+) [49]
+\openout2 = `mgui/appa.aux'.
+
+ (./mgui/appa.tex [50
+
+
+
+]
+Appendix A.
+
+Overfull \hbox (123.0pt too wide) in paragraph at lines 26--26
+[]$[]$  
+ []
+
+[51] [52] [53]) [54] (./mgui.ind
+Overfull \hbox (71.9989pt too wide) in paragraph at lines 1--1
+[]$[]$
+ []
+
+[55
+
+
+] [56] [57] [58
+
+]) (./mgui.aux (./mgui/preface.aux) (./mgui/ch01.aux)
+(./mgui/ch02.aux) (./mgui/ch03.aux) (./mgui/appa.aux)) ) 
+Here is how much of TeX's memory you used:
+ 1460 strings out of 20847
+ 17112 string characters out of 195948
+ 70676 words of memory out of 350001
+ 4323 multiletter control sequences out of 10000+15000
+ 26795 words of font info for 68 fonts, out of 400000 for 1000
+ 14 hyphenation exceptions out of 10000
+ 35i,12n,48p,168b,473s stack positions out of 3000i,100n,1500p,50000b,4000s
+
+Output written on mgui.dvi (68 pages, 160640 bytes).

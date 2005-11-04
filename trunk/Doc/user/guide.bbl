@@ -1,0 +1,34 @@
+\begin{thebibliography}{1}
+
+\bibitem{emacs}
+The Free Software Foundation, Cambridge, MA.
+\newblock {\em GNU Emacs}.
+\newblock Version 19.
+
+\bibitem{kern:upe}
+Brian~W. Kernighan and Rob Pike.
+\newblock {\em The Unix Programming Environment}.
+\newblock Prentice-Hall, Inc., Englewood Cliffs, New Jersy, 1984.
+
+\bibitem{osterhout:tcl}
+John~K. Ousterhout.
+\newblock {\em Tcl and the {Tk} Toolkit}.
+\newblock Addison-Wesley, Reading, Ma., 1994.
+
+\bibitem{netcdf}
+Russ Rew, Glenn Davis, and Steve Emmerson.
+\newblock {\em NetCDF User's Guide}.
+\newblock Unidata Program Center, Boulder, Colorado, April 1993.
+\newblock Version 2.3.
+
+\bibitem{steele:clisp}
+Guy~L. {Steele Jr.}
+\newblock {\em Common Lisp: The Language}.
+\newblock Digital Press, Bedford, Massachusetts, 1984.
+
+\bibitem{xdr}
+Sun Microsystems, Mountain View, California.
+\newblock {\em XDR}.
+\newblock Version 4.
+
+\end{thebibliography}

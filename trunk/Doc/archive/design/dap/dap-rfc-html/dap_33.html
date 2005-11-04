@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:11 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- DDS</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_34.html"><img alt="DODS" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_32.html"><img alt="DAS" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>DDS</b></td></tr></table>
+<h3>DDS</h3>
+
+The DDS entity is returned as the payload of a message whose
+<tt>Content-Type</tt> header MUST be <tt>text/plain</tt>. The body of the
+response contains text which holds all of the variables, their names and
+datatypes.
+<p>The DDS is a textual description of the variables and their names and types
+that compose the entire data set. The data set descriptor syntax is similar
+too the variable declaration/definition syntax of <font size="-1">C</font> and C++. A
+variable that is a member of one of the base type classes is declared by by
+writing the class name followed by the variable name. The type constructor
+classes are declared using <font size="-1">C</font>'s brace notation.
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+dds-doc </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "dataset" "&#123;" *type-decl "&#125;" id ";" </td></tr>
+<tr><td colspan="1" align="LEFT">
+type-decl </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> simple-decl | list-decl | array-decl </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> </td><td colspan="1" align="LEFT"> | structure-decl | sequence-decl | grid-decl </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<p>The <tt>dataset</tt> keyword has the same syntactic function as
+<tt>structure</tt> but is used for the specific job of enclosing the entire
+dataset even when it does not technically need an enclosing element (because
+at the outermost level it is a single element such as a structure or
+sequence).
+<p>An example DDS is shown in Figure&nbsp;<a HREF="#1">*</a>.
+<p><p><pre class="cb">
+dataset {
+   int catalog_number;
+   sequence {
+      string experimenter;
+      int32 time;
+      structure {
+         float64 latitude;
+         float64 longitude;
+      } location;
+      sequence {
+         float depth;
+         float temperature;
+      } xbt;
+   } casts;
+} data;
+</pre>
+<div align="center">Example Dataset Descriptor Entry.</div>
+<A NAME="1">&nbsp;</A>
+
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_34.html"><img alt="DODS" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_32.html"><img alt="DAS" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>DDS</b></td></tr></table></body></html>

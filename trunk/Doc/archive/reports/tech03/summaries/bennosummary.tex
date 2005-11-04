@@ -1,0 +1,182 @@
+Benno Blumenthal was not able to attend the meeting due to the
+blizzard.  However, his presentation is available on the web.  A
+mirror of the \ac{IRI} Data Library has been set up using
+\ac{DODS}/\ac{OPeNDAP} and \ac{THREDDS} to transfer the data,
+metadata, and collection structure between the two sites.  Standard
+\ac{HTTP} software is used to cache the metadata, and custom code to
+incrementally cache the data on the mirror site. Once the code is more
+fully developed, a similar system should be able to cache from the
+entire collection of \ac{THREDDS} servers.
+
+The mirroring scheme has three key parts: a server, a client, and a cache. 
+
+\begin{enumerate}
+  \item Server - serves datasets using \ac{THREDDS} and \ac{DODS} 
+  \item Client - views, manipulates, and re-serves a \ac{THREDDS}/\ac{DODS} 
+        dataset collection 
+  \item Cache - maintains a local copy of the information 
+\end{enumerate}
+
+Suggestions - Our experience leads to some suggestions for both the 
+\ac{THREDDS} and \ac{DODS}/\ac{OPeNDAP} standards. 
+
+\begin{enumerate}
+
+  \item Proper HTTP Headers
+
+    \begin{itemize} 
+    \item XML files and DODS/OPeNDAP responses should have headers so
+      that they are properly cachable. This includes at a minimum the
+      Last-Modified header, but could also require
+    \item \lit{Cache-Control:} public lines and \lit{Vary:} specifications
+      depending on the behavior of the server. We, for example,
+      include \lit{Vary:} Authorization lines on pages that are derived from
+      password-protected datasets.
+    \end{itemize}
+    
+  \item \lit{Content-Length} also helps increase reliability: caches
+    will not cache responses that do not match their
+    \lit{Content-Length} specification.
+
+     \begin{itemize}
+       
+     \item Most http servers serve normal files with last-modified
+       tags; those servers require cgi scripts to set those header
+       lines if the pages are to be cachable.
+       
+     \item Ingrid does display the last-modified information, which
+       can be helpful in checking a given collection or dataset.
+
+     \end{itemize}
+
+     There are, of course, other ways of looking at the HTTP headers
+     to make sure that ones servers are delivering last-modified tags
+     on a given WWW response.
+
+  \item DODS Request Size Negotiation
+
+     \begin{itemize}
+       
+     \item One way to get good transfer rates is to ask for larger
+       pieces: this is a pure win for servers that stream, and even
+       for servers that process in a single chunk, the ideal size
+       could very well be larger than a single lat/lon slice. Short of
+       the client trying a whole bunch of sizes and keeping track of
+       the results, there is no good way to figure out the optimal
+       size. And it is easy to end up with a server that has
+       ill-defined behavior when the request is too large, the classic
+       response being an error message inserted in the data stream.
+       
+     \item The classic C-behavior where the client asks for as much as
+       it wants and the server returns as much as it can has a certain
+       grace-and-style.  It is not entirely clear whether we can achieve the
+       same.
+
+        \item Given gigabit ethernet, can we really stick with a 2GB 
+          limit on the size of a single request? 
+      \end{itemize}
+
+  \item global aliases
+     \begin{itemize}
+       
+     \item THREDDS has an interesting ability to have multiple OPeNDAP
+       servers for a particular dataset. This means that a server that
+       is re-serving a dataset could make that particularly clear by
+       also marking the dataset by including an attribute containing
+       the URL of the original DODS server. There are a few cases
+       where one might want to carry this farther:
+       
+     \item If one has picked out one variable from a much larger
+       dataset (e.g. the best-estimate from a dataset which also
+       includes number-of-observations, std-dev, smoothed, unsmoothed
+       version), it would be nice if that relationship could be
+       indicated as well. If only some of the metadata has changed, it
+       would be nice if the client could figure out that the data
+       itself does not need to be recopied.
+     \end{itemize}
+     
+   \item Literature references in XML.  Frequently (one hopes) the
+     dataset metadata includes literature references. There must be
+     one or more XML standards for transmitting such information: it
+     would be great if we could pick and support one.
+     
+   \item Visualization metadata.  Some visualization metadata should
+     get transmitted with the dataset, particularly preferred
+     colorscales. At the moment, we have a list of named colorscales
+     and carry the name across, but we would prefer to be able to
+     describe an arbitrary colorscale.  My preference would be to
+     transmit this as a specialized DODS dataset, with the independent
+     variable corresponding to the data values and the dependent
+     variable(s) giving the color values. This would be one example of
+     an attribute being a reference to (another) DODS
+     dataset/variable.
+
+  \item Short and long names for datasets
+
+    \begin{itemize}
+       
+    \item Language-based clients can make good use of short as well as
+      more complete descriptions of datasets. THREDDS should
+      facilitate that.
+      
+    \item For example, the CDC dataset that I used as an earlier
+      example is represented in Ingrid as
+
+
+\begin{vcode}{bs} 
+ THREDDS
+  (Public Climate Data from the NOAA-CIRES Climate Diagnostics Center) @@
+  .CPC\_.25x.25\_Daily\_US\_UNIFIED\_Precipitation
+  (Monthly Accumulated Precipitation) @@
+\end{vcode}
+
+     \item and the dataset that I read via THREDDS from the Data
+     Library is  
+
+\begin{vcode}{bs} 
+ THREDDS
+  (IRI/LDEO Climate Data Library) @@
+  .NOAA .NCEP .EMC .CMB .GLOBAL .Reyn\_SmithOIv2 .weekly .ssta
+\end{vcode}
+     
+   \item While the long names are good for display, it is very useful
+     to have short unique names that can be used to concisely refer to
+     the datasets on a server or a server in a collection of servers.
+     We all concoct these short names for internal use: THREDDS should
+     let us share them with each other. Something as simple as having
+     both \lit{name} and \lit{long\_name} in the standard with only
+     \lit{name} required would suffice to allow data providers to
+     share their short names. 
+
+
+   \end{itemize}
+
+ \item  Arrays of bytes vs. strings
+
+   
+   Some servers translate NetCDF arrays of byte data into DODS arrays
+   of one character strings. Easier for client writers if you leave
+   them as byte arrays or---better yet---translate them to multi-character
+   strings.  If you do not translate to multi-character strings, the
+   client has to figure out that it needs to translate to
+   multi-character strings, and the client does not even know that the
+   data came from NetCDF files in the first place, i.e. it has an even
+   harder problem than the NetCDF-to-DODS server did.
+
+\end{enumerate}
+
+% $Id$
+%
+% $Log: bennosummary.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

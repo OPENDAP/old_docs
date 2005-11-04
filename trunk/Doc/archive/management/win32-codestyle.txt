@@ -1,0 +1,38 @@
+
+To move toward using same code on both Win32 and UNIX (without ifdef's),
+the following coding styles have to be enforced:
+
+1)  Setup any default args to a method in the declaration of that
+    method and only in the declaration.  Do not repeat (or override)
+    the default arg in the method definition.  That is redundant and
+    Visual C++ will flag it as an error at compile time.
+
+2)  Make no references to stdin, stdout, stderr, cin, cout, cerr in
+    the core library.  Any non-console win32 application that links with
+    the core will not be able to use that information and anything sent
+    to them will, in effect, disappear into nothingness.
+
+3)  If you declare a function to return a particular type, make sure
+    you return that type.  Unix compilers have lax rules in this regard,
+    but visual C++ flags it as an error or a warning.
+
+4)  If you add a function to the idl command line client, you must insert
+    its' name in the "idl_dods.def" file.
+
+5)  New lines in string constants are not allowed by VC++.
+
+
+Other considerations that must be satisfied by ifdef's
+------------------------------------------------------
+
+A)  Main must be declared as void under win32 and it must have a return
+    statement.
+
+B)  Don't include unistd.h under win32.
+
+$Id$
+
+$Log: win32-codestyle.txt,v $
+Revision 1.1  2000/08/31 01:38:20  jimg
+By Rob Morris
+

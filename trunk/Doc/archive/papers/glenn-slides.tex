@@ -1,0 +1,247 @@
+
+% Slides for a general presenation on DODS.
+% From Glenn Flierl. 3/21/94
+
+\nopagenumbers
+\magnification=\magstep3
+\tolerance=1000
+\baselineskip 15 pt
+\def\ni{\noindent}
+\def\s#1{\medskip\noindent{\bf #1}}
+\def\ss#1{\medskip\noindent{\it #1}}
+
+\centerline{\bf Distributed Ocean Data System (DODS)}
+\centerline{Sponsored by The Oceanography Society}
+
+\s{Purpose:}
+
+\item{$\cdot$} To develop a client--server system which will provide
+researchers with a simple way to locate, acquire, and use ocean data
+from a wide variety of sources.
+
+\item{$\cdot$} To give researchers and data archives an easy way to
+distribute their information.
+
+
+\s{Process:}
+
+\item{$\cdot$} Workshop series to define system and guide development
+
+\itemitem{$\cdot$} \# 1: Alton Jones Campus, URI, 9/28/93--10/1/93.
+Outline goals, architecture, communications protocols
+
+\itemitem{$\cdot$} \# 2: 94. Presentation of prototype, requirements
+for developing data servers
+
+\itemitem{$\cdot$} \# 3: TOS, 95. Demonstration for oceanographic
+community.
+
+\item{$\cdot$} Systems programmer (James Gallagher) plus scientists
+guiding development.
+
+\vfill\eject
+
+\centerline{\bf Approach: Data Access}
+
+\s{Application Program Interfaces (API):}
+
+User programs generally access data through some kind of
+application program interface which is responsible for reading the
+data files or querying the database and returning the results (usually
+as numbers) to the main program. Such a subroutine library
+
+\item{$\cdot$} provides the access to data
+
+\item{$\cdot$} hides details of the data format
+
+\item{$\cdot$} is formally defined
+
+\item{$\cdot$} may specify data model
+
+\s{Examples}
+
+\item{$\cdot$}netCDF
+
+\item{$\cdot$}JGOFS
+
+\item{$\cdot$}hdf
+
+\item{$\cdot$}MATLAB
+
+\item{$\cdot$}stdio (open, read, close)
+
+\vfill\eject
+
+\s{Remote Procedure Calls (RPC):}
+
+RPC's split the API between ``client stubs'' and ``server stubs.'' The
+former package the inputs from the application code's calls and send
+them over the network to the server stubs which execute a version of
+the original calls to get the data. The results are then packaged and
+returned to the client stub.  It, in turn, passes them back to the
+application code.
+
+\item{$\cdot$} permits components to be distributed
+
+\item{$\cdot$} hides details of communications
+
+\item{$\cdot$} can handle different machine formats for numbers (XDR)
+
+\s{Simple Data Server:}
+
+By working at the API level, applications need only be re--linked in
+order to be able to use data over the network. Neither the application
+code nor the data format needs to be changed. Calls for local and
+remote access appear the same (only the ``file name'' is replaced by a
+``universal resource locator''--like string giving the extra
+information about what machine is serving the information, etc.)
+
+\vfill\eject
+
+\s{Translating Server:}
+
+In some cases, the data to be served may not be accessible with the
+chosen API (e.g., one could choose to serve data written as
+unformatted records by a FORTRAN program as though it were netCDF). 
+
+\vfill\eject
+
+\s{Translators:}
+
+In many cases, the application programs users are working with will
+not have an API matching that expected by the server of the data. In
+this case, an additional process will be interposed. This
+``translator'' accepts calls from one API and builds the required
+information by making calls to a second, different API --- that
+required by the server.
+
+\vfill\eject
+\centerline{\bf DODS Data Model}
+
+Often the data model for a particular data set is not specified in the
+data set itself. Yet this kind of information is important in
+determining what operations are supported by a server and in
+translating from one API to another. DODS needs
+
+\item{$\cdot$} A method for expressing the data model of a server
+
+\item{$\cdot$} Procedure calls for obtaining that information.
+
+\item{$\cdot$} Ways for the application to specify operations and for
+the server to get this information.
+
+
+\vfill\eject
+
+\s{Scientific Data:}
+
+\ss{Functions:} Much of our data can be expressed as vector functions
+$$
+\eqalign{
+data=\vec f(\vec x)~~~~ &{\rm with}~~
+f_1=u,~f_2=v,~f_3=T,...\cr
+&x_1=lon,~x_2=lat,~x_3=press,~x_4=time,...\cr
+}
+$$
+For these, we can subset by (a) projection [picking only particular
+components of $\vec f$], (b) subsetting the domain [usually in terms
+of comparisons and Boolean operations], (c) subsetting the range.
+
+\ss{Grids:} A special subclass of functions are gridded data in which
+$$
+X=\vec x \otimes \vec y...~~~~ {\rm and}~~ data=\vec f(X,...)
+$$
+In some cases, the grid may be mapped to a distorted structure.
+Congruent functions (e.g. hyperslab,...)transform gridded data into
+another gridded set. Range operations and many domain operations will
+not preserve the gridded character.
+
+\vfill\eject
+\ss{Sequences:} Here each point is a tuple of values
+$$
+data=\{\vec g_1,~ \vec g_2,...\}
+$$
+including both independent and dependent variables on the same
+footing. While functions can be ``unravelled'' into sequences, the
+reverse operation may not be possible. Operations include projection
+and selection [subsetting by value]. There are no distinctions between
+independent and dependent variables. A ``relation'' is a sequence with
+the order being immaterial; in much of our data, however, the ordering
+does have implicit meaning.
+
+\ss{Data Set:} A data set is a collection of related elements of the
+types described above.
+
+\ss{Aggregation:} Often data can be usefully aggregated so that
+repeated information need not be transferred.
+
+\ss{Unions:} Different forms may be used for the same
+fundamental quantity, most notably time. The data model needs to
+transmit the information that universal time, or dd/mm/yy or yymmdd
+can be used interchangeably.
+
+\vfill\eject
+\s{Data Model Information:}
+
+\item{$\cdot$} Variable Information
+\itemitem{$\cdot$} Names
+\itemitem{$\cdot$} Types (real, string,...)
+\itemitem{$\cdot$} Attributes
+\item{$\cdot$} Functional Dependences
+\item{$\cdot$} Grid Definitions
+\item{$\cdot$} Aggregation Information
+
+\s{Operations:}
+
+With these definitions, we should be able to request that the server
+perform projections, selections [Boolean combinations of comparisons,
+regular expressions] on the data. In the case of gridded data, we may
+have more complex hyperslab operations. Since many of the API's do not
+explicitly include such operations, DODS will specify them as part of
+the URL (object name). 
+
+\vfill\eject
+\s{Virtual File System:}
+
+In some cases, possible selections can be presented to the users as a
+directory structure, e.g.
+
+{\tt
+\ni\quad cruise-AII
+
+\ni\quad\quad station01
+
+\ni\quad\quad\quad cast1
+
+\ni\quad\quad\quad cast2
+
+\ni\quad\quad\quad cast3
+
+\ni\quad\quad\quad cast4
+
+\ni\quad\quad station02
+
+\ni\quad\quad\quad cast1
+
+\ni\quad\quad\quad cast2
+
+\ni\quad...
+}
+
+\ni so that selecting {\tt /cruise-AII/station02/cast2} would actually
+be doing a database operation 
+
+{\tt cruise==AII\&station==02\&cast==2}.
+
+\ni The pseudodirectory provides a convenient, familiar, and intuitive
+organizational structure; in addition, it should be possible to
+provide the equivalent of symbolic links, equating a short name to a
+complex URL.
+
+
+\bye
+\item{$\cdot$} 
+\item{$\cdot$} 
+\item{$\cdot$} 
+\item{$\cdot$} 
+\item{$\cdot$} 

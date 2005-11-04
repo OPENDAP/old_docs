@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Adding Local Access to a DODS Client Library</TITLE>
+<META NAME="description" CONTENT="Adding Local Access to a DODS Client Library">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="previous" HREF="node14.html">
+<LINK REL="up" HREF="node13.html">
+<LINK REL="next" HREF="node20.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html344"
+  HREF="node20.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html340"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html336"
+  HREF="node18.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html342"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html345"
+  HREF="node20.html">Conclusion</A>
+<B> Up:</B> <A NAME="tex2html341"
+  HREF="node13.html">User Programs and DODS</A>
+<B> Previous:</B> <A NAME="tex2html337"
+  HREF="node18.html">Functions that Write to</A>
+ &nbsp; <B>  <A NAME="tex2html343"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00042000000000000000">
+Adding Local Access to a DODS Client Library</A>
+</H2>
+
+<P>
+In order to ensure that programs, once they have been re-linked with DODS
+client libraries, can still access local data stores (e.g., files) is is
+necessary to add software which can read those local data to the functions
+in the re-implemented library. Typically in each function in the new library
+the state information accessed by the identifier passed to the function is
+used to determine if the call is to access local or remote data. In the
+former case, the function must do exactly what the original implementation
+of the API would have done to satisfy the function call. 
+
+<P>
+It is wasteful to completely recode the entire API just to achieve local
+access, however, it is also not possible to simply link the user program with
+both the DODS client library and the original library. It is not possible to
+link with both the DODS client library and the original library because both
+must <EM>define the same external symbols</EM>. Linking with both libraries
+will produce link-time conflicts on most computers or result in an
+incorrectly linked binary image.
+
+<P>
+In order to use the original implementation of the library, it is necessary to
+rename all of its external symbols that will appear in user programs. For
+example, if an API defines four functions (open, close, read and write) and
+one global variable (errno), then each of those must be renamed to some new
+symbol (e.g., orig_open, orig_close, ...). These source modules can then
+be added to the set of object modules used to build the DODS client
+library. Of course the DODS client library must also include the original
+external symbol names; one approach is to recode each of the APIs external
+symbols as a function which either calls the DODS-replacement or the original
+function (now renamed so that the symbols do not conflict) depending on
+whether the access is local or remote.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html344"
+  HREF="node20.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html340"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html336"
+  HREF="node18.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html342"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html345"
+  HREF="node20.html">Conclusion</A>
+<B> Up:</B> <A NAME="tex2html341"
+  HREF="node13.html">User Programs and DODS</A>
+<B> Previous:</B> <A NAME="tex2html337"
+  HREF="node18.html">Functions that Write to</A>
+ &nbsp; <B>  <A NAME="tex2html343"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

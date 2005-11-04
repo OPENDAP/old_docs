@@ -1,0 +1,583 @@
+\def\filename{acronym}
+\def\fileversion{v1.6}
+\def\filedate{2000/05/21}
+\def\docdate {2000/05/21}
+% \iffalse
+%
+% Doc-Source file to use with LaTeX2e
+% Copyright 1994,95,96 by Tobias Oetiker (oetiker@ee.ethz.ch),
+%           2000 by Tobias Oetiker, Heiko Oberdiek, David Sterratt,
+%                   Ingo Lepper
+% all rights reserved.
+%
+% It may be distributed under the conditions of the LaTeX Project Public
+% License, either version 1.2 of this license or (at your option) any
+% later version.  The latest version of this license is in
+%    http://www.latex-project.org/lppl.txt
+% and version 1.2 or later is part of all distributions of LaTeX
+% version 1999/12/01 or later.
+%
+% The list of all files belonging to the `acronym' package is
+% given in the file `readme'.
+%
+%<*driver>
+\documentclass{ltxdoc}
+\begin{document}
+\DocInput{acronym.dtx}
+\end{document}
+%</driver>
+% \fi
+% \CheckSum{210}
+%  \changes{v1.6}{2000/05/21}{Added the smaller option and
+%    macros to control the appearance of \cs{acf} and \cs{acs} 
+%    provided by Ingo Lepper (lepper@math.uni-muenster.de)}
+%  \changes{v1.5}{2000/05/11}{Added new commands for handling
+%    English plural forms of acronyms and the footnote option provided
+%    by David.C.Sterratt@ed.ac.uk}
+%  \changes{v1.4}{2000/02/09}{Optional argument for \cs{acro} and
+%    \cs{acrodef}, allowing formatting of the acronym itself
+%    provided by Heiko Oberdiek (oberdiek@ruf.uni-freiburg.de)}
+%  \changes{v1.3}{1996/09/19}{Fixed dtx file ... could not be printed}
+%  \changes{v1.2}{1996/08/14}{Added \cs{acl} command patch provided by
+%                Ted Stern (stern@amath.washington.edu)}
+%
+% \title{%
+%   An Acronym Environment for \LaTeXe\thanks{^^A
+%    This file has version \fileversion\ last revised \filedate
+%   }^^A
+% }
+% \author{Tobias Oetiker}
+% \maketitle
+%
+% \section{Introduction}
+%    When writing a paper on cellular mobile radio I started to use a
+%    lot of acronyms. This can be very disturbing for the reader,
+%    as he might not know all the used acronyms. To help the reader
+%    I kept a list of all the acronyms at the end of my paper.
+%
+%    This package makes sure, that all acronyms used in the text are
+%    spelled out in full at least once.
+%
+% \section{The user interface}
+%    The package provides several commands and one environment
+%    for dealing with acronyms. Their appearance can be controlled by
+%    two package options and three macros.
+%
+% \subsection{Acronyms in the Text}
+%
+%    \DescribeMacro{\ac}
+%    To enter an acronym inside the text, use the
+%    \begin{quote}
+%     |\ac{|\meta{acronym}|}|
+%    \end{quote}
+%    command. The first time you use an acronym, the full name of the
+%    acronym along with the acronym in brackets will be printed. If you
+%    specify the |footnote| option while loading the package, the full
+%    name of the acronym is printed as a footnote.
+%    The next time you access the acronym only the acronym will
+%    be printed.
+%
+%    \DescribeMacro{\acf}
+%    If later in the text again the Full Name of the acronym should be
+%    printed, use the command
+%    \begin{quote}
+%     |\acf{|\meta{acronym}|}|
+%    \end{quote}
+%    to access the acronym. It stands for ``acronym full'' and it
+%    always prints the full name
+%    and the acronym in brackets.
+%
+%    \DescribeMacro{\acs}
+%    To get the short version of the acronym, use the command
+%    \begin{quote}
+%     |\acs{|\meta{acronym}|}|
+%    \end{quote}
+%
+%    \DescribeMacro{\acl}
+%    Gives you the expanded acronym without even mentioning the
+%    acronym.
+%    \begin{quote}
+%     |\acl{|\meta{acronym}|}|
+%    \end{quote}
+%
+%    \DescribeMacro{\acp}
+%    Works in the same way as \cmd{\ac}, but makes the short and/or
+%    long forms into  English plurals by adding an `s'.
+%
+%    \DescribeMacro{\acfp}
+%    Works in the same way as \cmd{\acf}, but makes the short and
+%    long forms into  English plurals by adding an `s'.
+%
+%    \DescribeMacro{\acsp}
+%    Works in the same way as \cmd{\acs}, but makes the short 
+%    form into an English plural by adding an `s'.
+%
+%    \DescribeMacro{\aclp}
+%    Works in the same way as \cmd{\acl}, but makes the long form
+%    into an English plural by adding an `s'.
+%
+% \subsection{Customization}
+%    
+%    The appearance of \cmd{\acs} and \cmd{\acf} can be configured 
+%    in various ways. Of main importance are the package options:
+%    \begin{description}
+%      \item[\normalfont|footnote|] 
+%         makes the full name of the acronym appear as a footnote. 
+%      \item[\normalfont|smaller|]
+%         lets the acronyms appear a bit smaller than the surrounding 
+%         text. This is in accord with typographic convention.
+%         The |relsize| package is required.
+%    \end{description}
+%
+%    There are three lower-level macros controlling the output. 
+%    Any acronym printed by \cmd{\acs} is formatted 
+%    by \DescribeMacro{\acsfont}\cmd{\acsfont}. Similarly, unless the 
+%    option |footnote| is specified, \DescribeMacro{\acffont}\cmd{\acffont} 
+%    handles the output of \cmd{\acf}, where the included acronym 
+%    goes through \DescribeMacro{\acfsfont}\cmd{\acfsfont} (and 
+%    \cmd{\acsfont}). 
+%    The plural forms are treated accordingly. Usually the 
+%    three macros do nothing. To give an example, the option |smaller| 
+%    makes \cmd{\acsfont} use the command \cmd{\textsmaller} from the 
+%    |relsize| package:
+%    \begin{quote}
+%      |\renewcommand*{\acsfont}[1]{\textsmaller{#1}}|
+%    \end{quote}
+%
+% \subsection{Defining Acronyms}
+%    \DescribeEnv{acronym}
+%    With the |acronym| environment you define all the acronyms used
+%    throughout your document. It is possible to add a longer
+%    description to each acronym definition.
+%
+%    In the |acronym| environment, acronyms are defined with the
+%    \DescribeMacro{\acro} command:
+%    \begin{quote}
+%      |\acro{|\meta{acronym}|}[|\meta{short name}^^A
+%        |]{|\meta{full name}|}| \meta{explanation}
+%    \end{quote}
+%    The first argument \meta{acronym} is the acronym string itself
+%    and is used in the commands of the previous section such as
+%    \cmd{\ac} or \cmd{\acl}, that print the different forms of the
+%    acronym.
+%
+%    Because internal commands take \meta{acronym} for storing
+%    the different forms of the acronym, the \TeX\ code for the
+%    acronym is limited by \cmd{\csname}.
+%    If the acronym requires problematic or complicate \TeX\ stuff
+%    (font commands, \dots), then this code
+%    can be given in the optional argument \meta{short name}.
+%    The first argument \meta{acronym} is then a simpler string
+%    to identify the acronym.
+%    For example, an acronym for water can look like this:
+%    \begin{quote}
+%      |\acro{H2O}[$\mathrm{H_2O}$]{water}|
+%    \end{quote}
+%    Then |\acs{H2O}| gets ``$\mathrm{H_2O}$'' and
+%    |\acl{H2O}| prints ``water''.
+%
+%    The |acronym| environment uses the |description| environment
+%    and the whole \cmd{\acro} definition acts like:
+%    \begin{quote}
+%      |\item[|\meta{acronym}|]|\meta{full name} \meta{explanation}
+%    \end{quote}
+%    Or, if the optional argument \meta{short name} is given, it looks like:
+%    \begin{quote}
+%      |\item[|\meta{short name}|]|\meta{full name} \meta{explanation}
+%    \end{quote}
+%
+%    \DescribeMacro{\acrodef}
+%    If you want to define acronyms which do not appear in the |acronym|
+%    environment, you can use the command:
+%    \begin{quote}
+%       |\acrodef{|\meta{acronym}|}[|\meta{short name}^^A
+%       |]{|\meta{full name}|}|
+%    \end{quote}
+%
+%    All acronym definitions, made by \cmd{\acro} or \cmd{\acrodef}
+%    are added to the |.aux| file. Therefore they are available
+%    from start-up in the next run. And the acronym definitions
+%    can be anywhere in the text.
+%
+% \clearpage
+% \section{An example file}
+%
+%    \begin{macrocode}
+%<*acrotest>
+\documentclass{article}
+\usepackage{acronym}
+\begin{document}
+\section{Intro}
+In the early nineties, \acs{GSM} was deployed in many European
+countries. \ac{GSM} offered for the first time international
+roaming for mobile subscribers. The \acs{GSM}'s use of \ac{TDMA} as
+its communication standard was debated at length. And every now
+and then there are big discussion whether \ac{CDMA} should have
+been chosen over \ac{TDMA}.
+
+If you want to know more about \acf{GSM}, \acf{TDMA}, \acf{CDMA}
+and \ac{oa}, just read a book about mobile communication.
+
+\subsection{Some chemistry and physics}
+\ac{NAD+} is a major electron acceptor in the oxidation of fuel
+molecules. The reactive part of \ac{NAD+} is its nictinamide ring,
+a pyridine derivate.
+
+One mol consists of \acs{NA} atoms or molecules. There is a relation
+between the constant of Boltzmann and the \acl{NA}:
+\begin{equation}
+  k = R/\acs{NA}
+\end{equation}
+
+\section{Acronyms}
+\begin{acronym}
+ \acro{GSM}{Global System for Mobile communication}.
+      \acs{GSM} is the new standard for digital cellular
+      communication in Europe.
+ \acro{TDMA}{Time Division Multiple Access}.
+      Some would say, that this is not as good as \ac{CDMA}.
+ \acro{CDMA}{Code Division Multiple Access}. The spread spectrum
+      modulation used in the Qualcomm system.
+ \acrodef{oa}{other acronyms}
+ \acro{NAD+}[NAD\textsuperscript{+}]{Nicotinamide Adenine Dinucleotide}.
+ \acro{NA}[\ensuremath{N_{\mathrm A}}]{Number of Avogadro}:
+        $\acs{NA} = 6.022045\cdot10^{23}\,\mathrm{mol}^{-1}$
+\end{acronym}
+\end{document}
+%</acrotest>
+%    \end{macrocode}
+%
+% \StopEventually{}
+% \clearpage
+%
+% \newcommand{\fnacro}{\cmd{\fn@}\texttt{\textsl{<acronym>}}}
+%
+% \section{The implementation}
+%    First we test that we got the right format and name the package.
+%    \begin{macrocode}
+%<*acronym>
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{acronym}
+  [\filedate\space\fileversion\space Support for acronyms]
+%    \end{macrocode}
+%
+% \subsection{Defining acronyms}
+%
+%    There are three commands that define acronyms:
+%    \cmd{\newacro}, \cmd{\acrodef}, and \cmd{\acro}.
+%    They are called with the following arguments:
+%    \begin{quote}
+%       |\acro{|\meta{acronym}|}[|\meta{short name}^^A
+%         |]{|\meta{full name}|}|
+%    \end{quote}
+%    There are two possibilities to
+%    scan the optional argument: It can be done by
+%    each command, or it can be done by a help command,
+%    that uses the information of the first argument to
+%    provide the optional argument, if it is not given. So the next
+%    command always have an optional argument.
+%    Here the second method is used, because it keeps the definition
+%    of the acronym defining commands simpler.
+%
+%    \begin{macro}{\AC@dblargafter}
+%    The internal help macro \cmd{\AC@dblargafter} implements
+%    the second method:
+%    \begin{quote}
+%      |\AC@dblargafter{first}\cmd[opt]...| calls
+%        |\cmd{first}[opt]...| and\\
+%      |\AC@dblargafter{first}\cmd...| gives
+%        |\cmd{first}[first]...|
+%    \end{quote}
+%    \begin{macrocode}
+\newcommand{\AC@dblargafter}[2]{%
+  \@ifnextchar[{#2{#1}}{\AC@@dblargafter{#1}{#2}}%
+}
+\newcommand\AC@@dblargafter{}
+\def\AC@@dblargafter#1#2{#2{#1}[#1]}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\newacro}
+%    The internal macro \cmd{\newacro} stores the \meta{full name}
+%    and eventually the \meta{short name} of the acronym in the
+%    command \fnacro. The \meta{short name} is only
+%    saved, if it differs from the \meta{acronym}.
+%    \begin{macrocode}
+\newcommand*{\newacro}[1]{\AC@dblargafter{#1}\AC@newacro}
+\newcommand\AC@newacro{}
+\def\AC@newacro#1[#2]#3{%
+  \begingroup
+    \def\reserved@a{#1}%
+    \def\reserved@b{#2}%
+    \ifx\reserved@a\reserved@b
+      \expandafter\gdef\csname fn@#1\endcsname{{#3}}%
+    \else
+      \expandafter\gdef\csname fn@#1\endcsname{{#3}{#2}}%
+    \fi
+  \endgroup
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\acrodef}
+%    The user command \cmd{\acrodef} calls \cmd{\newacro} and
+%    writes it into the |.aux| file.
+%    \begin{macrocode}
+\newcommand*{\acrodef}[1]{\AC@dblargafter{#1}\AC@acrodef}
+\newcommand\AC@acrodef{}
+\def\AC@acrodef#1[#2]#3{%
+  \newacro{#1}[{#2}]{#3}%
+  \if@filesw
+    \begingroup
+      \def\reserved@a{#1}%
+      \def\reserved@b{#2}%
+      \ifx\reserved@a\reserved@b
+        \protected@write\@auxout{}{\protect\newacro{#1}{#3}}%
+      \else
+        \protected@write\@auxout{}{\protect\newacro{#1}[{#2}]{#3}}%
+      \fi
+    \endgroup
+  \fi
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{acronym}
+%    I like to have a list of all acronyms I used in my document.
+%    Therefore you can define your acronyms inside the |acronym|
+%    environment. Not only stating the name of the acronym, but
+%    optionally also giving an explanation on it.
+%    \begin{quote}
+%      |\begin{acronym}|\\
+%      |\acro{CDMA}{Code Division Multiple Access}. The spread ...|\\
+%      |\end{acronym}|
+%    \end{quote}
+%    \begin{macro}{\acro}
+%    Acronyms can be defined with the user command \cmd{\acro}
+%    in this |acronym| environment:
+%    \begin{macrocode}
+\newenvironment{acronym}{%
+  \begin{description}
+    \providecommand*{\acro}[1]{\AC@dblargafter{##1}\AC@acro}%
+}{%
+  \end{description}%
+}
+\newcommand\AC@acro{}
+\def\AC@acro#1[#2]#3{%
+  \acrodef{#1}[{#2}]{#3}%
+  \item[{#2}] #3%
+}
+%    \end{macrocode}
+%    \end{macro}
+%    \end{macro}
+%
+% \subsection{Using acronyms}
+%
+%    \begin{macro}{\AC@check}
+%    If the acronym is undefined, the internal macro \cmd{\AC@check}
+%    warns the user and  provides a default for the full name.
+%    The acronym is printed fat with an exclamation mark at the end.
+%    \begin{macrocode}
+\newcommand*{\AC@check}[1]{%
+  \expandafter\ifx\csname fn@#1\endcsname\relax
+    \PackageWarning{acronym}{Acronym `#1' is not defined}%
+    \expandafter\gdef\csname fn@#1\endcsname
+      {{\textbf{#1!}}}%
+  \fi
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\acsfont}
+%    \begin{macro}{\acffont}
+%    \begin{macro}{\acfsfont}
+%    The appearance of the output of the commands \cmd{\acs} and 
+%    \cmd{\acf} is partially controlled by \cmd{\acsfont}, 
+%    \cmd{\acffont}, and \cmd{\acfsfont}. By default, they do nothing.
+%    \begin{macrocode}
+\newcommand*{\acsfont}[1]{#1}
+\newcommand*{\acffont}[1]{#1}
+\newcommand*{\acfsfont}[1]{#1}
+%    \end{macrocode}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%
+%    \begin{macro}{\acs}
+%    The user macro \cmd{\acs} prints the short form of the acronym
+%    using the font specified by \cmd{\acsfont}.
+%    This is the acronym itself or the \meta{short name}, if the
+%    optional argument is given in the definition of the acronym.
+%    This \meta{short name} is available as second argument of the
+%    data in \fnacro. The help macro \cmd{\AC@getsecond}
+%    extracts this second argument out of a list of two or three
+%    arguments. The output goes through \cmd{\acsfont}.
+%    \begin{macrocode}
+\newcommand*{\acs}[1]{%
+  \AC@check{#1}%
+  \acsfont{%
+    \expandafter\expandafter\expandafter\AC@getsecond
+      \csname fn@#1\endcsname{#1}\@nil
+  }%
+}
+\newcommand\AC@getsecond{}
+\long\def\AC@getsecond#1#2#3\@nil{#2}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\acl}
+%    The user macro \cmd{\acl} prints the full name of the
+%    acronym. It uses the \LaTeX\ macro \cmd{\@car} to extract
+%    the first argument of the data, that are stored in the
+%    command \fnacro.
+%    \begin{macrocode}
+\newcommand*{\acl}[1]{%
+  \AC@check{#1}%
+  \expandafter\expandafter\expandafter\@car
+    \csname fn@#1\endcsname\@nil
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\acf}
+%    The user macro \cmd{\acf} always prints the full name with
+%    the acronym. The format depends on \cmd{\acffont} and 
+%    \cmd{\acfsfont}, and on the option |footnote| handled below.
+%    \begin{macrocode}
+\newcommand*{\acf}[1]{%
+  \acffont{%
+    \acl{#1}%
+    \nolinebreak[3] %
+    \acfsfont{(\acs{#1})}%
+  }%
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\ac}
+%    The first time an acronym is accessed its Full Name (FN) is
+%    printed. The next time just (FN). This is done by |\gdef|ining
+%    the |\ac@FN| to be |\@empty| after its first use.
+%    \begin{macrocode}
+\newcommand{\ac}[1]{%
+  \expandafter\ifx\csname ac@#1\endcsname\relax
+    \acf{#1}%
+    \global\expandafter\let\csname ac@#1\endcsname\@empty
+  \else
+    \acs{#1}%
+  \fi
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\acsp}
+%    The user macro \cmd{\acsp} prints the plural short form of the
+%    acronym.
+%    This is the acronym itself or the \meta{short name}, if the
+%    optional argument is given in the definition of the acronym plus
+%    an `s'.  This macro is a wrapper around \cmd{\acs}.
+%    \begin{macrocode}
+\newcommand*{\acsp}[1]{%
+  \acs{#1}s%
+}%
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\aclp}
+%    The user macro \cmd{\aclp} prints the plural full name of the
+%    acronym. It is a wrapper around \cmd{\acl}.
+%    \begin{macrocode}
+\newcommand*{\aclp}[1]{%
+  \acl{#1}s%
+}%
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\acfp}
+%    The user macro \cmd{\acfp} always prints the plural full name with
+%    the plural of the acronym. The format depends on \cmd{\acffont} and 
+%    \cmd{\acfsfont}, and on the option |footnote| handled below.
+%    \begin{macrocode}
+\newcommand*{\acfp}[1]{%
+  \acffont{%
+    \aclp{#1}%
+    \nolinebreak[3] %
+    \acfsfont{(\acsp{#1})}%
+  }%
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\acp}
+%    The first time an acronym is accessed Full Names (FNs) is
+%    printed. The next time just (FNs). This is done by |\gdef|ining
+%    the |\ac@FN| to be |\@empty| after its first use.
+%    \begin{macrocode}
+\newcommand{\acp}[1]{%
+  \expandafter\ifx\csname ac@#1\endcsname\relax
+    \acfp{#1}%
+    \global\expandafter\let\csname ac@#1\endcsname\@empty
+  \else
+    \acsp{#1}%
+  \fi
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+% \subsection{Options}
+%    The option |footnote| leads to a redefinition of \cmd{\acf} and 
+%    \cmd{\acfp}, making the full name appear as a footnote. There is 
+%    no need for \cmd{\acffont} and \cmd{\acfsfont}.
+%    \begin{macrocode}
+\DeclareOption{footnote}{%
+  \renewcommand*{\acf}[1]{%
+    \acs{#1}%
+    \footnote{\acl{#1}{}}%
+  }%
+  \renewcommand*{\acfp}[1]{%
+    \acsp{#1}%
+    \footnote{\aclp{#1}{}}%
+  }%
+} 
+%    \end{macrocode}
+%    The option |smaller| leads to a redefinition of \cmd{\acsfont}.
+%    We want to make the acronym appear smaller. Since this should 
+%    be done in a context-sensitive way, we rely on the macro 
+%    \cmd{\textsmaller} provided by the |relsize| package. 
+%    As \cmd{\RequirePackage} cannot be used inside 
+%    \cmd{\DeclareOption}, we need a boolean variable.
+%    \begin{macrocode}
+\newif\if@ac@smaller
+\@ac@smallerfalse
+\DeclareOption{smaller}{\@ac@smallertrue}
+%    \end{macrocode}
+%    Now we process the options and care for the |smaller| option.
+%    \begin{macrocode}
+\ProcessOptions\relax
+\if@ac@smaller
+  \RequirePackage{relsize}
+  \renewcommand*{\acsfont}[1]{\textsmaller{#1}}
+\fi
+%    \end{macrocode}
+%    That's it.
+%    \begin{macrocode}
+\endinput
+%</acronym>
+%    \end{macrocode}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+% \Finale

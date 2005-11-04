@@ -1,0 +1,166 @@
+% Chapter one to the DODS Data Standards Guide
+%
+% $Id$
+%
+% $Log: ch01.tex,v $
+% Revision 1.1  1999/06/07 05:09:32  tom
+% added to CVS
+%
+%
+%
+
+\chapter{DODS and Data Standards}
+\label{intro}
+
+Once upon a time there was DODS.  And it was good.  DODS solved many
+problems of dataset incompatibility by making remote datasets pretend
+to be in a format they were not in.  This was tricky, and it was
+largely accomplished by hiding from the user the actual data storage
+format, and using many different converters to provide data in a
+standard transmission format.
+
+However, data storage format isn't everything.  Though the DODS
+solution is quite a useful one, it has its limitations.  Two datasets
+can be incompatible even though they share an identical data storage
+format.  For example, consider two sea surface temperature datasets
+stored in netCDF format files.  One can store its temperature in
+degrees Celsius, and another can store temperature as raw data, in
+unscaled satellite counts, that have to be converted into temperature
+values meaningful to a human.
+
+
+\section{Levels of Compatibility}
+\label{sec:compat}
+
+In discussions about whether two different datasets are compatible, we
+must distinguish between different levels of compatibility.  What
+level is important depends to some extent on how you intend to use the
+data.  To a human, for example, two datasets could be considered
+compatible if they are about the same data variable.  Two temperature
+datasets that cover the same area might be considered quite compatible,
+if all one is doing is looking at two different color contour maps
+lying on a table, or side-by-side on a computer screen.
+
+However if one is seeking datasets on which to execute various
+analyses and computations, a higher level of compatibility is
+required.
+
+The issues of data compatibility can be separated into four
+categories:
+
+\begin{itemize}
+\item Data storage format
+
+\item Data attributes 
+
+\item Data organization
+
+\item Server interface
+
+\end{itemize}
+
+
+\subsection{Data Storage Format}
+
+Two datasets whose data are stored and retrieved with different data
+format software are incompatible.  A dataset stored with netCDF
+software cannot be read by a program to read HDF files, and vice
+versa. 
+
+Data storage format was the first compatibility issue
+that DODS addressed, and it does so fairly successfully.  Whatever
+storage format data are kept in, the DODS server translates them into
+a standard transmission format before sending them to the DODS client
+requesting that data.  This translation happens file by file, however,
+so datasets that span multiple files may remain somewhat problematic,
+even though the file format itself is not an issue.
+
+
+\subsection{Data Attributes}
+
+Having solved the problem of data storage compatibility, DODS was
+faced with the problem of incompatible data attributes.  That is,
+considering our two temperature datasets, one dataset could refer to
+its temperature data in an array called ``T'', while another could
+refer to an array called ``Temp''.  To a human comparing the two
+files, the equation between the two might be obvious, but to a
+computer it might not.  (Even to a human, the facts might not be as
+obvious as they seem.  For example, ``T'' could also refer to
+``Time'')
+
+Other data attributes that are important to be able to compute with a
+set of data include flags for missing data and unit and unit
+conversion information.  The data standard outlined in
+\chapterref{dods-standard} of this document is an attempt to address
+this issue.
+
+
+
+\subsection{Data Organization}
+
+The organization of a dataset can create another impediment to
+compatibility.  Consider, for example, two datasets containing
+salinity measurements of the ocean at various different depths, and at
+different times.  Assuming that there is some reason not to put all
+the information in a single file, each dataset must be divided among
+several files, and this is where certain incompatibilitles can sneak
+in. 
+
+One dataset could store its data in several files, each of which
+contains a three-dimensional array---corresponding to latitude,
+longitude, and depth---of salinity values, corresponding to a
+particular time.  But a similar dataset might be arranged as arrays of
+latitude, longitude, and time, with several different files
+corrsponding to different depths.  Both arrangements are, in fact,
+common among on-line datasets.
+
+The DODS Catalog Server, under development (as of \today), is intended
+to address the issue of data organization within a dataset, allowing a
+user to query differently organized datasets with the same syntax
+query. 
+
+
+\subsection{Server Interface}
+
+The DODS software does create solutions to the compatibility issues
+outlined above.  However, in doing so, it introduces a fourth
+compatibility issue, which is that of the server interface itself.  A
+DODS server is programmed to respond to a set of server commands
+issued by a DODS client.  These commands come in the form of URLs sent
+to the server.
+
+Because the DODS project is a widely distributed project, and because
+the datasets available through DODS are---by design---not under
+central control, it is not always certain that two given DODS servers
+will be running software from the same software release.  Similarly,
+since there are provisions for making local modifications to server
+behavior, it is also not certain that server functions available on
+one server are available on another, even when they are both running
+at the same software release.
+
+Addressing these issues is an ongoing preoccupation of the DODS
+project and its (growing) user base.  The DODS servers also contain
+provisions for making this information available to clients. See
+\DODSuser\ for more information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

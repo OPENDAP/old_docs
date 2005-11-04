@@ -1,0 +1,60 @@
+
+$Id$
+
+To Build the dsp-dods servers:
+
+1) Type `./configure' at the system prompt. On some systems you may have to
+type `sh configure'.
+
+2) Type `make' to build the three server programs
+
+3) To install the data server you need to copy the four executables (one
+script and three binary programs) named `nph-dsp', `dsp_das', `dsp_dds' and
+`dsp_dods' to your http server's CGI directory. For many UNIX computers, this
+will be named cgi-bin and will reside within the http server's home directory
+(e.g., on my system the cgi binary directory is called
+/usr/local/etc/httpd/cgi-bin). You can find out the name of this directory if
+you don't know it by looking in the http server's srm.conf configuration file
+(which will be located in a directory called `conf' within the http server's
+home directory.
+
+For serving compressed data sets with cache capability, you need to set the
+cache directory in nph-dsp file and set the cron daemon to clean the
+cache periodically.
+
+For information about installing secure DODS servers, see the file SECURITY
+in DODS_ROOT.
+
+Debugging aids in DSP-DODS source code:
+
+debug: simple program instrumentation -- see the file Dtype.h in
+$(DODS_ROOT)/src/dsp-dods. This is used for short (single line) outputs.
+
+-----------------------------------------------------------------------------
+
+NOTE FOR LINUX
+
+The linux shell gags on the syntax we use in the Perl scripts to locate the
+perl interpreter on your system. Look at the nph-jg script. The top two lines
+look like:
+
+    #!/bin/sh -- # -*- perl -*-
+    eval "exec perl -T -S $0 $*" if 0;	# Trick to find perl. Must be on PATH.
+
+On Linux you should replace these lines with:
+
+    #!/path/to/your/perl -T
+
+Where /path/to/your/perl is the full pathname of the perl interpreter you
+want the servers to use. You can find the path to perl on your computer by
+typing:
+
+    which perl
+
+You can check the version of perl by typing:
+
+    perl -v
+
+You need Perl version 5.001 or greater.
+
+------------------------------------------------------------------------------

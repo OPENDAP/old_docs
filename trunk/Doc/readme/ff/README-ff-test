@@ -1,0 +1,31 @@
+
+	$Id$
+
+These files comprise a small set of test datasets for the FreeForm server.
+Each of the files named test?.fmt contains a FF format description for the
+data in the data file with matching base name (test0.fmt --> test0.dat, ...).
+
+For information on the content of these files, look in the FF manual. I've
+also stuck some information in comments in the files. Note that the manual
+does not contain information about the new array features of FF. The updated
+FF manual *does* contain information on the array syntax. 12/15/98 jhrg
+
+The format description files only need the *_input_data part to run with the
+DODS-FF server. However, by including an ASCII_output_data section it is
+simple to test the datasets and format descriptions themselves using
+`newform' (which can be found in the ff-dods/FFND directory). This program
+can be used to help diagnose problems with the format files.
+
+About the dejaGNU tests:
+
+Tests written:
+
+Tests for the DAS and DDS (all test datasets)
+Tests for the File Server software (using the 1988-6-avhrr test dataset).
+      Many of the tests for error conditions fail
+
+Tests to be written:
+
+Tests for the compressed and uncompressed data objects w/o constraints
+Tests for various types of constraints
+Tests for various features of the dispatch script

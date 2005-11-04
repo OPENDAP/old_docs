@@ -1,0 +1,411 @@
+% Building an OPeNDAP client.
+%
+% $Id$
+%
+
+\chapter{The \opendap Client}
+\label{opd-client}
+
+There are many different data analysis packages in use. Some packages, such
+as MATLAB and IDL, are commercially available, but many more are written for
+a specialized need or application. Many of these use one of the widely
+available sets of scientific data access functions (called an {\em
+  Application Program Interface}, or \ind{API})\indc{Application Program
+  Interface|see{API}} such as NetCDF, JGOFS, or HDF. There is great variety
+among all these programs, but one feature they share is that they all access
+data through files containing that data\footnote{This is not true of some
+  APIs, such as JGOFS.  That API, however, uses a data dictionary to allow
+  the user to think that the data access is through files.}.  That is to say
+that each program begins by identifying a file containing the data the user
+wishes to examine or analyze.
+
+An \ind{\opendap client} \indc{client!\opendap} is simply a data
+analysis application linked with the \opendap libraries instead of the
+standard data access API. Using this program, a user can look at files
+containing data in the same way as was possible without the \opendap
+libraries.  However, by using these libraries, a user can also use a
+URL (URL)\indc{Uniform Resource Locator|see{URL}} \indc{URL}, instead
+of a simple file name, to specify data located anywhere on the
+Internet.  \Figureref{intro,fig,unlinked} and
+\figureref{intro,fig,linked} illustrate the operation of an
+application program linked with a standard data access API, and the
+same program linked with the \opendap version of that API.
+
+An \opendap client is then a data analysis application program
+modified to become a web browser, somewhat like any other \ind{web
+  browser} (NCSA Mosaic\indc{Mosaic}, \ind{Netscape Navigator}) with
+which you may be familiar. A web browser can only display the data it
+receives, however. What makes an \opendap client different from
+another web browser is that, unlike Netscape, once the data has been
+received from an \opendap server, the \opendap client application can
+compute with it.
+
+Like a web browser, an \opendap client accepts a URL from a user, and
+parses it to come up with a protocol, an address, and a message. (See
+\sectionref{opd-client,url} for more information about URLs.) The
+browser then sends a message to the address, directed to the server
+who can service the desired protocol, asking for the information
+specified in the remainder of the URL. Unlike a typical web browser, an \opendap client will not know what to do with data returned for a web page
+containing text and pictures, but an \opendap server will return scientific
+data that an \opendap client can understand and process.
+
+Here is a simple example, using the \lit{ncview} program. This program
+simply prints out the contents of a netCDF formatted data file,
+specified on the command line, like this:
+
+\begin{vcode}{ib}
+> ncview fnocl.nc
+\end{vcode}
+
+Using \opendap, this same function may be executed from any computer connected to
+the Internet by substituting a URL\indc{URL!instead of file name} for the
+filename\indc{file name!use URL instead} above:
+
+\begin{vcode}{ib}
+> dncview http://dods.gso.uri.edu/cgi-bin/nc/data/fnocl.nc
+\end{vcode}
+\label{opd-client,eg}
+
+(See \figureref{opd-client,fig,url-parts} Aside from the fact that
+the data is remote, and must be specified with a URL, the program will
+seem to function in the same way it had with the simple netCDF library
+(albeit somewhat more slowly due to having to make network connections
+instead of local file operations). You can find \lit{dncview} (the
+\lit{ncview} program linked with the \opendap library) in the
+
+\begin{vcode}{ib}
+$DODS_ROOT/src/nc-dods/ncview
+\end{vcode}
+%$
+
+directory\label{opd-client,using-example}. Running the above command will produce the following output:
+
+\tbd{RECAPTURE THIS OUTPUT}
+
+\begin{vcode}{ib}
+netcdf fnocl {
+dimensions:
+    time_a = 16
+    lat = 17 ;
+    lon = 21 ;
+    time = 16 ;
+
+variables:
+    long u(time_a, lat, ion) ; 
+        u:units = ``meter per second'' ; 
+        u:long_name = ``Vector wind eastward component'' ; 
+        u:missing_value = ``-32767'' ; 
+        u:scale_factor = ``0.005'' ; 
+    long v(time_a, lat, ion) ; 
+        v:units = ``meter per second'' ;
+        v:long_name = ``Vector wind northward component'' ;
+        v:missing_value = ``-32767'' ;
+        v:scale_factor = ``0.005'' ; 
+    double lat(lat) ;
+        lat:units = ``degree North'' ;
+    double lon(lon) ;
+        lon:units = ``degree East'' ; 
+    double time(time) ;
+        time:units = ``hours from base_time'' ;
+
+// global attributes: 
+        :base_time = ``88- 10-00:00:00'' ; 
+        :title = ``FNOC UV wind components 
+                           from 1988- 10 to 1988- 13.'' ;
+data:
+ u =
+  -1728, -2449, -3099, -3585, -3254, -2406, -1252,
+    662, 2483, 2910, 2819, 2946, 2745, 2734,
+  2931, 2601, 2139, 1845, 1754, 1897, 1854, -1686,
+...
+\end{vcode}
+
+Although there are packaged \opendap browsing programs that a user can use
+to look at data, the user can also construct his or her own.  Linking
+an \opendap API with an already existing program allows a user to create a
+customized web browser that can access data available from any \opendap
+server connected to the Internet.
+
+The \opendap APIs are designed to accurately mimic the behavior of several
+different commonly used scientific data APIs.  As of this writing
+(\today), the \opendap API set includes:
+\indc{API!list of \opendap supported}
+
+\begin{longtable}{|p{0.5in}p{3in}p{1in}|}
+\caption{Supported APIs\label{opd-client,supported-APIs}} 
+\\ \hline
+\textbf{API} & \textbf{Description} & \textbf{Components} \\ \hline
+\endfirsthead
+\caption[]{Supported APIs} 
+\\ \hline
+\textbf{API} & \textbf{Description} & \textbf{Components} \\ \hline
+\endhead
+\hline
+\endfoot
+netCDF & 
+Support for gridded data, such as satellite data,
+  interpolated ship station data, or current meter data. & 
+Server and client. \\ \hline
+JGOFS & 
+Support for relational data, such as \class{Sequences}.  
+  Created by the Joint Globar Ocean Flux Study (JGOFS) project for use 
+  with oceanographic station data. & 
+Server and client. \\ \hline
+HDF & 
+Support for gridded data.  Commonly used for astronomical
+  data and model data. & % \rule[-3pt]{0pt}{1pt}&
+Server only. \\ \hline
+DSP & 
+Oceanographic and geophysical satellite data.  Provides
+  support for image processing.  Developed at the University of
+  Miami/RSMAS.  Primarily used for AVHRR and CZCS data. &
+Server only. \\ \hline
+GRIB & 
+Support for gridded binary data.  GRIB is the World
+  Meteorological Organization (WMO) format for the storage of weather
+  information and the exchange of weather product messages. &
+Server only, due in early 1999. \\ \hline
+BUFR & 
+  The WMO's standard set of codes for the transmission and
+  storage of meteorological data, using a compressed format with each
+  data value occupying the least number of bits necessary to contain 
+  its range of values.  Suitable for meteorological observations made
+  from a single point or set of points. & 
+Server only, due in early 1999. \\ \hline
+Free\-Form & 
+  On-the-fly conversion of arbitrarily formatted data,  including
+  relational data and gridded data.  May be used for sequence data,
+  satellite data, model data, or any other data format  that can be
+  described in the flexible FreeForm format definition 
+  language.  This server can be used to serve data stored in almost
+  all home-grown data formats. &
+Server only; no client required. \\ \hline
+native \opendap & 
+  The \opendap class library may be used directly by a client program.  It
+  supports relational data, array data, gridded data, and
+  a flexible assortment of data types that can be combined to
+c  accommodate most data models. &
+Client. \\ \hline
+\end{longtable}
+
+The API set is extensible, meaning that developers can use the \opendap
+software toolkit to write \opendap-compliant versions of new APIs.  See
+\OPDapi\ for more information.
+
+The most important result of this architecture is that, just as the
+use of the \lit{dncview} program above is identical to the original
+\lit{ncview}, a user can use remote \opendap data {\em and} continue to
+use the same data analysis and display programs with which he or she
+is familiar. Any program that uses one of the \opendap-supported APIs may
+be re-linked to use the \opendap version of that API.  This creates an \opendap
+client. That and a connection to the Internet, are all that a
+researcher requires to gain access to the available \opendap data.
+
+\section{Configuring Programs to Use \opendap}
+\label{opd-client,link}
+
+\indc{linking~client programs with \opendap} 
+\indc{configuration!user programs(relinking)} \indc{user programs!configuring}
+\indc{DODS!configuring} \indc{re-link|see{linking}} \indc{converting to \opendap}
+\indc{DODS!conversion} 
+
+Relinking an existing program with the \opendap implementation of some
+data API is a simple procedure.  Find the directory that contains the
+source/object code of the program you want to re-link and modify the
+makefile (typically called \lit{Makefile}) for the program so that the
+\opendap-compliant API library is used in place of the standard API
+library.  (If you can't find the libraries on your system, see
+\appref{install}, or ask the system administrator.) These
+libraries are: 
+\indc{libraries!necessary for \opendap}
+
+\begin{description}
+\item[\lit{libdap++.a}] Software common to all of the \opendap-supported
+  APIs.
+\end{description}
+
+\opendap also uses facilities from some standard libraries, and these must
+also be included in the link to resolve all the symbols.
+
+\begin{description}
+\item[\lit{libwww.a}] The World Wide Web library. \indc{World Wide
+    Web!library} This contains the functions used to communicate
+  between the \opendap client and server.
+
+\item[\lit{libexpect.a}] Functions from the \lit{expect}
+library are used to communicate between
+\opendap client processes. \indc{expect!library}
+
+\item[\lit{libtcl.a}] Contains definitions necessary for the
+  \lit{expect} library.  The use of this library in the link is not
+  related to the use of Tcl by \opendap clients.  \indc{Tcl!library}
+  
+\item[\lit{libstdc++.a}] 
+  The GNU C++ class library (This is not necessary if using \lit{g++}
+  to re-link.) \indc{stdc++}\indc{libstdc++}
+
+\end{description}
+
+You will also need to include the library containing the
+\opendap-compliant version of the API. The name of this library of course
+depends on the API, but it is generally in the form
+
+\begin{example}
+\lit{lib{\em API}-dods.a} 
+\end{example}
+
+Where {\em API} is an abbreviation indicating the API emulated by the
+specified library.  For example, the \opendap-compliant netCDF library is
+called \lit{libnc-dods.a} and the JGOFS version is \lit{libjg-dods.a}.
+
+\subsection{An Example Using netCDF}
+\label{opd-client,link-example}
+
+The \lit{ncview} program is a simple utility that prints the contents
+of a netCDF-format file to standard output.  This section outlines the
+process used to modify the \lit{ncview} makefile to link that program
+with the \opendap netCDF API, thereby turning \lit{ncview} into a
+network-ready \opendap client. The process of linking any other program
+with the corresponding \opendap library is entirely analogous to this one
+and only requires the substitution of the program name and the
+appropriate library.
+
+First the link flags were modified so that the library search path
+would include the likely places to find the \opendap libraries:
+
+\begin{vcode}{ib}
+LDFLAGS = -g -L$(DODS_ROOT)/lib
+\end{vcode}
+%$
+
+\indc{distribution directory|see{\lit{DODS\_ROOT}}}%
+\indc{master directory|see{\lit{DODS\_ROOT}}}%
+\indc{environment variable!DODS\_ROOT}%
+\indc{variable!environment}%
+
+\lit{DODS\_ROOT} is an environment variable that indicates the root
+directory of the \opendap installation, and in this manual is used as
+shorthand for this directory.  It is typically called something like
+\lit{/usr/local/DODS}. If you cannot find these directories on your
+system, consult your system administrator, or refer to
+\appref{install} for information about acquiring and installing
+the \opendap software.
+
+After the link flags were modified, the \opendap libraries were added to the list
+of libraries used. The order in which the libraries are listed is important.
+
+\begin{vcode}{ib}
+LIBS = -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -ltcl 
+       -lexpect -lz -lrx
+\end{vcode}
+\tbd{Check this.}
+
+\note{Because \opendap is implemented as a core set of classes contained in one
+library (\lit{libdap++.a}) and a set of specializations of those classes in a
+second library (\lit{libnc-dods.a}), and because there is a circular
+dependence between those two libraries, they must be included twice in the
+linker command.}
+
+Finally, \lit{g++} was substituted for the link command.\footnote{It
+  is possible to use \lit{\ind{gcc}} instead of \lit{g++}, but in that
+  case, \lit{-lg++} must be added to the end of the library list.}
+
+
+\subsection{Potential Problems}
+
+\indc{linking!problems} \indc{problems!linking} \indc{troubleshooting!linking}
+When a user links an existing a program to the \opendap libraries, there are
+several possible conditions that may cause problems.
+
+\begin{itemize}
+\item Some programs use more than one API.
+
+\item Some programs access data using both API and UNIX system calls.
+
+\item Some programs use undocumented features of the APIs.
+
+\end{itemize}
+
+If this is the case for a given program, there is generally no good solution
+beside rewriting the software to conform to a strict usage of the data
+reading parts of the given API. Of course if the problem is that the
+program uses more than one API, you can try linking the program with an \opendap-compliant version of the second API as well.
+
+\begin{itemize}
+\item Re-linked programs can be very large.
+\end{itemize}
+
+\indc{size!of \opendap programs} \indc{problems!size} \indc{troubleshooting!size
+  of executable} 
+The \opendap libraries are large, and the \lit{g++}, \lit{www},
+\lit{expect}, and \lit{tcl} libraries on which they are built are even
+larger. This means that the executable version of a re-linked \opendap
+client can seem unreasonably obese. Much of the disk space is occupied
+by symbol tables, which can be removed from the executable file with
+the \lit{strip} utility.  In many cases, a user can recover a
+substantial amount of disk space this way.
+
+\note[CAUTION]{Without familiarity with the \opendap software, it is best
+  only to strip the executable files. Stripping object files or
+  libraries might leave them in a useless condition for the linker.
+  Furthermore, stripping an executable file removes symbol names,
+  which may make diagnosing problems more difficult.}
+
+The \opendap libraries only affect the data \emph{reading} functionality
+of the specified API. There are no \opendap replacements for functions
+like netCDF's \lit{ncputrec()}, that \emph{write} data to a disk file.
+These functions are included in the \opendap-compliant API library, but
+they operate in a manner identical to the original (non-\opendap)
+versions, that is, they work on local files only, attempting to write
+``over the network'' will result in an error.  \indc{API!data output
+  functions} \indc{data!output functions}
+
+\section{Writing New \opendap Programs}
+
+The \opendap software may also be used to write new programs. This may be
+done either through one of the \opendap-supported API libraries, such as
+netCDF or JGOFS, or by using the \opendap data access protocol directly.
+There are advantages and disadvantages to each approach.
+\indc{writing new programs} \indc{new programs!writing}
+\indc{DODS!writing new programs}
+
+The biggest advantage of writing new code using an \opendap-supported API
+such as netCDF or JGOFS is that the programmer in question is probably
+already familiar with the use of that API. Writing an \opendap program using
+an adapted API is not significantly different than writing the same
+program with the original API. While writing this new program, it will be
+useful to remember that the data the program uses will often be remote,
+implying that data retrieval may not be instantaneous, and that
+implementation of local caching to store requested data might be a good
+idea, but other than that, the process is the same as writing a program
+using the regular API.
+\indc{native API} \indc{API!native} \indc{protocol!data access}
+\indc{Data Access Protocol}
+
+It is also possible to use the \opendap data access protocol directly.
+This is somewhat more involved than using one of the \opendap-compliant
+API libraries, and C++ is the only language supported for this.
+However, this approach can provide substantially more efficient
+programs. For further information about this approach, refer to the
+technical information about the DAP in \OPDapi .
+
+% $Log: ch02a.tex,v $
+% Revision 1.4  2003/09/04 19:42:06  tom
+% DODS->OPeNDAP
+%
+% Revision 1.3  2001/05/04 14:39:52  tom
+% added pdf to Makefile, added .dodsrc info to user guide
+%
+% Revision 1.2  2000/10/04 15:02:14  tom
+% changed \figureplace definition, misc other cleaning
+%
+% Revision 1.1  1999/10/18 21:39:44  tom
+% updated for new services, fixed server test section, add ifh intro.
+%
+%
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

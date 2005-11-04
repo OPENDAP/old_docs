@@ -1,0 +1,30 @@
+Roland Schweitzer summarized the status of Data served into OPeNDAP
+at NOAA/CDC.  Almost 7 gigabytes are served.  The data are accessable
+via FTP, OPeNDAP via a NetCDF server, a Unidata Aggregation server,
+and the GrADS DODS Server. The GDS configuration will be updated
+automatically for regularly updated datasets.  The THREDDS catalog 
+will allow access to all services.  
+
+Questions:  Can the servers
+handle the loads, will naive use cripple the servers, and will
+services be robust?  Partial solutions include blocking a single
+IP address for 24 hours which has more than 1000 hits in a single
+hour, and blocking access if a load exceeds some threshold.  The
+result is that the system provides feedback to the user who is
+motivated to become self-correcting.
+
+% $Id$
+%
+% $Log: schweitzersummary.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: plain-tex
+%%% TeX-master: t
+%%% End: 

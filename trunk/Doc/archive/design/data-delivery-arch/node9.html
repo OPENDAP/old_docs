@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Data Delivery Architecture</TITLE>
+<META NAME="description" CONTENT="Data Delivery Architecture">
+<META NAME="keywords" CONTENT="data-delivery-arch">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-arch.css">
+
+<LINK REL="next" HREF="node12.html">
+<LINK REL="previous" HREF="node3.html">
+<LINK REL="up" HREF="data-delivery-arch.html">
+<LINK REL="next" HREF="node10.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html172"
+  HREF="node10.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html168"
+  HREF="data-delivery-arch.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html162"
+  HREF="node8.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html170"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html173"
+  HREF="node10.html">Two Prospective Models for</A>
+<B> Up:</B> <A NAME="tex2html169"
+  HREF="data-delivery-arch.html">DODS Data Delivery Architecture</A>
+<B> Previous:</B> <A NAME="tex2html163"
+  HREF="node8.html">Data Format</A>
+ &nbsp; <B>  <A NAME="tex2html171"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00040000000000000000">
+Data Delivery Architecture</A>
+</H1>
+
+<P>
+DODS uses the client-sever paradigm to provide access to data across the
+Internet. Each computer with on-line data can provide access to any user with
+network access by installing one or more DODS data servers.  Users then
+employ client programs to access data from the data servers. The data
+delivery architecture for the entire distributed data system is the set of
+DODS data servers and clients in existence at any given time. Because there
+is no central authority which controls clients or servers, the system is in a
+constant state of flux. In the future there will be a system which enables
+users to search for servers with a particular type of data, but participation
+in such a central registry is voluntary and is not part of the data delivery
+architecture proper, rather the data delivery architecture consists solely of
+the data servers and necessary client software.
+
+<P>
+The data delivery architecture does not rely on a centralized archive of
+data, instead various data providers make relatively small amounts of data
+available using their computers and data server software. Each user of data
+can access the sum total of data from all the people or groups making data
+available much as each user of a World Wide Web browser can access any
+document made available through HTTP servers. While the contribution from
+each individual is small, the total pool of data that users can access is
+potentially huge.  Furthermore, the architecture of the DODS data delivery
+mechanism is both general enough and simple enough to be used by individual
+scientists and large agencies or groups of scientists. Thus the pool of data
+which comprise DODS can be contributed by a wide variety of providers.
+
+<P>
+In the data delivery mechanism, the DODS <A NAME="tex2html24"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A> is used to provide the
+interface definition for a data server. However, each data server translates
+the `calls' in the protocol to function calls in the API. These calls are
+used to encode information contained in the data set.  Thus, DODS data access
+is built around a family of data servers, defined by the set of data-access
+APIs supported by DODS, all of which use the same data access
+protocol<A NAME="tex2html21"
+
+HREF="footnode.html#foot478"><SUP>5</SUP></A>.
+
+<P>
+An essential concept on which DODS bases its data delivery architecture is
+that a significant percentage of existing data is stored in a documented
+format or API<A NAME="tex2html23"
+  HREF="footnode.html#foot479"><SUP>6</SUP></A>. This assumption ensures that there is a high return for time spent
+developing data servers. If an API has been used to encode a large number of
+different data sets, then a single type of data server (one for that API) can
+be used to provide access to all those data sets. The assumption that the
+interface to a data set (or type of data set) is well documented also reduces
+the complexity of designing a data server.
+
+<P>
+A second essential concept is that many science-data APIs draw on a small set
+of data models. These data models include relational sets, arrays,
+hierarchies, etc. It should therefore be possible to construct data servers
+which can translate some (or many) data sets from one API to another. This
+will enable users of one of the DODS supported APIs to read most of the data
+sets in any of the other supported APIs--not just data sets in one API.
+
+<P>
+The DODS data delivery architecture is flexible enough to support a wide
+range of users. Some users will have a detailed understanding of the format
+and content of a particular data set and should be able to use that
+understanding to their advantage. Other users will have no prior knowledge of
+format or content of the same data set and still should be able to access
+that data in a meaningful way.
+
+<P>
+Supporting a wide range of data access, from data browsing to direct
+access, means providing many different types of user applications which can
+access data. In fact, the sum total of data browsing, visualization and
+access software that even a single user might want is staggering.
+Furthermore, much of that software has already been written, but typically
+not with distributed access in mind and not for the specific format or API in
+which the data a given user wants is encoded. Complicating the problem is the
+wide range of data formats and APIs now available and the rate at which their
+numbers are expanding. Trying to write a complete set of network tools would
+be impossible. Before the tools were complete new formats/APIs
+would need to be supported.
+
+<P>
+A solution to this problem that fits well with the idea of data servers
+providing access based on APIs is to build replacement libraries for for
+those APIs. These libraries present to a program the same set of functions
+that the original implementation of the API presented, but replace the bodies
+of those functions with code that access a data server rather than a local
+resource. Any user program that was originally designed to work with one of
+the supported APIs can be re-linked with the DODS implementation of that API
+(called a `surrogate library' or a `client library') and access all of the
+distributed resources of DODS. Thus, the parts of the data delivery
+architecture that support data browsing, visualization and access are not
+described here because DODS will rely on existing user programs to provide
+those functions.
+
+<P>
+The DODS architecture supports data management by presenting the scientist
+with a set of third-party tools for storing and organizing data. Each of
+these tools provides support for representing information using one or more
+data models. Furthermore, the inclusion of an API in DODS implies that the
+API has been accepted by the scientific/oceanographic community and is thus
+of use in organizing or accessing relevant data sets (i.e., we chose APIs
+which are `popular' and feel that popularity implies acceptance). The set of
+data models circumscribed by the set of supported APIs forms the set of data
+models which the <A NAME="tex2html25"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A> uses to describe and provide access to data
+sets. Because the set of models is finite, it is possible that the user
+community will want to add an API which uses a data model DODS knows nothing
+about. In this case the <A NAME="tex2html26"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A> must be extended to support the new data
+model(s).
+
+<P>
+The complete data delivery architecture for DODS consists of data servers and
+data sets located on computers throughout the Internet, combined with user
+programs re-linked with DODS surrogate libraries. The set of data sets and
+user programs are not limited to those that use DODS supported APIs and/or
+formats. That a data set is accessible via a DODS data server and that a user
+program is able to access data using the <A NAME="tex2html27"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A> is the sole criteria for
+membership in DODS.
+
+<P>
+The intent of this architecture is to make it as simple as possible for
+scientists to access remote data. Using DODS servers, it should be possible
+for many scientists to use programs already written to access new and
+existing data sets stored on remote computers. The only preconditions their
+programs must meet are that they must have been written using an API which
+DODS supports and that they can be re-linked with the DODS implementation of
+that API. Because the interface to the API remains exactly the same the user
+program does not need to be modified in any way to access the remote data
+available through DODS.
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html174"
+  HREF="node10.html">Two Prospective Models for Data Servers</A>
+<LI><A NAME="tex2html175"
+  HREF="node11.html">The Role of Ancillary Data in Translation</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html172"
+  HREF="node10.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html168"
+  HREF="data-delivery-arch.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html162"
+  HREF="node8.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html170"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html173"
+  HREF="node10.html">Two Prospective Models for</A>
+<B> Up:</B> <A NAME="tex2html169"
+  HREF="data-delivery-arch.html">DODS Data Delivery Architecture</A>
+<B> Previous:</B> <A NAME="tex2html163"
+  HREF="node8.html">Data Format</A>
+ &nbsp; <B>  <A NAME="tex2html171"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

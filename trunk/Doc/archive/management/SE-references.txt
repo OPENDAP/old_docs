@@ -1,0 +1,68 @@
+
+On code inspection:
+
+from Xmosaic http://dxsting.cern.ch:80/sting/comp.software-eng/inspect.txt
+
+[Fagan 1986]
+Fagan, Michael E. "Advances In Software Inspections," IEEE Transactions
+on Software Engineering, Vol. 12, No. 7, Jul. 1986, pp. 744-751.
+
+Abstract: This paper presents new studies and experiences that enhance
+the use of the inspection process and improve its contribution to
+development of defect-free software on time and at lower costs.
+Examples of benefits are cited followed by descriptions of the process
+and some methods of obtaining the enhanced results.
+
+Software inspection is a method of static testing to verify that
+software meets its requirements. It engages the developers and others
+in a formal process of investigation that usually detects more defects
+in the product-at and lower cost-than does machine testing. Users of
+the method report very significant improvements in quality that are
+accompanied by lower development costs and greatly reduced maintenance
+efforts. Excellent results have been obtained by small and large
+organizations in all aspects of new development as well as in
+maintenance. There is some evidence that developers who participate in
+the inspection of their own product actually create fewer defects in
+future work. Because inspections formalize the development process,
+productivity and quality enhancing tools can be adopted more easily and
+rapidly.
+
+[Kelly 1992]
+Kelly, John C., Joseph S. Sherif, and Jonathan Hops.  "An Analysis of
+Defect Densities Found During Software Inspections," Journal of Systems
+and Software, Vol. 17, No. 2, Feb. 1992, pp. 111-117.
+
+Abstract: Software inspection is a technical evaluation process for
+finding and removing defects in requirements, design, code, and tests.
+The Jet Propulsion Laboratory (JPL), California Institute of
+Technology, tailored Fagan's original process of software inspections
+to conform to its software development environment in 1987. Detailed
+data collected from 203 inspections during the first three years of
+experience at JPL included averages of staff time expended, pages
+covered, major and minor defects found, and inspection team size. The
+data were tested for homogeneity. Randomized samples belonging to the
+various phases or treatments were analyzed using the completely
+randomized block design analysis of variance (a = 0.05). The results
+showed a significantly higher density of defects during requirements
+inspections. The number of defect densities decreased exponentially as
+the work products approached the coding phase because defects were
+fixed when detected and did not migrate to subsequent phases. This
+resulted in a relatively flat profile for cost to fix. Increasing the
+pace of the inspection meeting decreased the density of defects found.
+This relationship held for major and minor defect densities, although
+it was more pronounced for minor defects.
+
+[Russell 1991]
+Russell, Glen W. "Experience with Inspection in Ultralarge-Scale
+Developments," IEEE Software, Vol.  8, No. 1, Jan. 1991, pp. 25-31.
+
+Abbreviated Introduction:  inspections can be very cost-effective and
+highly beneficial, even when scaled up for ultralarge projects. Here I
+present quantitative results based on a 1988 study of inspection of 2.5
+million lines of high-level code at Bell-Northern Research.
+
+The data represent one of the largest published studies in the industry and
+confirm that code inspection is still one of the most efficient ways to
+remove software defects.  In the box on pp. 28-29, I describe how to
+successfully introduce inspections in large-scale production environments.
+

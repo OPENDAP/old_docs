@@ -1,0 +1,447 @@
+% Chapter two to the OPeNDAP User Guide
+%
+% $Id$
+%
+
+
+\chapter{Using \opendap}
+\label{opd,using}
+
+A user uses \opendap with an \opendap client program.  This client program may
+have been acquired by the user (for example, the \opendap Matlab and IDL
+graphic user interfaces, or Ferret, a freeware data analysis package
+each use \opendap for data access), or may be a program converted to
+use the \opendap library for data access (see \chapterref{opd-client}.
+
+In either case, there are a set of issues that must be addressed in
+order to use a program to access data through \opendap.  The issues can be
+classed into two groups.  One set of issues involves configuring the
+system to provide \opendap with the helper applications and environment
+variables it requires.  The other set concerns the manner in which a
+user communicates with an \opendap server.  We cover this first.
+
+\xname{url-parts}
+\section{How \opendap Finds Data}
+\label{opd-client,url}
+
+\indc{URL} \indc{Uniform Resource Locator|see{URL}} Once linked to the
+\opendap libraries, an \opendap client created from an existing program will
+work exactly as before when run using local files.  However, a user
+can also specify an \opendap Uniform Resource Locator (URL) to indicate
+some data file on a remote host machine.  When the program receives
+this URL, the \opendap libraries will recognize it as remote data, and
+issue a network request for the data.  If a user has also installed
+an \opendap server on the local machine, then local data may be accessed
+either through their local filenames or their \opendap URL.
+
+A URL is simply a unique name for some Internet resource.  
+The \figureref{opd-client,fig,url-parts} shows the parts of a 
+typical \opendap URL.
+
+\begin{figure}[h]
+\texorhtml
+{\small
+${}\overbrace{>dncview}^{Program} 
+\overbrace{\tt http}^{Protocol}://
+\overbrace{\tt dods.gso.uri.edu}^{Machine Name}/
+\overbrace{\tt cgi-bin/nph-nc}^{Server}/
+\overbrace{\tt data}^{Directory}/
+\overbrace{\tt fnoc1.nc}^{Filename}/
+\overbrace{\tt .das}^{URL Suffix}$}
+{\begin{vcode}{cb}
+>dncview http://dods.gso.uri.edu/cgi-bin/nph-nc/data/fnoc1.nc.das
+   ^     ^      ^                        ^      ^    ^        ^
+   |     |      |                        |      |    |        |
+Program  |      |                        |      |    |        |
+Protocol--      |                        |      |    |        |
+Machine Name-----                        |      |    |        |
+Server------------------------------------      |    |        |
+Directory----------------------------------------    |        |
+Filename----------------------------------------------        |
+URL Suffix-----------------------------------------------------
+\end{vcode}}
+\caption{Parts of an \opendap URL (without a constraint expression)}
+\label{opd-client,fig,url-parts}
+\end{figure}
+
+The parts of the URL are:
+
+\begin{description}
+
+\item[protocol] 
+  \indc{Internet protocol}\indc{protocol!Internet}
+  The protocol of an Internet request may be thought of as the kind
+  of conversation the client expects to have with the target machine.
+  For example, a web browser like Netscape Navigator wants to find
+  a server that can return hypertext documents, while an ftp client
+  wants to find a server that can understand file transfer requests. A
+  web browser equipped to display hypertext documents will specify
+  \lit{http} as the protocol for its conversation, and hope that the target
+  machine has an \lit{\ind{httpd}} daemon listening.
+  
+\item[host] \indc{host name}The host name in a URL is simply the
+  Internet address of the host machine running whatever server can
+  reply to the specified protocol.
+  
+\item[server] A special feature of the \lit{httpd} server process is
+  that it may be configured to execute Common Gateway Interface (CGI)
+  programs \indc{Common Gateway Interface|see{CGI}} \indc{CGI} upon
+  receipt of a properly specified URL. This is used, for example, by
+  Internet search engines that ask a user to fill out a form. The CGI
+  specification will be specific to the server in question, and the
+  part of the URL that follows the CGI name is passed to the CGI upon
+  invocation. This data may include a file name, but it may as easily
+  be some arbitrary string of instructions. The \opendap server is simply
+  a set of CGI scripts executed on demand by the \lit{httpd} server.
+  Here, the \opendap server is represented by a CGI script called
+  \lit{nph-nc}.
+  
+\item[filename] \indc{file name!part of URL} If a CGI is not
+  specified, the part of the URL after the host name is simply the
+  name of a file that is to be returned to the inquiring browser.  If
+  a CGI is specified, the file is given to the program as its
+  argument.
+
+\item[URL suffix] \indc{URL!suffix} If you are issuing an \opendap request
+  from a non-\opendap client, such as a web browser, you can specify the
+  type of request by appending a suffix to the URL.  Different
+  suffixes demand different services from the server.  The different
+  services are listed in \sectionref{opd-client,services}.  If you
+  are using \opendap from an \opendap client, or a client program adapted to
+  use the \opendap DAP library, you do not need to use a URL suffix.  For
+  example, to use \opendap from Matlab, with the Matlab GUI or
+  command-line clients, you do not need to use a suffix.  To use \opendap
+  from a simple web browser like Netscape Navigator, you will need to
+  use a suffix.
+
+\end{description}
+
+The URL in \figureref{opd-client,fig,url-parts} shows a client
+request to the \lit{httpd} server on the machine
+\lit{dods.gso.uri.edu}, for a netCDF dataset (specified by the
+\lit{nph-nc} in the \lit{cgi-bin} directory) contained in a file
+called \lit{fnoc1.nc}.  Upon receiving this URL, the \lit{httpd}
+server executes the specified \opendap server module (\lit{nph-nc}), which
+retrieves the file is in a directory called \lit{data} relative to
+wherever the \lit{httpd} server looks for its data\footnote{The only
+  part of the URL whose spelling is not at the discretion of the
+  administrator of the host machine is the \lit{http}, and the
+  \lit{nph-} at the beginning of the CGI script name. Even the
+  \lit{nc}, indicating netCDF, can be changed, although for clarity's
+  sake, we hope people won't do so.  Incidentally, the \lit{nph-} is a
+  relic, dating from the early days of the World Wide Web and the
+  first hypertext protocol standards.  It stands for ``Non-Parsing
+  Header'' (See the CGI 1.1 Standard for more information.), and is
+  the only way to pass data through many httpd servers unparsed.}.
+
+\opendap URLs can get somewhat more complicated than this simple
+description.  In particular, they can contain ``constraint
+expressions'' that limit a request to data satisfying a set of
+conditions, and they can contain requests to specific \opendap services,
+besides the data delivery service suggested here.  Constraint
+expressions are described in more detail in
+\sectionref{opd-client,constraint}, while the array of services
+provided by \opendap servers are described in
+\sectionref{opd-client,services}. 
+
+\subsection{Security}
+
+\indc{security!server}\indc{server!security}\indc{password!in URL}
+\indc{data security}\indc{limiting access to data}\indc{access control}
+\indc{username!embedding in URL}\indc{URL!embedding username in}
+\indc{URL!password}
+Some \opendap data providers will choose to control access to some or all
+of their data.  When you request data from one of these servers, the
+\opendap client  will prompt you for a username and password.  If you want
+to avoid the prompt, you can make the \opendap URL even more baroque by
+embedding a username and password in it, like this:
+
+\begin{vcode}{sib}
+http://user:password@www.dods.org/nph-dods/etc...
+\end{vcode}
+
+
+\section{The \opendap Services}
+\label{opd-client,services}
+
+\indc{services}
+Up to now, we have treated the \opendap server as if it has only one
+service: providing data to clients who ask for it.  It is true that
+this is the most important service a server provides.  However, it is
+also true that the server provides several other services besides
+that.  In fact, fulfilling a request for data actually requires three
+separate requests from the client, using three different services of
+the \opendap server.
+
+The services requested from an \opendap server are specified in a suffix
+appended to the URL described in
+\figureref{opd-client,fig,url-parts}.  Depending on the suffix
+supplied, the server will provide one of these services:
+
+%
+% Changes to this list should also be reflected in the list of
+% suffixes in ch04.tex.
+%
+\begin{description}
+  
+\item[Data Attribute] This service returns the entire data
+  attribute structure for the given dataset. This is a text file
+  describing the attributes of each data quantity in that dataset.
+  (See \sectionref{data,das} for more information about data
+  attributes.)  This service is activated when the
+  server receives a URL ending with \lit{.das}.
+  \indc{data attribute service}\indc{das@\lit{.das}}
+  
+\item[Data Descriptor] This service returns the entire data descriptor
+  structure for the given dataset. This is a text file describing the
+  structure of the variables in the dataset. (See
+  \sectionref{data,dds} for more information about data descriptors.)
+  This service is activated when the server receives a URL ending with
+  \lit{.dds}.
+  \indc{data descriptor service}\indc{dds@\lit{.dds}}
+  
+\item[\opendap Data] This service returns the actual data requested by
+  a given URL. This is not a text file, but is encoded as a
+  Multipurpose Internet Mail Extensions (MIME) document.  This service
+  is activated when the server receives a URL ending with \lit{.dods}
+  \indc{data service}\indc{dods@\lit{.dods}}
+  
+\item[ASCII Data] This service returns an ASCII representation of
+  the requested data.  This can make the data available to a wide
+  variety of browser programs.  This service is activated when the
+  server receives a URL ending with \lit{.asc} or \lit{.ascii}.  
+  \indc{ASCII data service}\indc{ascii@\lit{.asc}}
+
+\item[\ifh] When the server receives a URL ending in
+  \lit{.html}, it produces an HTML form containing information from
+  the dataset that you can use to construct a sensible URL with which
+  to request \opendap data.  The \ifh\ is also triggered when the \opendap
+  server receives a URL that references a directory instead of a file.
+  \indc{\ifh\ service}\indc{service!\ifh}
+  \indc{html@\lit{.html}}
+
+\item[Information]  This service returns information about
+  the server and dataset, in human-readable HTML form.  The returned
+  document may include information about both the data server itself
+  (e.g. server functions implemented), and the dataset referenced in
+  the URL.  The server administrator determines what information is
+  returned in response to such a request.  This service is activated
+  when the server receives a URL ending with \lit{.info}. See
+  \sectionref{sec,document-data} for more information about how to
+  configure the information service.
+  \indc{info service}\indc{info@\lit{.info}}
+
+\item[Version] This service returns the version information for the
+  \opendap server software running on the server.  This service is
+  triggered by a URL ending with \lit{.ver}.
+  \indc{version service}\indc{ver@\lit{.ver}}
+
+\item[Help] This service returns some help text in response to an
+  improperly specified URL.  This service is triggered by a URL ending
+  in any suffix that is not recognized by the \opendap server.
+  \indc{help service}
+
+\end{description}
+
+\note{A request for data from an \opendap client will generally make three
+different service requests, for data attributes, data descriptors, and
+for data.  The prepackaged \opendap clients do this for you, so you may
+not be aware that three requests are made for each URL.  That is, an \opendap client may accept an \opendap URL specifying some data, such as the
+one shown in \figureref{opd-client,fig,url-parts}.  In this case, the
+\opendap client library (such as nc-dods) will accept the input URL, and
+append the different suffixes to that URL, making three distinct
+requests to the \opendap server.}
+
+\subsection{\ifh}
+
+\indc{\ifh\ service}\indc{service!\ifh}
+\indc{html@\lit{.html}}
+
+Each \opendap server implements a service called the \ifh .  This is a way
+to use a standard Web client, such as Netscape, to get information
+about the data served by a specific server.\footnote{The \ifh\ is only
+  available for servers later than version 3.1.} The \ifh\ has two
+modes of operation: the directory level and the file level.
+
+If an \opendap URL references a directory instead of a file on the server
+machine, the server produces a listing similar to that shown in
+\figureref{opd-client,fig,ifh-dir}.  
+
+\figureplace{\ifh\ - Directory Level}{htbp}
+{opd-client,fig,ifh-dir}{ifh-dir.ps}{ifh-dir.gif}{}
+
+Clicking on a dataset shown in the directory-level listing 
+will produce an HTML form similar to the one in
+\figureref{opd-client,fig,ifh}.  The top line in the window (``Data
+URL'') shows a URL that makes a request for an \opendap dataset.  The
+windows below it show the variables that make up the dataset.  You can
+edit the form to select the data you'd like to see from this dataset,
+and the \ifh\ will edit the Data URL so that it only requests the data
+you are interested in.  When done, you can push the ``ASCII'' button,
+to see an ASCII representation of the data you've requested.  Netscape
+cannot handle binary data, so if you
+want to use the binary data, you should copy the URL in the Data URL
+window to the \opendap client you'd like to use.
+
+\figureplace{\ifh}{htbp}
+{opd-client,fig,ifh}{ifh.ps}{ifh.gif}{}
+
+\section{Using an \opendap Program}
+\label{opd-client,using}
+
+\indc{troubleshooting} \indc{client!troubleshooting} There are some
+configuration issues a user must consider in order to use an \opendap
+client application program. There is a short list of software that is
+required for some of the advanced features of \opendap, and some
+environment variables that control the execution of the \opendap software.
+For a piece of software that has been converted to use \opendap, after
+these conditions are satisfied, the program will run in the same
+manner it ran before. Aside from network delays, the user should not
+be able to tell that they are accessing data from the Internet.
+
+\indc{Internet connection!required for \opendap}
+Finally, though it may seem unnecessary to mention, in order for an \opendap client application to communicate with an \opendap server, the
+computer running the \opendap client must be connected to the Internet.
+
+\subsection{Requirements}
+
+In order to use of some of the features of the \opendap core software, a
+user's computer must have some additional software installed, and
+available on the user's \lit{\ind{PATH}}, in
+\lit{\$DODS\_ROOT/bin} or \lit{\$DODS\_ROOT/etc}.  
+\indc{client!using} \indc{required software}
+\indc{necessary software} \indc{software!required} \indc{system
+  configuration} \indc{configuration!system}
+
+\begin{itemize}
+  
+\item The \lit{wish} {\ind{Tcl}}/{\ind{Tk}} interpreter (or whatever
+  program is indicated by the \lit{DODS\_GUI} environment variable) is
+  used by the {\em{\ind{GUI manager}}} to provide a progress indicator
+  that displays the status of a pending data request as it is being
+  processed. It is also used by the error reporting system to display
+  error message received from the server.  \tbd{and by the data
+    locator, to display information and query the user}
+  
+\item The \lit{\ind{gzip}} program, the \ind{GNU} compression
+  software, is used to decompress data messages received from an \opendap
+  server. If this program is not installed, the \opendap core software
+  tells the server not to send compressed messages, so data may still
+  be received.  However, having the compression software installed and
+  available will increase the data transfer rate.
+
+\end{itemize}
+
+The required software, like \opendap itself, is free software. Refer to
+\appref{install} for information about acquiring that software.
+
+\subsection{Environment Variables}
+\label{opd-client,environment}
+
+After successfully relinking an application program with the \opendap
+libraries, there is a short list of \ind{environment variables} that
+may be defined.  Only \lit{DODS\_ROOT} is required. The other three
+variables are only used to override default values controlling the GUI
+manager process. Most users may safely ignore them.
+
+\begin{description}
+\item[\lit{DODS\_ROOT}]  indicates the root directory of the \opendap
+  software. The \opendap core software must be able to locate utilities
+  that are located in this directory tree. \indc{environment
+    variables!DODS\_ROOT} \indc{variable!environment}
+  
+\item[\lit{DODS\_GUI}] can contain the name of the program used by the
+  \new{GUI manager}.  A user might wish to change this variable to
+  point to a ``safe'' Tcl/Tk interpreter; whatever program is used
+  here must be able to process Tcl and Tk commands.  The default value
+  is the \lit{wish} program.  \indc{DODS\_GUI} \indc{environment
+    variables!DODS\_GUI}
+  
+\item[\lit{DODS\_GUI\_INIT}] indicates the name of any initialization
+  command required by the {\em GUI manager}. The default
+  initialization string executes the Tcl program in
+  \lit{\$DODS\_ROOT/etc/dods\_gui.tc1}.  \indc{DODS\_GUI\_INIT}
+  \indc{manager!GUI} \indc{GUI manager!initialization}
+  \indc{initialization!GUI manager} \indc{environment
+    variables!DODS\_GUI\_INIT}
+  
+\item[\lit{DODS\_USE\_GUI}] may be used to turn off the GUI manager. Set
+  the value of this variable to \lit{no}, and the progress indicator
+  and the error message windows will not be displayed.
+  \indc{DODS\_USE\_GUI} \indc{GUI manager!turning off}
+  \indc{environment variables!DODS\_USE\_GUI}
+
+\end{description}
+
+\note{The user has substantial control over the GUI manager. You can
+  change the program that listens for GUI commands from \lit{wish} to
+  anything else, and you can actually change the action of the GUI
+  commands by editing the Tcl code in the files \lit{dods\_gui.tcl},
+  \lit{error.tcl}, and \lit{progress.tcl}. (These are in the
+  \lit{\$DODS\_ROOT/etc} directory.)  However, editing these files and
+  variables will not change the form of the messages from the \opendap
+  server, and from the core software that are meant to invoke these
+  programs. In other words, the user may mess with these, but must be
+  careful to leave the GUI manager in a form that will be able to
+  process the messages it receives.}
+
+\subsection{The Error System}
+
+\indc{graphic user interface!error system} \indc{error system}
+\indc{message!error} The GUI manager is used to display error messages
+to the user. The messages themselves will vary with the server
+implementation. Refer to the documentation of the particular server,
+or consult the server's \lit{info} Service (See
+\sectionref{opd-server,service}.), for a list of the error messages
+that might be issued by a particular server.  \tbd{As error codes are
+  finalized, they should be included in an Appendix of this document,
+  and a pointer to them included here.}
+
+\subsection{Temporary Files}
+
+\indc{disk space!recovering} \indc{temporary files}
+\indc{files!temporary} \indc{tmp@\lit{/tmp}}
+\indc{tmpnam@\lit{tmpnam()}} Using an \opendap client application will
+create a number of temporary files. They are created with the
+\lit{tmpnam()} function, so their names will correspond to the rules
+for that function on your system (See the manual page for
+\lit{tmpnam(3)}, or type \lit{man tmpnam} for more information.)
+During normal operation, \opendap will delete the temporary files it
+creates as it goes. However, if execution of the \opendap client is
+somehow interrupted, these files may remain, and will have to be
+deleted by hand.
+
+
+
+% $Log: ch02.tex,v $
+% Revision 1.11  2003/09/04 19:42:06  tom
+% DODS->OPeNDAP
+%
+% Revision 1.10  2002/03/14 12:51:53  tom
+% various bugs, including bugzilla number 374
+%
+% Revision 1.9  2001/05/04 14:39:52  tom
+% added pdf to Makefile, added .dodsrc info to user guide
+%
+% Revision 1.8  2000/10/04 15:02:13  tom
+% changed \figureplace definition, misc other cleaning
+%
+% Revision 1.7  2000/03/23 18:26:14  tom
+% misc. updates
+%
+% Revision 1.6  1999/10/18 21:39:43  tom
+% updated for new services, fixed server test section, add ifh intro.
+%
+% Revision 1.5  1999/08/30 14:19:28  tom
+% updates prior to DODS release 3.0
+%
+% Revision 1.4  1999/02/04 17:42:13  tom
+% modified to use dods-book.cls and Hyperlatex
+%
+%
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

@@ -1,0 +1,170 @@
+\subsection{Simple Variables}
+\label{simple-variables}
+
+Variables in the \ac{DAP} have two forms. They are either base types or type
+constructors. Base type, or simple, variables are similar to predefined
+variables in procedural programming languages like C or Fortran (e.g.,
+\texttt{int} or \texttt{integer*4}).
+
+\begin{description}
+\item [byte] an 8-bit byte;unsigned char in ANSI C\@.
+\item [int16] a 16-bit signed integer.
+\item [uint16] a 16-bit unsigned integer.
+\item [int32] a 32-bit signed integer.
+\item [uint32] a 32-bit unsigned integer.
+\item [float32] the IEEE 32-bit floating point datatype (ANSI C's
+  \texttt{float}). 
+\item [float64] the IEEE 64-bit floating point datatype (ANSI C's
+  \texttt{double}) .
+\item [string] a sequence of bytes terminated by a null character.
+\item [URL] represented as a string, but may be dereferenced in a \ac{CE};
+  see Section~\ref{sec:ce}.
+\end{description}
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+simple-decl & = & simple-type id ";" \\
+simple-type & = & "byte"| "int16" | "uint16" | "int32" | "uint32" \\
+                & & | "float32" | "float64" | "string" | "url" \\
+id & = & (ALPHA | "\_" | "\%" | ".") \\
+       & & *(ALPHA | DIGIT | "/" | "\_" | "\%" | ".") \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\subsection{Constructor Variables} 
+\label{sec:ctor-vars}
+
+Constructor variables describe the grouping of one or more variables or values
+within a data set. These variables are used to describe different types of
+relations between the variables that comprise the data set. There are five
+classes of type constructor variables defined by the \ac{DAP}: lists, arrays,
+structures, sequences, and grids. 
+
+The types are defined in Sections~\ref{sec:list}~to~\ref{sec:grid}.
+
+\subsubsection{List}
+\label{sec:list}
+
+ The \textbf{List} type constructor is used to hold lists of 0 or
+  more items of one type. Lists of \texttt{byte}, \ldots, \texttt{grid} are
+  specified using the keyword \texttt{list} before the variable's class. The
+  list can be of any type \textbf{except \texttt{List}}.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+list-decl & = & "list" (simple-decl  | array-decl | structure-decl \\
+          & & | sequence-decl | grid-decl) \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+Examples:
+\begin{quote}
+\begin{vcode}{t}
+list int32 heights;
+List Float64 x[10][10];
+\end{vcode}
+\end{quote}
+
+\subsubsection{Array}
+An \textbf{Array} is a one dimensional indexed data structure as defined by
+ANSI \C. Multidimensional arrays are defined as arrays of arrays. The size of
+each array's dimensions must be given. Each dimension of an array may also be
+named.
+
+Multi-dimensional arrays are stored in \gloss[word]{row-major} order (as is
+the case with ANSI \C or \Cpp). Any array stored in row-major order is stored
+so that the last dimension varies most quickly. For example suppose the two
+dimensional array \texttt{String letter[2][3]} has two rows of three columns
+each and looks like:
+\begin{displaymath}
+\begin{array}{ccc}
+A & B & C \\
+D & E & F \\
+\end{array}
+\end{displaymath}
+the values would be stored as $A~B~C~D~E~F$ in memory.
+
+% Define whether multi-dimensional arrays are row-major or not.  Don't
+% use the phrase ``row-major'' without also giving an example; people
+% don't ever remember which is which.  (Except perhaps for you.)
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+array-decl & = & array-types id array-dims ";" \\
+array-types & = & simple-decl | structure-decl | sequence-decl | grid-decl \\
+array-dims & = & array-dim | array-dim array-dims \\
+array-dim & = & "[" [ name "=" ] DIGIT *DIGIT "]" \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\subsubsection{Structure}
+ A structure groups variables so that the collection can be
+  manipulated as a single item. The variables can be of any type.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+structure-type & = & "structure" "\{" *structure-types "\}" ";" \\
+structure-types & = & simple-type | list-type | array-type \\
+                & & | structure-type | sequence-type | grid-type \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\subsubsection{Sequence}
+ A sequence is an ordered set of $N$ variables which has
+  several instantiations (or values). Variables in a sequence may be of
+  different types.  Each instance of a sequence is one instantiation of the
+  variables. Thus a sequence can be represented as:
+
+\begin{displaymath}
+\begin{array}{ccc}
+  s_{0 0} & \cdots & s_{0 n} \\
+  \vdots & \ddots & \vdots \\
+  s_{i 0} & \cdots & s_{i n}
+\end{array}
+\end{displaymath}
+
+\noindent Every instance of sequence $S$ has the same number, order, and
+type of variables. Thus in a sequence which contains an array, each instance
+of the array MUST be the same size.\footnote{But a sequence may contain a
+  list and each instance of the list may have a different number of elements.
+  This is because arrays must have their size declared while lists do not.} A
+sequence implies that each of the variables is related to each other in some
+logical way. A sequence is different from a structure because its constituent
+variables have several instances while a structure's variables have only one
+instance (or value).
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+sequence-decl & = & "sequence" "\{" *sequence-types "\}" ";" \\
+sequence-types & = & simple-type | list-type | array-type \\
+                & & | structure-type | sequence-type | grid-type \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\subsubsection{Grid}
+\label{sec:grid}
+ A grid is an association of an $N$ dimensional array with $N$
+  named vectors, each of which has the same number of elements as the
+  corresponding dimension of the array. Each vector is used to map indices of
+  one of the array's dimensions to a set of values which are normally
+  non-integral (e.g., floating point values). The $N$ (map) vectors may be
+  different types. Grids are similar to arrays, but add named dimensions and
+  maps for each of those dimensions.
+  \label{page:grids} 
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+grid-decl & = & "grid" "\{" "array:" *array-decl "maps:" *array-decl "\}" ";" \\
+\end{tabular}
+\end{center}
+\end{ttfamily}

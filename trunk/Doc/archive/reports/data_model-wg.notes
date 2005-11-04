@@ -1,0 +1,236 @@
+Friday -
+Measuring Functions		
+  Mapping from one space to another	Rn --> Rm
+f(x)
+f1 = u	x1 = Lon 
+f2 = v	x2 = Lat
+f3 = T	x3 = press
+	x4 = time
+
+Discrete Functions -
+	One Independent Variable		Uniform/Non-uniform
+	Multiple Independent Variable		Gridded/Irregular
+						Ragged/Non-ragged
+_______________________
+Sequences
+	Seq (xi, fi)		implicit order
+				sequence of vectors
+				could by multi valued
+
+		Multiple pathways from function to sequence 
+		if single valued can go from seq to function
+
+	Sets (xi, fi)	no order 
+			if single valued, ordered
+				
+Operations
+	Hyperslab   	    operates on independent variable	xi
+	Value Operations    operates on dependent variable	f(x)
+
+   For a sequence or set opreators handle independent and dependent
+   variables the same
+
+
+   Discrete Function -
+	Hyperslab --> 2 classes     congruent --->  gridded/not ragged
+						    map to gridded/not ragged
+				    noncongruent->  Gridded/not ragged maps
+						    to gridded/ragged
+
+
+We defined the term Similar Operation as the outer product of
+vectors 
+	Regular Grid		x = [xi] x [xi] x [z2]
+	Similar Operation	x = sub[xi] x sub[xi] x sub[z2]
+
+	Nonsimilar is anything else
+	Dependent operation
+
+	-Nonsimilar and dependent operations are not easily transformed
+
+
+Question of what get returned if operation is not supported (i.e., cannot 
+perform similar operation should it return sequence or should it simply not
+send anything)
+
+Other spaces Rn
+	f (x, y, z) enumerated (i.e., Georges Banks, PI)
+	Operations supported
+		real		<, ==, >, <=, >=, !=
+		string	==, !=, req exp
+________________________
+
+Aggregation/Disaggregation/Structure
+	dependent		u, v, T, s
+	indep		x, y, z, t, location
+
+
+
+Statement to the effect that we are trying to develope a language to describe
+data models that will be used by servers to interoperate
+
+Data Model Information
+
+     Independent variables - 
+		 Name, types, attributes (units/scale factor) 
+		 Gridding relations and mapping (i.e. some of the variables
+		   are gridded or can be represented as a regular grid)
+		 Aggregation information 
+
+        *(aggregation and gridding implies that there is some well specified  
+	 relation/information that is also known and does not need to be
+	 repeatedly sent)
+
+     Dependent variables - 
+	        Names and types 
+		Function/dependencies 
+		Attributes(units/scale factors) 
+		Aggregation/info
+
+
+
+	Discrete Functions|	
+	Sequences	   >	Relation between independent & dependent
+	Sets		  |		    variables
+
+
+* The question was raised as to whether sequence and set are really two
+* seperate or should they be classed together as `not a function'.  It was
+* stated that for sequences and sets dependent and independent variables are
+* treated the saem in terms of the opreations that are performed on them.
+
+
+For discrete functions with gridded data we may be able to perform operation
+	     G --> G	similar operation
+
+Example	Current Meter
+	indep	x, y, z, t
+	dep		u, v, T
+gridded
+	z = [200, 400, 800, 1200]	x t=[0:5:500]
+	x = 10	y = -5
+	u = 4 x 101
+	v = 4 x 101
+	T = 4 x 101
+
+Directory Info - returns sets w/ no dependent information
+
+Back to example
+	CM	x, y, z, t, u, v, T, mfg
+
+	Dependencies		u (x, y, z, t)
+				v (x, y, z, t)
+				T (x, y, z, t)
+
+	Corner relationships --> Need to handle the mapping transformation
+
+Data Model Information
+  Need to transfer
+	Variables <names and types>
+	functional dependencies
+	gridding & mapping relations
+	aggregation information
+  Operations Supported
+	Real <, ==, >, <=, >+, != {  }?
+	String ==, !=, regexp
+	Grid corner, <, ==, >, <=, >=, !
+
+  Projections
+
+
+Should model define a lexicon, and have reserved terms common units of 
+parameter specification / conventions
+
+  Server supports certain transformations
+     Julian --> Gregorian <server specified functions>
+
+  Time Transformation, the question of where does the transformation take
+  place  
+     Date is transformed to appropriate form, possible options;
+	T1	part of application library
+	T2	separate client side application
+	T3	translator in access path
+	T4	standard transformations done within server
+
+  Variables can be represented in different forms Time is one example how do
+  you specify that two different representations of a variable are equivilent?
+
+    *Concept of unions as a variable attribute, i.e.; 
+	{universal time} {year, month, day, zulu}
+
+  Discussed the use of scale/offset - useful as part of the definition of a
+  variable --> in addition to name & type
+
+
+Steve asked the question where are we now in terms of what parts of the DODS
+system are built and how does the data model fit in-
+
+Glenn diagramed a NetCDF application remotely accessing the NetCDF API and a
+JGOFS app remotely accessing the JGOFS API, this is Phase 0 of the project,
+in Phase 1 we will have the NetCDF app remotely accessing the JGOFS API and
+the JGOFS app remotely accessing the NetCDF API.
+
+Glenn stated that by defining the data model we are specifying how to do 
+Phase 1.  In order to do Phase 1 we will take advantage of what the systems
+API do today and also define some new API functions < these new API functions
+will in essence be the DODS API extensions to the other APIs>
+
+The DODS API would provide 'extra' functions that are not supported by the
+local API but would be desirable (i.e.; relational aspect of data set)
+
+Another Example
+DODS DM
+	CAST, LAT, LON, time, press, SAL, O2, temp
+	temp		(press, cast)
+	SAL		(press, cast)
+	O2		(press, cast)
+	LAT		(cast)
+	LON		(cast)
+	time		(cast)
+
+	NetCDF Representation
+	lat		(castno)
+	lon		(castno)
+	time		(castno)
+	cast		(index)
+	temp		(index)
+	sal		(index)
+	press		(index)
+	O2		(index)
+
+	CAST, LAT, LON, Time, PRESS, temp, SAL, O2
+	press	(index, cast)		ragged array  concept
+	temp		(index, cast)
+	sal		(index, cast)		We need to model the fact 
+	O2		(index, cast)		that for each drop the
+	lat		(index, cast)		press is independent of
+	lon		(cast)			variable for a cast
+	time		(cast)			
+
+
+   Three methods for transforming ragged array gridded data were explored
+   Transforming JGOFS to NetCDF Grid
+
+		Unraveled   	-  Masks dependencies 
+		Extended Grid	-  Fill in the missing data to create
+		                   nonragged grid
+		NetCDF+         -  Define indices to collection of files of
+		                   ragged array
+
+           |Cast(-)
+	   |Lat	(-)
+NetCDF+   < Lon	(-)		Requires more data
+	   |Time(-)		 model information
+	   |Filename(-)
+
+
+We noted that accessing NetCDF data from JGOFS API will need to work 
+with vector outer product and scale offset
+
+We noted that in order to operate on collections of NetCDF files from a
+single NetCDF+ server it will be necessary to develop an operator to extract
+file names and other variables  and put  into Net CDF file structure then use
+translator server to read 
+
+
+

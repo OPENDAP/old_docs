@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Reusing DAS and DDS Objects</TITLE>
+<META NAME="description" CONTENT="Reusing DAS and DDS Objects">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="next" HREF="node12.html">
+<LINK REL="previous" HREF="node10.html">
+<LINK REL="up" HREF="node10.html">
+<LINK REL="next" HREF="node12.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html244"
+  HREF="node12.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html240"
+  HREF="node10.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html234"
+  HREF="node10.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html242"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html245"
+  HREF="node12.html">Using the DDS object</A>
+<B> Up:</B> <A NAME="tex2html241"
+  HREF="node10.html">Data Server Optimizations</A>
+<B> Previous:</B> <A NAME="tex2html235"
+  HREF="node10.html">Data Server Optimizations</A>
+ &nbsp; <B>  <A NAME="tex2html243"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00033100000000000000">
+Reusing DAS and DDS Objects</A>
+</H3>
+
+<P>
+Because the construction of the DAS and DDS objects requires that an entire
+data set be scanned, it can become very inefficient to continually rebuild
+these objects. Because the DAS and DDS server programs use a text
+representation for transmission of this object from the server to the client,
+and because text is easily stored by computer systems, it is possible to
+store both the DAS and DDS objects once they have been created. Subsequent
+accesses to these objects can be accomplished by reading and transmitting the
+textual representation without, in the case of these two programs, actually
+building the binary data object. 
+
+<P>
+When taking advantage of this optimization, it is important that the server
+check the date stamp of the DAS/DDS text objects and compare it to the latest
+modification date of the data set. For any data set to which new data is
+periodically added, the DAS/DDS text object must clearly be updated so that
+the cached text object matches exactly the object that would be created if
+the object were built by querying the data set.
+
+<P>
+The update of the DAS/DDS text object can itself be optimized significantly.
+It is not actually necessary to completely re-read the entire data set.
+Because the software used to build both the DAS and the DDS binary objects
+work incrementally, it is possible to read the DAS/DDS text object into
+memory (i.e., build the binary object from its text representation) and then
+read only the new parts of the data set. The binary object will be added to
+as needed. NB: The DAS/DDS software may not properly update <EM>changed</EM>
+data (data that was present in the previous incarnation of the data set, but
+is now different in the current version) nor is it straightforward to remove
+data which is no longer present in the data set.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html244"
+  HREF="node12.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html240"
+  HREF="node10.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html234"
+  HREF="node10.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html242"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html245"
+  HREF="node12.html">Using the DDS object</A>
+<B> Up:</B> <A NAME="tex2html241"
+  HREF="node10.html">Data Server Optimizations</A>
+<B> Previous:</B> <A NAME="tex2html235"
+  HREF="node10.html">Data Server Optimizations</A>
+ &nbsp; <B>  <A NAME="tex2html243"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

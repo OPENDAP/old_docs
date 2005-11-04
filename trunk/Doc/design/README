@@ -1,0 +1,8 @@
+$Id$
+
+What's here
+
+This directory has directories that hold the HTML version of a handful of the
+design papers we've produced. I think we should probably remove it or use it
+to hold snapshots of the papers in /archive/design.
+

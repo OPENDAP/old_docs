@@ -1,0 +1,869 @@
+\renewcommand{\chaptertitle}{Northeast Regional Workshop}
+\chapter{\texorhtml{}{Appendix D }\chaptertitle}
+
+%% $Id$
+
+\begin{center}
+January 8th - 10th, 2001\\
+URI - W. Alton Jones Campus\\
+West Greenwich, RI\\
+\end{center}
+
+\section{Introduction and Workshop Objectives}
+
+The meeting convened with Linda Mercer, NE regional DODS coordinator,
+asking the audience to introduce themselves (see \sectionref{IV,attendees}).  An
+overhead was displayed showing the following questions that the
+workshop attendees were to address:
+
+\begin{enumerate}
+\item Is there an area(s) of common interest in the Northeast?
+\item What datasets will be served via the system?
+\item Is the DODS data model adequate for the datasets to be served in the NE?
+\item What are the important interface issues for users in the region?
+\item What types of semantic metadata will be required and what
+  semantic standards will be used?
+\item Is a central regional node required to provide coordination
+  including services such as user support, data location, etc.?
+\end{enumerate}
+
+\section{Overview and Demonstration of DODS}
+
+Dan Holloway, URI DODS technical lead, went to the DODS demonstration
+website and proceeded to show a series of web pages describing DODS.
+A complete overview of the DODS data model can be found at:
+http://po.gso.uri.edu/~dan/dods-regional-
+workshops/dods-regional-workshops.html.
+
+Dan explained the five steps involved to analyze data:
+\begin{enumerate}
+\item LOCATE
+\item SUBSET
+\item ACQUIRE
+\item INGEST
+\item ANALYZE
+\end{enumerate}
+
+The DODS portion involves the middle three steps, i.e., SUBSETTING, ACQUIRING, 
+and INGESTING.  DODS does not focus on LOCATION or ANALYSIS.  What DODS 
+is not, and the underlying philosophy of DODS, were covered.
+
+Dan went on to explain that DODS is built from the bottom up, i.e., by
+putting high functionality at the data acquisition level, and that
+functionality decreases from the bottom up (the data level being at
+the bottom, the inventory level in the middle and the directory level
+at the top).
+
+The underlying philosophy of DODS was reiterated and is twofold:
+\begin{itemize}
+\item Anyone willing to share their data should be able to do so via DODS.
+\item The user should be able to use the application package with
+  which she or he is the most familiar, to examine or analyze the data
+  of interest.
+\end{itemize}
+
+Constraints of the DODS system include making it easy for the
+scientist to serve data AND to make it easy to access data.
+
+Syntactic and semantic metadata were described and how they relate to
+the data, inventory, and directory levels.  Semantic metadata can be
+sub-setted into use and search categories.  Use metadata can be
+further subdivided into translational use metadata and descriptive use
+metadata. The focus of DODS is on translational use metadata.
+
+Four levels of interoperability at the data level (for data accessible
+over the network) were explained as follows:
+\begin{description}
+\item[Level 0]  no syntactic or semantic metadata - FTP.
+\item[Level 1]  rigid syntactic, no semantic metadata - DODS.
+\item[Level 2] rigid syntactic, human readable semantic metadata - A
+  subset of DODS datasets.
+\item[Level 3] rigid syntactic, consistent semantic metadata; i.e.,
+  machine-readable - A subset of the DODS Level 2 datasets.
+\end{description}
+
+Three DODS data objects were defined:
+\begin{enumerate}
+\item The data descriptor structure (DDS) - the syntactic metadata for a dataset.
+\item The data attribute structure (DAS) - the semantic metadata for a dataset.
+\item Data - the actual data in binary structure.
+\end{enumerate}
+
+Additionally, DODS servers support several other services: 
+\begin{itemize}
+\item .ASCII (an ASCII representation of the data).
+\item .info (a more readable version of the .dds and .das combined).
+\item .html form (a web-based form that will help to build a DODS URL).
+\end{itemize}
+
+It was emphasized that writing DODS URLS can be difficult!
+
+Three classes of interfaces were described based on the difficulty
+involved in building a URL.  These are in order of increasing
+ease-of-use:
+
+\begin{description}
+\item[Command Line] No help is given creating a URL.
+\item[General Purpose URL Builder] A menu-based interface based on
+  data dimensions and names.
+\item[Graphical User Interface] A URL builder based on geophysical
+  parameter input.
+\end{description}
+
+The DODS data model was explained along with the data model
+constraints.  The following operations are permitted when requesting
+data:
+\begin{itemize}
+\item Projection.
+\item Relational operations on list and sequence elements.
+\item Rectangular and decimated subsets of arrays and grids.
+\end{itemize}
+
+And groupings of these data types:
+\begin{itemize}
+\item Array
+\item Structure
+\item List
+\item Sequence 
+\item Grid
+\end{itemize}
+
+Sequences and Grids are two separate constructs.
+
+Data types served in the NE: 
+\begin{itemize}
+\item Hydrography
+\item Moorings
+\item Bathymetry
+\item Model output
+\item Satellite products
+\end{itemize}
+
+Global:
+\begin{itemize}
+\item Surface fluxes
+\item Water column climatologies
+\item Satellite products
+\item COADS climatologies
+\item Near real-time numerical model weather and ocean predictions
+\end{itemize}
+
+Dan demonstrated the methods of accessing data served by DODS.
+
+An example of the Live Access Server (LAS) was given.
+Steps involved:
+\begin{itemize}
+\item Browser requests GIF image from PMEL site.
+\item PMEL Live Access Server passes request to Ferret.
+\item Ferret requests subset of monthly COADS SST data from local disk.
+\item Ferret requests subset of monthly NCEP Marine data from CDC/NOAA in Boulder.
+\item Ferret re-grids COADS to NCEP grid, differences, generates a GIF
+  image and returns the GIF image to Live Access Server.
+\item Live Access Server returns GIF image to the browser.
+\end{itemize}
+
+Another example used the DODS Matlab Graphical User Interface to
+select, request, adn download data directly into the Matlab workspace.
+
+Dan gave an example using PMEL data and another utilizing Matlab.
+
+\section{Workshop Participant Presentations}
+
+A good portion of the second day of the workshop was devoted to
+workshop participants giving presentations related to their
+organization and how they tie into the DODS concept. To set a context
+for the DODS discussion, David Mountain (NMFS, Woods Hole) gave an
+overview of a NMFS proposal for ``Ocean Observing Systems in the Gulf
+of Maine - A proposal to Integrate Existing Systems,'' presented to
+directors from marine organizations/agencies in the Northeast region,
+October 30, 2000, sponsored by the Regional Association for Research
+in the Gulf of Maine (RARGOM). The purpose of the meeting was to
+determine interest in developing an integrated system, comprised of
+monitoring data from existing programs that will generate analytic
+products in order to meet a broad spectrum of needs across the Gulf of
+Maine region.
+
+\subsection{Where Are we Now?}
+
+Many Operational Observation Programs:
+\begin{itemize}
+\item National Weather Service
+\item National Marine Fisheries Service
+\item National Ocean Service
+\item Dept of Fisheries and Oceans (Canada)
+\item Division of Marine Fisheries (MA)
+\end{itemize}
+
+Where are we now?
+\begin{itemize}
+\item Many datasets available via the web.
+\item Little coordination in the collection or analysis of the datasets.
+\end{itemize}
+
+Why Now?
+\begin{itemize}
+\item Improved technology.
+\item Increased understanding of the Gulf Ecosystem.
+\item From major research EOCHAB, GLOBEC, etc.
+\item The future is now.
+\end{itemize}
+
+The Future is Now.
+\begin{itemize}
+\item An Integrated Ocean Observing System: A Strategy for
+  Implementing the First Steps of a US Plan.
+\item A report (R.Fresch, chair).
+\end{itemize}
+
+Recommendations:
+\begin{enumerate}
+\item Use and enhance existing observational systems.
+\item Integrate into regional demo programs.
+\end{enumerate}
+
+System Components:
+\begin{enumerate}
+\item Measurement.
+\item Data storage.
+\item Data communication.
+\item Analysis.
+\item Integration.
+\end{enumerate}
+
+DODS can be the critical data communication component for a
+distributed, integrated observing system in the northeast.
+
+
+\subsection{Linda Mercer - Maine Department of Marine Fisheries}
+
+The Maine Department of Marine Resources has numerous datasets, many
+of which include physical parameters such as temperature and salinity,
+that it would be willing to share via DODS.
+
+Examples include:
+
+\subsubsection{Environmental Monitoring Program }
+
+Year started: 1989
+
+Data collection site: BBH Station
+
+Collection frequency: hourly
+
+\begin{itemize}
+\item Barometric Pressure (mb) (in)
+\item Precipitation (in)
+\item Relative Humidity (%)
+\item Salinity (ppt)    
+\item Sea Surface Temperature (c,f) 1905
+\item Sea Bottom Temperature (c,f) 
+\item Solar Radiation (langley/min)
+\item Air Temperature (c,f)
+\item Tide Height (ft)
+\item Wind Direction (deg) 
+\item Wind Speed (mph)
+\end{itemize}
+
+\subsubsection{Aquaculture Program}
+
+Year started: 1988
+
+Data collection site: finfish aquaculture sites
+
+Collection frequency: baseline at time of application then yearly 
+
+\begin{itemize}
+\item Current speed (m/sec)
+\item Dissolved Oxygen Depth Profile (%, mg/l)
+\item Salinity Depth Profile (ppt)
+\item Sea Temperature Depth Profile (c)
+\item pH Depth Profile  (pH/m)
+\end{itemize}
+
+\subsubsection{Stock Enhancement Program}
+
+Year started: 1985
+
+Data collection site: coastal Maine Rivers
+
+Collection frequency: depends on field schedule of various projects
+
+\begin{itemize}
+\item Air Temperature (c,f)
+\item Dissolved Oxygen (Surface/Mid/Bottom) (mg/l)
+\item Salinity (Surface/Mid/Bottom) (ppt)
+\item Temperature (Surface/Mid/Bottom) (c,f)
+\item Water Depth (m)
+\item Secchi Disk (cm)
+\item Weather Description (qualitative)
+\end{itemize}
+
+\subsubsection{Water Quality Program}
+
+Year started: 1989
+
+Data collection site: 1800 rain \& sample sites along coastal Maine
+
+Collection frequency: 6/yr (min), March- November
+
+\begin{itemize}
+\item Salinity (ppt)
+\item Water Temperature (c,f)
+\item Tide Status (high/med/low)
+\item Weather Description (qualitative)
+\item Precipitation (in)
+\item Dissolved Oxygen (mg/l)
+\end{itemize}
+
+\subsubsection{Survey - CDT}
+
+Year started: 1989
+
+Data collection site: various vessel surveys along Maine coast
+
+Collection frequency: survey schedule
+
+\begin{itemize}
+\item Water Temperature Depth Profile (c/m)
+\item Salinity (conductivity) Depth Profile (ppt/m)     
+\end{itemize}
+
+
+\subsection{Linda Mercer - Gulf of Maine Ocean Observing System}
+
+The Gulf of Maine Ocean Observing System (GoMOOS) is a NOPP-funded
+project that is developing a system of buoys and CODAR to collect
+oceanographic and meteorological data in the Gulf of Maine and make
+these data available on continuous real-time basis.  GoMOOS is a pilot
+component of the Northeast Ocean Observing System (NEOOS) that is, in
+turn, planned as one of approximately six regional observing systems
+envisioned to constitute a national observing system.  
+
+GoMOOS is a consortium of scientists, policymakers, and industry, and
+the observing system is designed, not as a research project, but as a
+utility that will build, deploy, operate, transmit/process/archive
+data, and maintain the infrastructure required to do this.  The data
+and information produced will allow those who depend on the Gulf of
+Maine for their livelihood and well- being, and those whose business
+is marine research, to undertake their pursuits and enhance the
+understanding of the Gulf more efficiently and profitably than ever
+before.
+
+The initial phase of GoMOOS will consist of 13 buoys placed
+strategically around the Gulf of Maine based on input from a variety
+of user groups, and a CODAR system with four sites that will provide
+coverage out to 200 km.
+
+\subsubsection{GoMOOS Data Products Summary}
+
+\begin{itemize}
+
+\item Wave products:
+\begin{itemize}
+\item Height
+\item Trends
+\item Nowcasts
+\item Forecasts
+\end{itemize}
+
+\item Meteorological.observations:
+\begin{itemize}
+\item Wind (hourly)
+\item Wind (4 times daily)
+\item Fog
+\end{itemize}
+
+
+\item Currents:
+\begin{itemize}
+\item Surface currents maps
+\item Water column currents
+\item Large scale circulation features
+\item Interannual variation
+\end{itemize}
+
+
+\item Temperature Patterns:
+\begin{itemize}
+\item Sea surface temperature
+\item SST composites
+\item Archives
+\item Water column temperature
+\end{itemize}
+
+\item Salinity
+
+\item Dissolved Oxygen
+
+\item Primary Productivity
+
+\item Turbidity
+
+\item Whale Sounds
+\end{itemize}
+
+Direct transfer of the data to scientists from GoMOOS can be
+effectively handled via DODS. A web-based graphical User Interface
+will be used to provide ``user-friendly'' data and data products that
+address the information requirements of Gulf user groups.
+
+
+\subsection{Nicholas Wolff -  Bigelow Laboratory for Ocean Sciences}
+
+He mentioned that he is here to get more familiar with what DODS is
+and to share that with researchers at Bigelow.  Nick works with Lew
+Incze who previously expressed an interest in DODS for serving several
+of his larval lobster time series with associated hydrographic data.
+
+
+\subsection{David Mountain - National Marine Fisheries Service}
+
+NMFS datasets for DODS
+
+\begin{tabular}[t]{ll}
+Now:&   Historic current meter records (NetCDF). \\
+Future: & Hydrographic  (~1500 CTD casts/yr) \\
+&       Zooplankton     (~ 700 longo tows/yr) \\
+&       CPR             (monthly CPR transects) \\
+&       Fish            (monthly trawls/yr) \\
+\end{tabular}
+
+\subsubsection{Problems/Needs}
+
+Serving data - data in ORACLE
+
+Retrieving data - plug-ins for ORACLE, S-Plus, Java?
+
+David pointed out that the intention of NMFS is to serve all their
+data via DODS.  They currently have some Matlab and IDL users.
+
+\subsection{Bruce Tripp - Woods Hole Oceanographic Institute}
+
+Data to share:
+Data sources at WHOI would be potential candidates for DODS.
+
+ECOHAB data:
+\begin{itemize}
+\item PI's sharing data and a website.
+\item Buoy data.
+\end{itemize}
+
+Multiple sources for Gulf of Maine data.
+
+Historic aspect of data needs to be explored.
+
+Contaminated sediment database from the Regional Marine Research
+Program in Gulf of Maine.
+
+\begin{itemize}
+\item Had multiple sources of data.
+\item Difficulty in critiquing the data to determine quality.
+\end{itemize}
+
+There is a new ocean observatory, the Martha's Vineyard Coastal Ocean
+Observatory headed by Jim Edson.  He has created a multi-observatory
+website (draft version at this time).  However, the website probably
+won't be used to house data.  There is collaboration between five
+coastal observatories on the East Coast.  They could potentially house
+a DODS server and share data.  Sediment transport and meteorology is
+the primary focus of the observatory groups.
+
+
+\subsection{Chuck Denham - USGS, Woods Hole}
+
+Data to share:
+\begin{itemize}
+\item Current meter data.
+\item Bathymetric data.
+\item Data is fairly distributed but have to know where to get it.
+\item Geographical range, Woods Hole (Gulf of ME, NY and NJ).
+\item EPIC formatted data for ADCP.  Data descriptors are needed for instruments.
+\end{itemize}
+
+\subsection{Steve Hale - EPA Monitoring Assessment Program, EMAP}
+
+MAIA - Estuary Report
+
+Why Share Estuarine Data?
+\begin{itemize}
+\item Broad-scale and long-term ecological processes (e.g.,
+  eutrophication, global change).
+\item No single group can collect all the data. 
+\end{itemize}
+
+Impediments to data sharing.
+
+Technology:
+\begin{itemize}
+\item Data formats
+\item Hardware
+\end{itemize}
+
+Sociological.
+
+How to exchange data:
+\begin{itemize}
+\item Directories/catalogs/clearinghouses
+\item Standards (Z39.50)
+\item Publishing on the web
+\end{itemize}
+
+How to integrate:
+
+\begin{itemize}
+
+\item Standards
+
+\item Metadata
+\begin{itemize}
+\item Information on methods
+\item Information on data quality
+\end{itemize}
+
+\item Databases:
+\begin{itemize}
+\item Core DBMS
+\item Database constellation
+\item Centralized metadata, distributed data
+\item GIS
+\end{itemize}
+\end{itemize}
+
+Coastal Zone 2000 Monitoring in the Northeast (map on display).
+
+Showed metadata standard overhead.
+
+EMAP Coastal zone works off an ORACLE database.
+
+Bibliography on-line.
+
+\subsection{Don Byrne - NJ Division of Fish, Game and Wildlife}
+
+See \sectionref{IV,NJ}
+
+New Jersey has a trawl survey and is willing to share data from this
+survey that dates from 1988 to the present using DODS.  New Jersey
+data are not currently available on a server.
+
+
+\subsection{Wendell Brown - Univ. of Mass at Dartmouth}
+
+Built an archive at the University of New Hampshire, with metadata.
+Physical oceanographic data.
+
+Advanced Fisheries Management Information System (AFMIS)
+Professors Brian Rothchild and Allan Robinson were major contributors.
+
+Employs simple ecosystem models.
+
+Components:
+\begin{enumerate}
+\item Sensors and platforms.
+\item Data and knowledge.
+\item Models with data assimilation.
+\item Reports distributed to users.
+\end{enumerate}
+
+Focus is on fisheries but can be used in other resource management functions.
+
+Showed AFMIS functional elements.
+
+Real-time forecast demonstration of concept (predicting where fish would be).
+
+List of forecast products:
+\begin{itemize}
+\item Discussion of model initialization
+\item Discussion of forecast products
+\item Synoptic forecast images
+  \begin{itemize}
+  \item Georges Bank plan view
+  \item Georges Bank vertical resources
+  \end{itemize}
+\item Tidal Velocity Forecast images
+\end{itemize}
+
+\section{More DODS}
+
+Paul Hemenway of URI, with the use of a flip chart, provided a
+graphical representation of how DODS works.  He stated that it takes
+some effort to put available datasets up on DODS.  DODS servers are
+specific to the data format you are serving (NetCDF, HDF, binary,
+ascii).  The DODS client is specific to the analysis package/language
+you are using (Matlab, IDL, EXCEL, etc.).
+
+Dan Holloway explained that DODS has two ASCII servers: FreeForm
+(handles binary very well and ASCII fairly well) and JGOFS (uses tree
+method object).  He discussed how JGOFS data is accessed through DODS.
+Dan pointed out that data location is an issue, and quality of data is
+also important.  Bandwidth of data was also discussed.  Finally, data
+need not be replicated (when considering setting up a separate
+server).
+
+
+\subsection{DODS Workshop Questions}
+
+Listed below are some of the more important regional questions and
+answers pertaining to DODS that were presented to the workshop
+participants:
+
+What would it take to be a DODS server (basic information)?
+
+An informational listing of items necessary to set up a server was
+thought to be very important. Maintenance issues should be among the
+topics covered. The DODS technical staff at URI could provide the
+informational listing and any support required.
+
+What datasets will be served in the NE?
+
+Most of the datasets discussed at the workshop were from the northern
+part of the Northeast region, i.e. Gulf of Maine and Georges Bank.
+More participation is needed from the mid-Atlantic regions.
+
+Datasets in the Northeast:
+\begin{itemize}
+\item Fisheries databases
+\item GOMOOS and other observing systems
+\item ECOHAB
+\item AFMIS
+\item USGS - WHOI and MWRA
+\item NOS tidal gauge
+\item NOAA status and trends
+\item Coastal 2000
+\item REDIMS contaminants
+\item Fish data
+\item Shellfish
+\item Temperature data
+\item Climatology
+\item Shoreline data collected by USGS (with focus on monitoring
+  before and after storms)
+\item Sediment transport data
+\end{itemize}
+
+Any modeling activities (data assimilation possibilities) by Lynch, Huije, GLOBEC.
+
+Talking to the modeling community will be important!
+
+Who is serving DODS datasets?  
+
+\begin{itemize}
+\item PMEL
+\item UCAR
+\item URI
+\item USGS
+\item NGDC
+\item Goddard
+\item Lamar
+\item BIO
+\item Mass Bay Modeling
+\end{itemize}
+
+Number of DODS client sites (unknown); can download DODS clients and servers.
+
+Is the DODS data model adequate for the datasets to be served in the NE?
+
+It was emphasized that data residing in DBMS format be accessible via DODS.
+
+The need for a data catalog(s) and the development of a template for
+the catalog was stressed:
+\begin{itemize}
+\item    Web-based.
+\item Would be compiled into a regional, centralized site.
+\item Searchable by keyword.
+\item Geographic.
+\item Should be able to serve up .gif and .jpeg images.
+\item Show links to informational pages describing the datasets.
+\item Would include pointers to URL's for the actual data.
+\end{itemize}
+
+What are important interface issues for users in the region?
+
+Being able to view generated maps and graphics would be useful.
+Presently, DODS does not support data in ACCESS format.
+
+What types of semantic metadata will be required and what semantic
+metadata standards will be used?
+
+COARDS is the minimum standard so far.  Data providers are encouraged
+to submit a maximum amount but DODS only requires a minimum amount of
+syntactic metadata and no semantic metadata to serve datasets.
+
+Is a central regional node required to provide coordination including
+services such as user support, data location, etc.?
+
+Yes, and the regional node should do the following:
+\begin{itemize}
+\item Provide user support until DODS users get up and running.
+  Someone within each region, probably a person from an existing
+  organization, should be chosen.
+\item Setting up a DODS regional work group will be helpful.
+\item Other groups that were not in attendance at the regional
+  workshop should be included (CT, NY, DE).
+\item Perhaps take DODS on the road to demonstrate its capabilities to
+  others not at the regional workshop.
+\item An outreach component is needed.
+\item Get data online and document difficulty in using DODS.
+\item Have a contractor do a demo for other states and regional players.
+\end{itemize}
+
+\section{Regional Pilot Project and Demonstration}
+
+From the presentations and group discussion it appears that DODS has
+focused (successfully) on large datasets and sophisticated users in
+the region.  The group felt that many good data produced by resource
+management agencies and research projects are yet to be found in small
+data sets housed on a variety of platforms and in a myriad of
+formats.  Wider access to these data is desirable but it is assumed
+that the task of making them DODS accessible is a large task.  What
+actually would it cost an organization or agency in new software,
+hardware, and skills --- infrastructure as well as actual dollar
+expenses --- to bring a data base on line in DODS?  A collaborative
+demonstration project between the NMFS and state fisheries agencies of
+ME, MA and NJ was discussed as one means to address this question and
+to guide others in the process. Simultaneously, this demo would guide
+the NOPP project in the selection of new DODS-supplied data tools that would be
+broadly useful to the community.
+
+The four agencies would have to assemble all fisheries data
+(documenting QA/QC, formats, software used, etc.)  This task could be
+large. DODS would support the task to bring all state fish data on
+line (perhaps initially via a single server at NMFS) It is expected
+that partial QA/QC and different sampling methods might make inter-
+comparison difficult.  Discussion and resolution of these issues would
+help to create a valuable regional dataset from the current collection
+of disconnected fragments.  A full-time person, knowledgeable in
+fisheries and fieldwork, perhaps based at URI, would be needed to
+interact with state fishery staff to assist with in-state data
+conversion/formatting as an initial step.
+
+Other groups of smaller datasets are held by marine labs and
+individual research projects that might also be assembled in a
+parallel DODS demonstration to assess datasets collected for different
+purposes and how to move them into the DODS system.
+
+The demonstration pilot project should address the following:
+(Ex: using fisheries data from NMFS, ME, MA, or NJ)
+\begin{enumerate}
+\item Creating one or more DODS servers for NMFS, ME, NH, and NJ.
+  \begin{itemize}
+  \item Develop a GUI interface that has higher resolution for NE
+    (similar to Matlab).
+  \item It may need to be modified for non-Matlab users.
+  \end{itemize}
+\item Define what being a DODS client is for each agency (ex: EXCEL).
+\item Develop a web-based graphical demonstration using data from
+  different sources.
+\item Provide an HTML template listing regional datasets (a simple
+  catalog).  The template should be able to get data from multiple
+  remote sources and bring back to a web-site for viewing.
+\item The demonstration project should include password protection.
+\end{enumerate}
+
+Other issues concerning the demonstration project:
+\begin{enumerate}
+\item Who will create the demo was discussed with no resolution yet.
+\item A technical person and data person would be needed to do the demo.
+\item Have the demo up and running before the national meeting.
+\item The group discussed the other possibilities for demonstration
+  projects such as using contaminant data created by the USGS and MWRA
+  or the northeast observing systems including the new Martha's
+  Vineyard Coastal Observatory.
+\end{enumerate}
+
+\section{Final Comments/Issues}
+
+\begin{enumerate}
+\item Decisions must be made on how much metadata needs to be
+  attached to datasets.  Currently, regional datasets may not have any
+  metadata associated with them.  Minimal semantic metadata standards
+  need to be developed.
+\item The willingness of other players in the region to serve up data
+  via DODS needs to be determined.
+\item Natural resource agencies may not have adequate data management
+  resources to implement DODS.  There will need to be considerable
+  ``hand holding'' provided to less technically sophisticated users.
+  There will likely be different issues for different user groups.
+\item More client server development is needed.
+\item The need for a PowerPoint quick demonstration of DODS.
+\item Model outputs would be a useful data type served by DODS.
+\item There was a desire to have biological data (fish data) served by DODS.
+\end{enumerate}
+
+\section{Attendees}
+\label{IV,attendees}
+
+NOPP/DODS NE Regional Workshop
+W. Alton Jones Campus, URI
+January 8 - 10, 2001
+
+\begin{center}
+  \begin{tabular}[t]{lp{2.0in}l} \\ 
+\textbf{Name} & \textbf{Organization} & \textbf{Email} \\
+Wendell Brown &                 Umass Dartmouth & wbrown@umass.edu \\
+Frank Bub &                     School for Marine Science \& Technology - SMST of UMass Dartmouth & fbub@umassd.edu \\
+Don Byrne &                     NJ Division of Fish \& Wildlife& njfgwbyrne@plexi.com \\
+Chuck Denham &                  USGS Woods Hole &       cdenham@usgs.gov \\
+John Evans &                    Univ. of Maine          &       jevans@umeoce.maine.edu \\
+John Fracassi &                 Rutgers University      &       johnf@arctic.rutgers.edu \\
+Jim Fritz &                     TPMC                    &       jfritz@tpmc.com \\
+Steve Hale &                    EPA - Narragansett Lab &         hale.steve@epa.gov \\
+Paul Hemenway &         Univ. of R.I.           &       phemenway@gso.uri.edu \\
+Dan Holloway &                  Univ. of R.I./DODS &            d.holloway@gso.uri.edu \\
+Linda Mercer &                  Maine Dept. of Marine Resources & linda.mercer@state.me.us \\
+David Mountain &                NMFS Woods Hole, MA & david.mountain@noaa.gov \\
+David Remsen &                  Marine Biological Lab   &       dremsen@mbl.edu \\
+Bruce Tripp &                   Woods Hole Oceanographic Institute & btripp@whoi.edu \\
+Nicholas Wolff &                        Bigelow Lab             &       nwolff@bigelow.org \\
+  \end{tabular}
+\end{center}
+
+\section{Ocean Monitoring Programs Conducted by
+The New Jersey Department of Environmental Protection}
+\label{IV,NJ}
+
+\begin{center}
+  \begin{tabular}[t]{|p{.75in}|p{0.5in}|p{1.0in}|p{0.5in}|p{0.5in}|p{0.5in}|p{0.75in}|} \hline
+\textbf{Agency} & \textbf{Program} & \textbf{Variables} & \textbf{Samp.\-/Yr.} & \textbf{Svys\-/Yr.} & \textbf{From} & \textbf{Offshore Limit} \\ \hline
+Bureau of Marine Fisheries & 
+Ground\-fish      & 
+Fish \& invert. no., wt., length; temp.,sal., DO (TSO), sea state, weather &
+\~{}200 &
+5 (\~{}bi-monthly)&
+1988 &  
+90 ft. isobath \\ \hline
+Bureau of Shellfisheries &
+Surf Clam &
+Surf clam vol., no., length; (TSO) &
+\~{}350 &
+1 (summer) & 
+1988 & 
+3 n.m. \\ \hline
+Bureau of Marine Water Monitoring &
+Bacteria &           
+Conc. of fecal coliform bacteria &
+\~{}200 &
+5-8 &
+1976 &
+3 n.m. (state waters) \\ \hline
+Bureau of Marine Water Monitoring &
+Nutrients &
+Conc. of total suspended solids, NH3, NO3, NO2, PO4, total N, TSO &
+\~{}140 &
+4 (quarterly) &
+1989 &
+3 n.m. (state waters) \\ \hline
+Bureau of Marine Water Monitoring &
+Phyto\-plankton &
+Phyto. Species, cell conc., TSO &
+5 &
+1, summer &
+1985 &
+3 n.m. (state waters) \\ \hline
+  \end{tabular}
+\end{center}
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
