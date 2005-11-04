@@ -1,0 +1,58 @@
+$Id$
+
+	      		      DSP-DODS server 
+				Version 1.0
+				  Sep. 1996
+
+This file contains information about the DODS-DSP image server. For information
+about building and using the software, see the files INSTALL and USING.
+
+DODS data servers make it simple to provide others with direct,
+over-the-network, access to your DSP images. There is no need to reformat
+your data so that a new system can read it. Instead DODS uses the http server
+along with a dispatch script and a set of three server programs (Data
+Attribute Server, Data Structure Server, and Data Server) to make your
+existing data files available to anyone who has access to a program rebuilt
+with DODS components.
+
+For more information about DODS server/client, see the URL
+
+    http://dods.gso.uri.edu
+
+dsp-dods is a server implementation of University of Miami DSP API, based on
+the Distributed Oceanographic Data System. The software contains data servers
+that can be used along with any DODS client program to process image data
+served by the dsp-dods servers.
+
+The server can handle all types of DSP image formats. It can also handle
+compressed images (.Z and .gz files) using a cache directory. If the image 
+projection type allows dimension scales are used to map the image into DODS 
+Grid (with latitude and longitude maps), otherwise a DODS Array is used (with
+lines and pixels). All the image associate blocks (header information) are given 
+as Global attributes while specific information about each variable is given as
+that variable's attributes.The user can refer to the entire remote image 
+using a URL and/or the local file name. Furthermore, if the user wants 
+to work only with a small part of the data set, a constraint expression can 
+be supplied along with the URL to save on network data transmission time.
+
+You can obtain a copy of the latest version of dsp-dods software using
+anonymous FTP from
+
+    Source files: ftp://dods.gso.uri.ed/pub/dods/DODS-dsp-<VERSION>.tar.gz
+    Binary files: ftp://dods.gso.uri.ed/pub/dods/binary/<Platform>
+
+    WWW page: http://dods.gso.uri.edu/DODS/home/software.html
+
+To build from the source, You need to have the latest version DSP imageio
+library from The University of Miami and the latest version of DODS core
+software which is available at dods.gso.uri.edu.
+
+Included in this distribution are: 
+
+ - server programs and their dispatch script (dsp-dods, dsp-das, dsp-dds,
+ nph-dsp)
+
+Questions about dsp-dods may be sent to reza@dods.gso.uri.edu.
+
+Good Luck :-)
+Reza Nekovei, URI

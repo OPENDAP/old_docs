@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Rewriting the Open and Close Functions</TITLE>
+<META NAME="description" CONTENT="Rewriting the Open and Close Functions">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="next" HREF="node16.html">
+<LINK REL="previous" HREF="node14.html">
+<LINK REL="up" HREF="node14.html">
+<LINK REL="next" HREF="node16.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html300"
+  HREF="node16.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html296"
+  HREF="node14.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html290"
+  HREF="node14.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html298"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html301"
+  HREF="node16.html">Getting Information about Variables</A>
+<B> Up:</B> <A NAME="tex2html297"
+  HREF="node14.html">Client Library Functions</A>
+<B> Previous:</B> <A NAME="tex2html291"
+  HREF="node14.html">Client Library Functions</A>
+ &nbsp; <B>  <A NAME="tex2html299"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00041100000000000000"></A>
+<A NAME="ddd:client-lib-open"></A>
+<BR>
+Rewriting the Open and Close Functions
+</H3>
+
+<P>
+The functions which perform the open/close operations will require complete
+re-implementation so that information about the data set can be retrieved
+from the data server. These re-implemented functions must store the necessary
+state information so that subsequent accesses for variable information or
+data reads can be satisfied. This state information will, in almost every
+case, consist of the data set attribute structure (DAS) and dataset
+descriptor structure (DDS).
+
+<P>
+Figures&nbsp;<A HREF="#fig:client-open"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>&nbsp;and&nbsp;<A HREF="#fig:client-close"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> are structure charts
+for the DODS client library open and close functions. In order to write the
+DODS client library version of <EM>open</EM> for a given API, the function
+must first determine if the data object (typically a file) is local to the
+user program making the open call or is a remote data object to be accessed
+through DODS. It is possible to access DODS objects which are local to a user
+program, but there is little reason to do so if the data object can be
+accessed through the API used by the user program. In any case, the
+distinction of local or remote is made on the basis whether a URL is used to
+reference the data object. If that is the case, the object is assumed to be
+remote and is accessed using a DODS data server, otherwise it is assumed to
+be local and is accessed using the functions of the original API
+implementation.
+
+<P>
+If the data object is remote, then the open function must build a structure
+which can hold the DAS and DDS objects which describe the named data
+set. Once this object is built, the open function must map this structure to
+a file identifier or pointer which can be passed back to the user program as
+the return value of the open function. Subsequent accesses to the data set
+will include this identifier (or pointer), and each function which is a
+member of the API can be modified to use it to gain access to the state
+information stored by the open function.
+
+<P>
+The close function must use the state information accessible with the file
+identifier or pointer returned by the open function to determine if the data
+set is local (and hence manipulated using the original API implementation) or
+remote. In either case, the appropriate actions necessary to free allocated
+storage, ..., must be taken. In the case of a local data set, the original
+implementation's <EM>close</EM> function must be called. In the case of a remote
+data set, the locally stored state information must be freed.
+
+<P>
+The network I/O tool kit which is part of the DODS software distribution
+contains utility functions and classes which simplify most of these
+operations. 
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:client-open"></A><A NAME="551"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+Structure Chart for the Open/Connect Functions in a DODS Client
+  Library</CAPTION>
+<TR><TD><IMG
+ WIDTH="119" HEIGHT="14" BORDER="0"
+ SRC="img7.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=client-open.ps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:client-close"></A><A NAME="556"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+Structure Chart for the Close/Disconnect Functions in a DODS Client
+  Library</CAPTION>
+<TR><TD><IMG
+ WIDTH="119" HEIGHT="14" BORDER="0"
+ SRC="img8.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=client-close.ps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html300"
+  HREF="node16.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html296"
+  HREF="node14.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html290"
+  HREF="node14.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html298"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html301"
+  HREF="node16.html">Getting Information about Variables</A>
+<B> Up:</B> <A NAME="tex2html297"
+  HREF="node14.html">Client Library Functions</A>
+<B> Previous:</B> <A NAME="tex2html291"
+  HREF="node14.html">Client Library Functions</A>
+ &nbsp; <B>  <A NAME="tex2html299"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

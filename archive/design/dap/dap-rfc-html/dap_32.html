@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:11 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- DAS</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_33.html"><img alt="DDS" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>DAS</b></td></tr></table>
+<h3>DAS</h3>
+
+The DAS entity is returned as the payload of a message whose
+<tt>Content-Type</tt> header MUST be <tt>text/plain</tt>. The body of the
+response contains text which holds all of the attribute containers and
+values.
+<p>The DAS is used to store attributes for both the entire dataset and
+variables in the dataset. The DAS consists of a number of
+<em>containers</em> each of which hold zero or more attributes. Each attribute
+is a name-datatype-value tuple. Values may be either scalar or vector. Note
+that two, three, ..., dimensional attribute values are <em>not</em>
+supported.  The name of the attribute container MUST be the same as
+the name of the variable to which its attributes refer.
+A DAS MUST have a container for each variable in the dataset. It MAY
+contain any number of extra containers.
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+das-doc </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "attributes" "" *attribute-cont "" </td></tr>
+<tr><td colspan="1" align="LEFT">
+attribute-cont </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> attribute-cont | attribute </td></tr>
+<tr><td colspan="1" align="LEFT">
+attribute </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> simple-decl id value *(, value) ";" </td></tr>
+<tr><td colspan="1" align="LEFT">
+value </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> &lt;Float&gt; | &lt;int&gt; | id | &lt;quoted string&gt; </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<p>The purpose of attributes is to hold additional information beyond the name,
+datatype and value of a variable and/or to hold extra information about a
+dataset as a whole. This extra information can make the contents of the
+dataset much easier to use. For example, extra information contained in the
+DAS might provide unit names, scaling factors or the missing-value
+values. Additional information about an entire dataset might contain
+information about who collected the information, under what circumstances
+<em>et cetera</em>. 
+<p>Many systems rely on attributes to store extra information that is necessary
+to perform certain manipulations with data. In effect, attributes are used to
+store information that is used `by convention' rather than `by design'.
+DODS can effectively support these conventions by passing the attributes
+from data set to user program via the DAS. Of course, DODS cannot
+enforce conventions in data sets where they were not followed in the first
+place.
+<p>An example DAS is shown in Figure&nbsp;<a HREF="#1">*</a>.
+<p><p><pre class="cb">
+attributes {
+   catalog_number {
+   }
+   casts {
+      experimenter {
+      }
+      time {
+         string units "hour since 0000-01-01 00:00:00";
+         string time_origin "1-JAN-0000 00:00:00";
+      }
+      location {
+         lat {
+            string long_name "Latitude";
+            string units "degrees_north";
+         }
+         lon {
+            string long_name "Longitude";
+            string units "degrees_east";
+         }
+      }
+      xbt {
+         depth {
+            string units "meters";
+         }
+         t {
+            float32 missing_value -9.99999979e+33;
+            float32 _fillvalue -9.99999979e+33;
+            string history "From coads_climatology";
+            string units "Deg C";
+         }
+      }
+   }
+}
+</pre>
+<div align="center">Example Dataset Attribute Entry. This example matches the DDS shown
+   in Figure&nbsp;<a HREF="dap_33.html#1">*</a>. Some of the variables in this fictional dataset
+   (e.g., <tt>catalog&#95;number</tt>) have no attributes. </div>
+<A NAME="1">&nbsp;</A>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_33.html"><img alt="DDS" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>DAS</b></td></tr></table></body></html>

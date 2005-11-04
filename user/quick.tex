@@ -1,0 +1,742 @@
+% This is the dods quick start guide for data users
+%
+
+\documentclass{dods-book}
+
+\rcsInfo $Id$
+\newcommand{\DOCversion}{Version \rcsInfoRevision}
+
+\include{../boiler/layout}
+\include{../boiler/dods-def}
+\include{quick/quick-def}
+
+\figpath{quick/figs}
+
+% This is a kluge to use brackets in the optional argument 
+% to vcode environments.
+\newcommand{\brk}[1]{[#1]}
+
+\makeindex
+
+\begin{document}
+%------------------------------------front matter
+\title{An \opendap Quick Start Guide\\\DOCversion}
+\author{Tom Sgouros}
+\date{\rcsInfoDate}
+\pagenumbering{roman}
+\maketitle
+
+\copyrightmatter
+
+\W\pslink{http://www.opendap.org/pdf/quick.pdf}
+
+%\include{quick/preface}
+
+\tableofcontents
+\listoffigures
+%\listoftables
+
+\clearemptydoublepage
+%------------------------------------book body
+
+\pagenumbering{arabic}
+
+%\include{quick/ch01}
+
+
+%  Outline of this book:
+%
+%
+%  A Quick Start: What to do with a URL
+
+\T\chapter{What To Do With An \opendap URL}
+
+The \OPD\ is a system that allows you to access data over the internet,
+from programs that weren't originally designed for that purpose, as
+well as some that were.
+
+With \opendap, you access data using a URL, just like a URL you would use
+to access a web page.  However, before you request any data, you need
+to know how to request it in a form your browser can handle.  \opendap
+data is stored in binary form, and by default, it is transmitted that
+way, too.\indc{DODS!URL}\indc{data!accessed by URL}\indc{URL!data accessed by}
+
+The other problem with an \opendap URL is that a single URL might point to
+an archive containing 50 megabytes of data.  You rarely want to
+request the whole thing without knowing a little about it.  \opendap
+provides sophisticated sub-sampling capabilities, but you need to know
+a little bit about the data in order to use them.
+
+\texorhtml{}{So here's what to do if someone gives you a raw URL, and
+  says there's some \opendap data on the other end.
+
+\htmlmenu{4}
+\chapter{What To Do With An \opendap URL}}
+\label{reynolds,chapter}
+
+Suppose someone gives you a hot tip that there's a lot of good data
+at:
+
+\begin{vcode}{sib}
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc
+\end{vcode}
+
+This URL points to monthly means of sea surface temperature,
+worldwide, compiled by Richard \ind{Reynolds} at the Climate Modeling branch
+of NOAA, but pretend you don't know that yet.\indc{Climate
+  Modeling!NOAA}\indc{NOAA!Climate Modeling} 
+
+The simplest thing you can do with this URL is to download the data it
+points to.  You could feed it to an \opendap-enabled data analysis package
+like Ferret, or you could append \lit{.asc}, and feed the URL to a
+regular web browser like Netscape.  This will work, but you don't
+really want to do it because in binary form, there are about 28
+megabytes of data at that URL.
+
+\note{An \opendap server will work with many different clients, some of
+  which are supported by the \opendap team, and some of which are
+  supported by others.  The operation of any individual package is
+  beyond the scope of this manual.  This guide explains how to use a
+  typical web browser such as Netscape Navigator to discover
+  information about the data that will be useful when analyzing data
+  in \emph{any} package.}
+
+\subj{You need to sample the data}
+A better strategy is to find out some information about the data.
+\opendap has sophisticated methods for subsampling data at a remote site,
+but you need some information about the data first.  First, we'll try
+looking at the data's \new{Dataset Descriptor Structure} (\ind{DDS}).  This
+provides a description of the ``shape'' of the data, using a vaguely
+C-like syntax.  You get a dataset's DDS by appending \lit{.dds} to the
+\xlinkn{URL}{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.dds}.\indc{dataset!shape}\indc{shape of dataset}
+
+\figureplace{An \opendap DDS (\lit{sst.mnmean.nc.dds})}{htb}
+{reynolds,dds}{reynolds-dds.ps}{reynolds-dds.gif}{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.dds}
+
+From the DDS shown, you can see that the dataset consists of five
+pieces: 
+
+\subj{Find out what's in the data}
+\begin{itemize}
+\item A 180-element vector called ``lat'',
+\item A 360-element vector called ``lon'',
+\item A 226-element vector called ``time'',
+\item A ``Grid'' containing a three-dimensional array of integer
+  values (\lit{Int16}) called \lit{sst}, and three ``Map'' vectors,
+  which may look familiar, and
+\item Another Grid called \lit{mask}.
+\end{itemize}
+
+The \new{Grid} is a special \opendap data type that includes a
+multidimensional array, and \new{map vectors} that indicate the
+independent variable values.  That is, you can use a Grid to store an
+array where the rows are not at regular intervals.  \texorhtml{There's
+  a simple grid in figure~\ref{grid,diagram}.}{Here's a simple grid:}
+\indc{array!irregular|see{Grid}}\indc{array!map vector}\indc{vector!map}
+
+\figureplace{A Grid}{h}{grid,diagram}{gridpts.ps}{gridpts.gif}{}
+
+The array part of the grid would contain the data points measured at
+each one of the squares, the X map vector would contain the positions
+of the columns, and the Y map vector would contain the positions of
+the rows.
+
+Of course you can also use a Grid to store arrays where the columns
+and rows are at regular intervals, and you'll often see \opendap data that
+way. 
+
+(The other special \opendap data type worth worrying about is the
+\emph{Sequence}.  You'll see more about them in
+section~\ref{quick,sequences}.  There are also \new{Structures} and
+\new{Lists}, but they exist largely for internal uses, and you don't
+often see these used in real datasets.)
+
+You can see from the DDS that the Reynolds data is in a 180x360x226
+element grid, and the dimensions of the Grid are called ``lat'',
+``lon'', and ``time''.  This is suggestive, but not as helpful as one
+could wish.  To find out more about what the data \emph{is}, you can
+look at the other important \opendap structure: the \ind{DAS}, or
+\new{Data Attribute Structure}.  This is somewhat similar to the DDS,
+but contains information about the data, such as units and the name of
+the variable.  Part of the DAS for the Reynolds data we saw above is
+\texorhtml{shown in ~\ref{reynolds,das}.}{shown in the figure below.
+  Click \xlinkn{here}{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.das}
+  or on the figure to see the rest of it.}
+
+\figureplace{An \opendap DAS (\lit{sst.mnmean.nc.das})}{h}
+{reynolds,das}{reynolds-das.ps}{reynolds-das.gif}
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.das}
+
+\note{The DAS is populated at the data provider's discretion.  Because
+  of this, the quality of the data in it (the \new{metadata}) varies
+  widely.  The data in the Reynolds dataset used in this example are
+  \ind{COARDS} compliant.  Other metadata standards you may encounter with
+  \opendap data are \ind{HDF-EOS}, \ind{EPIC}, \ind{FGDC}, or no metadata at all.}
+
+\subj{Find out more about the data variables}
+Now we can tell something more about the data.  Apparently the
+\lit{lat} vector contains latitude, in degrees north, and the range is
+from 89.5 to -89.5.  Since this is a global grid, the latitude values
+probably go in order.  We can check this by asking for just the
+latitude vector, like \xlinkn{this}%
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?lat}:
+
+\begin{vcode}[.]{sib}
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?lat
+\end{vcode}
+
+What we've done here is to append a \new{constraint expression}
+ to the \opendap URL, to indicate how to
+constrain our request for data.  Constraint expressions can take many
+forms.  This guide will only describe a few of them.  (You can refer
+to the \OPDuser\ for more complete information about constraint
+expressions.)  Try requesting the
+\xlinkn{time}%
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?time}
+and \xlinkn{longitude}
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?lon}
+\subj{The info service also provides the DAS and DDS information.}
+vectors to see how this works.
+\indc{expression!constraint|see{constraint expression}}
+
+According to the DAS, time is kept in ``days since 1-1-1 00:00:00'' in
+this dataset.  You can also learn from the DAS the actual time period
+recorded in the data which, because of your familiarity with the
+\ind{Julian calendar}, you instantly recognize as beginning in November,
+1981.  You might also notice that the \lit{mask} array is used to
+indicate land and sea, and has only the values 0 and
+1.\indc{calendar!Julian} 
+
+\indc{service!help}\indc{help service}\indc{service!info} 
+\opendap provides an \new{info service} that returns all the information
+we've seen so far in a single 
+request.  The returned information is also formatted differently (some
+would say ``nicer''), and you can occasionally find server-specific
+documentation here, as well.  Some will find this the easiest way to
+read the attribute and structure information.  You can see what
+information is available by appending \lit{.info} to a URL, like
+\xlinkn{this}
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.info}:
+
+\begin{vcode}[.]{sib}
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.info
+\end{vcode}
+
+\section{Peeking at Data}
+
+Now that we know a little about the shape of the data, and the data
+attributes, let's look at some of the data.
+
+\subj{Use subscripts to sample a Grid.}
+You can request a piece of an array with \ind{subscripts},
+just like in a C program or in Matlab or many other computer
+languages.  Use a colon to indicate a subscript range.
+\indc{Grid!sampling}\indc{sampling!Grid}\indc{array!subscripts}
+\indc{array!sampling}\indc{sampling!array}\indc{Grid!subscripts}
+\indc{peeking at data}\indc{data!peeking at}
+
+\begin{vcode}[http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?time\[0:6\]]{sib}
+...sst/mnmean.nc.asc?time[0:6]
+\end{vcode}
+
+This \xlinkn{URL}{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?time[0:6]} will produce \texorhtml{figure~\ref{reynolds,timevec}}{the following:}
+
+\figureplace{Part of a vector.}{h}{reynolds,timevec}{timevec.ps}{timevec.gif}{}
+
+You can do the 
+\xlinkn{same}
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?mask[28:30][206:209]}
+for one of the grids:
+
+\begin{vcode}[http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?mask\[28:30\]\[206:209\]]{sib}
+...sst/mnmean.nc.asc?mask[28:30][206:209]
+\end{vcode}
+
+\subj{Sampling a Grid produces part of the Grid, including the map vectors.}
+Which produces a portion of the land mask somewhere near Alaska's
+Kenai peninsula\texorhtml{, shown in figure~\ref{reynolds,mask}}{:}
+
+\figureplace{Part of an \opendap Grid.}{h}{reynolds,mask}{mask.ps}{mask.gif}{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?mask[28:30][206:209]}
+
+Notice that when you ask for part of an \opendap Grid, you get the array
+part along with the corresponding parts of the map vectors.
+
+If you are interested in the Reynolds dataset, you are probably more
+interested in the sea surface temperature data than the land mask.
+The temperature data is a three-dimensional grid.  To sample the 
+\xlinkn{\lit{sst}}
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?sst[12:13][28:30][206:209]}
+Grid, you
+just add a dimension for time:
+
+\begin{vcode}[http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?sst\[12:13\]\[28:30\]\[206:209\]]{sib}
+...sst/mnmean.nc.asc?sst[12:13][28:30][206:209]
+\end{vcode}
+
+This produces something like\texorhtml{ the figure shown in
+  figure~\ref{reynolds,sst}}{this:}
+
+\figureplace{Part of the Reynolds SST data}{h}{reynolds,sst}{sst.ps}{sst.gif}{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?sst[12:13][28:30][206:209]}
+
+\indc{units!scaling}
+Note that the sst values are in celsius degrees multiplied by 100, as
+indicated by the \lit{\ind{scale_factor}} attribute of the \xlinkn{DAS}
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.das}.
+Further, it's important to remember with this dataset, that the data
+were obtained by calculating spatial and temporal means.
+Consequently, the data points in the \lit{sst} array should be ignored
+when the corresponding entry in the \lit{mask} array indicates they
+are over land.
+
+%************THIS SECTION COMMENTED OUT BECAUSE SAMPLING GRIDS BY
+%************VALUE DOESN'T CURRENTLY WORK.  WHEN IT'S FIXED, 
+%************UNCOMMENT THIS SECTION.
+
+%\subsection{Sampling Grids by Value}
+
+%It is not always the easiest thing to figure out the array dimensions
+%you need.  OPeNDAP servers provide a way to sample a Grid using the
+%values of the dependent variables (the map vectors).  A function
+%called \lit{grid} is used to examine a Grid and its map vectors, and
+%translate relational clauses into array subscripts.
+
+%The Reynolds data we've been looking at is a 226x180x360 element
+%array.  What's more important now is that the \lit{time} dimension
+%varies from 723,486 to 730,334 (days since January 1, 0001), the
+%\lit{lat} dimension varies from 89.5 to -89.5, and the \lit{lon}
+%dimension varies from 0.5 to 359.5.  To request a series of worldwide
+%data arrays, covering the span of time between 730,000 and the
+%present, you can formulate a constraint expression like 
+%\xlinkn{this}
+%{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?grid(sst, "time>730000")}:
+
+%\begin{vcode}{sib}
+%...sst.mnmean.nc.asc?grid(sst, "time>730000")
+%\end{vcode}
+
+%There is no limit to the number of clauses that can be included in the
+%parentheses (although all bets are off if you include clauses that
+%conflict with one another).  So you can be more precise with a
+%constraint expression like \xlinkn{this}
+%{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.asc?grid(sst, "time > 730000", "lat>0", "lat<55", "lon<100")}:
+
+%\begin{vcode}{sib}
+%...sst.mnmean.nc.asc?grid(sst, "time>730000", "lat>0", "lat<55", "lon<100")
+%\end{vcode}
+
+%\note{As of \today\ this form of sampling is broken, and does not work.}
+
+
+\section{Sequence Data}
+\label{quick,sequences}
+
+Gridded data works well for satellite images, model data, and data
+compilations such as the Reynolds data we've just looked at.  Other
+data, such as data measured at a specific site, is not so readily
+stored in that form.  \opendap provides a data type called a \new{Sequence}
+to store this kind of data.
+
+\subj{A Sequence is a relational table.}
+A Sequence can be thought of as a \ind{relational data table}, with each
+column representing a different data value, and each row representing
+a different data ``instance.''  For example, an ocean \ind{temperature
+profile} can be stored as a Sequence of pressure and temperature pairs,
+and a weather station's data can be stored as a Sequence with time in
+one column, and each weather variable occupying another column.
+\indc{data!relational table}\indc{RDBMS}\indc{profile!temperature}
+
+Let's look at a couple of Sequences.  The first one is a collection of
+\ind{CTD data} (\ind{hydrographic data}, including temperature, pressure,
+salinity, and so on):\indc{data!hydrographic}\indc{station data}
+\indc{data!station}\indc{data!time series}\indc{time series data}
+
+\begin{vcode}{sib}
+http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd
+\end{vcode}
+
+The \xlinkn{DAS}{http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd.das}
+(append \lit{.das} to the URL) for this data is pretty uninformative,
+telling us only that all the data are stored as strings\texorhtml{.
+  You can see this in figure~\ref{rlctd,das}.}{:}
+
+\figureplace{A DAS for Sequence data.}{h}{rlctd,das}{rlctd-das.ps}%
+{rlctd-das.gif}{http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd.das}
+
+\subj{You can sometimes find data attributes among the data.}
+On the other hand, a lot of the information we would get from the DAS
+is actually encoded in the data itself, which you can see by looking
+at the data's
+\xlinkn{DDS}{http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd.dds} (append
+\lit{.dds} to the URL)\texorhtml{, shown in figure~\ref{rlctd,dds}.}{:}
+\indc{metadata!among the data}\indc{data!metadata mixed in}
+
+\figureplace{A DDS for Sequence data.}{h}{rlctd,dds}{rlctd-dds.ps}%
+{rlctd-dds.gif}{http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd.dds}
+
+We can get some idea of the data coverage by asking for some of the
+time and location data, with a URL like this:
+
+\begin{vcode}[http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd.asc?cruiseid,station,year_s,month_s,day_s,lat_s,lon_s]{sib}
+...rlctd.asc?cruiseid,station,year_s,month_s,day_s,lat_s,lon_s
+\end{vcode}
+
+This produces a response shown \texorhtml{in
+  figure~\ref{rlctd,coverage}.}{\xlinkn{here}{http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd.asc?cruiseid,station,year_s,month_s,day_s,lat_s,lon_s}.}
+
+% This has changed slightly, and probably should be regenerated.
+\figureplace{The \lit{rlctd} dates and locations}{h}{rlctd,coverage}
+{rlctd-cov.ps}{rlctd-cov.gif}{http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd.asc?cruiseid,station,year_s,month_s,day_s,lat_s,lon_s}
+
+
+\subj{Use a selection clause to select Sequence rows.}  
+After reviewing the data in the last request, perhaps we decide we
+only want to see data from one of the cruises listed, or maybe only
+data from the month of May.  We can add a \new{selection clause} to
+the constraint expression to select only that data.  For example:
+\indc{constraint expression!selection clause}
+
+\begin{vcode}[http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd.asc?cruiseid,station,year_s,month_s,day_s,lat_s,lon_s&month_s=5]{sib}
+...rlctd.asc?cruiseid,station,year_s,month_s,day_s,lat_s,lon_s&month_s=5
+\end{vcode}
+
+This produces a table containing all the rows from
+\texorhtml{figure~\ref{rlctd,coverage}}{the last example} where the
+month datum is May.  \texorhtml{Try entering the new URL in your browser
+  and see what you get.}{Click \xlinkn{here}%
+{http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd.asc?cruiseid,station,year_s,month_s,day_s,lat_s,lon_s\&month_s=5}
+to see that table.}
+
+Selection clauses can be stacked endlessly against a URL, allowing all
+the flexibility most people need to sample data files.  Here's an
+example of a
+\xlinkn{URL}{http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd.asc?o2\&month_s=5\&pres>50\&pres<100}
+that requests all the oxygen data in the file taken in May at a
+specific depth range:
+
+\begin{vcode}[http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd.asc?o2&month_s=5&pres>50&pres<100]{sib}
+...rlctd.asc?o2&month_s=5&pres>50&pres<100
+\end{vcode}
+
+The first clause in a constraint expression has a name, too.  It is
+the \new{projection clause}.  This is the list of variables that you
+wish to have returned, subject to the constraint of the selection
+clause.  In the previous example, the projection clause consiste only
+of the \lit{o2} variable.  In the one before that, the list was
+longer, containing 7 variables.\indc{constraint expression!projection
+  clause} 
+
+
+
+\tbd{There is a get_row() method for Sequences now, so that you can
+  select a sequence row by its ordinal number.  When this makes it
+into the server releases, document it.}
+
+
+
+\section{An Easier Way}
+
+\subj{The \opendap query form is an easier way to sample data.}
+\opendap also includes a way to sample data that makes writing a
+constraint expression somewhat easier.  Append \lit{.html} to the URL,
+and you get a form that directs you to add information to sample the
+data at a \xlinkn{URL}
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.html}:
+\indc{constraint expression!query form}
+\indc{constraint expression!building aids}
+\indc{query form}\indc{form!query}
+\indc{web interface}\indc{ifh}\indc{html interface}
+\indc{Data Access Form}
+
+\begin{vcode}[http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.html]{sib}
+...sst.mnmean.nc.html
+\end{vcode}
+
+Sending a URL ending in \lit{.html} returns a form like this:
+
+\figureplace{The \opendap Dataset Access Form}{h}{reynolds,ifh}{ifh.ps}{ifh.gif}{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.html}
+
+It's useful to have a browser window open with one of these query forms in it
+while you read this section.  \texorhtml{}{Click
+  \xlinkn{here}
+  {http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.html}
+  to bring up a copy of the form to use while you read.}
+
+Near the top of the page, you'll see a box entitled ``Data URL''.  At
+this point, if you've been following along, it should look pretty
+familiar.  If you're just jumping in, it's the \opendap URL connected to
+the data we're interested in, but unsampled.
+
+Moving down the page, there is a list of ``Global Attributes'', which
+is really just for your perusal.  At this point, there's not much to
+be done with this, but it is often helpful information.
+
+\subj{Select variables by clicking on a checkbox.}  The important part
+of the page is the ``Variables'' section.  For each variable in the
+dataset, you'll see the data description (e.g. ``Array of 32 bit Reals
+[lat = 0..179]''), a checkbox, a text input box, and a list of the
+variable's attributes.  If you click on the checkbox, you'll see the
+variable's array bounds appear in the text box, and you'll see that
+variable appear in a constraint expression appended to the Data URL at
+the top of the page.  If you edit the array bounds in the text box,
+hitting ``enter'' will place your edits in the Data URL box.
+
+In the oh-so-unlikely event you dare try all this without your
+documentation \new{vade mecum} along, there's a \but{Show Help}
+button up near the top of the page.  Clicking there will show you
+instructions about how to proceed.
+
+\note{You'll see a ``stride'' mentioned.  This is another way to
+  subsample an \opendap array or Grid.  Asking for \lit{lat[0:4]} gets you the first
+  five members of the \lit{lat} array.  Adding a stride value allows
+  you to skip array values.  Asking for \lit{lat[0:2:10]} gets you
+  every second array value between 0 and
+  10: 0, 2, 4, 6, 8, 10.\indc{array!stride}\indc{stride}} 
+\indc{Grid!sampling}\indc{sampling!Grid}\indc{array!subscripts}
+\indc{array!sampling}\indc{sampling!array}\indc{Grid!stride}
+\indc{Grid!subscripts}
+
+Move on down the variable list, editing your request, and experiment
+with adding and changing variable requests.
+
+When you have a request you'd like to make, look at the buttons at the
+top of the page.  
+
+\figureplace{Dataset Access Form Detail}{h}{reynolds,ifh-buttons}
+{ifh-buttons.ps}{ifh-buttons.gif}{}
+
+You can click on \but{Get ASCII}, and the data
+request will appear in a browser window, in comma-separated form.  The
+\but{Get Binary} button will save a binary data file on your local
+disk.  (The \but{Send to Program} will send the URL directly to an \opendap
+client.  However, it requires a suitable \opendap client to be running on
+your computer, and also requires you to install a helper application
+for your browser.  There are instructions for doing this at the \opendap
+home page.)
+
+\subj{The web interface works for Sequence data, too.}
+The \opendap Data Access Form interface works for Sequence data as well as
+Grids.  However, since Sequence constraint expressions look different
+than Grid expressions, the form looks slightly different, too.  You
+can see \texorhtml{from figure~\ref{rlctd,ifh-seq}}{below} that the
+variable selection boxes allow you to enter relational expressions for
+each variable.  Beside that, however, the function is exactly the same.
+\indc{constraint expression!query form}
+\indc{constraint expression!building aids}
+\indc{query form!Sequence data}\indc{form!query}
+\indc{web interface!Sequence data}\indc{html
+  interface!Sequence data}
+\indc{Data Access Form!Sequence Data}
+
+\figureplace{Dataset Access Form for Sequence Data (detail)}{h}
+{rlctd,ifh-seq}{ifh-seq.ps}{ifh-seq.gif}{http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd.html}
+
+\texorhtml{}{Click \xlinkn{here}
+  {http://dods.gso.uri.edu/cgi-bin/nph-jg/rlctd.html} to see a copy of
+  a Sequence form.}
+
+\note{Not all \opendap servers support all the \opendap functionality.  There
+  are a few non-standard \opendap servers out there in the world that only
+  support the bare minimum required.  That minimum is to respond to
+  queries for the DDS, DAS, and (binary) data.  The ASCII data and the
+  web access form are optional add-ons that are not required for the
+  basic \opendap function.}\indc{minimum server configuration}\indc{server!minimum configuration}
+
+
+\chapter{Finding More \opendap URLs}
+
+The \opendap package was developed to improve ways to share data among
+scientists.  Many times, data comes in the form of a URL enclosed in
+an email message.  But there are several other ways to find data served
+by \opendap servers.
+
+\section{GCMD}
+
+\subj{The GCMD now catalogs \opendap URLs!}  The \xlink{Global Change
+  Master Directory}{http://gcmd.gsfc.nasa.gov} is a source of a huge
+amount of earth science data.  They now catalog \opendap URLs for the
+datasets that have them.  You can search on ``\opendap'' right from the
+main page to find many of these datasets.  Try that search, then click
+on one of the data set names that returns, and look at the bottom of
+the resulting Set Description'' page, under the heading ``Related
+URL.''\indc{GCMD}\indc{Global Change Master Directory}
+\indc{NASA!Global Change Master Directory}
+\indc{URL!catalogued at GCMD}
+
+If you make that search, check the list for the Reynolds data from
+chapter~\ref{reynolds,chapter}; it should be there.
+
+\section{\opendap Dataset List}
+
+The \OPDhome\ has a list of available \opendap datasets.  Click on
+\xlink{\but{Datasets}}
+{http://www.unidata.ucar.edu/cgi-bin/dods/datasets/datasets.cgi?xmlfilename=datasets.xml}
+\subj{The \opendap project supports an ad hoc list of data URLs.}
+in the table of contents\texorhtml{}{ or right here}.  You can find a URL and a
+brief description for several hundred different datasets from that
+\xlinkn{list}{http://unidata.ucar.edu/packages/dods/home/data.shtml}.
+\indc{dataset!list, \opendap}\indc{list!\opendap datasets}
+
+\section{Web Interface}
+
+This is a little bit sneaky.  Many sites that serve one \opendap dataset
+serve several others as well.  The \opendap web interface (if it's enabled
+by the site) allows you to check the directory structure for other
+datasets.  For example, let's look at the \xlinkn{Reynolds data}
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.html}
+we saw in chapter~\ref{reynolds,chapter}:
+\subj{The web interface allows browsing data directories.}
+
+\begin{vcode}[.]{sib}
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/sst.mnmean.nc.html
+\end{vcode}
+
+\indc{ifh}\indc{html interface!finding more data}
+\indc{web interface!finding more data}
+\indc{Data Access Form!using to find data}
+If we use the same URL, but without the file at the end, we can browse
+the directory of data:
+
+\begin{vcode}[.]{sib}
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/
+\end{vcode}
+
+The \opendap server checks to see whether the URL is a directory, and if
+so, it generates a directory listing, like \texorhtml{in figure~\ref{reynolds,ifh-dir}.}{\xlinkn{this}{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/}:}
+
+\figureplace{Web Interface Index Listing}{h}{reynolds,ifh-dir}%
+{ifh-dir.ps}{ifh-dir.gif}%
+{http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/reynolds_sst/}
+
+You can see from the directory listing that the monthly mean dataset
+we've been looking at is accompanied by a weekly mean set, and a daily
+set.  You can click on those datasets for more information about them,
+and proceed to examine and use them just as we've done with the other
+examples in chapter~\ref{reynolds,chapter}.
+
+\note{This list is produced by an \opendap server.  It only really understands
+\opendap data files.  If the directory you're looking at has other files
+in it, clicking on them will probably produce an error.}
+
+\section{File Servers}
+
+Some datasets you'll find are actually lists of other datasets.  There
+are a few of these \emph{file servers} in the \xlinkn{\opendap Dataset
+  List}{http://unidata.ucar.edu/packages/dods/home/data.shtml} on the
+\OPDhome .  A file server is itself an \opendap dataset, organized as a
+Sequence, containing URLs with some other identifying data (often time).  You
+can request the entire dataset, or subsample it just like any other
+\opendap dataset.
+\subj{A file server is a list of other datasets, but it's a dataset, too.}
+
+There is a file server for GSO/URI's archive of AVHRR sea surface
+temperature data:
+\indc{query form!file server}\indc{form!query}
+\indc{web interface!file server}\indc{file server}\indc{server!file}
+\indc{Data Access Form!file server}
+\indc{sampling!file server}\indc{Sequence!file server}
+\indc{dataset!of datasets}
+
+\begin{vcode}{sib}
+http://maewest.gso.uri.edu/cgi-bin/nph-ff/catalog/avhrr.catalog
+\end{vcode}
+
+Look at this server's \xlinkn{DDS}{http://maewest.gso.uri.edu/cgi-bin/nph-ff/catalog/avhrr.catalog.dds}, and the \xlinkn{web interface}{http://maewest.gso.uri.edu/cgi-bin/nph-ff/catalog/avhrr.catalog.html}, and then try asking
+for some data like \xlinkn{this}{http://maewest.gso.uri.edu/cgi-bin/nph-ff/catalog/avhrr.catalog.asc?DODS_URL\&year=2000\&month=1}:
+
+\begin{vcode}[http://maewest.gso.uri.edu/cgi-bin/nph-ff/catalog/avhrr.catalog.asc?DODS_URL&year=2000&month=1]{sib}
+  .../catalog/avhrr.catalog.asc?DODS_URL&year=2000&month=1
+\end{vcode}
+
+This produces a list of all the data URLs corresponding to
+measurements taken in the month of January, 2000.
+
+\section{Matlab GUI}
+
+The \opendap Matlab GUI browser contains its own frequently updated list of
+available datasets.  Using that software, you can select datasets with
+\subj{The Matlab GUI has its own list of available data.}
+a mouse from a large selection of the available URLs.  For more
+information, please refer to the \OPDmgui\ manual.
+
+\chapter{Further analysis}
+
+This guide is about forming an \opendap URL.  After you have figured out
+how to request the data, there are a variety of things you can do with
+it.  (\opendap software mentioned here is available from the \OPDhome .)
+
+\tbd{Add links to the following list.}
+
+\begin{itemize}
+\item Use a generic web client like \lit{geturl} (a standard part of
+  the \opendap package), the free programs
+  \xlinkn{\lit{wget}}{http://www.gnu.org/manual/wget-1.5.3/html_mono/wget.html}
+  or \xlinkn{\lit{lynx}}{http://lynx.browser.org}, or even a browser
+  like \lit{Netscape Navigator} or \lit{Internet Explorer} to download
+  data into a local data file.  To be able to use the data further,
+  you will probably have to download the ASCII version by using the
+  \indc{geturl!\opendap utility web client}\indc{wget!web client}
+  \indc{lynx!web browser}\indc{Netscape}\indc{Internet Explorer}
+  \lit{.asc} suffix on the URL, as in the examples shown.
+\subj{Use a generic web client or an \opendap client to get the data you've chosen.}
+\item There are pre-packaged \opendap clients available that can download
+  binary \opendap data from the web into a useful form.  As of \today ,
+  command line clients (\lit{loaddods}) are available for the Matlab
+  and IDL data analysis environments, with which you can download \opendap
+  data directly into IDL or Matlab objects.  \indc{loaddods!Matlab or
+    IDL client}\indc{Matlab!loaddods client}\indc{IDL!loaddods client}
+\item The \xlink{\ind{Ferret}}{http://ferret.wrc.noaa.gov/Ferret} and \ind{GrADS}
+  free data analysis packages both support \opendap.  You can use these
+  for downloading \opendap data, and for examining it afterwards.  (There
+  are limitations.  As of \today , Ferret can not read datasets served
+  as Sequence data.)
+\item The Matlab analysis package also supports an \opendap client attached
+  to a graphical user interface.  You can use the GUI to create a
+  constrained \opendap URL, and download the data directly into Matlab.
+  The \OPDmgui\ contains more information about the Matlab GUI
+  client.\indc{Matlab!GUI \opendap browser}
+\item If you have a data analysis program or package that you like,
+  you can look into the possibility of linking that package to the
+  \opendap toolkit library, in effect making your program into a
+  web-capable \opendap client. \indc{DODS!linking to your
+    software}\indc{linking!\opendap to your programs} \ind{DODS!libraries}
+  \indc{libraries!\opendap} exist to mimic the behavior of the
+  \netcdf and \jgofs\ data access APIs.  If your program already uses
+  one of these APIs, getting it to run with \opendap may be as simple as
+  changing the libraries to which you link it.  The \OPDuser\ 
+  describes how to do this, and the \OPDapi\ describes how you can
+  use the \opendap toolkit directly to create a new application that
+  doesn't use one of the established data access
+  APIs.\indc{toolkit!\opendap}\indc{DODS!toolkit}
+\indc{JGOFS!data access API}\indc{data access API!JGOFS}
+\indc{netCDF!data access API}\indc{data access API!netCDF}
+
+\end{itemize}
+
+The use of these clients, like the ways in which you can analyze the
+data you find, is beyond the scope of this (or any) book.  Enjoy.
+
+\printindex
+
+\end{document}
+
+
+
+% $Log: quick.tex,v $
+% Revision 1.6  2004/11/09 14:41:10  tomfool
+% converted DODS->OPeNDAP
+%
+% Revision 1.5  2004/07/07 03:35:30  jimg
+% Added rcs Info Date.
+%
+% Revision 1.4  2001/12/05 15:15:11  tom
+% changed DODS home page dataset URL
+%
+% Revision 1.3  2001/06/29 15:54:15  tom
+% added PDF file generation
+%
+% Revision 1.2  2000/10/30 20:11:46  tom
+% indexed, incorporated first round of comments.
+%
+% Revision 1.1  2000/10/12 17:24:36  tom
+% added quick.tex to repository
+%

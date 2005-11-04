@@ -1,0 +1,135 @@
+
+	$Id$
+
+This is a simple management plan for DODS. 
+
+Goals:
+Become the data interoperability layer for the NASA ESIP Federation.
+
+	Do this by extending our servers so they provide `ease of use'
+	services in addition to `ease of access'. Simultaneously, develop a
+	simple data location tool to which others can add value and a
+	comprehensive suite of client programs. Add data sites in a focused
+	mannor giving preference to ones which complement exisiting sites.
+	Later add sites which open new types of data.
+
+Policy:
+
+Return to the Glenn, Peter, James strategy model with Richard as ex officio.
+	This must be an in-person meeting
+	Duration: about a day
+	Location: RI, Boston
+
+When interacting with other groups, solidify the relation with a MOU 
+	Always involve both technical and management in a MOU
+	Consider the impacts of other efforts
+
+Realistic time assessments
+	People doing work should provide an estimate of the time required
+
+		Before we start a new task, there should be an estimate of
+		the time it will require. This estimate should be made by the
+		person(s) who will actually do the task. The estimate should 
+		also define exactly what will be included in the `first
+		version' or what it means to `complete' this task. In the
+		former case, what will/should be included in follow on
+		versions should also be described, albeit more briefly than
+		the initial version's description. If this to be an on-going
+		process, there should be a description of the continued
+		work needed.
+
+	The estimate should be broken into small blocks of time
+
+		The estimate should break the problem do into small things
+		that will take no more than two weeks to do. If that's not
+		possible (and in some cases it is really not) then we should
+		understand that there is a high degree of variability in the
+		estimate. That's OK, so long as we know and accept that.
+
+	Tie the estimation to the work description
+
+		Breaking the estimate down into small pieces will help flesh
+		out ideas which appear simple but are, in fact, quite
+		complicated. 
+
+	Estimates should be written down
+
+		Time estimates are very hard to get correct, and this is
+		exacerbated when the thing you're estimating has never been
+		done before. However, by writing down an estimate so that it
+		can be reviewed later, it is possible to build up skill in
+		estimation and build up knowledge about the types of problems
+		that appear over and over again in a particular project. Put
+		another way, you can learn estimation. It is important to
+		make sure people feel comfortable (or minimally
+		uncomfortable) with this since it can feel as if people are
+		being graded. 
+
+Groups:
+	Management oversight will be provided by Richard.
+		1) Monitor system usability, especially WRT UIs
+			a) Are they easy to get?
+			b) Obvious flaws reported?
+		2) Interact with the Federation
+			a) Metrics
+			b) Clusters - ours and others
+			c) Meetings
+		3) Organize our participation at AGU meetings - the face that
+		   we present at these meetings (posters, booth, handouts,
+		   demos) 
+		4) Monitor compliance with funding
+			a) Track the milestones in the proposals
+			b) Submit reports, etc. to funding agencies
+		5) Track progress on project tasks
+			a) Organize and maintain a list of tasks (web, project)
+			b) Organize meetings (telecons and in-person).
+
+	Overall organization will be provided by Peter.
+
+- Choose a direction for the project and evaluate our progress towards it.
+  Forget the small tasks; that's for Dan, Richard and myself. If I say that
+  the core will be stable by early December, how does it look mid-November? 
+
+- Choose avenues of funding. You know the people, the agencies and can match
+  them with the project's goal(s).
+
+- Make sure that we are represented well within the federation and in other
+  situations (i.e., that someone from DODS is on the `right' technical and
+  policy committees).
+
+- Use DODS. Problems found should be fixed, but deficiencies cannot
+  necessarily be addressed right away. Resist the urge to adopt quick fixes.
+
+- Evaluate new tasks in light of our goal(s). Does the proposed thing really
+  further our objective(s) or does it just look cool? This is a really tough
+  one since the thing that makes a research group tick is its ability to
+  pursue stuff that's off the beaten path, but too much of that and you're
+  sunk. 
+
+	The strategic position of the project will be reviewed by the `Gang
+	of Four' (Glenn, Peter, James and Richard) every 6 months at an
+	in-person meeting.
+
+	Dods will divide itself into two main groups: The core, or system,
+	software group and the Clients and Data group. The core group will be
+	lead by James and the Clients and Data group will be lead by Dan.
+
+The overall technical coordination of the project will be James'
+responsibility. This means choosing which goals should be addressed by
+software and, of those, how they fit in with the rest of the system.
+
+Dan will be responsible for overseeing design and implementation of those
+parts of the project that fall under the Client and Data umbrella. This will
+include who does what and when. Similarly, James will oversee those parts of
+the project that are part of the system's infrastructure (which we have
+called the `core').
+
+When there's a question as to where a particular thing falls, Dan and James
+will assign it to one of the two groups, even though the assignment might be
+arbitrary.
+
+	The two main groups will meet via teleconference every two weeks.
+
+	It is possible that some people will be in both the Core and Clients
+	and Data groups.
+

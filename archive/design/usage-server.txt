@@ -1,0 +1,184 @@
+
+ $Id$
+
+The usage server.
+
+The usage server is a filter that will be run by the CGI script which
+currently dispatches calls intended for the DAS, DDS and data filters.
+
+The purpose of the usage server is to supply clients with information about
+specific characteristics of server implementation (e.g., what functions does
+it support in CEs) and dataset (e.g., what variables does it contain). This
+information will be available both as an object that clients can interrogate
+and as HTML which can be displayed by a browser (without any processing).
+Initially, only the HTML output will be coded.
+
+The usage server is intended to support the creation of a variety of
+interfaces to DODS by providing those interfaces with human-readable
+information about the dataset.
+
+The usage server should provide:
+
+    Information about the variables and their attributes (as DODS defines the
+    term).
+
+    The attributes with their associated variables - not two separate lists.
+
+    The hierarchical relation of container variables.
+
+    Any global attributes that the dataset contains.
+
+    Extra information supplied by the dataset creator/maintainer.
+
+Mechanism:
+
+    Access to the HTML version of the usage information will be via a URL
+    with the suffix `.html'. Access to the object version will be via the
+    suffix `.use'.
+
+    In addition, dataset creators/maintainers will be able to supply a set of
+    HTML documents that will be catenated with the document created from the
+    information in the DAS and DDS objects. For the `object version' users
+    will need to put the same information in a separate file using some other
+    syntax *or* we will try to parse the HTML (bad choice IMHO).
+
+    Finally, there will be an override mode where only the user supplied HTML
+    is  returned. Thus if the automatically generated part of the server
+    fails for a particular dataset the creator/maintainer can work around
+    that problem.
+
+Implementation:
+
+    The usage information will be built by looking for global attributes -
+    something that we will define liberally with an exact definition
+    depending on the type of dataset - as well as the per variable
+    information. This will come from the DAS and DDS of the named data set by
+    running the DAS and DDS filters and storing their output (even though
+    this means some extra effort in terms of externalizing and then interning
+    the DAS and DDS objects).
+
+    The usage server will be part of the core software and not necessarily
+    specialized by the APIs to build API-specific filters. This way we can
+    code one version up and use it will all the servers without waiting for
+    server implementors to get the new code, stop what they are doing, code
+    the new thing, ... Later they might want to hack special versions for
+    their servers but that will not be strictly necessary.
+
+    Phase one: do the HTML version. 
+    Phase two: do the structured text version.
+
+    Description of the boxes in the structure chart:
+	1) Get override document - Look for a document named <dataset>.ovr. If
+	that exists, return it and set the flag value to true. The main
+	module of the usage server will not call the `Build...' submodule and
+	instead use the document (which must be a complete HTML document) as
+	the sole source of information to be returned by the usage server.
+
+	2) Build document from objects... - Use the DAS, DDS and other
+	user-supplied documents to build up the HTML document returned by the
+	server. Here `user' refers to the person who installed the usage
+	server and/or the maintainer of the dataset.
+
+	3) Get DAS - for the particular URL used to access the dataset, build
+	the URL for the DAS and fetch it (using the filter program).
+
+	4) Get DDS - use the DDS filter program to get the DDS object.
+
+	5) Get user supplied HTML* - Return the text for the user supplied
+	HTML* documents. See the source code for information about the naming
+	conventions used.
+
+	6) Build global attributes - use the DAS object to find any global
+	attributes (attributes that match names like `NC_GLOBAL', GLOBAL,
+	...) and return them in HTML*.
+
+	7) Build variable summaries - Using the DAS and DDS build summaries
+	of both all the variables. return HTML*.
+
+	8) Get server specific HTML - Look on the host for an HTML document
+	that describes anything specific to this server. Look for this
+	information in a file in the same directory as the server dispatch
+	script NB: information about sever functions for geolocation would go
+	here.
+
+	9) Get dataset specific HTML - Look on the host for
+	extra information about the dataset.
+
+Schedule:
+
+    Do phase one now.
+    Do phase two if it is needed at a later date.
+
+Example documents:
+
+An override file (which causes the usage server/filter to not read any
+information from other ancillary files or the dataset and instead return
+*only* this document):
+
+    <html>
+    <head>
+    <title> Test of override documents </title>
+    </head>
+
+    <body>
+
+    <h2>
+    fnoc1.nc
+    </h2>
+
+    This is where user-supplied inforamtion about the datset would reside. This
+    information would cause the useage server to not use the DAS and DDS to build
+    a dynamic usage document.
+
+    </body>
+    </html>
+
+NB: This file has an extension `.ovr' and must reside in the same directory
+as the data. The basename of the file must match the basename of the dataset
+with the exception that fnoc.ovr `matches' fnoc1.nc, fnoc2.nc, ... That is,
+digits on the end of a filename are considered a type of extension. You can
+make the override file specific to a particular file in a series and not
+others (e.g., fnoc1.ovr matches fnoc1.mv only and not fnoc2.nc, while
+fnoc.ovr matches them both).
+
+Per-dataset HTML*:
+
+
+    <h3>
+    About the Fleet Numerical Ocean Winds dataset
+    </h3>
+
+    The FNOC dataset is used as a sample dataset for testing of DODS. It is a
+    `real' scientific dataset, but I really don't understand what it means.
+
+    <p>
+
+NB: This file must be in the same directory as the dataset. Note that the
+same <basename><digits>.<extension> scheme used for the override file is used
+here.
+
+Per-server HTML*:
+
+    <h3>
+    Server Functions:
+    </h3>
+    <dl>
+    <dt>geolocate(variable, lat1, lat2, lon1, lon2)
+    <dd>Returns the elements of <em>variable</em> that fall within the box
+    created by <em>lat1</em>, <em>lon1</em> and <em>lat2</em>, <em>lon2</em>.
+
+    <p>
+
+    <dt>time(variable, start_time, stop_time)
+    <dd>Returns the elements of <em>variable</em> that fall within the time
+    interval <em>start_time</em> and <em>stop_time</em>.
+    </dl>
+
+    <p>
+
+NB: This file must reside with the server. For the netcdf server (which is
+made up of nph-nc, nc_das, nc_dds adn nc_dods) this file is called nc.html).
+
+
+
+

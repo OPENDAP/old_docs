@@ -1,0 +1,72 @@
+%%
+%%  gloss.hlx, a hyperlatex companion to gloss.sty
+%%
+%%  Tom Sgouros 5/14/2001
+%%
+%%
+
+%% $Id$
+
+\newenvironment{thegloss}{\begin{description}}{\end{description}}
+\newenvironment{glossitem}{\glossitem}{\endglossitem}
+\newenvironment{glossitem*}{\glossitem*}{\endglossitem*}
+\newcommand{\makegloss}{}
+\newcommand{\glossheading}[1]{\end{description}\xml{p}\textbf{#1}\begin{description}}
+
+\HlxEval{
+(defvar hyperlatex-gloss-entries nil)
+
+(put 'gloss             'hyperlatex 'hyperlatex-format-gloss)
+(put 'glossitem         'hyperlatex 'hyperlatex-format-glossitem)
+(put 'endglossitem      'hyperlatex 'hyperlatex-format-endglossitem)
+(put 'printgloss         'hyperlatex 'hyperlatex-format-printgloss)
+
+(defun hyperlatex-format-gloss ()
+  (let ((optarg (hyperlatex-parse-optional-argument))
+        (label (hyperlatex-parse-required-argument)))
+    (if hyperlatex-final-pass
+        (let ((match (assoc label hyperlatex-gloss-entries)))
+          (if (null match)
+              (hyperlatex-warning "WARNING: Unknown glossary key %s" label)
+	    (cond ((string= "" optarg)
+		   (insert (car match)))
+		  ((string= "nocite" optarg)
+		   (insert ""))
+		  ((string= "word" optarg)
+		   (insert (nth 1 match)))
+		  ((string= "Word" optarg)
+		   (insert (nth 2 match)))))))))
+
+(defun hyperlatex-format-glossitem ()
+  (let ((starp (hyperlatex-starred-p))
+	(label (hyperlatex-parse-required-argument))
+	(word-lc (hyperlatex-parse-required-argument))
+	(word-uc (hyperlatex-parse-required-argument))
+	(arg4 (hyperlatex-parse-required-argument)))
+    (if hyperlatex-final-pass
+	(insert (format "\\item[%s]" word-uc))
+      (setq hyperlatex-gloss-entries
+	    (cons (cons label (list word-lc word-uc arg4))
+			hyperlatex-gloss-entries)))
+    (goto-char hyperlatex-command-start)))
+
+(defun hyperlatex-format-endglossitem ()
+  (let ((starp (hyperlatex-starred-p)))
+    ()))
+
+(defun hyperlatex-format-printgloss ()
+  (let* ((tex-name (buffer-file-name hyperlatex-input-buffer))
+	 (base-name (progn
+		      (if (string-match "^.*\\(\\.[a-zA-Z0-9]+\\)$" tex-name)
+			  (substring tex-name 0 (match-beginning 1))
+			tex-name)))
+	 (hyperlatex-gloss-filename (concat base-name ".gls.bbl")))
+    (hyperlatex-parse-required-argument)
+    (if (file-exists-p hyperlatex-gloss-filename)
+	(progn
+	  (insert "\\chapter{Glossary}\n")
+	  (hyperlatex-insert-file hyperlatex-gloss-filename)
+	  (goto-char hyperlatex-command-start))
+      (hyperlatex-message "Formatted glossary file not found: %s"
+	       hyperlatex-gloss-filename))))
+}

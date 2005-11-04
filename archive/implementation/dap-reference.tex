@@ -1,0 +1,775 @@
+{\tt BaseType} contains the following member functions:
+
+\begin{description}
+
+\item {\bf Constructor}
+
+\declaration{BaseType(const String \&n = (char *)0, const String \&t =
+	(char *)0, xdrproc\_t xdr = NULL);} 
+
+{\tt BaseType}'s constructor takes three arguments: a {\tt String} that is
+the name of the variable, a {\tt String} that is the type of the variable,
+and a {\tt xdrproc\_t} which is a xdr encoding/decoding function.
+Descendents of {\tt BaseType} should define constructors that take the name
+parameter as an argument. These constructors should then pass that parameter
+to {\tt BaseType}'s constructor along with hardcoded values for {\tt
+xdr\_coder} and the type name. The {\tt xdr\_coder} is not used to encode
+or decode all data of a particular type; it is used only for certain types of
+arrays. However, to simplify use of the DAP, each object's constructor should
+provide a fuction pointer for {\tt xdr\_coder} which can encode on of those
+objects. Even though {\tt xdr\_coder} is used for arrays, the function itself
+should en/decode single objects, not arrays. See Sun's XDR manual for more
+information\cite{sun:XDR}.
+
+\item {\bf ptr\_duplicate}
+
+\declaration{virtual BaseType *ptr\_duplicate() = 0;}
+
+When {\tt ptr\_duplicate} is called it returns a pointer to a copy of itself
+(not necessarily a {\tt BaseType *}). Since {\tt ptr\_duplicate} is a virtual
+function, objects will be duplicated correctly when referred to via pointers
+to {\tt BaseType}. 
+
+This member function is abstract and thus must be defined for each descendent
+of {\tt BaseType}.
+
+\item {\bf name}
+
+\declaration{String name() const;}
+
+Returns a copy of the name of the variable represented by this instance.
+
+\item {\bf set\_name}
+
+\declaration{void set\_name(const String \&n);}
+
+Given a {\tt String}, set the variable name to that {\tt String}.
+
+\item {\bf type}
+
+\declaration{String type() const;}
+
+Returns a copy of the type of the variable represented by this instance.
+
+\item {\bf set\_type}
+
+\declaration{void set\_type(const String \&t);}
+
+Given a {\tt String}, set the variable type to that {\tt String}.
+
+\item {\bf card}
+
+\declaration {virtual bool card() = 0;}
+
+Returns true if the object is one of the cardinal types. Of particular use
+since arrays of these objects are represented specially to improve
+transmission efficiency.
+
+This member function is abstract and thus must be defined for each descendent
+of {\tt BaseType}.
+
+\item {\bf xdr\_coder}
+
+\declaration{xdrproc\_t xdr\_coder();}
+
+Return the {\tt xdrproc\_t} which can encode/decode this variable ({\tt
+xdrproc\_t} is a pointer to a xdr en/decoder function). This is {\em not\/} a
+virtual function, nor is there a special member function to set the
+`xdr\_coder'; it can only be set with the constructor.
+
+\item {\bf var}
+
+\declaration{virtual BaseType *var(const String \&name = (char *)0);}
+
+Returns a {\tt BaseType *} to a variable contained in a constructor type
+(e.g., in an array of Int32, var(...) returns a pointer to Int32).  
+
+NB: Only meaningful for objects in {\tt Array}, {\tt List}, {\tt Structure},
+{\tt Sequence}, {\tt Function}, or {\tt Grid}.
+
+\item {\bf add\_var}
+
+\declaration{virtual void add\_var(BaseType *v, Part p = nil);}
+
+Add variable V to part P of the object.     Returns: void
+
+NB: Only meaningful for objects in {\tt Array}, {\tt List},
+{\tt    Structure}, {\tt Sequence}, {\tt Function}, or {\tt
+Grid}.
+
+\item {\bf width}
+
+\declaration{virtual unsigned int width() = 0;}
+
+Return the size in bytes required to store the variable.
+
+This member function is abstract and thus must be defined for
+each descendent of {\tt BaseType}.
+
+\item {\bf read}
+
+\declaration{virtual bool read(String dataset, String var\_name, String
+	constraint) = 0;} 
+
+Given {\tt String}s for the data set name, variable name, and constraint
+expression, read the variable from the data set into the object.
+
+This member function is abstract and thus must be defined for each descendent
+of {\tt BaseType}. For each API this is point where data is moved from the
+dataset into the DODS DAP software so that it can be sent to the client.
+
+\item {\bf read\_val}
+
+\declaration{virtual unsigned int read\_val(void **val) = 0;}
+
+Reads the value of the variable {\em in an internal buffer\/} and places it
+in the memory referenced by {\tt **VAL}.  Either the caller must allocate
+enough storage for {\tt **VAL} or set it to null.  If set to null then {\tt
+new} will be used to allocate storage and the caller is responsible for
+deallocatinbg storage with {\tt delete}
+
+This member function is abstract and thus must be defined for each descendent
+of {\tt BaseType}.
+
+\item {\bf store\_val}
+
+\declaration{virtual unsigned int store\_val(void *val, bool reuse = false) =
+	0;} 
+
+Stores the value pointed to by VAL {\em in the objects internal buffer\/}.
+It returns the size (in bytes) of the information copied.
+
+This member function is abstract and thus must be defined for each descendent
+of {\tt BaseType}.
+
+\item {\bf serialize}
+
+\declaration{virtual bool serialize(bool flush = false) = 0;}
+
+Move the contents of the object (which should contain the value of a
+variable) onto the network. If the data needs to be transformed from the
+local representation to network representation (as defined by the \Dap), then
+that is done as well.
+
+This member function is abstract and thus must be defined for each descendent
+of {\tt BaseType}.
+
+NB: This member function does {\em not\/} check to see if valid data is in
+the object.
+
+\item {\bf deserialize}
+
+\declaration{virtual bool deserialize(bool reuse = false) = 0;}
+
+Copy data from the network to the object. If the data needs to be transformed
+from network to local representation, that step is performed as well. If
+REUSE is true, then the internal buffer is reused rather an being deleted and
+reallocated using new. No checks are made to ensure that the old buffer is
+large enough to hold the new incoming data; that is the caller's
+responsibility. 
+
+This member function is abstract and thus must be defined for each descendent
+of {\tt BaseType}.
+
+NB: This member function does {\em not\/} check to see if the contents of the
+network are valid.
+
+\item {\bf expunge()}
+
+\declaration{bool expunge();}
+
+Flush the \_out stream writing all data to the network.
+
+Returns: true if the stream could be flushed, false otherwise.
+
+\item {\bf print\_decl}
+
+\declaration{virtual void print\_decl(ostream \&os, String space = " ",  bool
+	print\_semi = true);} 
+
+Print the declaration for this variable. This member function takes three
+arguments: an {\tt ostream} where text output will be sent, a {\tt String} of
+spaces which are prepended to the declaration (so they can be nicely
+indented), and a {\tt bool} which controls output of a trailing semicolon and
+newline ({\tt true} == print the semicolon and newline).
+
+\item {\bf print\_val}
+
+\declaration{virtual void print\_val(ostream \&os, String space = "", bool
+	print\_decl\_p = true) = 0;} 
+
+Print the value of the variable. This member function takes two arguments: an
+{\tt ostream} where text output will be sent, and a {\tt String} of spaces
+that are prepended to the value.  PRINT\_DECL\_P when true causes the
+variable declaration to be prepended.
+
+This member function is abstract and thus must be defined for each descendent
+of {\tt BaseType}.
+
+\item {\bf check\_semantics}
+
+\declaration{virtual bool check\_semantics(bool all = false);}
+
+Return {\tt true} if the semantics of this variable are correct. This member
+function is next to useless for direct descendents of {\tt BaseType}, but for
+children of {\tt CtorType}, it is very valuable (it is possible to declare
+variable in the DDS that will parse but which make no sense).  This member
+function takes a single argument: a {\tt bool} which when {\tt true} causes
+constructor-type variables to be recursively checked.
+
+\end{description}
+
+Array:
+
+\begin{description}
+
+\item {\bf Constructor}
+
+\declaration{Array(const String \&n = (char *)0,  BaseType *v = 0);}
+
+Array's constructor takes two arguments: {\tt String}s for the variable name
+and a {\tt BaseType} pointer which references the variable which is an
+array. See above.
+
+\item {\bf append\_dim}
+
+\declaration{void append\_dim(int dim, String name = "");}
+
+Add a dimension to the array. This member function takes an {\tt int}
+argument for the size of the dimension and a String argument for its name.
+
+Returns: void.
+
+\item {\bf first\_dim}
+
+\declaration{Pix first\_dim();}
+
+Return a {\tt Pix} which references the first dimension of the {\tt Array}.
+
+\item {\bf next\_dim}
+
+\declaration{void next\_dim(Pix \&p);}
+
+Given a {\tt Pix} which refers to one of the {\tt Array}'s dimensions, update
+the {\tt Pix} so that it refers to the next dimension.
+
+\item {\bf dimension\_size}
+
+\declaration{int dimension\_size(Pix p);}
+
+Given a {\tt Pix} which refers to a dimension, return the size of that
+dimension as an {\tt int}.
+
+\item {\bf dimension\_name}
+
+\declaration{String dimension\_name(Pix p);}
+
+Given a {\tt Pix} which refers to a dimension, return the name of that
+dimension as an {\tt String}.
+
+\item {\bf dimensions}
+
+\declaration{unsigned int dimensions();}
+
+Return the number of dimensions in this array.
+
+\item {\bf print\_decl}
+
+\declaration{virtual void print\_decl(ostream \&os, String space = " ", bool
+	print\_semi = true);}
+
+Print the declaration for this variable. If SPACE is given, us that as left
+padding, otherwise use the default (which is one space). If PRINT\_SEMI is
+true, end the declaration with a semicolon and a newline (the default).
+
+Returns: void
+
+\item {\bf print\_val}
+
+\declaration{virtual void print\_val(ostream \&os, String space = "", bool
+	print\_decl\_p = true);}
+
+Print the declaration for the object (using print\_decl) and follow that with
+the value contained in the variable. If PRINT\_DECL\_P is true, then the
+declaration and an equal sign is prepended to the output and a semicolon and
+newline are appended to the output.
+
+Returns: Void
+
+\end{description}
+
+List:
+
+\begin{description}
+
+\item {\bf length}
+
+\declaration{unsigned int length();}
+
+Returns: The number of elements in the list.
+
+NB: This is {\em not\/} the same as {\tt BaseType}'s {\tt width()} member
+function---that returns the {\em number of bytes\/} required to store the
+{\tt List}.
+
+\item {\bf set\_length}    
+\declaration{void set\_length(unsigned int l);}
+
+Set the length of a {\tt List} object.
+
+\item {\bf set\_size}    
+\declaration{void set\_size(unsigned int s);}
+
+Deprecated synonym for {\tt set\_length}.
+
+\end{description}
+
+{\Tt Structure}:
+
+\begin{description}
+
+\item {\bf var}    
+\declaration{virtual BaseType *var(const String \&name);}  
+\declaration{BaseType *var(Pix p);}
+
+Get the {\tt BaseType} pointer which points to the named variable, or get the
+{\tt BaseType} pointer which points to the variable referred to by {\tt Pix}
+p. If the variable is not a member of the {\tt Structure}, return NULL.
+
+\item {\bf add\_var}
+
+\declaration{virtual void add\_var(BaseType *, Part p = nil);}
+
+Add the variable referred to by the {\tt BaseType} pointer to {\tt Part} p of
+the {\tt Structure}.
+
+\item {\bf first\_var}
+
+\declaration{Pix first\_var();}
+
+Return a {\tt Pix} the refers to the first member of the {\tt Structure}.
+
+\item {\bf next\_var}
+
+\declaration{void next\_var(Pix \&p);}
+
+Update {\tt Pix} p to refer to the next member of the {\tt Structure}. Set p
+to NULL when there are no more members.
+
+\end{description}
+
+Sequence:
+
+\begin{description}
+
+\item {\bf var}    
+\declaration{virtual BaseType *var(const String \&name);}  
+\declaration{BaseType *var(Pix p);}
+
+Get the {\tt BaseType} pointer which points to the named variable, or get the
+{\tt BaseType} pointer which points to the variable referred to by {\tt Pix}
+p. If the variable is not a member of the {\tt Sequence}, return NULL.
+
+\item {\bf add\_var}
+
+\declaration{virtual void add\_var(BaseType *, Part p = nil);}
+
+Add the variable referred to by the {\tt BaseType} pointer to {\tt Part} p of
+the {\tt Sequence}.
+
+\item {\bf first\_var}
+
+\declaration{Pix first\_var();}
+
+Return a {\tt Pix} the refers to the first member of the {\tt Sequence}.
+
+\item {\bf next\_var}
+
+\declaration{void next\_var(Pix \&p);}
+
+Update {\tt Pix} p to refer to the next member of the {\tt Sequence}. Set p
+to NULL when there are no more members.
+
+\end{description}
+
+Function:
+
+\begin{description}
+
+\item {\bf first\_indep\_var}
+
+\declaration{Pix first\_indep\_var();}
+
+Returns a {\tt Pix} which refers to the first member in the {\em
+independent\/} section of the {\tt Function}.
+
+\item {\bf next\_indep\_var}
+
+\declaration{void next\_indep\_var(Pix \&p);}
+
+Update {\tt Pix} p to refer to the next member in the {\em independent\/}
+section of the {\tt Function}. Set p to NULL when there are no more members.
+
+\item {\bf indep\_var}
+
+\declaration{BaseType *indep\_var(Pix p);}
+
+Get the {\tt BaseType} pointer which points to the {\em independent\/}
+variable referred to by {\tt Pix} p. If the variable is not a member of the
+{\tt Function}, return NULL.
+
+\item {\bf first\_dep\_var}
+
+\declaration{Pix first\_dep\_var();}
+
+Returns a {\tt Pix} which refers to the first member in the {\em dependent\/}
+section of the {\tt Function}.
+
+\item {\bf next\_dep\_var}
+
+\declaration{void next\_dep\_var(Pix \&p);}
+
+Update {\tt Pix} p to refer to the next member in the {\em dependent\/}
+section of the {\tt Function}. Set p to NULL when there are no more members.
+
+\item {\bf dep\_var}
+
+\declaration{BaseType *dep\_var(Pix p);}
+
+Get the {\tt BaseType} pointer which points to the {\em dependent\/} variable
+referred to by {\tt Pix} p. If the variable is not a member of the {\tt
+Function}, return NULL.
+
+\end{description}
+
+Grid:
+
+\begin{description}
+
+\item {\bf array\_var}
+
+\declaration{BaseType *array\_var();}
+
+Returns a {\tt BaseType} pointer to the $N$ dimensional variable that
+contains the grid values.
+
+\item {\bf first\_map\_var}
+
+\declaration{Pix first\_map\_var();}
+
+Returns a {\tt Pix} which refers to the first member in the {\em map/}
+section of the {\tt Grid}.
+
+\item {\bf next\_map\_var}
+
+\declaration{void next\_map\_var(Pix \&p);}
+
+Update {\tt Pix} p to refer to the next member in the {\em map/} section of
+the {\tt Grid}. Set p to NULL when there are no more members.
+
+\item {\bf map\_var}
+
+\declaration{BaseType *map\_var(Pix p);}
+
+Get the {\tt BaseType} pointer which points to the {\em map\/} variable
+referred to by {\tt Pix} p. If the variable is not a member of the {\tt
+Grid}, return NULL.
+
+\end{description}
+
+The class {\tt DAS} defines the following member functions:
+
+\begin{description} \item {\bf Constructor}
+
+\declaration{DAS(AttrTablePtr dflt=(void *)NULL, unsigned int
+	sz=DEFAULT\_INITIAL\_CAPACITY);} 
+
+Make a new, empty, instance of {\tt DAS}. You can specify a default
+attribute table for each each variable and the size of the hash table {\tt
+DAS} uses to reference the {\tt AttrTable} for each variable. However, the
+internal representation for this class may change, and this parameter might
+become meaningless.
+
+\item {\bf first\_var}
+
+\declaration{Pix first\_var();}    
+
+Return a {\tt Pix} that refers to the first variable in the {\tt DAS}.
+
+\item {\bf next\_var}
+
+\declaration{void next\_var(Pix \&p);}  
+
+Given a {\tt Pix} that refers to an entry in the {\tt DAS}, update that {\tt
+Pix} to refer to the next variable. Set the {\tt Pix} to NULL if no more
+variables remain in the {\tt DAS}.
+
+\item {\bf get\_name}
+
+\declaration{String \&get\_name(Pix p);}
+
+Return a reference to the name of the variable referred to by {\tt Pix} p in
+a {\tt String}.
+
+\item {\bf get\_table}
+
+\declaration{AttrTable *get\_table(Pix p);} 
+\declaration{AttrTable *get\_table(const String \&name);}
+
+\declaration{AttrTable *get\_table(const char *name);}\footnote{{\tt (char
+*)} version. It is necessary to provide this definition because without
+explicitly defining a member function for {\tt (char *)}, \Cpp\ will confuse
+it with a {\tt Pix} since {\tt Pix} is represented by a {\tt (void *)}.}
+
+Return the {\tt AttrTable} associated with variable NAME.
+
+\item {\bf add\_table}
+
+\declaration{AttrTable *add\_table(const String \&name, AttrTable *at);}
+\declaration{AttrTable *add\_table(const char *name, AttrTable *at);}
+
+Add the {\tt AttrTable} pointed to by AT at the {\tt AttrTable} for variable
+NAME.
+
+Return AT if not error is detected, NULL otherwise.
+
+\item {\bf parse}
+
+\declaration{bool parse(String fname);}
+\declaration{bool parse(int fd);}
+\declaration{bool parse(FILE *in=stdin);}
+
+Parse the data set attribute structure(s) and then store the variables and
+their attributes in the current {\tt DAS} object.  If any of the input
+sources contains more than one data set attribute structure, the variables
+and attributes they describe are all merged into the current {\tt DAS}
+object.
+
+Return TRUE if the input source was parsed without error, FALSE otherwise.
+
+\item {\bf print}
+
+\declaration{bool print(ostream \&os = cout);}
+
+Print the contents of the data set attribute structure to OS. 
+
+\end{description}
+
+DDS:
+
+\begin{description}
+
+\item {\bf Constructor}
+
+\declaration{DDS(const String \&n = (char *)0);}
+
+Create a new {\tt DDS} object for the data set named N.
+
+\item {\bf get\_dataset\_name}
+
+\declaration{String get\_dataset\_name();}
+
+Return the data set name.
+
+\item {\bf set\_dataset\_name}
+
+\declaration{void set\_dataset\_name(const String \&n);}
+
+Set the data set name to be N.
+
+\item {\bf add\_var}
+
+\declaration{void add\_var(BaseType *bt);}
+
+Add the variable pointed to by BT to the data set. Unlike the {\tt DAS}, the
+{\tt DDS} retains information about the order of variables.
+
+\item {\bf del\_var}
+
+\declaration{void del\_var(const String \&n);}
+
+Delete the variable named N from the data set.
+
+\item {\bf first\_var}
+
+\declaration{Pix first\_var();}
+
+Return a {\tt Pix} the refers to the first variable in the data set.
+
+\item {\bf next\_var}
+
+\declaration{void next\_var(Pix \&p);}
+
+Given a {\tt Pix} P that refers to a variable in the {\tt DDS}, update that
+{\tt Pix} to refer to the next variable in the data set. If there are no more
+variable, set P to NULL.
+
+\item {\bf var}
+
+\declaration{BaseType *var(Pix p);}
+\declaration{BaseType *var(const String \&n);}
+\declaration{BaseType *var(const char *n);} \footnote{{\tt (char *)}
+version. As with the {\tt get\_table} member function in the {\tt DAS} class,
+it is necessary to provide this definition since \Cpp\ will confuse it with a
+{\tt Pix} unless it is explicitly defined as a member function for {\tt (char
+*)}. This is because {\tt Pix} is represented by a {\tt (void *)}.}
+
+Return a pointer to the variable referred to by {\tt Pix} P,
+or with the name N, in the data set. If the variable does not
+exist, return NULL.
+
+\item {\bf parse}
+
+\declaration{bool parse(String fname);}
+\declaration{bool parse(int fd);}
+\declaration{bool parse(FILE *in=stdin);}
+
+Parse the data set descriptor structure(s) from FNAME, FD, or IN.  If more
+than one DDS is parsed, the second DDS and any additional DDSs are merged
+with the existing in-memory DDS.
+
+Return TRUE if the DDSs can all be parsed, FALSE otherwise.
+
+\item {\bf print}
+
+\declaration{bool print(ostream \&os = cout);}
+
+Print the {\tt DDS} on OS.
+
+Return TRUE if the {\tt DDS} was printed, FALSE otherwise.
+
+\item {\bf check\_semantics}
+
+\declaration{bool check\_semantics(bool all = false);}
+
+Check the semantics of the data set. If ALL is TRUE, recursively check the
+semantics of the variables in the data set (e.g., descend into {\tt
+Structure} variables and check the semantics of their components).
+
+Return TRUE if the variables are OK, FALSE otherwise.
+
+\end{description}
+
+{\tt Connect} defines the following member functions:
+
+\begin{description}
+
+\item {\bf Constructor}
+
+\declaration{Connect(const String \&name, const String \&api = "");}
+
+Make a new instance of {\tt Connect}. NAME is the URL or local file name to
+open and API is the name of the API. The API name is used to build URLs which
+access different parts of the data set (See \DDD).
+
+\item {\bf is\_local}
+
+\declaration{bool is\_local();}
+
+Return TRUE if the data set managed by this instance of {\tt Connect} is a
+local data set, FALSE otherwise.
+
+\item {\bf URL}
+
+\declaration{const String \&URL();}
+
+Return the URL which points to the remote data et managed by this instance of
+{\tt Connect}. If this {\tt Connect} manages a local data set, return an
+empty string (``''). This is the string passed to the constructor via the
+NAME parameter.
+
+\item {\bf DAS}
+
+\declaration{DAS \&das();}
+
+Return a reference to the {\tt DAS} object associated with the open data set
+if this {\tt Connect} manages a remote data set, otherwise the return value
+is undefined.
+
+\item {\bf DDS}
+
+\declaration{DDS \&dds();}
+
+Returns a reference to the {\tt DDS} object associated with the open data set
+if this {\tt Connect} manages a remote data set, otherwise the return value
+is undefined.
+
+\item {\bf request\_das}
+
+\declaration{bool request\_das(const String \&ext = "das");}
+
+Get the {\tt DAS} from the remote server.  The parameter EXT is a string that
+tells the data server CGI which filter program is to be run to handle the
+request.  The default is "das".
+
+Returns TRUE if successful, FALSE if unsuccessful.
+
+\item {\bf request\_dds}
+
+\declaration{bool request\_dds(const String \&ext = "dds");}
+
+Get the {\tt DDS} from the remote server. The parameter EXT is a string that
+tells the data server CGI which filter program is to be run to handle the
+request.  The default is "dds".
+
+Returns TRUE if successful, FALSE if unsuccessful.
+
+\item {\bf request\_data}
+
+\declaration{bool request\_data(const String expr, bool asynch = false, const
+	String \&ext = "dods");}
+
+This function makes a data read request to the remote API server and links
+the object's xdrin file pointers to the data stream.  This function does not
+actually read the data, it only sets up the BaseType static class member so
+the data can be read.
+
+The string EXPR is for use with contraint expressions, which are not yet
+implemented.
+
+If ASYNCH is FALSE (default), then the data will be read synchronouly; if
+ASYNCH is TRUE, then the data will be read asynchronouly.
+
+The parameter EXT is a string that tells the data server CGI which filter
+program is to be run to handle the request.  The default is "dods".
+
+Returns TRUE if successful and FALSE if unsuccessful.
+
+\end{description}
+
+{\tt Connections} defines the following methods:
+
+\begin{description}
+
+\item {\bf Constructor}
+
+\declaration{Connections(int max\_connections = MAX\_CONNECTIONS);}
+
+Make a new instance of {\tt Connections}. MAX\_CONNECTIONS defaults to 64.
+
+\item {\bf operator[]}
+
+\declaration{ConnectPtr \&operator[](int i);}
+
+Return the {\tt Connect} pointer associated with integer I. If you want to
+manage {\tt Connect}s using something other than integer references, you must
+subclass {\tt Connections}.
+
+\item {\bf Add\_connect}
+
+\declaration{int add\_connect(Connect *c);}
+
+Add the {\tt Connect} object pointed to by C to the instance of {\tt
+Connections}.
+
+Returns the integer which refers to the managed {\tt Connect} pointer.
+
+\item {\bf del\_connect}
+
+\declaration{void del\_connect(int i);}
+
+Remove the {\tt Connect} referred to by integer I from the
+{\tt Connections}  object. 
+
+\end{description}
+

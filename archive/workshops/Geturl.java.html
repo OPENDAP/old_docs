@@ -1,0 +1,281 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dods-ex.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.4.1, Sat May 11 14:26:10 2002 -->
+<head>
+<title>Writing an OPeNDAP Client</title>
+</head><body bgcolor="ccffcc">
+<pre>
+///////////////////////////////////////////////////////////////////
+// Copyright (c) 1998, California Institute of Technology.  
+// ALL RIGHTS RESERVED.   U.S. Government Sponsorship acknowledged.
+//
+// Please read the full copyright notice in the file COPYRIGHT
+// in this directory.
+//
+// Author: Jake Hamby, NASA/Jet Propulsion Laboratory
+//         Jake.Hamby@jpl.nasa.gov
+///////////////////////////////////////////////////////////////////
+
+package dods.util.geturl;
+import <font COLOR="cc6600"><b>dods.dap.*;</b></font>
+import <font COLOR="cc6600"><b>dods.util.geturl.gui.StatusWindow</b></font>;
+import <font COLOR="cc6600"><b>dods.util.Getopts;</b></font>
+import <font COLOR="cc6600"><b>dods.util.InvalidSwitch;</b></font>
+import <font COLOR="cc6600"><b>dods.util.OptSwitch;</b></font>
+
+/** Java port of the geturl command-line client. */
+public class Geturl {
+
+  /** Version of the client. */
+  private static final String VERSION = "0.1 Beta";
+
+  private static void usage() {
+    System.err.println("Usage: geturl " +
+	 "[dDagVvk] [c <expr>] [t <codes>] [m <num>] <url> [<url> ...]");
+    System.err.println("[gVvk] [t <codes>] <file> [<file> ...]");
+    System.err.println("In the first form of the command, dereference the URL");
+    System.err.println("perform the requested operations. In the second, assume");
+    System.err.println("the files are DODS data objects (stored in files or read");
+    System.err.println("from pipes) and process them as if -D were given.");
+    System.err.println("        d: For each URL, get the DODS DDS.");
+    System.err.println("        a: For each URL, get the DODS DAS.");
+    System.err.println("        D: For each URL, get the DODS Data.");
+    System.err.println("        g: Show the progress GUI.");
+    System.err.println("        v: Verbose.");
+    System.err.println("        V: Version.");
+    System.err.println("        c: <expr> is a contraint expression. Used with -D.");
+    System.err.println("           NB: You can use a `?' for the CE also.");
+    System.err.println("        m: Request the same URL <num> timeset.");
+    System.err.println("        z: Don't ask the server to compress data.");
+    System.err.println("        p: Dump the DODS Data as binary, not text.");
+    System.err.println("       Without D, d or a, print the URL.");
+  }
+
+  public static void main(String args[]) {
+    boolean get_das = false;
+    boolean get_dds = false;
+    boolean get_data = false;
+    boolean dump_data = false;
+    boolean gui = false;
+    boolean cexpr = false;
+    boolean verbose = false;
+    boolean multi = false;
+    boolean accept_deflate = true;
+    int times = 1;
+    String expr = "";
+    <p>
+    try {
+      Getopts opts = new Getopts("daDgVvc:m:zp", args);
+      if(opts.getSwitch(new Character('d')).set)
+	get_dds = true;
+      if(opts.getSwitch(new Character('a')).set)
+	get_das = true;
+      if(opts.getSwitch(new Character('D')).set)
+	get_data = true;
+      if(opts.getSwitch(new Character('p')).set)
+	dump_data = get_data = true;
+      if(opts.getSwitch(new Character('V')).set) {
+	System.err.println("geturl version: " + VERSION);
+	System.exit(0);
+      }
+      if(opts.getSwitch(new Character('v')).set)
+	verbose = true;
+      if(opts.getSwitch(new Character('g')).set)
+	gui = true;
+
+      String optVal;
+      optVal=opts.getSwitch(new Character('c')).val;
+      if (optVal != null) {
+	cexpr = true;
+	expr = optVal;
+      }
+
+      optVal = opts.getSwitch(new Character('m')).val;
+      if (optVal != null) {
+	multi = true;
+	times = Integer.parseInt(optVal);
+      }
+
+      if(opts.getSwitch(new Character('z')).set)
+	accept_deflate = false;
+
+      // If after processing all the command line options there is nothing left
+      // (no URL or file) assume that we should read from stdin.
+      String argp[] = opts.argList();
+      if(argp.length == 0) {
+	if (verbose)
+	  System.err.println("Assuming standard input is a DODS data stream.");
+	<font COLOR="red"><b>
+	DConnect url</b></font> = new <font COLOR="red"><b>DConnect(System.in);</b></FONT>
+	try {
+	  <font COLOR="cc6600"><b>StatusUI ui</b></font> = null;
+	  if (gui)
+	    <font COLOR="cc6600"><b>ui</b></font> = new <font COLOR="cc6600"><b>StatusWindow("stdin")</b></font>;
+	  <FONT COLOR="red"><b>
+	  DataDDS dds</b></font> = <font COLOR="red"><b>url.getData(ui);</b></font>
+	  processData(<font COLOR="red"><b>url</b></font>, <font COLOR="red"><b>dds</b></font>, verbose, dump_data, accept_deflate);
+	}
+	catch (<font COLOR="cc6600"><b>DODSException e</b></font>) {
+	  System.err.println(<font COLOR="cc6600"><b>e</b></font>);
+	  System.exit(1);
+	}
+	catch (Exception e) {
+	  System.err.println(e);
+	  e.printStackTrace();
+	  System.exit(1);
+	}
+      }
+
+      for(int i=0; i < argp.length; i++) {
+	String nextURL = argp[i];
+	if (verbose)
+	  System.err.println("Fetching: " + nextURL);
+	<font COLOR="red"><b>
+	DConnect url</b></font> = null;
+	try {<font COLOR="red"><b>
+	  url</b></font> = new <font COLOR="red"><b>DConnect(nextURL, accept_deflate);</b></font>
+	}
+	catch (java.io.FileNotFoundException e) {
+	  System.err.println(nextURL + " is neither a valid URL nor a filename.");
+	  System.exit(1);
+	}
+	if (<font COLOR="cc6600"><b>url.isLocal()</b></font>) {
+	  if (verbose)
+	    System.err.println("Assuming that the argument " + nextURL +
+			       " is a file\n" +
+			       "that contains a DODS data object; decoding.");
+
+	  try {
+	    <font COLOR="cc6600"><b>StatusUI ui</b></font> = null;
+	    if (gui)
+	      <font COLOR="cc6600"><b>ui</b></font> = new <font COLOR="cc6600"><b>StatusWindow(nextURL)</b></font>;
+	    <font COLOR="red"><b>
+	    DataDDS dds</b></font> = <font COLOR="red"><b>url.getData(ui);</b></font>
+	    processData(<font COLOR="red"><b>url</b></font>, <font COLOR="red"><b>dds</b></font>, verbose, dump_data, accept_deflate);
+	  }
+	  catch (<font COLOR="cc6600"><b>DODSException e</b></font>) {
+	    System.err.println(<font COLOR="cc6600"><b>e</b></font>);
+	    System.exit(1);
+	  }
+	  catch (Exception e) {
+	    System.err.println(e);
+	    e.printStackTrace();
+	    System.exit(1);
+	  }
+	}
+
+	if (<font COLOR="3366cc"><b>get_das</b></font>) {
+	  for (int j=0; j < times; j++) {
+	    try {
+	      <font COLOR="red"><b>
+	      DAS das</b></font> = <font COLOR="red"><b>url.getDAS();</b></font>
+	      if (verbose) {
+		System.err.println("Server version: " + <font COLOR="cc6600"><b>url.getServerVersion()</b></font>);
+		System.err.println("DAS:");
+	      }	<font COLOR="red"><b>
+	      das.print(System.out);</b></font>
+	    }
+	    catch (<font COLOR="cc6600"><b>DODSException e</b></font>) {
+	      System.err.println(<font COLOR="cc6600"><b>e</b></font>);
+	      e.printStackTrace();
+	      System.exit(1);
+	    }
+	    catch (java.io.FileNotFoundException e) {
+	      System.err.println(e);
+	      System.exit(1);
+	    }
+	    catch (Exception e) {
+	      System.err.println(e);
+	      e.printStackTrace();
+	      System.exit(1);
+	    }
+	  }
+	}
+
+	if (<font COLOR="3366cc"><b>get_dds</b></font>) {
+	  for (int j=0; j < times; j++) {
+	    try {<font COLOR="red"><b>
+	      DDS dds</b></font> = <font COLOR="red"><b>url.getDDS();</b></font>
+	      if (verbose) {
+		System.err.println("Server version: " + <font COLOR="cc6600"><b>url.getServerVersion()</b></font>);
+		System.err.println("DDS:");
+	      }	<font COLOR="red"><b>
+	      dds.print(System.out);</b></font>
+	    }
+	    catch (<font COLOR="cc6600"><b>DODSException e</b></font>) {
+	      System.err.println(<font COLOR="cc6600"><b>e</b></font>);
+	      System.exit(1);
+	    }
+	    catch (java.io.FileNotFoundException e) {
+	      System.err.println(e);
+	      System.exit(1);
+	    }
+	    catch (Exception e) {
+	      System.err.println(e);
+	      e.printStackTrace();
+	      System.exit(1);
+	    }
+	  }
+	}
+
+	if (<font COLOR="3366cc"><b>get_data</b></font>) {
+	  if ((cexpr==false) && (nextURL.indexOf('?') == -1)) {
+	    System.err.println("Must supply a constraint expression with -D.");
+	    continue;
+	  }
+	  for (int j=0; j < times; j++) {
+	    try {
+	      <font COLOR="cc6600"><b>StatusUI ui</b></font> = null;
+	      if (gui)
+		<font COLOR="cc6600"><b>ui</b></font> = new <font COLOR="cc6600"><b>StatusWindow(nextURL)</b></font>;<font COLOR="red"><b>
+	      DataDDS dds</b></font> = <font COLOR="red"><b>url.getData(expr, ui);</b></font>
+	      processData(<font COLOR="red"><b>url</b></font>, <font COLOR="red"><b>dds</b></font>, verbose, dump_data, accept_deflate);
+	    }
+	    catch (<font COLOR="cc6600"><b>DODSException e</b></font>) {
+	      System.err.println(<font COLOR="cc6600"><b>e</b></font>);
+	      System.exit(1);
+	    }
+	    catch (java.io.FileNotFoundException e) {
+	      System.err.println(e);
+	      System.exit(1);
+	    }
+	    catch (Exception e) {
+	      System.err.println(e);
+	      e.printStackTrace();
+	      System.exit(1);
+	    }
+	  }
+	}
+      }
+    }
+    catch (InvalidSwitch e) {
+      usage();
+      System.exit(1);
+    }
+    // we must explicitly exit in case we opened a StatusWindow which might
+    // otherwise prevent the Java VM from quitting
+    System.exit(0);
+  }
+
+  private static void processData(<font COLOR="red"><b>DConnect url</b></font>, <font COLOR="red"><b>DataDDS dds</b></font>, boolean verbose,
+				  boolean dump_data, boolean compress) {
+    if (verbose)
+      System.err.println("Server version: " + <font COLOR="cc6600"><b>url.getServerVersion()</b></font>);
+    
+    if (dump_data) {
+      try {<font COLOR="red"><b>
+	dds.externalize(System.out, compress, true);</b></font>
+      }
+      catch (java.io.IOException e) {
+	System.err.println(e);
+      }
+    } else {
+      System.out.println("The data:");<font COLOR="red"><b>
+      dds.printVal(System.out);</b></font>
+      System.out.println();
+    }
+  }
+}
+</pre></body></html>

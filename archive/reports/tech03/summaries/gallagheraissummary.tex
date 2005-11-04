@@ -1,0 +1,36 @@
+James Gallagher presented an overview, possible architectures,
+and prototype of the \ac{AIS}.  The premise is that people who
+provide data will not, in general, also provide consistent and 
+complete use metadata for those data.  The \ac{AIS} provides
+a means to append the required metadata to data in a way 
+that is transparent to the user making an OPeNDAP request.  
+It also allows the addition of aliases to attributes and variables,
+and it does not alter the original dataset.  The architectures
+include merging objects and \ac{AIS} resources on the client 
+or on the server.  The current \ac{AIS} prototype only implements
+adding attributes.  James gave two examples, and an evaluation
+of the prototype.
+
+Conclusions:
+\begin{enumerate}
+  \item The \ac{AIS} needs more use for a complete evaluation.
+  \item The \ac{AIS} is cumbersome while developing \ac{AIS} resources.
+  \item The \ac{AIS} server built using enveloping requires cumbersome URLs
+  \item The attribute-only implementation is limited.
+\end{enumerate}
+
+% $Id$
+%
+% $Log: gallagheraissummary.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

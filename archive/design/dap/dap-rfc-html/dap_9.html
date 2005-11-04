@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:09 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- Array</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_10.html"><img alt="Structure" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_7.html"><img alt="Constructor Variables" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_8.html"><img alt="List" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Array</b></td></tr></table>
+<h3>Array</h3>
+An <b>Array</b> is a one dimensional indexed data structure as defined by
+ANSI C@. Multidimensional arrays are defined as arrays of arrays. The size of
+each array's dimensions must be given. Each dimension of an array may also be
+named.
+<p>Multi-dimensional arrays are stored in row-major order (as is
+the case with ANSI Cor C++). Any array stored in row-major order is stored
+so that the last dimension varies most quickly. For example suppose the two
+dimensional array <tt>String letter[2][3]</tt> has two rows of three columns
+each and looks like:
+<blockquote><i>
+<table><tr><td colspan="1" align="CENTER">
+
+A </td><td colspan="1" align="CENTER"> B </td><td colspan="1" align="CENTER"> C </td></tr>
+<tr><td colspan="1" align="CENTER">
+D </td><td colspan="1" align="CENTER"> E </td><td colspan="1" align="CENTER"> F </td></tr>
+<tr><td colspan="1" align="CENTER">
+</td></tr></table>
+
+</i></blockquote>
+the values would be stored as <i>A&nbsp;B&nbsp;C&nbsp;D&nbsp;E&nbsp;F</i> in memory.
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+array-decl </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> array-types id array-dims ";" </td></tr>
+<tr><td colspan="1" align="LEFT">
+array-types </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> simple-decl | structure-decl | sequence-decl | grid-decl </td></tr>
+<tr><td colspan="1" align="LEFT">
+array-dims </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> array-dim | array-dim array-dims </td></tr>
+<tr><td colspan="1" align="LEFT">
+array-dim </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "[" [ name "=" ] DIGIT *DIGIT "]" </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_10.html"><img alt="Structure" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_7.html"><img alt="Constructor Variables" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_8.html"><img alt="List" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Array</b></td></tr></table></body></html>

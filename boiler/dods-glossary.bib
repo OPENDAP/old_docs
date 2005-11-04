@@ -1,0 +1,260 @@
+
+% Glossary used for the registry SRS. Maybe this will be generally useful?
+% 1/20/2000 jhrg
+
+@gd{virtual-variables,
+word = {virtual variables},
+definition = {A virtual variable in DODS is a variable added to a data source 
+                  by an \ac{AIS} \ac{DDS}. The \ac{AIS} resource adds one or
+                  more variables to those in the data source. A \ac{AIS}
+                  \ac{DDS} object is used to bind the virtual variable to a
+                  function in the data source.}}
+
+@gd{level-three-interop,
+word = {level three interoperability},
+definition = {Interoperability between a data source and an analysis program
+                  that is semantically meaningful; i.e., the data may be
+                  requested in a geophysical or, more generally, a
+                  scientifically consistent form without human intervention
+                  and they may be manipulated on receipt in a consistent
+                  scientific manner again without human intervention.}}
+
+@gd{metadata,
+word = {metadata},
+definition = {C.J. Date in ``Introduction to Database Systems'' ($7^{th}$
+                  ed., p.70) defines
+                  metadata as ``detailed information regarding the various
+                  objects that are of interest to the system itself.'' He
+                  notes that ``descriptor information'' is a synonym. The
+                  ``objects'' he refers to are database tables which contain
+                  information about the internal organization of the
+                  particular database in question. In DODS the DDS object
+                  most closely matches Date's definition of metadata.
+                  However, in the Earth Science community, the word is usually
+                  used to refer to \emph{any} information about the variables
+                  in a given dataset. Thus the information in a DAS object
+                  (a.k.a. attributes) is also considered metadata.}}
+
+@gd{syntactic-metadata,
+word = {syntactic metadata},
+definition = {This is what many computer science texts call simply
+                  `\gloss[word]{metadata}.' We use the term to distinguish
+                  the information about data type and structural organization
+                  of a whole and its parts from other types of information
+                  about a given data source.}} 
+
+@gd{semantic-metadata,
+word = {semantic metadata},
+definition = {Information about a data source that is not
+                  \gloss[word]{syntactic-metadata}. This is information
+                  typically used by people or software to relate information
+                  in the data source to real-world phenomena.}}
+
+@gd{web-pathname,
+word = {web pathname},
+definition = {The pathname of a file or directory relative to the host
+                  machine's web server's document root directory. In a URL of
+                  the form \texttt{http://$<host>$/$<path>$} the web pathname
+                  is $<path>$.}}
+
+@gd{document-root,
+word = {document root},
+definition = {The root directory of the files served by a web server. See The
+                  Apache Web Server Documentation~\cite{apache:httpd}.}}
+
+@gd{dods-url,
+word = {dods url},
+definition = {A URL which can be used to access a data source using a DODS
+                  server. The URL has five parts: \texttt{
+                  http://$<host>$/$<ScriptAlias>$/$<CGI>$/$<path>$?$<constraint>$}.
+                  See the DODS User's Guide~\cite{DODS:users-guide} for an
+                  explanation of each component of the URL.}}
+
+@gd{dods-server,
+word = {dods server},
+definition = {The collection of programs which comprise a DODS server. A DODS
+                  server is accessed through a URL. Each server provides
+                  information in the form of MIME documents. These MIME
+                  documents may hold ASCII, HTML or objects found only in
+                  DODS. See the DODS User's and Programmer's Guides for more
+                  information.}}
+
+@gd{data-source,
+word = {data source},
+definition = {A data source is any resource that can be accessed from a URI 
+using the DAP. Typically this is a DAP data server accessed using HTTP.}}
+
+@gd{dods-client,
+word = {dods client},
+definition = {A DODS client is any program which can process in some
+                  meaningful way the three basic DODS objects: the DAS, DDS
+                  and DataDDS. Web browsers are not, by themselves, DODS
+                  clients, although they can save DODS objects to files for
+                  later use by DODS clients.}}
+
+@gd{http-server,
+word = {http server},
+definition = {A daemon process that responds to HTTP methods. Nominally this
+                  daemon listens for connections on port 80. For DODS'
+                  purposes, this daemon must support the CGI~1.1
+                  specification.}}
+
+@gd{dods-dataset,
+word = {dataset},
+definition = {A dataset accessible through a DODS Server. This may be a
+                  single file of data or it may be a collection of files.
+                  Strictly speaking, every distinct file is a dataset to the
+                  DODS software. However, Users and Providers often see
+                  a collection of discrete files as comprising a single
+                  dataset.}}
+
+@gd{multifile,
+word = {multi-file dataset},
+definition = {A dataset that is composed of two or more files. While the DODS
+                  software views each file as a separate dataset, most users
+                  and data providers think of many collections of files as a
+                  logical unit.}}
+
+@gd{singlefile,
+word = {single-file dataset},
+definition = {A dataset that is completely contained in a single file.}}
+
+@gd{dods-core-group,
+word = {dods core group}, 
+definition = {The developers of DODS based at the University of Rhode Island.}}
+
+@gd{web-browser,
+word = {web browser},
+definition = {One of the two popular GUI-based web browser; Netscape version
+                  3.x or later or MS Internet Explorer 5.x or later.}}
+
+@gd{dir-browser,
+word = {directory browser},
+definition = {A feature of the DODS Server starting in version 3.1 that
+                  provide a way for users to browse collections of files
+                  using a DODS Server and a Web Browse.}}
+
+@gd{web-crawler,
+word = {web crawler},
+definition = {A WWW client program which searches a graph made up of HTML
+                  documents. Nodes in the graph are the HTML documents and
+                  edges are the document's links.}}
+
+@gd{data-prov,
+word = {data provider},
+definition = {A person or institution that installs and maintains a DODS
+                  Server.}}
+
+
+@gd{reg-dataset,
+word = {registered dataset},
+definition = {A dataset that has been added to the Registry, or until that 
+exists, a dataset otherwise know to the DODS core group as being publicly 
+accessible.}}
+
+@gd{publicly-accessible,
+word = {publicly accessible},
+definition = {A dataset is publicly accessible if it is included in the
+dataset registry or if it is otherwise known that the providers will allow
+anyone to access the dataset without restriction. \emph{Do we really want
+to say ``without restriction''?}}}
+
+@gd{client-cache,
+word = {client-side cache},
+definition = {The DODS client-side cache is an HTTP~1.1 compliant client-side
+cache. Any valid HTTP response can be cached by this system. The cache's
+implementation is part of the W3C's libwww.}}
+
+@gd{libwww,
+word = {libwww},
+definition = {libwww is the W3C's reference implementation of HTTP~1.1. The
+                  library is written in C, is freely available and is
+                  actively supported.}}
+
+@gd{constraint,
+word = {constraint expression},
+definition = {A programmatic expression that describes which variables in a
+                  dataset, and which parts of those variables, are to be
+                  returned by a DODS server as the result of a data request.
+                  Constraint expressions have a fairly simple syntax where
+                  possible operations are based on the datatype of the
+                  variable(s) being requested. For more information on the
+                  syntax and semantics of constraint expressions, see the
+                  DODS User's Guide.~\cite{DODS:users-guide}}}
+
+@gd{query-string,
+word = {query string},
+definition = {The part of a URL that follows the optional question mark
+                  (\texttt{?}) character. This information is passed, via an
+                  environment variable, to a CGI program (along with a host of
+                  other parameters). See CGI: Common Gateway
+                  Interface~\cite{w3c:cgi} for a complete description of the
+                  CGI~1.1 specification.}}
+
+@gd{hyperslab,
+word = {hyperslab},
+definition = {``A portion of [an array]. A hyperslab selection can be a
+                  logically contiguous collection of points in a dataspace or
+                  a regular pattern of points or blocks in a
+                  dataspace.''~\cite{NCSA:HDF5}}} 
+
+@gd{dods-attributes,
+word = {attributes},
+definition = {An attribute is a name-datatype-value tuple associated with a
+                  variable or dataset. Attributes are stored in the DAS
+                  response, which supports nesting of attribute containers.
+                  Containers whose names match those of variables defined
+                  in the DDS hold attributes for those variables. All other
+                  containers hold attributes that pertain to the entire
+                  dataset.}} 
+
+@gd{dap-server,
+word = {server},
+definition = {In this paper, \emph{server} refers to a DAP server and not an
+                  HTTP server. In places where it would otherwise be
+                  ambiguous which is meant, it will be stated explicitly.}}
+
+@gd{dap-client,
+word = {client},
+definition = {As with the word \emph{server}, the word \emph{client} refers
+                  to a DAP client in this paper.}}
+
+@gd{session-level,
+word = {session level},
+definition = {Layer 5 of the OSI network model. A session level protocol
+                  defines the format of the data sent between a client and
+                  server.}}
+                  
+@gd{presentation-level,
+word = {presentation level},
+definition = {Layer 6 of the OSI network model. A presentation level protocol
+                  ensures compatible syntax among the communicating
+                  processes.}}
+
+@gd{application-level,
+word = {application level},
+definition = {Layer 7 of the OSI network model. The application layer
+                  provides the user with access to the communication services
+                  provided by the architecture.}}
+
+@gd{row-major,
+word = {row-major},
+definition = {Arrays store values in row-major order when the ``rightmost
+                  subscript varies fastest as elements are accessed in
+                  storage order.''\cite{kr:c} For example suppose the two
+                  dimensional array \texttt{String letter[2][3]} has two rows
+                  of three columns each and looks like:
+                      \begin{displaymath}
+                      \begin{array}{ccc}
+                       A & B & C \\
+                       D & E & F \\
+                       \end{array}
+                       \end{displaymath}
+                  the values would be stored as $A~B~C~D~E~F$ in memory.}} 
+
+@gd{big-endian,
+word = {big endian},
+definition = {Big endian storage order organizes multi-byte types such as a
+                  32-bit integer so that the Most Significant Byte is at the
+                  lowest address, $A$, and the Least Significant Byte is at
+                  $A+3$.\cite{harbison:c}}}

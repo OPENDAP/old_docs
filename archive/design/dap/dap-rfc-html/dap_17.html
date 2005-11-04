@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:10 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- Accept-Encoding</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_18.html"><img alt="Host" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_16.html"><img alt="Request Headers" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_16.html"><img alt="Request Headers" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Accept-Encoding</b></td></tr></table>
+<h3>Accept-Encoding</h3>
+
+The <tt>Accept-Encoding</tt> request-header is used by a DAP client to
+tell a server that it can accept compressed responses. See RFC
+2616&nbsp;<a HREF="dap_43.html#rfc2616">[4]</a> for this header's grammar.  Values for encodings are
+<tt>deflate</tt>, <tt>gzip</tt> and <tt>compress</tt>. This header is
+OPTIONAL. When a client includes this header it is effectively asking the
+DAP server to encode the response using the given scheme. The server is
+under no obligation to use the requested encoding. However, a server MUST NOT
+use an encoding when a client has not requested it. In addition, a client
+MUST supply the header with every request for which it desires a special
+encoding.
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_18.html"><img alt="Host" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_16.html"><img alt="Request Headers" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_16.html"><img alt="Request Headers" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Accept-Encoding</b></td></tr></table></body></html>

@@ -1,0 +1,52 @@
+%
+% hacked from art12.doc
+% 
+% makes 1 , 1.25, 1.25 and 1.25 in. margins on the top, left, right and
+% bottom resp. when using \documentstyle[12pt,...]{article}
+%
+% jhrg 1/6/94
+
+% SIDE MARGINS:
+\if@twoside               % Values for two-sided printing:
+   \oddsidemargin 0pt     %   Left margin on odd-numbered pages.
+   \evensidemargin 38pt   %   Left margin on even-numbered pages.
+   \marginparwidth 85pt   %   Width of marginal notes.
+\else                     % Values for one-sided printing:
+   \oddsidemargin 18.5pt  %   Note that \oddsidemargin = \evensidemargin
+   \evensidemargin 18.5pt
+   \marginparwidth 68pt 
+\fi
+\marginparsep 10pt        % Horizontal space between outer margin and 
+                          % marginal note
+ 
+ 
+% VERTICAL SPACING:        
+\topmargin 0pt            %    Nominal distance from top of page to top
+                          %    of box containing running head.
+\headheight 0pt           %    Height of box containing running head.
+\headsep 0pt              %    Space between running head and text.
+\topskip = 12pt           %    '\baselineskip' for first line of page.
+
+\textheight = 635pt % 36\baselineskip
+\advance\textheight by \topskip
+\textwidth 435pt         % Width of text line.
+
+% Adding this fixes the top and bottom margin sizes. jhrg
+
+\textheight 8.75in
+
+\newcommand{\postscript}[2]{
+        \par
+        \hbox{
+                \vbox to #1{
+                        \vfil
+                        \special{ps: plotfile #2.ps}
+                }
+        }
+}
+
+
+
+
+
+

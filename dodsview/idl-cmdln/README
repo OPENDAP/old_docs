@@ -1,0 +1,173 @@
+
+	$Id$
+
+This file describes the DODS IDL command line client.
+
+Also included in this file are comments from the client's original author,
+Dan Carr of Research Systems, Inc. These instructions assume that the build
+platform is a HP/UX workstation and make explicit use of the UNIX system
+linker, ld. Subsequently I added Makefile.in, configure.in and configure
+files. The configure script builds a Makefile from Makefile.in. The Makefile
+builds the client using g++ as the linker (although that in turn uses ld, it
+standardizes the command line options used in linking and that should unify
+things). I hope that this will make it simpler to build the client on various
+platforms.
+
+** Here's how to use the client:
+
+IDL> url = 'http://dods.gso.uri.edu/cgi-bin/nph-nc/data/fnoc1.nc'
+IDL> stat = GET_DODS(url, data)
+% Compiled module: GET_DODS.
+% Compiled module: GET_DODS_DATA.
+% Compiled module: DODS_VAR.
+% Compiled module: DODS_FIX_NAME.
+IDL> print, stat
+1
+IDL> help, /str, data
+** Structure <4008a1b8>, 5 tags, length=46320, refs=1:
+   U               STRUCT    -> <Anonymous> Array[1]
+   V               STRUCT    -> <Anonymous> Array[1]
+   LAT             STRUCT    -> <Anonymous> Array[1]
+   LON             STRUCT    -> <Anonymous> Array[1]
+   TIME            STRUCT    -> <Anonymous> Array[1]
+IDL> print, TAG_NAMES(data)
+U V LAT LON TIME
+IDL> help, /str, data.u
+** Structure <40088fa8>, 3 tags, length=22908, refs=2:
+   ARRAY           LONG      Array[16, 17, 21]
+   START_STRIDE_STOP
+                   LONG      Array[3, 3]
+   DIMENSION_NAMES STRING    Array[3]
+IDL> print, data.u.dimension_names
+TIME_A LAT LON
+
+Note: The IDL program get_dods.pro takes four arguments; see the program
+file for complete comments.
+
+Note: In the 3.1 release of DODS the progress indicator has been disabled.
+
+****************************************************************************
+
+This is Dan Carr's original README. Some things have changed. Dan originally
+called the program idl_dods.sl; I changed the extension to .so to be more in
+line with Solaris. This might not make much sense with HP/UX, but it might be
+OK. 
+
+Hi Peter,
+
+Here are some preliminary details on how it works.
+
+1. Building the interface.
+------------------------------------------------------------------------------
+
+The only version that I have compiled is for HPUX 10.20 .
+However, you should be able to compile my code for other
+platforms.   I took the simple approach and just copied
+most of the files I needed to a local directory.   Then,
+I just run a shell script to compile and link.
+Here are the compile and link statements that I use:
+
+gcc -c -fPIC -O2 -DHPUX_SOURCE \
+-DARCH_32BIT -DHAVE_CONFIG_H -DUSE_LIBGXX_INLINES \
+-I. \
+-I../DODS/include \
+-I../DODS/packages-2.17/include \
+-I../DODS/packages-2.17/include/w3c \
+-I../DODS/src/dap-2.19a/GNU \
+-I/usr/include/sys \
+idl_dods.cc
+
+ld -b +b ./ -E -Z -d -u main -o idl_dods.sl idl_dods.o \
+write_val.o name_map.o attributes.o \
+ClientByte.o ClientInt32.o ClientFloat64.o \
+ClientStr.o ClientUrl.o ClientArray.o \
+ClientStructure.o ClientList.o ClientSequence.o \
+ClientFunction.o ClientGrid.o ClientUInt32.o \
+libdap++.a libwww.a libz.a librx.a libidl.sl \
+libstdc++.a libgcc.a libc.1 libdld.1
+
+Most of the files that I compile/link with are from DODS or GNU.
+The exceptions are:
+   "libidl.sl": from the "idl/bin/bin.*" directory under the IDL distribution.
+   "export.h": from the "idl/external" directory under the IDL distribution.
+   "idl_dods.cc": source code file that I wrote.
+
+Note: You will need IDL version 5.2 files to link/run successfully.
+
+
+2. Installing the interface.
+------------------------------------------------------------------------------
+
+You will need the following files:
+   "libidl.sl" (from the IDL distribution).
+   "idl_dods.sl" (output from build script).
+   "dods_fix_name.pro" (IDL program that I wrote).
+   "dods_setup.pro" (IDL program that I wrote).
+   "dods_var.pro" (IDL program that I wrote).
+   "get_dods.pro" (IDL program that I wrote).
+
+Place all 5 of these files in your working directory.
+I will use "/home/peter/idl_dods" as an example, below.
+
+NOTE: The install/run steps will be streamlined in the future.
+
+
+3. Running the interface.
+------------------------------------------------------------------------------
+
+Start IDL version 5.2 .   At the IDL prompt type:
+
+   IDL> cd, '/home/peter/idl_dods'
+   IDL> @dods_setup               ; Only need to do this once per IDL session.
+   IDL> stat = GET_DODS('http://dods.gso.uri.edu/nph-nc/data/fnoc1.nc', data)
+
+The GET_DODS function returns a status (1=good, 0=bad).   The first parameter
+is the URL string.   The second parameter is a named IDL variable (which may
+be undefined before the call).   The data will be returned through the second
+parameter if the status is 1.   The data is returned as an anonymous IDL
+structure.   Each field in the structure corresponds to a variable from the
+DDS.   The tag name of each field in the structure is the same as the
+corresponding variable's name in the DDS.   One or more of the fields may
+be nested structures.   For example, the "grid" data type is returned as
+a nested structure with fields for the grid data, the dimension names, and
+the start/stop/stride values for each dimension.   The structures may be
+nested several layers deep in the case of structure and sequence data types.
+
+>From a programming point of view, you will want to examine the returned
+anonymous structure using the IDL functions "N_TAGS", "TAG_NAMES", "SIZE",
+and/or "N_ELEMENTS".
+
+
+
+That's about it.   I will write up some more documentation when I get the
+rest of it tested and working.   I will put my "idl_dods.cc" and "*.pro"
+files on our outgoing ftp site.   You can get them via anonymous ftp from:
+
+   $ ftp.rsinc.com
+   name: anonymous
+   pass: <your email address>
+   ftp> ascii
+   ftp> cd outgoing
+   ftp> get idl_dods.cc
+   ftp> get dods_fix_name.pro
+   ftp> get dods_setup.pro
+   ftp> get dods_var.pro
+   ftp> get get_dods.pro
+
+
+Let me know when you have questions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

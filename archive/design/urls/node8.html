@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Data Delivery and URLs</TITLE>
+<META NAME="description" CONTENT="Data Delivery and URLs">
+<META NAME="keywords" CONTENT="urls">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="urls.css">
+
+<LINK REL="previous" HREF="node7.html">
+<LINK REL="up" HREF="node6.html">
+<LINK REL="next" HREF="node9.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html147"
+  HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html143"
+  HREF="node6.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html139"
+  HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html145"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html148"
+  HREF="node9.html">Deficiencies of URLs</A>
+<B> Up:</B> <A NAME="tex2html144"
+  HREF="node6.html">Uses of URLs by</A>
+<B> Previous:</B> <A NAME="tex2html140"
+  HREF="node7.html">URLs and the Data</A>
+ &nbsp; <B>  <A NAME="tex2html146"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00042000000000000000"></A>
+<A NAME="delivery"></A><A NAME="urls:user-vs-generated"></A>
+<BR>
+Data Delivery and URLs
+</H2>
+
+<P>
+The Data Delivery Mechanism consists of libraries with which users re-link
+their programs as well as stand alone utilities built at least partially from
+those libraries. URLs are used verbatim by the data delivery components of
+DODS. The URL is passed to the server or translator using the API <EM>  open</EM> call (e.g., <TT>ncopen()</TT>). The client library stub is responsible
+for removing the envelope of the URL and sending either the path or embedded
+URL to the correct host/server or host/translator.
+
+<P>
+When a user wants to access data via a DODS server they must give to a client
+(i.e., a program linked with one of the DODS reimplemented API libraries) A
+URL which references that data. Users may choose to supply a constraint along
+with that URL effectively limiting the parts of the data set that the client
+can see. For example, suppose a data set exists which contains several
+arrays:
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="url:fig:dds"></A><A NAME="544"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+The DDS of a dataset.</CAPTION>
+<TR><TD><IMG
+ WIDTH="21" HEIGHT="35" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\begin{code}{cb}
+Dataset {
+Int32 u[time_a = 16][lat = 17][lon = ...
+...oat64 lon[lon = 21];
+Float64 time[time = 16];
+} fnoc1;
+\end{code}
+\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="url:fig:dds2"></A><A NAME="552"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+The DDS of a dataset constrained by <!-- MATH
+ $u[2:2][1:17][1:21]$
+ -->
+<IMG
+ WIDTH="438" HEIGHT="154" ALIGN="MIDDLE" BORDER="0"
+ SRC="img3.png"
+ ALT="$u[2:2][1:17][1:21]$">.</CAPTION>
+<TR><TD><IMG
+ WIDTH="171" HEIGHT="39" BORDER="0"
+ SRC="img4.png"
+ ALT="\begin{figure}\begin{code}{cb}
+Dataset {
+Int32 u[time_a = 1][lat = 17][lon = 21];
+} fnoc1;
+\end{code}
+\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+The user can refer to the entire dataset using a URL without a constraint
+expression;
+<A NAME="tex2html25"
+  HREF="http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc.dds">http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc</A>. If the user were to
+specify this, then the client-library will receive from the server a DDS like
+the one in Figure&nbsp;<A HREF="#url:fig:dds"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>. However, if the user knows that they
+only want to work with a small part of the data set they can supply a
+constraint expression along with the URL. For example, suppose that the
+user only wants the latitude and longitude values for <IMG
+ WIDTH="428" HEIGHT="62" ALIGN="MIDDLE" BORDER="0"
+ SRC="img5.png"
+ ALT="$time_a = 2$">, and
+furthermore that they are only interested in the array <IMG
+ WIDTH="85" HEIGHT="34" ALIGN="BOTTOM" BORDER="0"
+ SRC="img6.png"
+ ALT="$u$">. They could supply
+the user program with the following URL:
+<A NAME="tex2html26"
+  HREF="http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc?u[2:2][1:17][1:21].dds">http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc?u[2:2][1:17][1:21]</A>
+The
+user program will receive DDS in Figure&nbsp;<A HREF="#url:fig:dds2"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>. For program which
+are designed to read the entire dataset without user interaction this is a
+powerful additional feature.
+
+<P>
+However, constraint expressions have a second use in DODS. They are used by
+the reimplemented APIs to extract specific parts of a data set when that is
+requested by the user program. Many APIs provide features which make it
+possible to write software which opens a data set, presents the user program
+with a collection of variables and then provides a way for the program to
+read one or more of those variables. In an API reimplemented for DODS, those
+calls must all be satisfied by information the API receives from a DODS
+server.
+
+<P>
+In order for the API to get information about the data set<A NAME="tex2html24"
+  HREF="footnode.html#foot561"><SUP>2</SUP></A> the API must synthesize
+various URLs using the one given by the user as a base. For example, to get
+the DDS of the data set referenced by <TT>http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc</TT> the reimplemented API must
+append the suffix <TT>.dds</TT> (e.g., <TT>http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc.dds</TT>. Similarly, the DAS of
+that data set is obtained by appending <TT>.das</TT>. 
+
+<P>
+Getting data is a bit more work than getting the DAS or the DDS. The request
+for a particular variable must be translated into a DODS constraint
+expression. This constraint expression is then appended to the URL given by
+the user and then the suffix <TT>.dods</TT> is appended to that. For example,
+suppose the user program makes an API function call requesting the value of
+the array <IMG
+ WIDTH="85" HEIGHT="34" ALIGN="BOTTOM" BORDER="0"
+ SRC="img6.png"
+ ALT="$u$"> in the preceding figures. What the API is supposed to return is
+the values of the entire array <IMG
+ WIDTH="85" HEIGHT="34" ALIGN="BOTTOM" BORDER="0"
+ SRC="img6.png"
+ ALT="$u$">, but no other values. The reimplemented
+API would build the URL <TT>http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc?u.dods</TT> where the <IMG
+ WIDTH="15" HEIGHT="16" ALIGN="BOTTOM" BORDER="0"
+ SRC="img7.png"
+ ALT="$?u.dods$">
+specify that the variable <IMG
+ WIDTH="85" HEIGHT="34" ALIGN="BOTTOM" BORDER="0"
+ SRC="img6.png"
+ ALT="$u$"> is to be the only variable in the projection
+and the <TT>.dods</TT> selects the data filter from the DODS server. For more
+information on the constraint expression syntax, see <A NAME="tex2html27"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">DODS--Data Access Protocol</A>; for more
+information on the DODS data servers, see <A NAME="tex2html28"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-design/data-delivery-design.html">DODS--Data Delivery Design</A>.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html147"
+  HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html143"
+  HREF="node6.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html139"
+  HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html145"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html148"
+  HREF="node9.html">Deficiencies of URLs</A>
+<B> Up:</B> <A NAME="tex2html144"
+  HREF="node6.html">Uses of URLs by</A>
+<B> Previous:</B> <A NAME="tex2html140"
+  HREF="node7.html">URLs and the Data</A>
+ &nbsp; <B>  <A NAME="tex2html146"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

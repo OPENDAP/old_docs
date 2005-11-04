@@ -1,0 +1,115 @@
+\documentstyle[12pt,psfig]{article}
+\topmargin -8ex
+\footskip 4ex
+\headheight 8ex
+\footheight -4ex
+\textwidth 6.25in
+\textheight 8.25in
+\oddsidemargin 0em
+\parskip 1ex
+%\pagestyle{empty}
+\begin{document}
+
+
+\section{Overview of DODS components}
+
+In order for a researcher to access data within a distributed data
+system the system must be able to resolve; 1) where the data is, and 2) in
+what form is the data available.  Within such a system the answer to
+where the data is would be resolve as a unique location or more than
+one discrete location in the case of multiple copies of a data set.
+Within a system which supports the translation of data from one format
+to another, as the DODS system is designed to do, the form of the data
+may in fact be configurable by the researcher.  These two logical
+functions, find and translate are seperate components of the DODS
+system architecture.  The functions are formally termed Location
+Function and Protocol Arbitration within the DODS model.  A third
+component of the DODS architecture, the DODS data model, provides the
+necessary structured framework for implementing both the Location and
+Protocal Arbitration within the architecture.
+
+The elements and structures of the data model must be defined prior to
+developing a detailed implementation of either the Location or
+Protocol Arbitration component.  However, it is important to consider
+some of the general requirements concerning data location and
+translation in order to develop a data model that will be flexible
+enought to support how the researcher will eventually use the system.
+
+We will outline what these general requirements are and consider how
+they influence the definition/function of the data model.  We will
+also summarize what the current status of activities that are dealing
+with the developemnt of the three DODS components.
+
+\subsection{Data Location}
+
+Data location involves two related levels of granularity; data set and data
+record or element of the data set.  From the system's perspective they
+involve two distinct domains, the domain of all data sets and the domain of a
+single data set (or server).  Traditionally, this is viewed as the Directory
+and Inventory levels of a data system.
+
+
+\subsubsection{Data Set Granularity}
+
+For a distributed system with potentially large numbers of servers and data
+sets it is desirable to aggregate summary information about the individual
+data sets which can resolve queries based on specified selection criteria.
+We would wish to pose queries using a rich set of boolean operators and
+relational constructs which requires that the system recognizes a semantic
+language for query specification.  So as not to impose an unnecessary
+complexity on the system, the aggregated information would most likely be
+centralized (although redundent systems would be appropriate to counter
+single point failure).  The centralized system, the directory, would provide
+a means of quickly eliminating inappropriate data sets from the domain of a
+researcher's query.  Because of the summary nature of the directory, it can
+only resolve possible candidate data sets in response to a specified query.
+However, this obviously is prefered over the domain of all data sets.
+
+To support a directory query, specific parameters will need to be
+provided within the summary information.  A list of these valid
+parameters would include at a minimum, time range, geographic
+coverage, sensor and measurement.  In addition, the summary
+information would also need to contain a server address and possibly the
+protocol(s) the server supports.  The requirement for the directory
+level of the Location function would be to provide the address of the
+server and its supported protocol based on the gross chracteristics of
+the data set. 
+
+\subsubsection{Data Record Granularity}
+
+The second level of granularity that the system must support searching on is
+the record and element level of the data set.  This granularity is predicated
+by the granularity of the data itself, the API supporting the data set and
+the data server implementation.  
+
+    The requirement for this level of the Location function is to provide
+direct access to data set granules in an efficient way.  In addition we want
+the system to provide access that is unambiguous in terms of the selection
+criteria that have been provided (i.e.; access is predicated on all
+conditions of the search criteria being true for each data granule accessed).
+To access data effectively at this level there must be a method of
+dealing with the inherent complexity of the data set.  This is done through
+the formalism of the API and the operations it provides.  The API's
+operations (function calls) constitute the pathways to the data.  The data
+server is the interface between the API and the network which manages process
+to process network communication and any necessary transport protocol to API
+translations.  
+
+    
+
+
+
+
+In accessing data it is important to preserve, whenever possible, 
+the data's internal structure and dependencies (e.g.; it would be
+less than optimal to have a hyperslab from an image returned as a simple list
+of integers and lose the two dimensional structure of the original image
+data in the process).   
+At this detailed level we would hope to be able to resolve a
+particular record or granule based on selection criteria.  What
+constitues a record/granule would be defined by the API and therefore
+would not necessarily be uniform accross the system for any one data
+set type.  It is also desirable to be able to form projections based
+on the records selected.  Through the data set's data server user is
+operating on the data itself and results are data set and user search
+criteria dependent.  

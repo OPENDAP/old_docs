@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Building the Data Read Program</TITLE>
+<META NAME="description" CONTENT="Building the Data Read Program">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="previous" HREF="node8.html">
+<LINK REL="up" HREF="node7.html">
+<LINK REL="next" HREF="node10.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html220"
+  HREF="node10.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html216"
+  HREF="node7.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html212"
+  HREF="node8.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html218"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html221"
+  HREF="node10.html">Data Server Optimizations</A>
+<B> Up:</B> <A NAME="tex2html217"
+  HREF="node7.html">Construction of the Data</A>
+<B> Previous:</B> <A NAME="tex2html213"
+  HREF="node8.html">Building the DAS and</A>
+ &nbsp; <B>  <A NAME="tex2html219"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00032200000000000000">
+Building the Data Read Program</A>
+</H3>
+
+<P>
+While the two programs used to send the DAS and DDS to the client both may
+read from the data set, the <EM>send data</EM> program necessarily <EM>  must</EM> read from the data set. This program reads the values of a single
+variable in the data set (as defined by the <A NAME="tex2html50"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">Data Access Protocol</A>) and packages it in a <A NAME="tex2html51"
+  HREF="http://www.cis.ohio-state.edu/htbin/rfc/rfc1590.html">Multipurpose Internet Mail Extensions</A>
+document. This MIME document is then sent to the client process. The client
+process must decode the binary MIME document and internalize the data it
+contains (see Section&nbsp;<A HREF="node13.html#ddd:client"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>).
+
+<P>
+A structure chart for the send data program is shown in
+Figure&nbsp;<A HREF="#fig:server-read"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>. This structure chart shares some features with
+the DAS chart in Figure&nbsp;<A HREF="node8.html#fig:server-das"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>; it also has modules for CGI
+parameter parsing and construction of a MIME document. However, there are
+some important differences between the two figures. The MIME document sent to
+the client by the send data program contains both text and binary parts,
+while the DAS and DDS programs send text-onlyq MIME documents. In addition,
+the send data program uses the DDS object (which contains instances of
+objects for each variable in the data set) when it performs the read
+operation.
+
+<P>
+The implicit dependency between the DDS filter and data filter programs is
+important. In order for the send data program to function, it must invoke the
+read member function for the requested variable. However, to get the variable
+object, the send data program must have access to the DDS object.  Thus,
+before send data can do anything beyond parsing its arguments, it must build
+the DDS object. This may be accomplished in several ways: the DDS object may
+be cached (either as binary data or using the text representation built for
+transmission to the client), it may be built explicitly by the send data
+program via the DDS program (the send data program acts as a client of the
+DDS send server program), or it may be built by including the DDS send
+program's logic in the send data program.
+
+<P>
+Once the DDS object has been instantiated by the send data program, it must
+invoke a member function to read the desired variable from the data set. The
+read member function for each class of variable described in the <A NAME="tex2html52"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A> must
+be specialized for any API used to read the data set. The specialization of
+the data type hierarchy for a particular API is described in the
+documentation for the <A NAME="tex2html53"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html">client and server toolkit</A>.
+
+<P>
+Once the data for the variable has been read into the correct object within
+the DDS, the data filter must build a multipart MIME document so that the
+data can be returned to client program. This MIME document contains a text
+part and a binary part. The text part consists of a  DDS which describes just
+the variable in this document (as opposed to every variable in the entire
+dataset) This is straightforward to make given the completet DDS and the
+<A NAME="tex2html54"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html">client and server toolkit</A> software. Following the text section, the data filter program must
+append the value of the variable (encoded using XDR). 
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:server-read"></A><A NAME="526"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+Structure Chart for the Data set Variable Read Server Program.</CAPTION>
+<TR><TD><IMG
+ WIDTH="119" HEIGHT="14" BORDER="0"
+ SRC="img6.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=server-send.ps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html220"
+  HREF="node10.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html216"
+  HREF="node7.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html212"
+  HREF="node8.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html218"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html221"
+  HREF="node10.html">Data Server Optimizations</A>
+<B> Up:</B> <A NAME="tex2html217"
+  HREF="node7.html">Construction of the Data</A>
+<B> Previous:</B> <A NAME="tex2html213"
+  HREF="node8.html">Building the DAS and</A>
+ &nbsp; <B>  <A NAME="tex2html219"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

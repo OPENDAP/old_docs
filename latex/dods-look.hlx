@@ -1,0 +1,71 @@
+%% Hey Emacs, this is -*-latex-*- code
+%%
+%% dods-look.  For using with the article package. ts.
+%%
+
+%% $Id$
+
+\setcounter{htmldepth}{3}
+
+\newcommand{\HlxPanelFields}{}
+
+\renewcommand{\HlxIcons}{http://top.gso.uri.edu/icons.ts/}
+\newcommand{\HlxImage}[2]{\htmlimage[alt="#1" border=0]{\HlxIcons{}#2}}
+
+\newcommand{\toppanel}{\EmptyP{\HlxSeqPrevUrl\HlxUpUrl\HlxSeqNextUrl}{%
+  \xml*{table cellpadding=0 cellspacing=2}\xml{tr}
+  \xml*{td}%
+  \EmptyP{\HlxSeqNextUrl}
+  {\xlink{\HlxCallEval{\HlxImage}{\HlxPure{\HlxSeqNextTitle}}{ts-next.gif}}%
+    {\HlxSeqNextUrl}}%
+  {\htmlimage[alt=""]{\HlxIcons{}ts-next-gr.gif}}%
+  \xml*{/td}%
+  \xml*{td}%
+  \EmptyP{\HlxUpUrl}
+  {\xlink{\HlxCallEval{\HlxImage}{\HlxPure{\HlxUpTitle}}{ts-up.gif}}%
+    {\HlxUpUrl}}%
+  {\htmlimage[alt=""]{\HlxIcons{}ts-up-gr.gif}}%
+  \xml*{/td}%
+  \xml*{td}%
+  \EmptyP{\HlxSeqPrevUrl}
+  {\xlink{\HlxCallEval{\HlxImage}{\HlxPure{\HlxSeqPrevTitle}}{ts-prev.gif}}%
+    {\HlxSeqPrevUrl}}%
+  {\htmlimage[alt=""]{\HlxIcons{}ts-prev-gr.gif}}%
+  \xml*{/td}%
+  \HlxPanelFields
+  \xml*{/tr}%
+  \xml*{/table}}}
+
+\newcommand{\bottommatter}{%
+  \HlxBlk\htmlrule\EmptyP{\HlxAddress}
+  {\xml{address}\HlxAddress\HlxBlk\xml{/address}\\}{}}
+
+\newcommand{\bottompanel}{\toppanel}
+
+\newcommand{\htmlpanelfield}[2]{\HlxAppend{\HlxPanelFields}%
+  {\xml*{td bgcolor="###99ccff" align="center"}%
+    \link{#1}{#2}\xml*{/td}}}
+
+% Here are some common redefinitions for hyperlatex in DODS books
+
+% All sections appear in the menus.
+\newcommand{\addcontentsline}[3]{}
+% All HTML is raggedright
+\newcommand{\raggedright}{}
+% Lengths are not very relevant
+\newcommand{\setlength}[1]{}
+\newcommand{\addtolength}[1]{}
+
+
+\HlxEval{
+(put 'appendix       'hyperlatex 'hyperlatex-ts-format-appendix)
+
+(defun hyperlatex-ts-format-appendix ()
+  (progn
+    (hyperlatex-setcounter "section" 0)
+    (hyperlatex-define-macro "thesection" 0
+      (concat "\\Alph{section}") "")))
+}
+
+
+%% The end.

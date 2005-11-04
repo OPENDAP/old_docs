@@ -1,0 +1,479 @@
+%CHAPTER 3       
+%
+% $Id$
+%
+
+\chapter{Format Descriptions for Tabular Data}
+\label{ff,tblfmt}
+
+\indc{format descriptions}\indc{descriptions!format}
+Format descriptions define the formats of input and output data and
+headers. FreeForm ND provides an easy-to-use mechanism for describing
+data. FreeForm ND programs and FreeForm ND-based applications that you
+develop use these format descriptions to correctly access data. Any
+data file used by FreeForm ND programs must be described in a format
+description file.
+
+This chapter explains how to write format descriptions for data
+arranged in tabular format---rows and columns---only. For data in
+non-tabular formats, see the next chapter.
+
+\section{FreeForm ND Variable Types}
+\label{ff,tblfmt,vartypes}
+
+The data sets you produce and use may contain a variety of variable
+types. The characteristics of the types that FreeForm ND supports are
+summarized in \tableref{ff,tab,datatypes}, which is followed by a
+description of each type.
+
+\begin{ifclear}{ffs}
+\begin{table}[htb]
+\caption{\ffnd\ Data Types}
+\label{ff,tab,datatypes}
+\begin{center}
+\begin{tabular}{|p{0.75in}|p{1.0in}|p{1.0in}|p{0.6in}|p{0.65in}|} \hline
+\tblhd{Name} & \tblhd{Minimum Value} & \tblhd{Maximum Value} & 
+\tblhd{\texonly{\raggedright} Size in Bytes} & \tblhd{Precision}* \\ \hline 
+\lit{char} &  &  & ** & \\ \hline 
+\lit{uchar} & 0 & 255 & 1 & \\ \hline 
+\lit{short} & -32,767 & 32,767 & 2 & \\ \hline 
+\lit{ushort} & 0 & 65,535 & 2 & \\ \hline 
+\lit{long} & -2,147,483,647 & 2,147,483,647 & 4 & \\ \hline 
+\lit{ulong} & 0 & 4,294,967,295 & 4 & \\ \hline 
+\lit{float} & $10^{-37}$ & $10^{38}$ & 4 & 6***\\ \hline 
+\lit{double} & $10^{-307}$ & $10^{308}$ & 8 & 15***\\ \hline 
+\lit{constant} &  &  & ** & \\ \hline 
+\lit{initial} &  &  & record length & \\ \hline 
+\lit{convert} &  &  & ** & \\ \hline 
+\multicolumn{5}{l}{* Expressed as the number of significant digits} \\
+\multicolumn{5}{l}{** User-specified} \\
+\multicolumn{5}{l}{*** Can vary depending on environment}
+\end{tabular}
+\end{center}
+\end{table}
+\end{ifclear}
+\begin{ifset}{ffs}
+\begin{table}[htb]
+\caption{\ffnd\ Data Types}
+\label{ff,tab,datatypes}
+\begin{center}
+\begin{tabular}{|p{0.75in}|p{1.0in}|p{1.0in}|p{0.6in}|p{0.65in}|} \hline
+\tblhd{Name} & \tblhd{Minimum Value} & \tblhd{Maximum Value} & 
+\tblhd{\texonly{\raggedright} Size in Bytes} & \tblhd{Precision}* \\ \hline 
+\lit{char} &  &  & ** & \\ \hline 
+\lit{uchar} & 0 & 255 & 1 & \\ \hline 
+\lit{short} & -32,767 & 32,767 & 2 & \\ \hline 
+\lit{ushort} & 0 & 65,535 & 2 & \\ \hline 
+\lit{long} & -2,147,483,647 & 2,147,483,647 & 4 & \\ \hline 
+\lit{ulong} & 0 & 4,294,967,295 & 4 & \\ \hline 
+\lit{float} & $10^{-37}$ & $10^{38}$ & 4 & 6***\\ \hline 
+\lit{double} & $10^{-307}$ & $10^{308}$ & 8 & 15***\\ \hline 
+%\lit{constant} &  &  & ** & \\ \hline 
+%\lit{initial} &  &  & record length & \\ \hline 
+%\lit{convert} &  &  & ** & \\ \hline 
+\multicolumn{5}{l}{* Expressed as the number of significant digits} \\
+\multicolumn{5}{l}{** User-specified} \\
+\multicolumn{5}{l}{*** Can vary depending on environment}
+\end{tabular}
+\end{center}
+\end{table}
+\end{ifset}
+
+
+\note{The sizes in \tableref{ff,tab,datatypes} are machine-dependent.
+  Those given are for most Unix workstations.  }
+
+\begin{description}
+\item[\lit{char}]
+  
+  The \lit{char} variable type is used for character strings.
+  Variables of this type, including numerals, are interpreted as
+  characters, not as numbers.
+
+\item[\lit{uchar}]
+  
+  The \lit{uchar} (unsigned character) variable type can be used for
+  integers between 0 and 255 (28- 1). Variables that can be
+  represented by the \lit{uchar} type (for example: month, day, hour,
+  minute) occur in many data sets. An advantage of using the \lit{uchar}
+  type in binary formats is that only one byte is used for each
+  variable. Variables of this type are interpreted as numbers, not
+  characters.
+
+\item[\lit{short}]
+  
+  A \lit{short} variable can hold integers between -32,767 and 32,767
+  ($2^{15}- 1$). This type can be used for signed integers with less
+  than 5 digits, or for real numbers with a total of 4 or fewer digits
+  on both sides of the decimal point (-99 to 99 with a precision of 2,
+  -999 to 999 with a precision of 1, and so on).
+
+\item[\lit{ushort}]
+  
+  A \lit{ushort} (unsigned short) variable can hold integers between 0
+  and 65,535 ($2^{16} - 1$).
+
+\item[\lit{long}]
+  
+  A \lit{long} variable can hold integers between -2,147,483,647 and
+  +2,147,483,647 ($2^{31} - 1$). This variable type is commonly used
+  to represent floating point data as integers, which may be more
+  portable. It can be used for numbers with 9 or fewer digits with up
+  to 9 digits of precision, for example, latitude or longitude
+  (-180.000000 to 180.000000).
+
+\item[\lit{ulong}]
+  
+  The \lit{ulong} (unsigned long) variable type can be used for
+  integers between 0 and 4,294,967,295 ($2^{32} - 1$).
+
+\item[\lit{float, double}]
+  
+  Numbers that include explicit decimal points are either \lit{float}
+  or \lit{double} depending on the desired number of digits. A
+  \lit{float} has a maximum of 6 significant digits, a \lit{double}
+  has 15 maximum. The extra digits of a \lit{double} are useful, for
+  example, for precisely specifying time of day within a month as
+  decimal days. One second of time is approximately 0.00001 day. The
+  number specifying day (maximum = 31) can occupy up to 2 digits. A
+  \lit{float} can therefore only specify decimal days to a whole
+  second (31.00001 occupies seven digits). A \lit{double} can,
+  however, be used to track decimal parts of a second (for example,
+  31.000001).
+
+\begin{ifclear}{ffs}
+\item[\lit{constant}]
+  
+  FreeForm ND has two variable types, \lit{constant} and
+  \lit{initial}, for sequences of characters (or bytes) that are the
+  same for all records in a file. A \lit{constant} variable is placed
+  into the output buffer on initialization. The \lit{constant} value
+  is the same as the name of the variable. For example, given the
+  variable description below:
+
+\begin{example}
+NGDCDATA 1 8 constant 0 
+\end{example}
+
+the string NGDCDATA, which is both the variable name and value, is
+placed in characters 1-8 of each output record.
+
+FreeForm ND recognizes the special \lit{constant} type \lit{NEWLINE}
+as an end-of-line character, which is used with multi-line records.
+The variable descriptions shown next are for a data record that
+includes several variables, the end-of-line character, then several
+more variables.
+
+\begin{example}
+year 1 2 short 0
+       .
+       .   (more variables)
+       .
+latitude_sec 75 80 float 2
+EOL 81 82 NEWLINE 0
+longitude_deg 83 89 float 3
+longitude_min 72 78 float 2
+       .
+       .   (remaining variables)
+       . 
+\end{example}
+
+The variable \lit{longitude\_deg} starts a new line in the data file. 
+
+\item[\lit{initial}]
+  
+  The variable type \lit{initial} can be used when you want to set
+  more than one constant value at a time. It provides an
+  initialization template for the output record. This template is read
+  from a file with the same name as the \lit{initial} variable. For
+  example, suppose you have the following variable description:
+
+\begin{example}
+seattle.ini 1 80 initial 0 
+\end{example}
+
+The initial variable is named \lit{seattle.ini}, so the initialization
+template file \lit{seattle.ini} is read and used to initialize the
+output records. Assume the Seattle template contains the following
+values, which are written to an earthquake record:
+
+\begin{example}
+SEA19                                   SEA          
+\end{example}
+
+The other values in the output record are written over this template
+resulting in a record that looks like the following:
+
+\begin{example}
+SEA19  5  -146.34172   -47.39710   1011 SEA   910802 
+\end{example}
+
+\note{The length of the template file must equal the length of the
+  record in the output format. The file name and extension are of your
+  choosing. }
+
+\item[\lit{convert}]
+  
+  The \lit{convert} variable type allows you to access an extensive
+  set of functions for constructing output variables that do not exist
+  in input files, but can be computed from variables which do.
+  FreeForm ND can transparently identify and call conversion functions
+  during the data access process if you use properly named input and
+  output variables in variable descriptions.
+  
+  See \chapterref{ff,convvars} for examples and
+  \chapterref{ff,varname} for a complete list of names for conversion
+  variables.
+
+\end{ifclear}
+
+\item[\lit{header}]
+  
+  Older versions of FreeForm ND included header variables. You can now
+  specify header formats in format description files.
+
+  For details, see \sectionref{ff,tblfmt,formatdesc} and also
+  \chapterref{ff,hdrfmt}.
+
+\end{description}
+
+\section{FreeForm ND File Types}
+
+\indc{binary!file type}\indc{file type!binary}
+\indc{ASCII!file type}\indc{file type!ASCII}
+\indc{dBASE!file type}\indc{file type!dBASE}
+FreeForm ND supports binary, ASCII, and dBASE file types. Binary data
+are stored in a fixed amount of space with a fixed range of values.
+This is a very efficient way to store data, but the files are
+machine-readable rather than human-readable. Binary numbers can be
+integers or floating point numbers.
+
+Numbers and character strings are stored as text strings in ASCII. The
+amount of space used to store a string is variable, with each
+character occupying one byte.
+
+The dBASE file type, used by the dBASE product, is ASCII text without
+end-of-line markers.
+
+\section{Format Description Files}
+
+\indc{fmt@\lit{.fmt} file}
+\indc{format descriptions!example}\indc{descriptions!format}
+Format description files accompany data files. A format description
+file can contain descriptions for one or more formats. You include
+descriptions for header, input, and output formats as appropriate.
+Format descriptions for more than one file may be included in a single
+format description file.
+
+An example format description file is shown next. The sections that
+follow describe each element of a format description file.
+
+\begin{vcode}{nib}
+/ This format description file is for
+/ data files latlon.bin and latlon.dat. 
+
+binary_data "Default binary format"
+latitude 1 4 long 6
+longitude 5 8 long 6
+
+ASCII_data "Default ASCII format"
+latitude 1 10 double 6
+longitude 12 22 double 6
+\end{vcode}
+
+Lines 1 and 2 are comment lines.  Lines 4 and 8 give the format type
+and title, as described in \sectionref{ff,tblfmt,format}. Lines 5, 6,
+9, and 10 contain variable descriptions, described in
+\sectionref{ff,tblfmt,var}.  Blank lines signify the end of a format
+description
+
+You can include blank lines between format descriptions and comments
+in a format description file as necessary.  Comment lines begin with a
+slash (/). FreeForm ND ignores comments.
+
+\section{Format Descriptions}
+\label{ff,tblfmt,formatdesc}
+
+A format description file comprises one or more format descriptions. A
+format description consists of a line specifying the format type and
+title followed by one or more variable descriptions, as in the
+following example: 
+
+\begin{vcode}{ib}
+binary_data "Default binary format"
+latitude 1 4 long 6
+longitude 5 8 long 6
+\end{vcode}
+
+\subsection{Format Type and Title}
+\label{ff,tblfmt,format}
+
+\indc{format!title}\indc{title!format}
+\indc{format!type}\indc{type!format}
+A line specifying the format type and title begins a format
+description. A \new{format descriptor}, for example, \lit{binary\_data}, is
+used to indicate format type to FreeForm ND. The \new{format title}, for
+example, ``Default binary format'', briefly describes the format. It
+must be surrounded by quotes and follow the format descriptor on the
+same line. The maximum number of characters for the format title is 80
+including the quotes.
+
+\subsubsection{Format Descriptors}
+
+\indc{format!descriptor}\indc{descriptor!format}
+Format descriptors indicate (in the order given) file type, read/write
+type, and file section. Possible values for each descriptor component
+are shown in the following table.
+
+\begin{table}[htb]
+\caption{Format Descriptor Components}
+\begin{center}
+\begin{tabular}[t]{|l|p{1.2in}|l|} \hline
+\tblhd{File Type} & \tblhd{Read/Write Type
+ (optional)} & \tblhd{File Section} \\ \hline 
+\begin{tabular}{l}
+\lit{ASCII} \\
+\lit{binary} \\
+\lit{dBASE} \\
+\end{tabular}
+& 
+\begin{tabular}{l}
+\lit{input}\\
+\lit{output} \\
+\end{tabular}
+& 
+\begin{tabular}{l}
+\lit{data} \\
+\lit{file\_header} \\
+\lit{record\_header} \\
+\lit{file\_header\_separate}* \\
+\lit{record\_header\_separate}* \\
+\end{tabular}
+ \\ \hline 
+\multicolumn{3}{p{4.5in}}{* The qualifier \lit{separate} indicates
+  there is a header file separate from the data file.}
+\end{tabular}
+\end{center}
+\end{table}
+
+The components of a format descriptor are separated by underscores
+(\_). For example, \lit{ASCII\_output\_data} indicates that the format
+description is for ASCII data in an output file. The order of
+descriptors in a format description should reflect the order of format
+types in the file. For instance, the descriptor
+\lit{ASCII\_file\_header} would be listed in the format description
+file before \lit{ASCII\_data}. The format descriptors you can use in
+FreeForm ND are listed in the next table, where \lit{XXX} stands for
+\lit{ASCII}, \lit{binary}, or \lit{dBASE}.  (Example: \lit{XXX\_data}
+= \lit{ASCII\_data}, \lit{binary\_data}, or \lit{dBASE\_data}.)
+
+\begin{table}[htb]
+\caption{Format Descriptors}
+\begin{center}
+\begin{tabular}[t]{|l|l|l|} \hline
+\tblhd{Data} & \tblhd{Header} & \tblhd{Special} \\ \hline 
+\begin{tabular}{l}
+\lit{XXX\_data} \\
+\lit{XXX\_input\_data} \\
+\lit{XXX\_output\_data} \\
+\end{tabular}
+& 
+\begin{tabular}{l} 
+\lit{XXX\_file\_header} \\
+\lit{XXX\_file\_header\_separate} \\
+\lit{XXX\_record\_header} \\
+\lit{XXX\_record\_header\_separate} \\
+\lit{XXX\_input\_file\_header} \\
+\lit{XXX\_input\_file\_header\_separate} \\
+\lit{XXX\_input\_record\_header} \\
+\lit{XXX\_input\_record\_header\_separate} \\
+\lit{XXX\_output\_file\_header} \\
+\lit{XXX\_output\_file\_header\_separate} \\
+\lit{XXX\_output\_record\_header} \\
+\lit{XXX\_output\_record\_header\_separate} \\
+\end{tabular}
+& 
+\begin{tabular}{l}
+\lit{RETURN}* \\
+\lit{EOL}** \\
+\end{tabular}
+\\ \hline 
+
+\multicolumn{3}{p{4.5in}}{* The RETURN descriptor lets FreeForm ND skip
+    over end-of-line characters in the data.} \\
+
+\multicolumn{3}{p{4.5in}}{** The EOL descriptor is a constant
+    indicating an end-of-line character should be inserted in a
+    multi-line record.} \\
+\end{tabular}
+\end{center}
+\end{table}
+
+For more information about header formats, see \chapterref{ff,hdrfmt}
+on page 89.
+
+
+
+
+
+\subsection{Variable Descriptions}
+\label{ff,tblfmt,var}
+
+\indc{variable descriptions}\indc{descriptions!variable}
+A variable description defines the name, start and end column
+position, type, and precision for each variable. The fields in a
+variable description are separated by white space. Two variable
+descriptions are shown below with the fields indicated. Each field is
+then described.
+
+Here are two example variable descriptions.  Each one consists of a
+name, a start position, and end position, a type, and a precision.
+
+\begin{vcode}{ib}
+latitude    1  10  double  6
+longitude  12  22  double  6
+\end{vcode}
+
+\begin{description}
+\item[Name]
+  
+  The variable name is case-sensitive, up to 63 characters long with
+  no blanks. The variable names in the example are latitude and
+  longitude. If the same variable is included in more than one format
+  description within a format description file, its name must be the
+  same in each format description.
+
+\item[Start Position]
+  
+  The column position where the first character (ASCII) or byte
+  (binary) of a variable value is placed. The first position is 1, not
+  0. In the example, the variable latitude is defined to start at
+  position 1 and longitude at 12.
+
+\item[End Position]
+  
+  The column position where the last character (ASCII) or byte
+  (binary) of a variable value is placed. In the example, the variable
+  latitude is defined to end at position 10 and longitude at 22.
+
+\item[Type]
+  
+  The variable type can be a standard type such as char, float,
+  double, or a special FreeForm ND type. The type for both variables
+  in the example is double. See \sectionref{ff,tblfmt,vartypes} for
+  descriptions of supported types.
+
+\item[Precision]
+  
+  Precision defines the number of digits to the right of the decimal
+  point. For float or double variables, precision only controls the
+  number of digits printed or displayed to the right of the decimal
+  point in an ASCII representation. The precision for both variables
+  in the example is 6.
+\end{description}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

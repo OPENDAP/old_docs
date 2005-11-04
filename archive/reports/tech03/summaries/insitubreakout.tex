@@ -1,0 +1,128 @@
+(Led by: Joe Wielgosz, who also took notes.)
+
+Overall goal:   Find consensus on a convention for representing in-situ 
+data in OPeNDAP, to facilitate development of interoperable clients and 
+servers
+
+\subsubsection{Attendees and individual goals:}
+
+\paragraph{Project PI:}
+
+\begin{description}
+\item[Peter Cornillon / OPeNDAP]
+        Address in-situ issues as a primary goal for OPeNDAP. Support mooring 
+data collections as an initial step.
+\end{description}
+
+\paragraph{Software group representatives:}
+
+\begin{description}
+\item[Joe Wielgosz / COLA (facilitator)] Support BUFR weather
+  observations in GrADS-DODS Server, and provide GrADS clients with
+  access to in-situ data using OPeNDAP
+\item[Steve Hankin / NOAA-PMEL] Provide NetCDF-based clients with
+  access to in-situ data using OPeNDAP
+\item[Dan Holloway / OPeNDAP] Continue development of JGOFS server
+  (?).
+\item[Don Denbo / NOAA-PMEL] Integrate OPeNDAP into EPIC client and
+  server software
+\end{description}
+
+\paragraph{Data provider representatives:}
+\begin{description}
+\item[Kevin Gomes / MBARI]
+        Provide intranet and public access to instrument readings from MOOS 
+(MBARI Ocean Observing System)
+\item[Gang Yuan, Yingshuo Shen / U Hawaii-IPRC(ADPRC)] Provide access
+  to data on APDRC EPIC server using OPeNDAP
+\item[David White / USC-Baruch Institute] Provide access to various
+  in-situ data, stored in NetCDF, including moored buoys, using
+  OPeNDAP.
+\item[don't have name / U Alaska-GEM] Provide access to
+  "heterogeneous datasets with homogeneous fields" (various data
+  collections, stored in NetCDF) using OPeNDAP don't have name / NODC
+  Provide access to NODC complete holdings using OPeNDAP
+\end{description}
+
+
+\subsubsection{Notes:}
+
+Discussion was based around powerpoint slides, attached.
+
+\paragraph{Data types:}
+
+\begin{itemize}
+\item Most data are collections of linear series (ok to represent as
+  two-level Sequence)
+\item Some data may have additional dimension(s), e.g. current meters
+  (M levels x N times for each instrument) - need more Sequence
+  levels.
+\end{itemize}
+
+\paragraph{Data structure:}
+
+\begin{itemize}
+\item Field chosen for indexing/sorting is not always
+  instrument/profile ID - time is primary index, for example, for
+  synchronized wave meters (M instruments for each synchronized time)
+\item Searchable header fields are usually identified ahead of time to
+  allow caching/extraction; however header fields in general are not
+  consistent
+\item Cornillon emphasized goal of aggregating data from multiple
+  centers (with assumption of different structures) into a single
+  searchable collection - for example, unified interface to all
+  available mooring data for US coastal waters
+\end{itemize}
+
+\paragraph{Data model:}
+
+General response was positive. Refinement-based usage model matches
+experience of most attendees. Some potential issues were raised:
+
+\begin{itemize}
+\item Searches crosswise to indexing may be very very slow (i.e. one
+  point from each profile) - based on JGOFS experience - so could be
+  dangerous to provide data model which allows such searches. But is
+  this a data model issue or a server implementation issue?
+\item Many in-situ archives include disparate data (few consistent
+  variables or header fields) - however, OPeNDAP data model does not
+  allow variation in structure between profiles
+\end{itemize}        
+
+\paragraph{Clients/servers}
+
+\begin{itemize}
+\item No particular response to mention of C, FORTRAN, GIS as
+  potential client interfaces.
+\item NetCDF translation would provide access to in-situ data in
+  Ferret, ncdump, other tools with no extra development.
+\item Don Denbo proposes a simplified Java API for in-situ data
+  "hybrid" architecture - NetCDF files plus separate
+  store/cache/database for header info - is extremely common.  need a
+  server that can aggregate NetCDF in-situ data, accessing separate
+  header info store for efficient searching
+\end{itemize}
+
+\paragraph{Next steps:}
+
+\begin{itemize}
+\item Joe - develop slides into a more formal document to be discussed, 
+revised and posted online for reference.
+\item OPeNDAP - consider developing NetCDF in-situ aggregation capability
+\end{itemize}
+                                
+%
+% $Log: insitubreakout.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: plain-tex
+%%% TeX-master: t
+%%% TeX-master: t
+%%% End: 

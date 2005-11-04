@@ -1,0 +1,112 @@
+The OPeNDAP Technical Working Conference 2003 took place in Boulder,
+Colorado on 19-21 March 2003.  The meeting was attended by approximately
+40 people, some of whom attended intermittently due to the inclement
+weather.  Slides from the presentations are presented on-line at:
+\xlink{http://www.po.gso.uri.edu/tracking/meetings/tech03/}{http://www.po.gso.uri.edu/tracking/meetings/tech03/}
+This report is available from that site as well.
+
+The presentations were divided into 7 categories:
+\begin{enumerate}
+   \item System-wide Overviews-B.
+   \item The New \ac{DAP} Specification-B.
+   \item The \ac{AIS}-B.
+   \item The Treatment of In-Situ Data-B.
+   \item Data Discovery and Inventory Methods, Tools, and Issues-B.
+   \item Connecting \ac{SIS} to \ac{GIS}-B.
+   \item Experiences with Serving and Accessing \ac{OPeNDAP} Data.
+\end{enumerate}
+
+Breakout discussions for at least an hour each were held for the
+five topics indicated with a "B".
+ 
+The overviews concentrated on \ac{OPeNDAP} (Cornillon), the evolution
+of \ac{OPeNDAP} into the field of high-performance computing (Fox),
+and \ac{OPeNDAP}'s role in the developing Ocean Observing System
+(Hankin).
+
+That the specification of the \ac{DAP} needs revision has been evident
+for some time.  Particularly clear has been that the specification
+needs to be independent of implementation solutions, and independent
+of the underlying transport mechanism.  To that end, relevant talks
+and a breakout session were devoted to discussion the \ac{DAP} Specification,
+and its revision.  The result was several good ideas about elements
+that should be included or revised in the new specification, but the
+overall reaction was very favorable toward the proposed modifications.
+
+The \ac{DAP} was originally designed as a means of coding and transporting
+data from a server to a client in such a manner that the content of the
+original data is preserved, but that the storage format of the data
+is transparent to the client.  However, no specific information about
+the data is required other than the syntactic metadata needed to
+``unpack'' the data at the client when they are received.  Users and
+computer programs need to know more about the data than just the
+semantic metadata in order to make intelligent use of those data.
+The need for an ``Ancillary Information System'' to append and augment
+the data and metadata from an original server has become incressingly
+clear as users try to use the data they access through \ac{OPeNDAP}.
+Two prototypes of \ac{AIS}-like systems were demonstrated at the
+meeting.  Then, during the \ac{AIS} breakout session, various aspects
+of the proposed system were discussed.
+
+The problem of treating in-situ data in a tractable fashion that allows
+fast access to a wide variety of queries was discussed extensively
+in the in-situ breakout session.  Several suggestions were made which
+will be pursued, including the design and implementation of an
+aggregation server for in-situ data.
+
+The problem of data discovery, once data are available through
+\ac{OPeNDAP}, is of growing concern amoung users.  \ac{THREDDS}
+is an emerging technology that addresses the issue of 
+cataloging and traversing inventories for users seeking information
+about datasets.  An implementation of \ac{THREDDS} on one system
+was described.  Also, the problem of discovery of datasets and
+their inventories, was demonstrated using the \ac{ODC}.  The breakout
+session concentrated on the question of how providers can make
+their datasets, served by \ac{OPeNDAP}, visible to the outside
+world via google and other search engines.  One conclusion was
+that ``Best Practices'' documents should be made available to aid
+providers.
+
+\ac{GIS} users form a vast community of communities that access
+and analyze a myriad of data, but who, as of the present,
+cannot access data served by \ac{OPeNDAP}.  A large effort
+to create a viable, available \ac{OPeNDAP} to \ac{GIS}
+connector has been unsuccessful so far.  Therefore a breakout
+was held to address this issue.  The result was a few
+initiatives among the participants to remedy the situation,
+by various means.
+
+Finally, the pure \ac{OPeNDAP} users presented several examples
+of \ac{OPeNDAP} servers in use, tests of those servers, 
+integration of \ac{OPeNDAP} into other systems, and the stages
+of development of systems and projects that use or will use
+\ac{OPeNDAP}.
+
+The meeting was a good mix of presentations of the order of
+20 minutes each, and breakout discussions of the order of one
+or two hours each, which lead to a clear sense of participation
+by all, and most with a sense of their individual work being 
+significant contributions toward the progress and goals of the
+whole \ac{OPeNDAP} endeavor.  The result was a feeling that the
+project is vibrant and growing;  the current software is being
+used extensively and successfully, and the discussions point
+to major improvements that will enhance the use of \ac{OPeNDAP}
+by high performance computer, modelers, users of in-situ data,
+and users who need to make sure their data conform to uniform
+standards of their own design and/or choosing.
+
+% $Id$
+%
+% $Log: meetingsummary.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:43  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

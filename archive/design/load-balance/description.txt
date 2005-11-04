@@ -1,0 +1,40 @@
+
+	$Id$
+
+Notes on the load-balancing server proposed by Peter C.
+
+- We talked about the load-balancing server (LBS) with Glenn. 
+
+- The LBS seems like a good idea because it demonstrates that DODS can
+  perform some of the advanced functions that are associated with EOSDIS
+  (i.e., pulling data from one of several locations to distribute the load
+  across those locations).
+
+- For the LBS to work the dataset to be served must be replicated.
+  - The LBS won't do any of the replication.
+
+- HTTP redirection can be used.
+  - DODS, netscape support redirects already.
+    - Does IE?
+  - Use of redirects keeps control at the client.
+  - See configutation.fig/gif 
+    - 1. Client makes a request to the LBS.
+    - 2. LBS queries the servers of the replicated dataset.
+      - 2a. LBS uses load information to choose the `best' source.
+      - 2b. LBS returns best source as an HTTP redirect.
+    -3. Client is redirected to best source.
+
+- Getting load information is simple
+  - Can build a simple CGI which runs uptime.
+  - The output is simple to parse.
+
+- Choosing the URL is more complex
+  - Trigger this off of a name (e.g., URI_AVHRR) or a URL?
+  - Build this into all DODS serves?
+  - Build a separate service?  
+    - Build a service that provide a `directory' of local datasets?
+    - Load-balancing as a feature of this new service?
+  - Add a `names' feature to DODS servers?
+
+  --> Initially build a separate service that maps a name to a URL. Decide
+      later whether/how to incorporate this into DODS.

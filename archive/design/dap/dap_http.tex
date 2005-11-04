@@ -1,0 +1,1113 @@
+%
+% Specification for an HTTP implementation of the DAP
+%
+
+\documentclass[justify]{dods-paper}
+\usepackage{acronym}
+\usepackage{xspace}
+\usepackage{gloss}
+\rcsInfo $Id$
+
+\include{dap_boiler}
+
+\title{\DAPHTTPTitle\\ DRAFT}
+\htmltitle{\DAPHTTPTitle\ -- DRAFT}
+\author{James Gallagher\thanks{The University of Rhode Island,
+    jgallagher@gso.uri.edu}, Tom Sgouros}
+\date{Printed \today \\ Revision \rcsInfoRevision}
+\htmladdress{James Gallagher <jgallagher@gso.uri.edu>, 
+  \rcsInfoDate, Revision: \rcsInfoRevision}
+\htmldirectory{html}
+\htmlname{daph}
+
+\begin{document}
+
+\maketitle
+\T\tableofcontents
+
+\section{Introduction}
+
+The \opendap system may be implemented using a wide variety of
+communication protocols.  \DAP servers and clients may communicate
+using HTTP, FTP, GridFTP, or any other modern socket protocol.  No
+matter what communication protocol is used, all implementations of the
+\DAP must adhere to the specification given in \DAPObjects.  
+
+The current document specifies the behavior of only the HTTP
+implementation of the \DAP.  That is, \DAP servers and clients that
+communicate using HTTP must adhere to the specifications in this
+document.  The \opendap project supports only this protocol
+specification.  Other protocol specifications may be published by the
+groups publishing the first implementation using that protocol.
+
+In the remainder of this document, we use \DAP to signify the HTTP
+implementation of the \DAP.  This is strictly a convenience, and is
+not meant to imply anything about other possible implementations.
+
+The \DAP works like any other client/server system.  A client sends
+requests to a server, and the server responds to those requests with
+one of the \DAP objects or with a service response.  The data objects
+and the services that are to be supported by all \DAP implementations
+are described in the \DAPObjects document.
+
+In the next two sections, we look in detail at the form of
+the requests and the responses for the HTTP implementation of the
+\DAP. 
+
+
+\section{Requests}
+\label{sec-requests}
+
+A \DAP client sends a request to a server using HTTP.  The request
+consists of an HTTP GET request method, a \URI~\cite{rfc2396} that
+encodes information specific to the \DAP and an HTTP protocol version
+number followed by a MIME-like message containing various headers that
+further describe the request. In practice, DAP clients use a
+third-party library implementation of HTTP/1.1 so the GET request,
+\URI and HTTP version information are hidden from the client; it sees
+only the \DAP URL and some of the request headers.  
+
+\subsection{The URL}
+\label{sec-url}
+
+A URL is simply a unique name for some Internet resource.
+\Figureref{fig-url-parts} shows the parts of a typical \DAP URL.
+
+\begin{figure}[h]
+\texorhtml
+{\begin{center}\small
+${}\overbrace{\tt http}^{\textnormal{Protocol}}://
+\overbrace{\tt dods.gso.uri.edu}^{\textnormal{Machine Name}}/
+\overbrace{\tt cgi-bin/nph-nc}^{\textnormal{Server}}/
+\overbrace{\tt data}^{\textnormal{Directory}}/
+\overbrace{\tt fnoc1.nc}^{\textnormal{Filename}}
+\overbrace{\tt .dods}^{\textnormal{URL Suffix}}?
+\overbrace{\tt sst[1:5][1:5]}^{\textnormal{Constraint}}$
+\end{center}}
+{\begin{vcode}{cb}
+http://dods.gso.uri.edu/cgi-bin/nph-nc/data/fnoc1.nc.dods?sst[1:5][1:5]
+   ^            ^               ^      ^    ^        ^     ^
+   |            |               |      |    |        |     |
+Protocol        |               |      |    |        |     |
+Machine Name-----               |      |    |        |     |
+Server---------------------------      |    |        |     |
+Directory-------------------------------    |        |     |
+Filename-------------------------------------        |     |
+URL Suffix--------------------------------------------     |
+Constraint expression---------------------------------------
+\end{vcode}}
+\caption{Parts of a \DAP URL}
+\label{fig-url-parts}
+\end{figure}
+
+The parts of the URL are:
+
+\begin{description}
+  
+\item[Protocol] The communication protocol between the client and the
+  server.  For the HTTP implementation of the \DAP, this is always
+  \lit{http}.
+
+\item[Host] The IP number or name of the host machine running the \DAP
+  server.
+  
+\item[Server] Many \DAP servers are simply a set of CGI scripts
+  executed on demand by the \lit{httpd} server.  Here, the server is
+  represented by a CGI script called \lit{nph-nc}.  Many HTTP servers
+  parse the headers of incoming CGI requests.  The HTTP specification
+  dictates that CGI programs whose name begins with \lit{nph-} will
+  receive their data intact.  (See note on page~\pageref{note-1}.)
+  Many \DAP implementations take advantage of this feature, since it
+  removes dependence on any particular HTTP server software.
+  
+\item[Directory \& Filename] The \DAP is fundamentally a file-based
+  protocol.  To the right of the server (CGI) name comes a directory
+  and file name identifying the file containing the requested data.
+  These together make up the \new{Dataset ID}.  \DAP implementations
+  that serve data not stored in files can omit the directory names, or
+  use them to organize their data.
+
+\item[URL suffix] The \DAP uses the suffix on the file name to
+  determine what sort of request this is.  \Tableref{tab-url-suffix}
+  has a list of the suffixes and the kinds of responses they 
+  summon.  There are a variety of services available from most \DAP
+  HTTP servers.  These include getting the data as formatted text,
+  getting information about the server and data available from it, 
+  browsing available data files, and others.   Requests for these are
+  indicated by different URL suffixes.  See \DAPASCII, \DAPHTML, or
+  \Sectionref{sec-help} of this document for information about these
+  services. 
+
+  \begin{table}[htbp]
+    \begin{center}
+      \begin{tabular}[t]{lp{3in}}
+        \tblhd{Suffix} & \tblhd{Meaning} \\ \hline
+        \lit{.info} & Information about a \DAP server and its data \\ \hline
+        \lit{.asc}  & Formatted data (\DAPASCII.)\\ \hline
+        \lit{.html} & Data review form (\DAPHTML.) \\ \hline
+        \lit{.ver} & Version information (\Sectionref{sec-version})\\ \hline
+        \lit{.dods} & Data (\DDX and \Blob) \\ \hline
+        \lit{.das}, \lit{.dds} & \DDX \\ \hline
+      \end{tabular}
+      \caption{URL suffixes and their meaning}
+      \label{tab-url-suffix}
+    \end{center}
+  \end{table}
+  
+  Most dedicated \DAP clients hide the suffixes from the user.  A user
+  would enter the \DAP URL up to, but not including, the suffix, and
+  the client software appends the suffix before sending it to the
+  server.  It is convenient to know the suffixes, however, because
+  of the \DAP services that provide responses that can be displayed by a
+  standard web server.
+
+\item[Constraint] The constraint expression is a way to subsample a
+  \DAP dataset.  Constraint expression basics are covered in
+  \DAPObjects, and the way to express a constraint expression in a
+  request to an HTTP \DAP server is in \Sectionref{sec-ce-http}.
+
+\end{description}
+
+The URL in \Figureref{fig-url-parts} shows a client
+request to the \lit{httpd} server on the machine
+\lit{dods.gso.uri.edu}, for a netCDF dataset (specified by the
+\lit{nph-nc} in the \lit{cgi-bin} directory) contained in a file
+called \lit{fnoc1.nc}.  Upon receiving this URL, the \lit{httpd}
+server executes the specified \DAP server module (\lit{nph-nc}), which
+retrieves the file \lit{fnoc.nc} in a directory called \lit{data} relative to
+wherever the \lit{httpd} server looks for its data.
+
+\label{note-1}
+\note{The only part of the URL whose spelling is not at the discretion of
+the administrator of the host machine is the \lit{http}, and the
+\lit{nph-} at the beginning of the CGI script name. Even the \lit{nc},
+indicating netCDF, can be changed, although for clarity's sake, we
+hope people won't do so.  Incidentally, the \lit{nph-} is a relic,
+dating from the early days of the World Wide Web and the first
+hypertext protocol standards.  It stands for ``Non-Parsing Header''
+(See the CGI 1.1 Standard for more information.), and is the only way
+to pass data through many httpd servers unparsed.  The \opendap
+software uses this to make the server software portable between HTTP
+servers.  If this is not important to you, and you know how to keep
+your server from trying to parse the data passing through it, then
+this is not essential.}
+
+
+
+\subsection{Request Headers}
+
+
+The headers described in this section MUST be handled as described.
+Other headers which are part of HTTP 1.1 MAY be included in the
+request and MAY be honored by a \DAP server.
+
+\subsubsection{Accept-Encoding}
+\label{sec-accept-encoding}
+
+The \lit{Accept-Encoding} request-header is used by a \DAP client to
+tell a server that it can accept compressed responses. See RFC
+2616~\cite{rfc2616} for this header's grammar.  Values for encodings are
+\lit{deflate}, \lit{gzip} and \lit{compress}. This header is
+OPTIONAL. When a client includes this header it is effectively asking the
+\DAP server to encode the response using the given scheme. The server is
+under no obligation to use the requested encoding. However, a server MUST NOT
+use an encoding when a client has not requested it. In addition, a client
+MUST supply the header with every request for which it desires a special
+encoding.
+
+\subsubsection{Host}
+\label{sec-host}
+
+The \lit{Host} request-header is used by a \DAP client to provide its
+IP address or DNS name to the \DAP server. See RFC 2616~\cite{rfc2616}
+for this header's grammar. This header MUST be included with every request.
+
+\subsubsection{User-Agent}
+\label{sec-user-agent}
+
+The \lit{User-Agent} request-header is used by a \DAP client to
+provide specific information about the client software to the \DAP
+server. See RFC 2616~\cite{rfc2616} for this header's grammar. This header is
+RECOMMENDED. \DAP servers MAY log this information.
+
+\subsubsection{XDODS-Accept-Types}
+\label{sec-accept-types}
+
+The \lit{XDODS-Accept-Types} experimental request-header is used by a
+\DAP client to tell a \DAP server which of the standard \DAP
+datatypes the client can understand. The server SHOULD NOT return datatypes
+to the client that it does not understand. This header is OPTIONAL; if absent
+a server can assume that a client understands all the standard datatypes. 
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+XDODS-Accept-Types & = & [ "!" ] type\_list | all \\
+type\_list & = & type | type "," type\_list \\
+all & = & "All" \\
+type & = & "Byte" | "Int16" | "UInt16" | "Int32" \\
+       & & | "UInt32" | "Float32" | "Float64" \\
+       & & | "String" | "URL" | "Array" | "List" \\ 
+       & & | "Structure" | "Sequence" | "Grid" \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+A \DAP server determines which datatypes are understood by a client using
+the following rules:
+\begin{enumerate}
+\item If the value of the header is \lit{All}, then the client understands
+  all the datatypes.
+\item If a datatype is listed in the value-string, then that type is
+  understood, otherwise it is not understood.
+\item If the value-string starts with the literal \lit{!} then the type(s)
+  listed are \emph{not} understood by the client and the remaining types are
+  understood. 
+\end{enumerate}
+
+\subsubsection{XDODS-Accept-Endian}
+\label{sec-accept-endian}
+
+This header is used to indicate to the server whether the client uses
+big-endian or little-endian byte order.  The possible values are
+\lit{big} and \lit{little}.  The \DAP specifies that transmission of
+data is to be in big-endian format (see \DAPObjects), but
+this header allows for more efficient transmission in the event that
+both the client and the server are on machines with little-endian
+architecture. 
+
+
+\subsubsection{XDODS-Accept-FP}
+\label{sec-accept-fp}
+
+This header is used to specify that the client uses a specific
+floating-point number encoding.  The \DAP specifies that transmission
+of floating-point data use the IEEE 754 standard method.  But in the
+event that both the client and server are on machines that use a
+different encoding method, this header can allow for more efficient
+transmission.  
+
+\subsection{Constraint Expression Syntax}
+\label{sec-ce-http}
+
+The \CE, described in \DAPObjects, is an XML document containing
+instructions for subsetting a data set served by a \DAP server.  Since
+the HTTP implementation of the \DAP uses a GET request instead of a
+POST, the \CE must actually be part of the \URL, instead of appended in
+a data payload.  To that end, there is a translation of the XML \CE
+syntax into a form containing no newlines or other forbidden characters.
+A schematic representation of the syntax of an HTTP \CE is shown in
+\Tableref{tab:ce}.
+
+A \CE has two parts, the projection clause and the selection
+clause(s). A \new{projection} lists the variables to be returned by
+the \DAP server, and a \new{selection} selects values of those
+variables from the complete set stored at the server.  For example, a
+projection clause might specify that temperature is to be returned,
+and a selection clause would specify that only \Sequence entries with
+dates later than 1999 are to be examined.  The result returned from a
+request like this would be a \Sequence of temperature measurements
+taken after 1999.
+
+A projection clause may specify more than one variable, in which case
+the variable names are specified in a comma-separated list.  A
+projection may also contain invocations of server-side functions,
+which are to be executed by the server, and whose data will be
+returned to the client in the response document.  If the
+projection is omitted, the server will assume that all the variables
+in the dataset are to be returned.
+
+A selection clause is a series of conditions to be satisfied by the
+data returned.  For example, one might request all the data taken by a
+particular ship, or a particular scientist.  Selections only apply to
+\Sequence data, but \Grid data can also be selected in the projection
+clause.
+
+
+\begin{table}[!t]
+\label{tab:ce}
+\caption{The syntax of a constraint expression.}
+\begin{center}
+\begin{tabular}{llp{3in}}
+CE               & = & [\var{projection}] [\lit{\&} \var{selection}] \\ \\
+\var{projection} & = & \var{variables} \\
+\var{variables}  & = & \var{variable} $|$ \var{variable}\lit{,}\var{variables} \\
+\var{variable}   & = & \var{name} $|$ \var{hyperslab} $|$ \var{function} \\
+\var{function}   & = & \var{fname}\lit{(}\var{args}\lit{)} \\
+\var{args}       & = & \var{arg} $|$ \var{arg}\lit{,}\var{args} \\
+\var{arg}        & = & \var{name} $|$ \var{constant} \\ \\
+
+\var{hyperslab}  & = & \var{name}\lit{[}\var{array-dim}\lit{]} \\
+\var{array-dim}  & = & \var{start\lit{:}stride\lit{:}stop} $|$ \var{start\lit{:}stop} \\
+\var{start, stride, end} & = & \var{integer} \\ \\
+
+\var{selection}  & = & \var{conditions} \\
+\var{conditions} & = & \var{condition} $|$ \var{condition}\lit{\&}\var{conditions} \\
+\var{condition}  & = & \var{variable} \var{rel\_op} \var{constant} \\
+\var{rel\_op}    & = & $\texttt{<}|\texttt{>}|\texttt{=}|\texttt{!=}$ \\ \\
+\var{name}       & = & The name of a variable in the data set. \\
+\var{fname}      & = & The name of a function provided by the server.
+                       See the server's \CapX. \\
+\var{constant}   & = & A signed numeral constant, may or may not
+                       include a decimal point. \\ 
+\var{integer}    & = & An unsigned numeral without a decimal point. \\
+\end{tabular}
+\end{center}
+\end{table}
+
+See \DAPObjects for a description of the behavior of a \CE, and
+limitations on these constraint forms for certain data types.
+
+\note{Due to the restrictions of URL syntax, there must not be any
+  space characters in a URL.  If you want to use a space, say in a
+  quoted function argument, you can use \lit{\%20} to substitute for
+  the space character.  Similar escape expressions may be used for
+  other non-printing characters.}
+
+Following are \CE examples from \DAPObjects, accompanied by their
+translation into the single-line http format.
+
+
+First is a simple selection from a \Sequence.
+
+\examplelabel{ce-trans-1}
+\begin{vcode}{it}
+<Constraint name="013.214">
+  <Project variable="temp"/>
+  <Project variable="salt"/>
+  <Select variable="salt" condition=">" constant="34.0"/>
+</Constraint>
+
+...?temp,salt&salt>34.0
+\end{vcode}
+
+The hyperslab method allows you to reference segments of a \Grid,
+\Array, or \Sequence by index.
+
+\examplelabel{ce-trans-2}
+\begin{vcode}{it}
+<Constraint name="a347">
+  <Project variable="sst">
+    <Hyperslab dimension="lat" start="1" stop="10" stride="2"/>
+    <Hyperslab dimension="lon" start="20" stop="40"/>
+  </Project>
+</Constraint>
+
+...?sst[1:2:10][20:40]
+\end{vcode}
+
+A selection may also be applied to a \Grid, so long as the selections
+correspond to the \Grid dimensions.
+
+\examplelabel{ce-trans-3}
+\begin{vcode}{it}
+<Constraint name="a348">
+  <Project variable="sst"/>
+  <Select variable="lat" condition=">" constant="24.5"/>
+  <Select variable="lon" condition="<" constant="-50.5"/>
+</Constraint>
+
+...?sst&lat>24.5&lon<-50.5
+\end{vcode}
+
+Multiple \Grids may be selected if they share some dimensions.
+
+\examplelabel{ce-trans-3a}
+\begin{vcode}{it}
+<Constraint name="a348">
+  <Project variable="temp"/>
+  <Project variable="oxygen"/>
+  <Select variable="lat" condition=">" constant="24.5"/>
+  <Select variable="lon" condition="<" constant="-50.5"/>
+</Constraint>
+
+...?temp,oxygen&lat>24.5&lon<-50.5
+\end{vcode}
+
+Functions may appear in the projection or selection clause.  If they
+appear as part of a selection, they must return a single (scalar) value.
+
+\examplelabel{ce-trans-4}
+\begin{vcode}{it}
+<Constraint name="ralph">
+  <Project function="make-sst">
+    <Argument variable="raw-count"/>
+    <Argument constant="223"/>
+  </Project>
+  <Select function="make-sst" condition=">" constant="25.0">
+    <Argument variable="raw-count"/>
+    <Argument constant="223"/>
+  </Select>
+</Constraint>
+
+...?make-sst(223)&make-sst(223)>25.0
+\end{vcode}
+
+\subsection{Version Request}
+\label{sec-version}
+
+The \VER response returns information about the \DAP version, server
+version and may return information about a dataset's version.  The
+response may be requested two ways: by using the string \lit{version}
+as the filename (omitting the directory) or by appending the extension
+\lit{ver} to the dataset name (see \Sectionref{sec-url}).
+\Tableref{tab:version} contains a description of the request syntax.
+
+\begin{table}[!h]
+\label{tab:version}
+\caption{Syntax of a \VER request}
+\begin{center}
+\begin{tabular}{lll}
+\var{abs\_path} & = & \var{server\_path}/\var{dataset\_id} \lit{.} \var{ext} \\
+\var{server\_path} & = & name of DAP server (including CGI, if any)\\
+\var{dataset\_id} & = & \lit{version} \\
+\var{ext} & = & \lit{ver} \\
+\end{tabular}
+\end{center}
+\end{table}
+
+See \Sectionref{sec-version-response} for a description of the HTTP
+\VER reply.
+
+\subsection{Help Requests}
+\label{sec-help}
+
+There are two more required request forms for the HTTP implementation
+of the \DAP: the \INFO request and the \HELP request.  
+
+A \HELP request is intended to evoke information about the function of
+a \DAP server, while an \INFO request includes that information with
+information about a particular dataset served by that server.  The
+syntax of a \HELP request is shown in \Tableref{tab:help}.
+
+The \HELP response MUST be returned when the server receives a URL
+whose Dataset ID portion is \lit{help}.  It MAY reply with the \HELP
+response when it receives a URL with no extension (i.e., a URL with no
+Dataset ID at all).  This second option can interfere with the \DIR
+response (see \DAPHTML) if your server keeps datasets in
+the root-level directory.  In this case, the \DIR response MUST be
+returned instead of the \HELP response in reply to a URL without a
+Dataset ID.
+
+\begin{table}[!h]
+\label{tab:help}
+\caption{Syntax of a \HELP request}
+\begin{center}
+\begin{tabular}{lll}
+\var{abs\_path} & = & \var{server\_path}/\var{dataset\_id} \\
+\var{server\_path} & = & name of DAP server (including CGI, if any)\\
+\var{dataset\_id} & = & \lit{help}
+\end{tabular}
+\end{center}
+\end{table}
+
+The syntax of an \INFO request is shown in \Tableref{tab:info}.
+
+\begin{table}[!h]
+\label{tab:info}
+\caption{Syntax of an \INFO request}
+\begin{center}
+\begin{tabular}{lll}
+\var{abs\_path} & = & \var{server\_path}/\var{dataset\_id} \lit{.} \var{ext} \\
+\var{server\_path} & = & name of DAP server (including CGI, if any)\\
+\var{dataset\_id} & = & directory and filename of some data set \\
+\var{ext} & = & \lit{info} \\
+\end{tabular}
+\end{center}
+\end{table}
+
+\Sectionref{sec-help-response} describes the data returned by these
+two requests
+
+\subsection{Other Requests}
+
+The requests (and their associated responses) described so far are the
+ones that are either required or commonly available among \DAP
+servers.  Two other responses are sometimes available, and the
+\opendap project provides specifications for server implementators who
+wish to provide those services.  These are the formatted data response
+(also called the ASCII response), described in \DAPASCII, and the HTML
+response, described in \DAPHTML.  Please refer to those documents for
+information about those services.
+
+\section{Responses}
+\label{sec-responses}
+
+A valid \DAP response has the same form as a valid HTTP response.  The
+first line contains the HTTP protocol version, a status code and
+reason phrase~\cite{rfc2616}. Following this are the response headers
+which vary depending on the request and payload of the response (see
+\Sectionref{sec-resp-headers} for a description of the headers). As
+described in \cite{rfc822}, the HTTP response status line and headers
+are separated from the response's payload by an extra set of CRLF
+characters which make a blank line.
+
+The \DAP response is the payload of the MIME-like HTTP response.  The
+data objects that may be returned are described in detail in the
+\DAPObjects.
+
+\tbd{[Add some text describing how the three basic responses can be thought
+  of as objects]}
+
+\subsection{Response Headers}
+\label{sec-resp-headers}
+
+Like the requests, the HTTP response headers MAY contain all the
+header fields specified in RFC 2616~\cite{rfc2616}.  Following is a
+list of the header fields about which there is some \DAP{}-specific
+behavior.  It is not a list of all the header fields used by the
+\DAP.  In particular, servers are highly encouraged to implement the
+\lit{Last-Modified} header field.
+
+\subsubsection{Content-Description}
+
+The \lit{Content-Description} header is used to tell clients which of
+the different basic responses is being returned or if an error message
+is being returned. For any of the basic responses (\DDX, \DAX, \Blob,
+or the older \DDS, \DAS, or \DataDDS responses) or the error response
+(\ErrorX object), this header MUST be included. This header SHOULD NOT
+be included by the \TEXT, \HTML, \INFO, version or directory responses.
+See RFC 2045~\cite{rfc2045} for information about this header.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+Content-Description & = & "Content-Description" ":" tag \\
+tag & = & | "dap-ddx" | "dap-dax" | "dap-blob" | "dap-errorx" \\
+ & & | "dods-dds" | "dods-das" | "dods-data" | "dods-error" \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+Example:
+
+\begin{vcode}{it}
+Content-Description: dods-error
+\end{vcode}
+
+\subsubsection{Content-Encoding}
+
+If a \DAP server applies an encoding to an entity, it MUST include the
+\lit{Content-Encoding} header in the response. See RFC
+2616~\cite{rfc2616} for this header's grammar. The sole recognized
+encoding for the \DAP is \lit{deflate}.
+
+Example:
+
+\begin{vcode}{it}
+Content-Encoding: deflate
+\end{vcode}
+
+\subsubsection{Content-Type}
+
+The \lit{Content-Type} header MUST be included in any response from a
+\DAP server. Valid content types for \DAP responses are:
+\lit{text/plain}, \lit{text/html} and \lit{application/octet}.  See
+RFC 2616~\cite{rfc2616} for this header's grammar.
+
+\emph{It would be better to use a multipart
+  document in place of the \lit{application/octet}.} 
+
+Example:
+
+\begin{vcode}{it}
+Content-Type: application/octet
+\end{vcode}
+
+\subsubsection{Date}
+
+The \lit{Date} header provides a time stamp for the response. This header
+is needed for servers that support caching. See RFC 2616~\cite{rfc2616}
+for this header's grammar. Servers MUST provide this header.
+
+Example:
+
+\begin{vcode}{it}
+Date: Fri, 09 Feb 2003 18:54:55 GMT
+\end{vcode}
+
+\subsubsection{Keep-Alive}
+
+A \DAP server (or an underlying HTTP server if one is used to
+implement the \DAP server) MAY return a \lit{Keep-Alive} header for an
+authenticate (code 401) response. For all other responses, the \DAP
+server MUST NOT return this header. See
+RFC 2616~\cite{rfc2616} for this header's grammar.
+
+\emph{This is a shortcoming of the \DAP. It should support HTTP/1.1's
+  persistent connections. However, to do requires that the responses
+  also return Content-Length. Since none of our servers do this, I've
+  got no experience with persistent connections.}
+
+\subsubsection{Server}
+
+The \lit{Server} header provides information about the server used to
+process the request. In this case the \emph{server} MAY be either the
+\DAP server or an underlying HTTP server if the \DAP server uses
+that as part of its implementation. See RFC 2616~\cite{rfc2616}
+for this header's grammar. This header is OPTIONAL.
+
+Example:
+
+\begin{vcode}{it}
+Server: Apache/1.3.12 (Unix)  (Red Hat/Linux) PHP/3.0.15 mod_perl/1.21
+\end{vcode}
+
+\subsubsection{WWW-Authentication}
+
+The \lit{WWW-Authenticate} header MUST be included in a message that has a
+response code of 401. That is, when the \DAP server is asked to provide
+access to a resource that is restricted and the request does not include
+authentication information (see ``HTTP Authentication: Basic and Digest
+Access Authentication''~\cite{rfc2617}). then it must return with a response
+code of 401 and include the \lit{WWW-Authenticate} header. See RFC
+2616~\cite{rfc2616} for this header's grammar.
+
+Example:
+
+\begin{vcode}{it}
+WWW-Authenticate: Basic realm="special directory, with CGIs"
+\end{vcode}
+
+\subsubsection{XDODS-Server}
+
+The \lit{XDODS-Server} header is used to return a \DAP server's
+implementation version information to the client program.  This header
+MUST be included in every response. 
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+XDODS-Server & = & "XDODS-Server" ":" "dods/" version [, text] \\
+version & = & DIGIT "." DIGIT [ "." DIGIT ] \\
+text & = & software implementation information, as a single line of text
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+Example:
+
+\begin{vcode}{it}
+XDODS-Server: dods/4.0.1, netCDF server 4.2.2
+\end{vcode}
+
+\subsection{Version Response}
+\label{sec-version-response}
+
+If a \DAP server receives a \lit{version} request (see
+\Sectionref{sec-version}), it MUST return \DAP version
+information. If the request is made using the \lit{ver} extension to a
+dataset ID then the server MUST return the \DAP version and server
+version information. It MAY also return a dataset version.
+
+Version information should be returned as plain text in the payload of the
+response. This version information may be essentially the same as the
+information in the XDODS-Server header. The intent is to present users and
+system maintainers with information about servers that can be used to track
+down problems or determine if a server can be upgraded to a newer version to
+fix a particular problem.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+version-response & = & dap-version CRLF server-version \\
+                 & & [ CRLF dataset-version ] \\
+dap-version & = & "Core version:" token "/" version-number \\
+server-version & = & "Server version:" token "/" version-number \\
+dataset-version & = & "Dataset version:" token "/" version-number \\
+token & = & 1*<any CHAR except CTLs or separators> \\
+version-number & = & 1*DIGIT "." 1*DIGIT "." 1*DIGIT \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\begin{textoutput}{Required Headers:}
+XDODS-Server: dods/4.0\\
+Content-Type: text/plain\\
+Date: \emph{date}
+\end{textoutput}
+
+
+\subsection{Help Responses}
+\label{sec-help-response}
+
+There are two more required request forms for the HTTP implementation
+of the \DAP: the \INFO request and the \HELP request.  
+
+\subsubsection{\INFO}
+\label{sec-info}
+
+The \INFO response MUST present the user with an HTML document that
+contains the dataset-specific information in the dataset's \DDX, as
+well as the server-specific information in the \VER response and the
+\CapX.  The intent is to present this information in a way that can be
+rendered by a WWW browser.  Structural information about the dataset
+SHOULD be preserved so that users can build \DAP URLs by hand.
+
+The \INFO response MAY also return other information. If server
+installers and/or dataset maintainers add HTML which describes the
+dataset or the server, this information MUST be merged into the HTML
+document returned in response to the \INFO request.
+
+The purpose of the \INFO response is to supply information about the
+dataset in a form that is easy for people to read. It should be
+structured so that after only a little experience people can easily
+assess a dataset using the document. In addition, the \INFO response
+may be used in creating various user interfaces which access data
+using \DAP servers.
+
+The \INFO response should provide:
+
+\begin{enumerate}
+\item The hierarchical relation of container variables.
+\item Each variable's datatype.
+\item Each variable's attributes.
+\item Any global attributes that the dataset contains.
+\item Extra information supplied by the dataset creator/maintainer.
+\item \CE functions available on this server.
+\item The information from the \VER response.
+\end{enumerate}
+
+One implementation of the \INFO response uses HTML text in files
+corresponding to each dataset served by a server, as well as HTML
+documenting the server as a whole.  These documents are merged on the
+fly to create the \INFO response, providing information both about the
+server and the specific datasets in question.  
+
+The \INFO response is by URLs with the syntax shown in
+\Sectionref{sec-help}.  The response headers are as follows:
+
+\begin{textoutput}{Required Headers:}
+XDODS-Server: dods/4.0\\
+Content-Type: text/html\\
+Date: \emph{date}
+\end{textoutput}
+
+
+\subsubsection{\HELP}
+
+The \HELP response MUST return an HTML document which lists the
+extensions recognized by the server.  The response MAY return other
+information as well.  The intent is to provide a human-readable
+document, to be displayed in a WWW browser, that provides instruction
+in the use of the server that received the request.
+
+\begin{textoutput}{Required Headers:}
+XDODS-Server: dods/4.0\\
+Content-Type: text/html\\
+Date: \emph{date}
+\end{textoutput}
+
+
+\subsection{Other Responses}
+
+To learn about the responses to HTML or formatted data (ASCII)
+requests, see \DAPHTML or \DAPASCII. 
+
+
+\subsection{Alternate Response Bodies}
+\label{sec-resp-alt}
+
+Earlier versions of the \DAP did not use the \DDX, \DAX, \Blob, and
+\ErrorX objects in their current form.  Instead, the \DAP (then called
+\DODS) used a C-style syntax in objects called the \DDS, \DAS,
+\DataDDS.  The correspondence between the earlier formats and the
+current XML descriptions is not exact.  The \DataDDS contained the
+information now in the \DDX and \Blob, but without any of the
+attribute information for the variables.  The \DDS and \DAS together
+contained the information now in the \DAX.
+
+There were a large number of \DAP clients released in these earlier
+versions, and so an HTTP implementation of the \DAP SHOULD provide the
+responses in this section.
+
+\subsubsection{DAS}
+\label{sec-das}
+The \DAS entity is returned as the payload of a message whose
+\lit{Content-Type} header MUST be \lit{text/plain}. The body of the
+response contains text which holds all of the attribute containers and
+values.
+
+The \DAS is used to store attributes for both the entire dataset and
+variables in the dataset. The \DAS consists of a number of
+\emph{containers} each of which hold zero or more attributes. Each attribute
+is a name-datatype-value tuple. Values may be either scalar or vector. Note
+that two, three, \ldots, dimensional attribute values are \emph{not}
+supported.  The name of the attribute container MUST be the same as
+the name of the variable to which its attributes refer.
+% added a MUST.  ts.
+
+A \DAS MUST have a container for each variable in the dataset. It MAY
+contain any number of extra containers.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+das-doc & = & "attributes" "{" *attribute-cont "}" \\
+attribute-cont & = & attribute-cont | attribute \\
+attribute & = & simple-decl id value *(, value) ";" \\
+value & = & <Float> | <int> | id | <quoted string> \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+The purpose of attributes is to hold additional information beyond the name,
+datatype and value of a variable and/or to hold extra information about a
+dataset as a whole. This extra information can make the contents of the
+dataset much easier to use. For example, extra information contained in the
+\DAS might provide unit names, scaling factors or the missing-value
+values. Additional information about an entire dataset might contain
+information about who collected the information, under what circumstances
+\emph{et cetera}. 
+
+Many systems rely on attributes to store extra information that is necessary
+to perform certain manipulations with data. In effect, attributes are used to
+store information that is used `by convention' rather than `by design'.
+\ac{DODS} can effectively support these conventions by passing the attributes
+from data set to user program via the \DAS. Of course, \ac{DODS} cannot
+enforce conventions in data sets where they were not followed in the first
+place.
+
+An example \DAS is shown in \Figureref{fig-das}.
+
+\begin{figure}
+\begin{vcode}{cb}
+attributes {
+   catalog_number {
+   }
+   casts {
+      experimenter {
+      }
+      time {
+         string units "hour since 0000-01-01 00:00:00";
+         string time_origin "1-JAN-0000 00:00:00";
+      }
+      location {
+         lat {
+            string long_name "Latitude";
+            string units "degrees_north";
+         }
+         lon {
+            string long_name "Longitude";
+            string units "degrees_east";
+         }
+      }
+      xbt {
+         depth {
+            string units "meters";
+         }
+         t {
+            float32 missing_value -9.99999979e+33;
+            float32 _fillvalue -9.99999979e+33;
+            string history "From coads_climatology";
+            string units "Deg C";
+         }
+      }
+   }
+}
+\end{vcode}
+\caption{Example Dataset Attribute Entry. This example matches the DDS shown
+   in \Figureref{fig-dds}. Some of the variables in this fictional dataset
+   (e.g., \lit{catalog\_number}) have no attributes. }
+\label{fig-das}
+\end{figure}
+
+\subsubsection{DDS}
+\label{sec-dds}
+The \DDS entity is returned as the payload of a message whose
+\lit{Content-Type} header MUST be \lit{text/plain}. The body of the
+response contains text which holds all of the variables, their names and
+datatypes.
+
+The DDS is a textual description of the variables and their names and
+types that compose the entire data set. The data set descriptor syntax
+is similar to the variable declaration syntax of C and \Cpp. A
+variable that is a member of one of the base type classes is declared
+by by writing the class name followed by the variable name. The type
+constructor classes are declared using C's brace notation.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+dds-doc & = & "dataset" "\{" *type-decl "\}" id ";" \\
+type-decl & = & simple-decl | list-decl | array-decl \\
+          & & | structure-decl | sequence-decl | grid-decl \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+The \lit{dataset} keyword has the same syntactic function as
+\lit{structure} but is used for the specific job of enclosing the entire
+dataset even when it does not technically need an enclosing element (because
+at the outermost level it is a single element such as a structure or
+sequence).
+
+An example DDS is shown in \Figureref{fig-dds}.
+
+\begin{figure}
+\begin{vcode}{cb}
+dataset {
+   int catalog_number;
+   sequence {
+      string experimenter;
+      int32 time;
+      structure {
+         float64 latitude;
+         float64 longitude;
+      } location;
+      sequence {
+         float depth;
+         float temperature;
+      } xbt;
+   } casts;
+} data;
+\end{vcode}
+\caption{Example Dataset Descriptor Entry.}
+\label{fig-dds}
+\end{figure}
+
+
+\subsubsection{DODS}
+\label{sec-dods}
+
+The \ac{DataDDS} entity is returned as the payload of a message whose
+\lit{Content-Type} header MUST be \lit{application/octet}.  The body
+of the response contains both text which holds a \DDS which describes
+the variables listed in the request and the values for those variables
+encoded using XDR\cite{xdr}. The text \DDS and the binary data are
+separated in the response entity by the literal \lit{Data:}.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+DataDDS & = & DDS CR "Data:" CR <Binary values>
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+simple-decl & = & simple-type id ";" \\
+simple-type & = & "byte"| "int16" | "uint16" | "int32" | "uint32" \\
+                & & | "float32" | "float64" | "string" | "url" \\
+id & = & (ALPHA | "\_" | "\%" | ".") \\
+       & & *(ALPHA | DIGIT | "/" | "\_" | "\%" | ".") \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+
+Clients MAY supply a constraint expression (see \DAPObjects) with
+any \lit{DataDDS} request. The \DDS in the \lit{DataDDS} response
+describes the variables returned. The order that the variables are listed in
+the \DDS MUST match the order of the values in the binary section of the
+\ac{DataDDS} response. If the response contains constructor types, then the
+variables are sent in the order they would be visited in a depth-first
+traversal of the accompanying \DDS.
+
+\subsubsection{ERROR}
+\label{sec-error}
+When a server encounters an error, either in its software or in the users
+request, it MUST return an error response. The body of the response contains
+an error code along with text that provides a description of the problem
+encountered. Server writers are encouraged to provide text that describes the
+problem with enough information to enable a user to correct the problem or
+submit a meaningful bug report to the server's maintainer.
+
+\note[Ed note]{Error objects can, in theory, contain a short Java or
+  TCL/Tk program to help users resubmit URLs, et cetera. However,
+  we've never used this feature.}
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+Error & = & "Error" "\{" "code=" error-code ";" \\
+      & & "message=" error-msg ";" "\}" \\
+error-code & = & 1*DIGIT \\
+error-msg & = & quoted-string \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+\section{Authentication and Authorization}
+
+The HTTP implementation of the \DAP should provide for access control to
+individual files.  Access can be controlled by the individual file, or
+the directory.  See \Figureref{fig-url-parts}.  The \DAP server must
+be able to query the client for the username and password as needed.
+In the case of nested protections, where a file inside a protected
+directory is itself is protected, the \DAP server must be able to
+prompt the client multiple times.
+
+When there is only one level of access control, a client can include
+the username and password directly in the \DAP URL, like this:
+
+\begin{vcode}{it}
+http://username@password:machine.uri.edu/nph-nc/data/file.nc  
+\end{vcode}
+
+It is also convenient to be able to restrict access to data resources
+by excluding requests from specific IP numbers, or ranges of IP
+numbers.  The \DAP does not require this form of access, but it is
+suggested. 
+
+
+
+\appendix
+
+\bibliographystyle{plain}
+\T\addcontentsline{toc}{section}{References}
+\T\raggedright
+\bibliography{../../../boiler/dods}
+
+\section{Change log}
+
+\begin{verbatim}
+$Log: dap_http.tex,v $
+Revision 1.14  2003/07/24 22:32:12  tom
+excised dap_services document references
+
+Revision 1.13  2003/07/18 21:33:02  tom
+re-added material about help and info services.  I'm going to delete dap_services
+
+Revision 1.12  2003/07/18 20:09:39  tom
+moved version response information in
+
+Revision 1.11  2003/07/16 20:30:17  tom
+comments incorporated.  needs detail about errors.
+
+Revision 1.10  2003/07/16 01:06:08  tom
+progress on comments, fixed titles
+
+Revision 1.9  2003/06/10 16:13:53  tom
+incorporated suggestions from March meeting
+
+Revision 1.8  2003/06/10 01:02:57  tom
+CE syntax fixes
+
+Revision 1.7  2003/06/05 21:00:58  tom
+changed CE syntax
+
+Revision 1.6  2003/06/04 21:17:39  tom
+little changes about CEs
+
+Revision 1.5  2003/05/31 01:30:18  tom
+fixed constraint expression description in dap_objects to be XML
+
+Revision 1.4  2003/05/28 21:06:50  tom
+progress 5/28
+
+Revision 1.3  2003/05/23 22:08:30  tom
+makefile repairs, bibliography
+
+Revision 1.2  2003/05/23 21:50:52  tom
+progress made
+
+Revision 1.1  2003/05/23 19:27:42  tom
+new files, rearranging DAP spec into separate documents
+
+
+\end{verbatim}
+
+\end{document}

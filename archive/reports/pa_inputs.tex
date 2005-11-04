@@ -1,0 +1,2556 @@
+\begin{center}
+\LARGE
+ {\bf Ian Bacon}
+\end{center}
+
+\bigskip
+\large
+\noindent{\bf Personal-}
+
+%\externalref{bass_src} {\bf Bill Bass}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Ian Bacon
+\item{Title:}  Program Manager, NASA Programs
+\item{Affiliation:}  Telos Systems Group
+\item{Address:}  14585 Avion Parkway, Chantilly, VA  22021
+\item{email:}  ian@getafix.tsg.com
+\item{phone:}  (703)802-1730
+\item{fax:}  (703)802-0718
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  Space Flight Operations Center, JPL
+\item{Discipline:}  Planetary Science
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  all types returned from deep space probes
+	\item{Inventory Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}
+	\item{Total volume of Data [Megabytes]:}  more like Gigabytes
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+
+\medskip
+ 	Telos has experience with both distributed data systems and the
+  object oriented world, through our work at JPL, and also through internal
+  R\&D projects.  At JPL, we have been responsible for the Space Flight
+  Operations Centre, previously called SFOC, now called AMMOS. This is a
+  distributed system, comprised of over 500 UNIX workstations, spread across
+  the country, networked together over the Internet. Telos designed a
+  significant portion of this system. It is used to control spacecraft, but
+  also to collect the level zero data, process them to level 1, and make them
+  available in quick-look form to interested parties.  We have also been
+  responsible for the Command Sequence Generator, used for Magellan and other
+  systems. It takes maneuver profiles for various spacecraft, and converts
+  them into the command sequences which are uploaded to the vehicles.  SeqGen
+  was designed using object oriented design techniques, and was developed in
+  C++. It includes a small object oriented database which was developed
+  specifically for the project by Telos.
+
+  	On the East Coast, Telos has been working with object oriented
+  database systems on a project originally designed to meet the needs of one
+  of the Intelligence agencies.  Project Headroom, as it is currently known,
+  functions as a distributed database system, capable of extracting data from
+  a variety of different database types (including Sybase and Oracle, as well
+  as flat files, network databases, and others). The data can be accessed
+  over a network, and are joined into a single data object, in an object
+  oriented database.  We are currently working on a prototype of this system
+  for use with scientific datasets. The version which we are developing
+  allows analysts to select data from multiple datasets without having to
+  know specifically where they are located, effectively creating a fileless
+  system.  When the data are contained in monolithic files (such as HDF
+  files) the system browses Metadata files, and extracts only those data
+  points of interest to the analyst, so it is not be necessary to pull huge
+  files over the Internet, and then manually extract the data.  Data from
+  several datasets can be joined into a single data object, when there are
+  areas of commonality between them (such as dates or geographical locations,
+  for example). The data, once retrieved, are available for processing by
+  public domain or user specific tools, which can be incorporated into the
+  object oriented database as methods.  The client side includes a very
+  powerful search tool, which is capable of performing contextual searches of
+  text based information. We are also currently binding IDL into the client,
+  to allow the analyst to use its powerful tools on the data object which the
+  system builds.  Our goal would be to distribute this system over the ECS
+  network, with client systems at the SCFs, and servers at each of the DAACs.
+
+\newpage
+
+
+
+
+\begin{center}
+\LARGE
+{\bf  Bill Bass}
+\end{center}
+\bigskip
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+
+\item{Name:}  Bill Bass
+\item{Title:}  Principal Scientist
+\item{Affiliation:}  Hughes Applied Information Systems, Inc.
+\item{Address:}  1616A McCormick Drive
+\item{email:}  bill@eos.hac.com
+\item{phone:}  (301)925-0304
+\item{fax:}  (301)925-0327
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  Eos Data and Information System Core System 
+(ECS)
+\item{Discipline:}  Atmosphere, Ocean, Land, Cryosphere, Interdisciplinary
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  From Raw Remote Sensed Data to Geophysical 
+Parameters
+	\item{Inventory Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  200000/day
+	\item{Total volume of Data [Megabytes]:}  1 TB/day
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	I am a system engineer working on the development of a data and 
+information system for a repository and distribution system for a large 
+quantity of remotely sensed data.  I am currently investigating means of 
+generalizing this NASA system to a global change data and information 
+system and, beyond than, to a system in which users may easily become 
+data providers as well as data users (sometimes called User-DIS).
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  Wendell S. Brown}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Wendell S. Brown
+\item{Title:}  Professor of Oceanography
+\item{Affiliation:}  Inst. for the Study of Earth Oceans and Space, UNH
+\item{Address:}  OPAL/EOS Morse Hall, UNH, Durham, NH  03824
+\item{email:}  kmg@kepler.unh.edu
+\item{phone:}  (603)862-3153
+\item{fax:}  (603)862-0243
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  Environmental Data and Information 
+Management System (EDIMS)
+\item{Discipline:}  Marine
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}	NOAA/realtime meteorological data
+	\item{Inventory Meta Data [Y/N]:}  y
+	\item{Digital Data, Data Products ]Y/N]:}  y
+	\item{Number of Data Granules:}  8 files/day
+	\item{Total volume of Data [Megabytes]:}  0.002/file
+\medskip
+	\item{Type of Data:}  Coastline/bathymetry
+	\item{Inventory Meta Data [Y/N]:}  y
+	\item{Digital Data, Data Products [Y/N]:}  y
+	\item{Number of Data Granules:}  30 files
+	\item{Total volume of Data [Megabytes]:}  1
+\medskip
+	\item{Type of Data:}  UNB riverflow data
+	\item{Inventory Meta Data [Y/N]:}  y
+	\item{Digital Data, Data Products [Y/N]:}  y
+	\item{Number of Data Granules:}  1 file/day
+	\item{Total volume of Data [Megabytes]:}  0.001/file
+\medskip
+	\item{Type of Data:}  AFAP dataset
+	\item{Inventory Meta Data [Y/N]:}  y
+	\item{Digital Data, Data Products [Y/N]:}  y
+	\item{Number of Data Granules:}  1 file
+	\item{Total volume of Data [Megabytes]:}  30
+\medskip
+	\item{Type of Data:}  Massachusetts Bay dataset
+	\item{Inventory Meta Data [Y/N]:}  y
+	\item{Digital Data, Data Products [Y/N]:}  y
+	\item{Number of Data Granules:}  745 files
+	\item{Total volume of Data [Megabytes]:}  8
+\medskip
+	\item{Type of Data:}  NOAA/NOCN SST dataset
+	\item{Inventory Meta Data [Y/N]:}  y
+	\item{Digital Data, Data Products [Y/N]:}  y
+	\item{Number of Data Granules:}  0-8 files/day
+	\item{Total volume of Data [Megabytes]:}  0.3/file
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\bigskip
+
+\noindent {\bf EDIMS CONTEXT}
+
+	The Gulf of Maine Council on the Marine Environment (GOM/CME) has 
+developed a ten-year Gulf Action Plan to address issues concerning the 
+environmental health of the Gulf and management of the marine resource.  
+Toward that end, the GOM/CME Working Group established a Data and 
+Information Management Committee (DIMC) to develop an Environmental 
+Data and Information Management System (EDIMS) for the Gulf of Maine 
+region.  I was chosen to lead a University of New Hampshire (UNH) effort 
+to design and implement a prototype EDIMS which is now available for 
+broad community use.
+
+\bigskip
+\noindent {\bf EDIMS CONCEPT}
+
+	The EDIMS is designed to make a data directory and a relevant set of 
+data bases accessible to EDIMS users.  The prototype EDIMS is designed to 
+be simple and flexible enough to accommodate anticipated changes.  We 
+expect that the eventual user group will include marine environment and 
+resource managers; state and provincial planners; and ocean scientists and 
+engineers.  As users become more familiar with the prototype EDIMS they 
+will articulate their needs more clearly.  The development of EDIMS will 
+be guided by that feedback.
+
+	The fully operational EDIMS will need to deliver to its users a large 
+and diverse blend of archived and real-time data from operational and 
+research sources.  Thus EDIMS is structured around a decentralized 
+database.  Figure 1 illustrates schematically how data users/suppliers 
+from the states, provinces and federal agencies will be able to exchange 
+data and information via the Internet network.  This approach relies on the 
+effort and resources of the data users/suppliers and thus can be expanded 
+relatively easily.
+
+	While the EDIMS data directory and a few special data sets will 
+reside at a host computer site, most of the EDIMS databases will reside at 
+remote locations.  EDIMS data users/suppliers will link to the network and 
+thus have access to all of the information and data at the EDIMS host site 
+(presently UNH), as well as the remote EDIMS sites.  As envisioned, EDIMS 
+data users/suppliers will be asked to assume a major share of the 
+responsibility for database quality and maintenance.  They will be 
+assisted by an EDIMS manager at the host site who will oversee the 
+operations of the EDIMS and implement improvements to EDIMS.  We expect 
+that different data users/suppliers in the region will commit to and 
+support such an EDIMS because of their need to access the comprehensive 
+EDIMS database.  This information will enable them to conduct research, 
+protect public health, and/or manage the Gulf of Maine marine resource 
+better than ever before.
+
+\bigskip
+\noindent {\bf PROTOTYPE EDIMS}
+
+	A UNH development team has constructed and implemented the 
+prototype EDIMS.  The prototype EDIMS consists of a few representative 
+databases (see below), which can be accessed by a broad user community.  
+We have developed a set of protocols that will enable the group of data 
+users/suppliers to (a) query a directory of the regional Gulf of Maine data 
+sets; (b) electronically transfer a selected subset of these data to their 
+own computing environment; and (c) communicate generally with the 
+prototype EDIMS user community.  We have selected a diverse set of 
+databases to be part of the prototype EDIMS.  They are:
+
+\begin{itemize}
+\item    A Gulf of Maine database directory
+\item   Documentation (incl. EDIMS User Manual)
+\item   Gulf of Maine maps and bathymetry
+\item   Massachusetts Bays Program physical oceanographic data archive
+\item   Real-time satellite imagery and meteorology from the NOAA/NOS 
+		Ocean Products Division
+\item   The New Brunswick Department of Environment real-time river 
+		discharges
+\item   The USGS sediment texture data archive
+\item   Dartmouth model "data" for the Gulf of Maine
+\item   The Bedford Institute of Oceanography Atlantic Fisheries 	
+		Adjustment Program (AFAP) hydrographic data archive
+\end{itemize}
+\smallskip
+	Our goal in the next six months is to add:
+\smallskip
+\begin{itemize}
+\item   A "Who's Who" in the Gulf of Maine
+\item   The Gulf Watch mussel data
+\item   The EOEA Massachusetts shellfish data archive
+\end{itemize}
+\smallskip
+
+	EDIMS includes a SQL/ORACLE-based data directory.  A simple query 
+system enables EDIMS users to browse the EDIMS database directory for 
+information in user-specified time and space domains.  This 
+documentation  directory and "capture" any of the electronic EDIMS 
+databases.  The prototype EDIMS electronic databases consist of a data 
+description header and a flat ASCII data file.
+
+	In the prototype Gulf of Maine database directory, documentation and 
+all but the Dartmouth databases reside on the EDIMS host client/server 
+computer at the University of New Hampshire.  (When fully implemented, 
+most the EDIMS data bases will reside at their remote storage sites.)  
+During the prototype EDIMS development, most the databases will be 
+static, for the regularly updated NOAA and river discharge databases.
+
+	Internet is the conduit for the prototype EDIMS data and information.  
+It is an established and well-documented international network, with data 
+and mail transfer protocols that can be implemented on a variety of 
+platforms.  The Internet File Transfer Protocol (FTP) feature is used to 
+retrieve selected data from the host and/or remote storage sites.  In an 
+effort to keep track of EDIMS use, we will monitor access to the EDIMS.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  Donald Collins}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Donald J. Collins
+\item{Title:}  Manager
+\item{Affiliation:}  Physical Oceanography Distributed Active Archive 
+Center
+\item{Address:}  Jet Propulsion Laboratory
+			m/s  300-323
+			4800 Oak Grove Drive
+			Pasadena, California  91109
+\item{email:}  D.Collins/OMNET     djc@shrimp.jpl.nasa.gov
+\item{phone:}  (818) 354-3473
+\item{fax:}  (818) 393-6720
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  Physical Oceanography Distributed Active 
+Archive Center
+\item{Discipline:}  Physical Oceanography
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  Satellite data of the oceans, including
+		supporting data for verification.  Higher level data products.
+	\item{Inventory Meta Data [Y/N]:}   Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}
+	\item{Total volume of Data [Megabytes]:}  10 Tb by 1995
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	The goal of the PO.DAAC is to serve the needs of the oceanographic, 
+geophysical, and interdisciplinary science communities which require 
+physical information about the oceans.  This goal will be accomplished 
+through the acquisition, processing, archiving, and distribution of data 
+obtained through remote sensing, or by conventional means, and through 
+the provision of higher level data products to the scientific community.
+
+	The PO.DAAC presently serves the broad scientific community, 
+responding, without charge to the user, to requests for complete data sets 
+and for subsets of data based on temporal and spatial criteria specified by 
+the user. The PO.DAAC is responsible for the acquisition of well 
+documented satellite ocean data products at all levels, from existing 
+visible, infrared, passive and active microwave sensors, the distribution 
+of these holdings to the scientific community, and the provision of data 
+product documentation.
+
+	The Earth Observing System (EOS) Project at the Goddard Space 
+Flight Center (GSFC) contains as one element the Earth Science Data and 
+Information System (ESDIS).  The ESDIS has been formulated as a 
+distributed system, consisting of central functions at GSFC and 
+Distributed Active Archive Centers (DAAC) at eight sites throughout the 
+United States.  The Jet Propulsion Laboratory (JPL) has been designated as 
+the site for the Physical Oceanography Distributed Active Archive Center 
+(PO.DAAC).  The activities at each of the DAACs have been separated into 
+Version 0 activities and into later versions.  The concept for Version 0 is 
+that these activities evolve from the capabilities of the present systems 
+that have existed at the selected sites from discipline specific data 
+systems and data activities.  Version 0 will be operational in July, 1994 
+as a, "working prototype with operational elements", with prototype 
+capabilities for an Information Management System (IMS), a Data Archive 
+and Distribution System (DADS), and a Product Generation System (PGS).   
+
+	Version 1 will be operational at the end of FY-97, utilizing hardware 
+and software delivered by the EOS Core System contractor.  The transition 
+between Version 0 and Version 1 will be conducted without an 
+interruption of service to the scientific community.  Version 1 operations 
+will be conducted by the PO.DAAC.
+
+	The activities of the PO.DAAC are focused on the provision of pre-
+EOS data sets to the scientific community during Version 0, on the 
+establishment of an operational status for the PO.DAAC by July, 1994, and 
+on the transition between Version 0 and Version 1.
+
+	The PO.DAAC will provide the data archive and distribution services 
+for the \\TOPEX/POSEIDON mission, including the generation and publication 
+of the Merged Geophysical Data Record, through the end of the nominal 
+mission in August, 1995, and through the end of any extended mission 
+period, presently assumed to be August, 1997.
+
+	The PO.DAAC will archive and distribute the data from the AVHRR 
+Oceans Pathfinder, and will assume the continued AVHRR Oceans 
+Pathfinder data production following the initial production of the data 
+sets for the period 1981-1995 by the Pathfinder Task.  The transition is 
+assumed to occur at the beginning of FY-96.  The Pathfinder Task will 
+assume responsibility for a 1 km U.S. coastal data product in FY-95, and 
+will continue to produce this data product after that time.
+
+	The PO.DAAC will continue the provision of data archive and 
+distribution services to the U.S. WOCE and Scatterometry teams for the 
+ERS-1 low bit rate data sets, and the provision of these same services to 
+the U.S. teams for ERS-2, with a probable launch in mid-1995.
+
+	The PO.DAAC will assume responsibility for data packaging and 
+formats for the NSCAT data products, and for the archiving and 
+distribution of these products to the NSCAT Science Working Team, and to 
+the scientific community.  The PO.DAAC activities include preparation for, 
+and the support of, the NSCAT mission, with launch in February, 1996.  The 
+PO.DAAC will also assume responsibility for the development of higher 
+level data products as determined by the SWT and the PO.DAAC User 
+Working Group.
+
+	The PO.DAAC will be responsible for data processing, archiving, and 
+distribution for the EOS Altimeter mission, including all data products 
+from level 0 through the Sensor Data Record and Geophysical Data Record.  
+This responsibility will include the production of value added data 
+products, and the archiving of ancillary data and algorithms required for 
+reprocessing of data.  The extent of the PO.DAAC role will be determined 
+during the Phase A and Phase B studies, scheduled to begin in late FY-93.  
+During this period, the respective roles of the PO.DAAC and NOAA will be 
+determined relative to the mission data.
+
+	The PO.DAAC will be responsible for data processing, archiving, and 
+distribution for the SeaWinds  mission, including all data products from 
+level 0 through the Sensor Data Record and Geophysical Data Record.  This 
+responsibility will include the production of value added data products, 
+and the archiving of ancillary data and algorithms required for 
+reprocessing of the data.  The extent of the PO.DAAC role will be 
+determined during the Phase A and Phase B studies, scheduled to begin in 
+late FY-94.  During this period, the role of the PO.DAAC will be determined 
+relative to the mission data.
+
+	The PO.DAAC will continue to publish the TOGA CD-ROM series 
+throughout the International TOGA period, ending in FY-96.  The PO.DAAC 
+will publish other data sets as recommended by the Science Working 
+Teams of the missions which we support, and by the User Working Group, 
+including the SSM/I Oceans Products in FY-94, the Altimetric CD-ROM in 
+FY-95, the West Coast Time Series CD-ROM in FY-95, and additional data 
+sets as identified.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  James H. Corbin}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  James H. Corbin
+\item{Title:}  Director
+\item{Affiliation:}  Center for Air Sea Technology, Mississippi State 
+University
+\item{Address:}  MSU - CAST, Bldg. 1103, Room 233, Stennis Space Center, 
+MS  39529-5005
+\item{email:}  j.corbin (OMNET)
+		corbin@cast.msstate.edu (INTERNET)
+\item{phone:}  (601)688-2561
+\item{fax:}  (601)688-7100
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data System Name:}  Navy Environmental Observational Nowcast 
+System (NEONS)
+\item{Discipline:}  Oceanography, Meteorology
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  Operational model runs from FNOC
+	\item{Inventory Meta Data [Y/N]:}  N (?)
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  ~150 per day; X/Y grid
+	\item{Total Volume of Data [Megabytes]:}  ~20MB per day; 21 day 
+		rotating archive
+\medskip
+	\item{Type of Data:}  Model results from Data Assimilation and 
+		Model Evaluation Experiments (DAMEE) project
+	\item{Inventory Meta Data [Y/N]:}  Y (?)
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  (?)  ~10**5
+	\item{Total Volume of Data [Megabytes]:}  (?)  ~GB
+\medskip
+	\item{Type of Data:}  Observational data for verification in DAMEE
+	\item{Inventory Meta Data [Y/N]:}  Y  (?)
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  (?)  ~10**5; profiles, tracks, etc.
+	\item{Total Volume of Data [Megabytes]:}  (?)
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	A major effort of CAST is development of distributed data-bases 
+and data systems.  For the last four years the CAST research staff has 
+made major contributions to the enhancement and applications of the 
+Naval Environmental Operational Nowcast System (NEONS) developed by 
+the Naval Research Lab at Monterey California.  NEONS is an interface to a 
+relational database management system.  It provides "C" and "FORTRAN" 
+Applications Programming Interface (API) to the RDBMS, and also models 
+typical oceanographic data types, namely grids, point observations in 
+time, profiles, tracks, and images.  Through CAST efforts, NEONS has been 
+implemented at the U.S. Naval Oceanographic Office (NAVOCEANO), the 
+Fleet Numerical Oceanography Center (FNOC), the National Climate Data 
+Center, and the Naval Research Lab Stennis Space Center (NRL/SSC) among 
+others.  Through the support efforts to NRL/SSC, NAVOCEANO and FNOC, 
+CAST will have near real-time access to meteorological and 
+oceanographic observational and Navy operational model output data sets 
+that could be included in the distributed system.
+
+	CAST is also in the final developmental phases of a "client-server" 
+version of NEONS called "netNEONS" which obviates the need for running a 
+local RDBMS.  This allows local client applications to access the remote 
+RDBMS transparently via the remote NEONS server.  The experience gained 
+with netNEONS, coupled with what CAST has learned in the development of 
+a prototype Network Data Browser and associated applications could prove 
+valuable input to this workshop.  This prototype allows the scientists to 
+browse and retrieve model output fields stored in UNIX files scattered 
+across the network.  The meta information on the contents of the files are 
+registered in an RDBMS which the user queries via a GUI.  This is a 
+contents based browse system being developed for the NRL/SSC Ocean 
+Sciences Group.  The NRL scientists run many numerical models of 
+differing versions.  The Network Data Browser helps keep track and 
+manage outputs from the different model runs for each of the different 
+modeling groups and facilitates cross-group data browsing and retrieval.  
+The final version is intended to be an end-to-end client-server system.
+
+	CAST has also developed and implemented an operational data-base 
+for NAVOCEANO to manage and distribute the ocean profile data from the 
+Master Oceanographic Observational Data Set (MOODS). This entailed 
+migrating nearly two and a half million ocean profiles from files-based 
+system on UNISYS to the EMPRESS Distributed RDBMS running on a Cray Y-
+MP and SUN front end.  CAST is also teaming with University of Colorado 
+on development of an Altimetry Data Processing and Analysis System 
+(ideally this will be a distributed system).
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  Peter Cornillon}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Peter Cornillon
+\item{Title:}  Professor of Oceanography
+\item{Affiliation:}  URI/GSO
+\item{Address:}  112 Watkins, Narragansett Bay Campus, URI, 
+Narragansett, RI  02882
+\item{email:}  pete@petes.gso.uri.edu
+\item{phone:}  (401)792-6283
+\item{fax:}  (401)792-6728
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data System Name:}  xbrowse
+\item{Discipline:}  Physical Oceanography
+\medskip
+\item{Data System Name:}  Global AVHRR Database
+\item{Discipline:}  Physical Oceanography
+\medskip
+\item{Data System Name:}  InSitu
+\item{Discipline:}  Physical Oceanography
+
+\item{Data Managed:}
+	\begin{description}
+	\item{Total Volume of Data [Megabytes]:}  Gigabytes
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary:}
+\normalsize
+\medskip
+
+	At The University of Rhode Island I am involved with three different 
+data access systems.  Each system has a different scope, but all are 
+accessible using the Internet.
+
+	The Global AVHRR database locates existing HRPT and LAC passes 
+both at a number of institutions around the world.  The database is 
+automatically updated using the Internet.  Users can submit SQL queries to 
+the database using a captured account.  In addition, the database can be 
+used to co-locate AVHRR and XBT data using a data server we developed 
+and installed at NODC.  The AVHRR database currently points to over 
+140,000 HRPT/LAC passes.
+
+	The Xbrowse system provides realtime access to our 20,000+ 
+archive of 5km AVHRR data of the western North Atlantic.  This client-
+server system provides the user with a simple interface to a flatfile 
+database which can be searched by date only.  In response to a query the 
+user is presented with a list of image names, any one of which may be 
+examined.  Xbrowse uses progressive transmission to ameliorate different 
+(often low) levels of available network bandwidth at users sites.
+
+	We have also developed a set of small in situ data servers which are 
+accessed transparently using a captured account.  This system provides 
+access to several different types of in situ and model data.  It uses a 
+hierarchical searching mechanism specifically tailored to these data sets.
+
+	In addition, we have an extensive in house archive of satellite data, 
+both processed and raw.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  Henry A. Debaugh}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Henry A. Debaugh
+\item{Title:}  Database Administrator for the Ocean and Lake Levels 
+Division (OLLD)
+\item{Affiliation:}  NOAA
+\item{Address:}  NOAA/NOS, Routing code:  N/OES2x1, Room 7209, 1305 
+East-West Highway, Silver Spring, MD  20910
+\item{email:}  Internet not available yet (We are hoping for November.)  
+Use omnet, care of d.beaumariage
+\item{phone:}  (301)713-2884
+\item{fax:}  (301)713-4437
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  National Water Level Data Center (proposed 
+name)
+\item{Discipline:}  Oceanography
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  Water Level Time Series data
+	\item{Inventory of Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  ?  (OLLD maintains a world wide 
+network of water level observation stations app:  200 at present)
+	\item{Total Volume of Data:}  app. 3000 megabytes
+\medskip
+	\item{Type of Data:}  Ancillary Atmospheric and Oceanographic 
+Times Series Data
+	\item{Inventory of Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  ?  (OLLD maintains a world wide 
+network of water level observation stations app:  200 at present)
+	\item{Total Volume of Data:}  app. 1000 megabytes
+\medskip
+	\item{Type of Data:}  Water Temperature \& Density
+	\item{Inventory of Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  ?  (OLLD maintains a world wide 
+network of water level observation stations app. 90 collect Temperature 
+\& Density data)
+	\item{Total Volume of Data:}  app. 200 megabytes
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary:}
+\normalsize
+\medskip
+
+	I am the database administrator for the Ocean and Lake Levels 
+Division.  I have a primary responsibility for the management of OLLD's 
+data resources.
+
+\medskip
+OVERVIEW OF OLLD'S NATIONAL WATER LEVEL DATA CENTER \footnote {proposed 
+name}
+
+\medskip
+	The Ocean and Lake Levels Division in the Office of Ocean and Earth 
+Sciences, National Ocean Service, NOAA, is presently developing the Data 
+Processing and Analysis Subsystem (DPAS), a critical component of the 
+Next Generation Water Level Measurement System (NGWLMS).  DPAS is a 
+fully integrated, state-of-the-art computer system that will perform the 
+following functions of the NGWLMS; data acquisition, data processing, 
+analysis and quality control, database management, field requirements 
+assessments, logistics control, administrative activities, and data 
+dissemination.  DPAS is scheduled to be completed early in 1994 and 
+operational after thorough system testing has been successfully 
+completed.  Some parts of DPAS, such as data acquisition functions, have 
+been operational since early in 1992.  DPAS will provide on-line access to 
+the Division's very large and valuable database for both in-house and 
+external users.  OLLD analysts and oceanographers will use DPAS software 
+to derive standard Division products and also to perform ad-hoc analyses 
+and perform specialized services.
+
+	The Division is responsible for the collection and subsequent 
+processing and analysis of water level and related data from the coastal 
+areas of the United States, including Alaska, Hawaii, and U.S. territories 
+in the Pacific, and the Great Lakes.  Through OLLD's participation in the 
+Global Sea Level Program field stations have already been installed in 
+several foreign nations and more installations are planned for the near 
+future.  NGWLMS field units, which are replacing existing water level 
+gages based on antiquated technologies, automatically measure and record 
+water level data and associated data quality assurance parameters, and 
+other ancillary environmental data (such as wind speed, direction and 
+gusts, barometric pressure, etc.).  These data are transmitted from each 
+remote site every three hours via GOES satellites to NESDIS satellite 
+downlink facilities at Wallops Island, Virginia.  DPAS automatically calls 
+NESDIS every hour to download data collected since the last call and then 
+automatically performs preliminary quality control checks and generates 
+several reports which advise NOS personnel on the operational status of 
+the entire system.  Every 2 weeks (as presently scheduled) DPAS also 
+automatically interrogates they field units directly and downloads data 
+that was not collected via satellite transmission for whatever reason.
+
+	The nucleus of DPAS is Sybase, a high-performance relational 
+database management system (DBMS) which manages and maintains OLLD's 
+database which will exceed 10Gb of data in a few years.  This database 
+will store and maintain not only data from the new NGWLMS field units but 
+much of OLLD's historical data as well.  Sybase provides many other 
+important features such as security and control, server enforced 
+integrity, high data availability, and window-based tools.  Sybase also 
+runs on a variety of hardware platforms and operating systems making it 
+highly portable and providing an easy migration path to more powerful 
+platforms.  Sybase is used in a client-server architecture.  For DPAS 
+development, a VAX 4000 Model 500 computer acts as a database server 
+running Sybase server software; this processor will be upgraded when the 
+system becomes fully operational to increase performance.  Other VAXes 
+are networked to the database server to provide various network services.  
+Application software, consisting of integrated commercial and 
+customized software, runs on client workstations which are 486-based 
+PC's running the OS/2 operating system for in-house work.  DPAS will 
+have the flexibility to allow external client workstations with other 
+hardware and software configurations to access the database server via 
+wide-area network (WAN) and download selected data to be used as 
+needed.
+
+	When completed, DPAS will automatically perform many functions of 
+OLLD that are now manual processes.  Routine data processing and quality 
+assurance tasks will be done autonomously.  DPAS will provide more 
+capabilities to both in-house and external users and allow ad-hoc analyses 
+to be accomplished with relative ease.  The extensive data archive of OLLD 
+will be directly and readily available to external users and data from 
+NGWLMS field units will become available in near-real time.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  Elaine Dobinson}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Elaine Dobinson
+\item{Title:}  PO.DAAC Deputy Task Manager
+\item{Affiliation:}  JPL
+\item{Address:}  4800 Oak Grove Drive, Pasadena, A  91109
+\item{email:}  elaine\_dobinson@isd.jpl.nasa.gov
+\item{phone:}  (818)306-6269
+\item{fax:}  (818)306-6929
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+\item{Data System Name:}  EOSDIS Physical Oceanography DAAC
+\item{Discipline:}  Computer Science
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  Physical Oceanographic Data Products
+	\item{Inventory Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  Approx. 30,000 Granules
+	\item{Total Volume of Data [Megabytes]:}  Approx. 125 Gigabytes
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	I am currently working on the Version 0 implementation of EOSDIS.  I 
+led the IMS work at the PO.DAAC, co-lead the IMS system-level data 
+dictionary development activities, and am currently deputy manager for 
+the DAAC.  The PO.DAAC archive is an upgrade of the NODS (NASA Oceans 
+Data System) implemented in INGRES and about to be ported over to UNIX 
+on SGI.
+
+	Prior to my working on EOSDIS I was the lead database designer of 
+the science data catalog for the Planetary Data System.  I am also the 
+supervisor of the Archive Data Management Group in the Science Data 
+Systems Section of JPL.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  Glenn R. Flierl}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Glenn R. Flierl
+\item{Title:}  Professor of Physical Oceanography
+\item{Affiliation:}  MIT
+\item{Address:}  54-1426, MIT, Cambridge, MA 02139
+\item{email:}  glenn@lake.mit.edu
+\item{phone:}  (617) 344-2728
+\item{fax:}
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  JGOFS
+\item{Discipline:}  Bio, Chem, Phys Oceanogr.
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  station, time-series, model ...
+	\item{Inventory Meta Data [Y/N]:}  y
+	\item{Digital Data, Data Products [Y/N]:}  y
+	\item{Number of Data Granules:}
+	\item{Total volume of Data [Megabytes]:}  growing, but not huge
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\medskip
+
+\centerline{\bf A Distributed, Object-based Data Management System}
+\centerline {\bf for JGOFS}
+\centerline {Glenn Flierl, James Bishop, David Glover, Satish Paranjpe}
+
+\medskip
+\normalsize
+Large oceanographic programs such as JGOFS (The Joint Global Ocean Flux 
+Study) require data management systems which enable the exchange and 
+synthesis of extremely diverse and widely spread data sets. We have 
+developed a distributed, object-based data management system for 
+multidisciplinary, multi-institutional programs. It provides the capability 
+for all JGOFS scientists to work with the data without regard for the 
+storage format or for the actual location where the data resides.  The 
+approach used yields a powerful and extensible system (in the sense that 
+data manipulation operations are not predefined) for managing and 
+working with data from large scale, on-going field experiments.
+
+In the ``object-based'' system, user programs obtain data by 
+communicating with a program (the ``method'') which can interpret the 
+particular data base.  Since the communication protocol is standard and 
+can be passed over a network, user programs can obtain data from any data 
+object anywhere in the system. Data base operations and data 
+transformations are handled by methods which read from one or more data 
+objects, process that information, and write to the user program
+(or to the next filter in the series).
+
+We have written methods for various ASCII and binary databases, and built 
+transformation routines for doing mathematical operations, dynamic 
+height calculations, and data joins.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  George M. Frank}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  George M. Frank
+\item{Title:}  National Geodetic Survey Database Administrator
+\item{Affiliation:}  DOC/NOAA/NOS/C\&GS/NGS
+\item{Address:}  1315 East West Highway - Station 9127
+			Silver Spring, Md. 20910-3282
+\item{Email:}  george@galaxy.ngs.noaa.gov
+\item{Phone:}  301-713-3251
+\item{Fax:}  301-713-4172
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data System Name:}  National Geodetic Survey Integrated Data Base 
+(NGSIDB)
+\item{Discipline:}  Geodesy
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  Geodetic Survey Data
+	\item{Inventory Meta Data:}  Yes
+	\item{Digital Data, Data Products:}  Yes
+	\item{Number of Data Granules:}  
+	\item{Total Volume of Data (MB):}  6000
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary:}
+\normalsize
+\medskip
+
+	The National Geodetic Survey is a Federal organization that was 
+established in 1807.  It was given the responsibility to map the coastline 
+of the United States so that the nation's shipping industry could safely 
+navigate its waters.  This mandate has resulted in the determination of 
+horizontal coordinates of latitude and longitude for over 300K points and 
+the vertical coordinates for approximately 1000K points.  This 
+information is the basis for the National Geodetic Reference System from 
+which all U.S. mapping efforts should begin.
+
+	The NGS data holdings consists of all the geodetic surveying 
+information that NGS has accumulated from private, local and federal 
+government and its own efforts during the period since 1807.  The data 
+types consist of coordinates of latitude, longitude, and elevation; 
+descriptive text describing the location and physical characteristics of 
+the points; and observational data such as gravity, directions, distances, 
+elevation differences, and satellite observations including doppler, very 
+long baseline interferometry (VLBI), and global positioning system (GPS).
+
+	The NGS data is stored and managed by a relational database 
+machine, a Britton LEE IDM 700, otherwise known as a Sharebase or 
+Teradata.  This database server is accessed through a local area network 
+of Unix workstations and PCs using the Structured Query Language (SQL).  
+SQL is used in either an interactive mode or in Fortran or C application 
+programs.  The NGS LAN is a TCP/IP twisted pair ethernet consisting of 
+over 100 PCs and 35 UNIX workstations such as Suns, HPs, and Sun clones.  
+The NGS LAN can be accessed with dial-in capability or through Internet.
+
+	For those outside users that have not been granted direct access to 
+the NGS LAN or database system, information can be obtained by 
+contacting the NGS Information Center by telephone.  The Information 
+Center provides a wide variety of data in various formats.  GPS orbital 
+data which is not in the database can be obtained through the Information 
+Center or through the Coast Guard bulletin board.
+
+	The NGS database system is currently undergoing a transition to a 
+Sybase DBMS system that resides on a Sun multiprocessor server.  Sybase 
+possesses features such as ANSI SQL and Open Server, that will permit 
+NGS to more easily share its data with other database systems.  The 
+multiprocessing capability of this system will also increase the 
+performance and therefore the availability of the NGS data.
+
+	NGS and another organization within NOAA, the Ocean Lake and Level 
+Division (OLLD),is proposing to create a distributed data system.  NGS and 
+OLLD independently maintain their own data holdings using Sybase DBMS.  
+Each realizes that the other possesses data that they could use.  It is their 
+goal to create a system that would provide a link between them.  This 
+would require the creation of metadata for their databases, a network 
+accessible graphical user interface (GUI) that would allow users to locate 
+and obtain data easily and rapidly, and the physical link that could be 
+provided through Internet or dial-in access.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  David Fulker}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  David Fulker
+\item{Title:}  Director, Unidata Program Center
+\item{Affiliation:}  University Corporation for Atmospheric Research 
+(UCAR)
+\item{Address:}  P.O. Box 3000, Boulder, CO  80307 
+			or for UPS, etc:  3300 Mitchell Lane, Suite 170, Boulder, 
+			CO  80301
+\item{email:}  fulker@unidata.ucar.edu
+\item{phone:}  (303)497-8650
+\item{fax:}  (3)497-8690
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data System Name:}  Unidata
+\item{Discipline:}  Atmospheric Science
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  Surface, Soundings, Grids, Images
+	\item{Inventory Meta Data [Y/N]:}  N
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  NA (real-time flow)
+	\item{Total Volume of Data [Megabytes]:}  >100 MB/day
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+\large
+\begin{description}
+\item{\bf *} {\bf UNIDATA Overview Factsheet}
+\end{description}
+\normalsize
+
+	Unidata is a nationwide program to help university departments 
+acquire and use atmospheric data.  The Unidata Program Center (UPC) is 
+managed by the University Corporation for Atmospheric Research (UCAR) 
+in Boulder, Colorado, and sponsored by the National Science Foundation 
+(NSF).  Personnel and other resources required for university participation 
+are provided by the institutions themselves.  The NSF and university 
+resources are complemented by contributions from private industry.
+
+\bigskip
+\noindent{\bf Unidata Provides:}
+\begin{itemize}
+	\item Real-time weather data (via satellite) at group discount rates;
+	\item Software to display and analyze those data;
+	\item Consultation on the necessary hardware and software;
+	\item Training workshops on how to install and use Unidata software;
+	\item Ongoing support by and for the Unidata community of users.
+\end{itemize}
+
+\noindent {\bf Products and Services}
+\begin{itemize}
+\item Current Data via Satellite:
+
+\noindent Established Data Products.  Unidata participants receive National 
+Weather Service data at discounted rates.  These include the Domestic 
+Data Service (conventional surface and upper-air observations for the 
+U.S.), the International Data Service, and the Numerical Product Service 
+(gridded analyses and forecasts from the National Meteorological Center 
+and the European Centre fro Medium-Range Weather Forecasting).
+
+\noindent Research Data Products.  A special Unidata broadcast channel carries 
+a range of data prepared at the University of Wisconsin-Madison under
+contract with the UPC.  These include satellite and radar images, as well as
+the conventional meteorological data used with the Unidata McIDAS software/
+This channel also carries special products not generally available through
+the National Weather Service, such as wind profiler data.
+
+\item Software Tools:
+
+\noindent netCDF [described below]
+
+\noindent The Local Data Manager (LDM) [described below]
+
+\end{itemize}
+
+	To licensed universities, Unidata distributes software applications 
+for displaying and analyzing the data captured by the LDM.  These packages 
+are WXP, the Weather Processor (developed by Purdue University), GEMPAK 
+(developed at NASA/Goddard Space Flight Center), and YNOT (developed by 
+MacDonald Dettwiler and Associates).  Unidata also distributes McIDAS-X 
+and McIDAS-OS2 (developed at the University of Wisconsin-Madison Space 
+Science and Engineering Center), which analyze and display data from the 
+special Unidata/Wisconsin broadcast channel.
+
+\bigskip
+\noindent {\bf Support:}
+\medskip
+
+	The Unidata Program Center provides full support for all the 
+software packages it distributes.  Full support includes:  consultation, 
+training workshops, software maintenance, and documentation.
+
+\noindent Costs:
+
+	Unidata software, training, and support are provided at no charge to 
+universities. Unidata arranges a group discount rate for data services.  
+Universities assume the costs of purchasing equipment, hiring site and 
+system administrators, subscribing to data services, and all travel and 
+accommodations associated with training workshops.
+
+	Some of the Unidata activities most relevant to a distributed data 
+systems workshop are associated with two software systems, netCDF and 
+LDM, described below.
+
+\large
+\begin{description}
+\item{\bf *} {\bf UNIDATA netCDF Factsheet}
+\end{description}
+\normalsize
+
+\noindent {\bf Overview:}
+\medskip
+
+	The Network Common Data Form, or netCDF, package is a software 
+package that standardizes how scientific data are stored and retrieved. 
+More than a data format, the netCDF package is a set of programming 
+interfaces that can be used with widely varying scientific data sets by 
+machines of widely varying architecture.
+
+\bigskip
+\noindent {\bf Features}
+\begin{itemize}
+\item Standardized Data Access
+
+\noindent Unidata's library of netCDF subroutines insulates applications from 
+the underlying data format.  Multidimensional floating- point, integer, and 
+character data can be stored and retrieved using these functions.  Data are 
+accessed by specifying a netCDF file, a variable name, and a description of 
+what part of the multidimensional data is to be accessed.  
+Multidimensional data may be accessed one point at a time, in cross-
+sections, or all at once.
+
+\item Self-Describing
+
+\noindent Variables and their associated dimensions are named.  Information 
+about the data, such as what units are used what is the valid range of data 
+values, can be stored in attributes associated with each variable.  The 
+processing history of a data set can be stored with the data.
+
+\item C and FORTRAN Compatible
+
+\noindent The netCDF subroutines can be invoked from either C or FORTRAN, 
+and data stored using one language may be retrieved in the other.
+
+\item Machine-Independent
+
+\noindent The format underlying the netCDF package employs an open standard 
+known as XDR (for eXternal Data Representation) that renders netCDF files 
+machine independent.  The netCDF package is particularly useful at sites 
+with a mix of computers connected by a network.  Data stored on one 
+computer may be read directly from another without explicit conversion.
+
+\item Portable
+
+\noindent The software has been used successfully on a broad range of 
+computers, from PCs to supercomputers.
+
+\item Benefits
+    \begin{itemize}
+	\item Reusable Applications
+
+\noindent Unidata's purpose in creating the netCDF library is to generalize 
+access to scientific data so that the methods used for storing and 
+accessing data are independent of the computer architecture and the 
+applications being used.  In addition, the library minimizes the fraction of 
+development effort devoted to dealing with data formats.
+
+	\item Reusable Data
+
+\noindent Standardized data access facilitates the sharing of data.  Since the 
+netCDF package is quite general, a wide variety of analysis and display 
+applications can use it.  The netCDF library is suitable, for example, for 
+use with satellite images, surface observations, upper-air soundings, and 
+grids.  By using the netCDF package, researchers in one academic 
+discipline can access and use data generated in another discipline.
+    \end{itemize}
+\end{itemize}
+
+\large
+\begin{description}
+\item{\bf *} {\bf UNIDATA LDM Factsheet}
+\end{description}
+\normalsize
+
+
+\begin{description}
+	\item {}{\bf Overview}
+
+\noindent Unidata's Local Data Manager (LDM) software acquires 
+meteorological data and shares these data with other computers on a 
+network.  The LDM handles data from National Weather Service data 
+streams, including gridded data from numerical forecast models.
+
+\noindent A client ingester handles a specific data feed.  It scans the data 
+stream, determines product boundaries, and extracts products, passing 
+selected products to one or more LDM servers.
+
+\noindent The LDM server processes the raw data passed to it by one or more 
+ingesters and converts that data into a form that can be used by 
+applications programs.
+
+	\item {} {\bf Features --}  The LDM is
+
+\noindent User configurable:  the LDM server can be instructed to append a 
+particular product to a file; save a product in a particular form, such as 
+Unidata's netCDF; execute an arbitrary program with the data product as 
+input; store or retrieve products in a simple database by key; and/or pass 
+data along to other running client programs.
+
+\noindent Site configurable:  data captured on one machine can be stored on 
+other machines on a network. This means that data ingest functions can be 
+separated from storage and use functions, allowing sites to tailor their 
+LDM system to their capacity.
+
+\noindent Extensible:  new client decoders can be added easily, including 
+decoders for archival data.
+
+\noindent Event-driven:  the system captures data in real time.
+\end{description}
+
+	Unidata is currently engaged in exploiting the architecture of the 
+LDM software to build a system for distributing real-time data via the 
+Internet.  The principle is that products will fan out from the source 
+through several tiers of cooperating LDM computers, each of which relays 
+data to several "neighbors" on an event-driven basis.  In this way, 
+hundreds of end-user sites can be served promptly (i.e., within a few 
+seconds of data arrival) without the kinds of traffic jams that would 
+arise if all sites were to contact a single server at the same time (i.e., at 
+the time of data arrival).
+
+	The distributed LDM system is undergoing tests at a dozen or so 
+sites, and the results are sufficiently encouraging that we are planning 
+eventually to replace the satellite data broadcast service with this 
+Internet Data Distribution (IDD) system.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  James Gallagher}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  James Gallagher
+\item{Title:}  Programmer/Analyst
+\item{Affiliation:}  URI/GSO
+\item{Address:}  110 Watkins, Narragansett bay campus, URI, 
+Narragansett, RI. 02882
+\item{email:}  jimg@dccz.gso.uri.edu
+\item{phone:}  401.792.6939
+\item{fax:}  401.792.6728
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  xbrowse
+\item{Discipline:}  Physical oceanography
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  Sea surface temperaure (SST)
+	\item{Inventory Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  O(10k)
+	\item{Total volume of Data [Megabytes]:}  O(10)
+\medskip
+	\item{Type of Data:}  SST, Raw satellite
+	\item{Inventory Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  O(10)
+	\item{Total volume of Data [Megabytes]:}  O(1)
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	Xbrowse was designed so that users who are not physically at an 
+archive site can efficiently access, review and retrieve image and in-situ 
+data necessary for their work. Xbrowse uses the Internet to provide real-
+time access to image archives. Xbrowse is different from other remote 
+browsing systems in that it provides more than a fixed resolution preview 
+of each image being browsed.  With xbrowse, the user views the image at 
+progressively increasing levels of resolution -- up to the resolution of the 
+archived data if desired.  Images that are of no interest to the user, for 
+example because of cloud cover in a region of specific interest or because 
+of data drop out in part of the image, can quickly be passed by at low 
+resolution.  Images of greater interest can be allowed to progress to 
+higher levels of resolution.  Further, the user can stop the progressive 
+transmission of the image at a (low) level of resolution and mark out an 
+inset area in the main image for viewing at higher levels of resolution.  
+Since researchers often need only a portion of the image area at full 
+resolution, this progressive transmission/composite image approach to 
+browsing makes it feasible to provide effective real-time, remote access 
+to the archived data and allows xbrowse to be used as a data access tool 
+and not just a data ordering tool. In addition, xbrowse can access in situ 
+metadata and overlay that data on the imagery being displayed.
+
+	The xbrowse software is based on the client/server model of 
+cooperating, independent processes.  Client software, essentially the user 
+interface, is installed on a user's machine.  Server software at archive 
+sites responds to commands from the client software to send the data 
+requested by the user.  The client software on the user's machine can 
+interact with many different servers at different sites.  Although at 
+present only the two data servers mentioned earlier are operational -- the 
+server at the University of Rhode Island which provides AVHRR SST 
+images and a server at the National Ocean Data Center which provides XBT 
+metadata -- it is expected that other data servers will be added at other 
+archives in the future.
+
+	Both the client and data server are available via anonymous ftp at 
+zeno.gso.uri.edu. 
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  Jeffrey Given}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Jeffrey Given
+\item{Title:}  Geophysicist
+\item{Affiliation:}  Science Applications International Corporation
+\item{Address:}  MS A-2 10260 Campus Point Drive, San Diego, CA  92121
+\item{email:}  jeff@gso.saic.com
+\item{phone:}  (619)458-2656
+\item{fax:}  (619)458-4993
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	Our group at Science Applications International Corporation has 
+approximately 40 professionals involved with all aspects of the 
+management, processing, and wide-area distribution of geophysical data.  
+The representative data management activities include:
+\begin{description}
+
+\item{\bf 1.}	The Center for Seismic Studies (CSS), Arlington, VA.  This is
+a seismological data center that we have developed for ARPA over the past
+decade.  The activities of the CSS include (1) Near real-time, world-wide
+data acquisition over a TCP/IP WAN; (2) Data processing and analysis by
+independent, cooperating institutions in Norway, Russia, and the US, with
+automated data migration between the sites; (3) data-centric software
+architecture based on a distributed Oracle DBMS and supported by several
+application interfaces; (4) many gigabytes of randomly and readily accessible
+time-series data stored on an optical jukebox and tightly integrated into a
+near-real time processing system; (5) User interfaces built with X/Motif for
+data selection, browsing, and interpretation; (6) Distribution of these data
+to the world-wide community of seismologists.
+
+\item{\bf 2.}	Sequoia 2000.  SAIC has been an industrial partner for two
+years in this state-wide project of the University of California.  We are
+deeply involved in developing DBMS and application software to support the
+project oceanographers and climate researchers involved in global change
+science.  We are working especially closely with NOAA staff and NOAA-
+supported researchers at SIO.
+
+\item{\bf 3.}	NOAA.  Under contract to Scripps Institution of Oceanography,
+SAIC is prototyping a distributed data access system.
+
+\item{\bf 4.}	Acoustic Thermometry of Ocean Climate (ATOC).  Under contract
+to Scripps Institution of Oceanography, SAIC is developing a data center for
+the ARPA-sponsored ATOC project.  The data to be managed includes large
+volumes of real-time acoustic data collected from distant, distributed, data
+acquisition points, and numerous other oceanographic and atmospheric data
+sets.  A fundamental project requirement is that access to these data be
+available to a global community of users for acoustic analysis and
+global-change studies.
+
+\end{description}
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  David M. Glover}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  David M. Glover
+\item{Title:}  Research Specialist
+\item{Affiliation:}  Woods Hole Oceanographic Inst.
+\item{Address:}  Dept. of MC\&G, WHOI, Woods Hole, MA 02543
+\item{email:}  david@plaid.whoi.edu
+\item{phone:}  (508) 457-2000
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data System Name:}  JGOFS DBMS
+\item{Discipline:}  Biological, Chemical, and Physical Oceanography
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  station data and time series data
+	\item{Inventory Meta Data [Y/N]:}  y
+	\item{Digital Data, Data Products [Y/N]:}  y
+	\item{Number of Data Granules:}
+	\item{Total Volume of Data [MB]:}  approx. 50MB and growing
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\medskip
+
+\centerline{\bf A Distributed, Object-based Data Management System}
+\centerline {\bf for JGOFS}
+\centerline{Glenn Flierl, PI, James Bishop, David Glover, Satish Paranjpe}
+\normalsize
+\medskip
+	We have been involved in developing a distributed, object-based, 
+multiple client, multiple server front-end for a relational DBMS.  This 
+system provides to the user (the scientists in the JGOFS project) a 
+format/location transparent means of access to the continually growing 
+JGOFS database. This access allows the synthesis of fairly diverse data 
+set types into new science-driven products without the user worrying 
+about where the data is located or in what format it is stored. This is 
+achieved by using "methods" that are executable bits of code that know 
+about the data set's particulars and the requests are directed by a "server" 
+that acts as a telephone operator knowing where the data is located. Since 
+none of the data manipulation operations are predefined the system is 
+flexible and extensible.
+
+	I also sit on the EOSDIS Advisory Panel (aka the Data Panel) for the 
+EOS Investigator Working Group (IWG) and chair the Users Working Group 
+(UWG) for the JPL Physical Oceanography DAAC. The Data Panel has been 
+instrumental in the crafting of the EOSDIS requirements that went into 
+the RFP that was consequently won by Hughes. Now the Data Panel "stands 
+guard", as it were, to insure that the distributed, evolving DIS we 
+recommended actually comes about. The Users Working Group (UWG) 
+advises the physical oceanography DAAC at JPL.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  Steve Hankin}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Steve Hankin
+\item{Title:}  Computer Scientist
+\item{Affiliation:}  NOAA/Pacific Marine Environmental Laboratory
+\item{Address:}  7600 Sand Point Way NE, Seattle WA, 98115
+\item{email:}  hankin@pmel.noaa.gov
+\item{phone:}  (206)526-6080
+\item{fax:}  (206)526-6744
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  FERRET and TMAP Data Base
+\item{Discipline:}  Oceanography
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  gridded data products
+	\item{Inventory Meta Data [Y/N]:}  Y (exists)
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  250 (files)
+	\item{Total volume of Data [Megabytes]:}  5000 Mbytes	
+\medskip
+	\item{Type of Data:}  gridded model outputs
+	\item{Inventory Meta Data [Y/N]:}  Y (exists)
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  3000 (files)
+	\item{Total volume of Data [Megabytes]:}  250,000 Mbytes
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	The Thermal Modeling and Analysis Project (TMAP) at NOAA/PMEL in 
+Seattle is a numerical ocean modeling and data analysis group 
+emphasizing upper ocean processes and ocean climate physics.  Typically 
+TMAP's model experiments are performed on Cray and Cyber 
+supercomputers and produce mid-size output data sets (one to five 
+gigabytes).  TMAP also performs observational data studies to produce 
+data sets suitable for forcing and validating the models.  These analyses 
+are carried out on networked workstations.  The program FERRET was 
+developed by TMAP as the primary software tool for analysis.
+
+	FERRET is a workstation-based, interactive visualization and 
+analysis environment that permits users to explore large and complex 
+gridded data sets.  'Gridded data sets' in the FERRET framework include 
+climatological data products (e.g. Levitus climatologies), binned monthly 
+observation summaries (e.g. COADS), operational model outputs (e.g. NMC \& 
+ECMWF), diagnostic model outputs (e.g. GFDL MOM), suitably prepared 
+'section' data, and time series and vertical profiles (viewed as singly 
+dimensioned grids).  FERRET's gridded data sets can be one to four 
+dimensions - usually (but not necessarily) longitude, latitude, depth, and 
+time - where the coordinates along each axis may be regular or irregularly 
+spaced.  A data set may contain mixed 1, 2, 3, and 4-dimensional 
+variables.  Axes of the same orientation may also differ - models often 
+require staggered grids and gridded data products have few standards for 
+temporal or spacial resolution.
+
+	FERRET was designed to function in a distributed data environment.  
+Since gridded data sets are frequently multi-gigabyte in size the program 
+contains logic to manage a data set as a network-wide, distributed 
+collection of files.  Furthermore, FERRET communicates with its data base 
+using a two phase approach that is suited to optimized, wide-area access.  
+In phase one FERRET queries the meta-data to determine the description 
+and range of the available variables.  In phase two, after a user has 
+specified a calculation, FERRET issues requests for only the minimally 
+required subset of the data needed for the calculation, optimizing with 
+respect to parameters that control access speed.  Memory caching is used 
+to minimize the network bandwidth requirements. 
+
+	FERRET is an excellent environment for browsing gridded data sets.  
+Graphical displays of data sections (and extractions of these sections to 
+files) may be created with single commands.  Graphical displays are 
+automatically labelled with complete and unambiguous documentation.  
+Additional variables may be overlaid - again with full documentation 
+provided automatically.  A (prototype) point and click graphical user 
+interface (GUI) has been developed to make browsing simple for novice 
+users.  The development of this GUI is expected to continue under a project 
+funded by the NOAA ESDIM program to provide Internet-wide gridded data 
+browsing and analysis services from the NOAA Seattle campus. 
+
+	FERRET development has emphasized interoperability standards.  
+FERRET data sets are normally stored in the Unidata netCDF format, a 
+self-documenting, publicly available format supported by the meteorology 
+community.  FERRET graphics are layered upon the International Standards 
+Organization's Graphical Kernel System (ISO/GKS) which provides network 
+compatibility through the X-windows standard, and also supports a wide 
+collection of other protocols: PostScript, HPGL, CGM, Tektronix, and 
+Versatek to name a few.  FERRET is written in transportable FORTRAN 77 
+and ANSI C.  It has been ported to SUN, DEC/Ultrix, SGI, VAX, and Macintosh 
+(beta version) with IBM RS6000 and DEC/Alpha versions planned for the 
+near future. 
+
+	FERRET offers a flexible environment for data analysis;  new 
+variables may be defined interactively as mathematical transformations 
+of variables from data sets.  Complex analyses may be defined through 
+hierarchical variable definitions.  A symmetric, 4-dimensional command 
+syntax is used to designate arbitrary rectangular regions in 4-space and 
+"IF-THEN-ELSE" logic permits calculations to be applied over arbitrarily 
+shaped regions.  An assortment of data smoothers and data gap fillers 
+compliments the normal range of mathematical analysis tools.  FERRET's 
+scripting language facilitates large, batch-style calculations and enables 
+FERRET to interact with specialized packages such as Matlab or GMT and to 
+use custom-written routines. 
+
+	The TMAP group maintains a large and growing data base of gridded 
+data products - approximately 5 Gigabytes in size presently.  These data 
+are stored in random access format for quick, record-level access by 
+FERRET and are maintained on-line.  Much of this data base is expected 
+shortly to be available over Internet through FERRET.
+
+A partial list of the data sets includes:
+\begin{itemize}
+\item COADS monthly average surface marine observations (1946-1991)
+\item Esbensen \& Kushnir global ocean surface heat budget
+\item ECMWF/TOGA global 12-hourly surface analysis (1985-92)
+\item FSU tropical Pacific wind stress (1961-92)
+\item NODC Levitus climatological global ocean atlas
+\item NGDC ETOPO 5 minute relief of the surface of the earth
+\item NMC blended monthly average SST (1982-1992)
+\item NMC monthly upper air winds and OLR analysis (1968-88)
+\item Oberhuber atlas of heat, buoyancy and turbulent kinetic energy 
+\item Rasmusson and Carpenter tropical Pacific El Nino composite 
+analysis
+\item Richardson monthly climatological global ocean surface currents
+\item Sadler tropical Pacific winds (1979-90)
+\item US Navy FNOC global 6-hourly surface winds (1982-92)
+\end{itemize}
+\smallskip
+A partial list of the sites using FERRET includes:
+\smallskip
+\begin{itemize}
+\item NCAR
+\item MIT
+\item Los Alamos National Laboratories
+\item NOAA/Pacific Marine Environmental Laboratory
+\item NOAA/Alaska Fisheries Science Center
+\item NOAA/Geophysical Fluid Dynamics Laboratory
+\item NOAA/Atlantic Ocean Marine Laboratory
+\item University of Washington (6 departments)
+\item University of Hawaii
+\item Naval Post-graduate School
+\item Florida State University
+\item University of Rhode Island
+\item University of British Columbia
+\item Texas A and M
+\end{itemize}
+\smallskip
+	FERRET is freely available over the Internet via anonymous FTP on 
+node abyss.pmel.noaa.gov.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  Roen Hogg}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Roen Hogg
+\item{Title:}  Faculty Research Assistant
+\item{Affiliation:}  Oregon State University
+\item{Address:}
+		College of Oceanography
+		Oceanography Administration -- Building 104
+		Corvallis, OR  97331-5503
+\item{email:}  roen@oce.orst.edu
+\item{phone:}  503-737-4414
+\item{fax:}  503-737-2064
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	The objective of our project is to use object-oriented technology to 
+develop a user-friendly system that will allow scientists to interact with 
+oceanic data and test hypotheses at the workstation.  In addition, this 
+system will facilitate multidisciplinary ocean field experiments by 
+allowing scientists to communicate the results of their research to 
+internal and external user groups.
+
+	The proposed system will provide intuitive and relatively 
+transparent access to existing analysis systems, numerical models, 
+imagery data, data acquisition systems, heterogeneous databases, and 
+communication systems.  Given the large disk storage and computing 
+capability (between 2-3 Giga flops) required by existing 3-D modeling and 
+analytical tasks, the system will provide access to the Oregon State 
+University Oceanography computing facilities (SUN Sparc and IBM UNIX-
+based workstations, massively parallel CM-5 Connection Machine, and 
+100GB optical data storage capabilities).
+
+	Some of the major features associated with the system include the 
+following:
+\begin{description}
+\item{1.} Derivation Analysis
+
+\noindent The system will process requests for the selection and formatting 
+of relevant data.  In particular, the system will process requests to 
+transform:
+\begin{description}
+	\item{(1)}	level 1 data (sensor data) into level 2 data
+(geophysical data) 
+	\item{(2)}	level 2 data (geophysical data) into level 3 data
+(higher-order data)
+\end{description}
+
+\item{2.} Research Analysis
+
+\noindent The system will support the research analysis common to most 
+research projects.  This includes the following:
+\begin{description}
+	\item{(1)}	useful numerical analysis and display of data sets
+	\item{(2)}	useful data queries 
+\end{description}
+
+\noindent In addition, the system will store a description of how each data
+set was derived.
+
+\item{3.}	Visualization
+
+\noindent The system will support graphic and video images.  These images 
+will include plots (e.g., profile, time series, drifter, imagery, grids, 
+station), satellite images, and video.  The system will provide the 
+following functionality:
+\begin{description}
+	\item{(1)}	interface with the appropriate graphic/video generating 
+programs
+	\item{(2)}	store a description of how each image was derived
+	\item{(3)}	store any free-form text a scientist wants to
+associate with a particular image
+	\item{(4)}	provide useful query capabilities
+\end{description}
+
+\item{4.}	Communication
+
+\noindent The system will provide computer networking and transmission of 
+data and results to internal and external user groups.  The system will 
+support the following types of communication:
+\begin{description}
+	\item{(1)}	e-mail
+	\item{(2)}	video
+	\item{(3)}	audio
+	\item{(4)}	data (files)
+\end{description}
+
+\item{5.}	Ocean Model
+
+\noindent The system will interact with various existing models by providing 
+specifications of input and output parameters.
+\end{description}
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  James D. Irish}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  James D. Irish
+\item{Title:}  Research Specialist
+\item{Affiliation:}  Woods Hole Oceanographic Institution
+\item{Address:}  307 Smith
+\item{email:}  jirish@whoi.edu
+\item{phone:}  (508)457-2000 Ext. 2732
+\item{fax:}  (508)457-2195
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  Not using a formal data system at present, but 
+starting to formulate one for use in 1 year.
+\item{Discipline:}  Physical Oceanography
+\item{Data Managed:}  Water Velocity, Temperature, Pressure, 
+Conductivity, Optical and Acoustical Time Series
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	As a student at Scripps I worked with Walter Munk and his BOMM 
+system of data analysis and archiving.  I carried many ideas (and much 
+code) to APL/UW where I constructed a similar system to analyze and 
+store data using the computer systems there.  At UNH Wendell Brown and I 
+merged our ideas and the SIO routines to an Ocean Analysis Software 
+Package with archiving capability, but the system had no on-line search 
+capability.  A search and retrieval system was started, but not completed 
+before I left UNH.  At UNH I also developed moorings systems which 
+telemetered data via ARGOS and GOES satellites, and packet radio back to 
+the laboratory in real-time.  Since I have been at WHOI, I have also used 
+cellular phone techniques for returning data from the field.  A PC and 
+mainframe based system was developed at UNH for retrieving the near 
+real-time data daily from the field, editing, normalizing, and storing it in 
+ASCII and binary data files for analysis and archiving.  However, we were 
+never able to get funding to set up a real-time data base for others to 
+access.  As part of my funded GLOBEC activities on Georges Bank, I am 
+again deploying moorings with GOES and ARGOS telemetry (and possibly 
+acoustic telemetry from bottom instruments) for several years, and plan 
+to work with the Georges Bank Data Management Office at WHOI (Wiebe, 
+Flierl, Brown, and Lynch) in establishing a real-time data retrieval, 
+processing and distribution system on my computers for use within the 
+Georges Bank GLOBEC data system using the ideas and concepts developed 
+and tested by this group.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  George Milkowski}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  George Milkowski
+\item{Title:}  Data Systems Manager/Developer
+\item{Affiliation:}  University of Rhode Island
+\item{Address:}  Graduate School of Oceanography
+			Narragansett Bay Campus
+			Narragansett, RI 02882-1197
+\item{email:}  george@zeno.gso.uri.edu OMNET{g.milkowski}
+\item{phone:}  401 792 6939
+\item{fax:}  401 792 6728
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  Global 1km AVHRR Inventory
+\item{Discipline:}  Physical Oceanography
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  High Resolution Raw/Level 1b AVHRR
+	\item{Inventory Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Some
+	\item{Number of Data Granules:}  $>$200,000
+	\item{Total volume of Data [Megabytes]:}  700 Gigabytes
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	The Global 1km AVHRR Inventory was developed to provide, within a 
+single inventory, a comprehensive listing of available high resolution 
+AVHRR data from major archives around the world.  The inventory includes 
+listings of Level 1b data holdings from U.S. and foreign archives.  Those 
+archives with holdings listed are; NOAA/NESDIS, USGS EROS Data Center, 
+University of Rhode Island, University of Miami,  European Space Agency 
+(ESA's inventory is composed of AVHRR data collected and archived by 
+contributing European country agencies and their data centers),      
+Australian CSIRO.  The Japanese Weather Service is currently working on 
+providing listings of their holdings.  An on-line, simple to use, user 
+interface provide access to the Global 1km Inventory and permits user 
+specified searches based on time, geographic location, sensor, archive, 
+platform, sensor data collection mode and data processing level.  The      
+inventory is held with a relational data base management system.  
+Information on how to access and use the inventory can be obtained 
+through anonymous ftp at zeno.gso.uri.edu in /usr/spool/ftp/pub/.       
+Access to the inventory is also possible through the NASA Climate and 
+Global Change Master Directory.
+
+	Contributing archives periodically transfer listings of their new 
+acquisitions to the Global 1km AVHRR Inventory.  These updates are coded 
+in the internationally recognized format developed by the Committee on 
+Earth Satellites Work Group on Data Catalog Subgroup specifically for 
+AVHRR inventory update exchange.  
+
+	Other scientific data management activities include the 
+development and management of an XBT client-server application with 
+NOAA/NODC that provides the location of XBT drops based on user supplied 
+spatial and temporal windows.  This application was designed such that 
+the client application can either stand alone or be incorporated within 
+another application.  An example of this latter implementation is URI's 
+XBROWSE where the XBT client-server application dynamically displays 
+the location of XBT data correlated with sea surface temperature imagery.  
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  Christopher Miller}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Christopher Miller
+\item{Title:}  Physical Scientist
+\item{Affiliation:}  NOAA/NESDIS/Environmental Information Services
+\item{Address:}  1825 Connecticut Ave., NW, Suite 506, Washington, D.C.  
+20235
+\item{email:}  C.Miller.NOAA (Omnet)
+\item{phone:}  (202)606-5012
+\item{fax:}  (202)606-0509
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	The responsibilities of the Environmental Information Services 
+Office encompass the activities of the NOAA National Data Centers 
+(National Climatic Data Center, National Oceanographic Data Center and 
+the National Geophysical Data Center) and the Environmental Services Data 
+and Information Management (ESDIM) Program, which is a cross-cutting 
+program addressing NOAA-wide data management issues.  ESDIM's current 
+focus is rescuing critical NOAA data at risk of being lost and improving 
+access to NOAA data and information.  The head of Environmental 
+Information Services, Mr. Gregory Withee, is, also, responsible for the 
+Information Management element of the NOAA Climate \& Global Change 
+Program.  Information Management serves the Climate \& Global Change 
+Program through its support of the needs of the multiple science elements 
+of that program (generation of long-term climate and global change data 
+sets; development of information management systems in connection with 
+specific science program objectives).  Information Management is, also, a 
+focal point for the Global Change Data and Information System (GCDIS), 
+which is envisioned as an interagency gateway for access and delivery of 
+data and information products.  A key goal is to promote interoperability 
+among the existing heterogeneous systems.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  William Schramm}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:} William Schramm
+\item{Title:}  Chief, Ocean Applications Branch
+\item{Affiliation:}  NOAA
+\item{Address:}  2560 Garden Road, Monterey, CA 93940
+\item{email:}  OMNET/W.SCHRAMM
+\item{Phone:}  (408) 647-4206
+\item{Fax:}  (408) 647-4225
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  NEONS database management system
+\item{Discipline:}  Synoptic Oceanography and Meteorology
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of data:}  Numerical ocean and atmospheric products 
+(gridded fields from Navy and NOAA sources)
+	\item{Inventory Meta Data?}  yes
+	\item{Digital data, data products?}  yes
+	\item{Number of data granules:}  7025 fields
+	\item{Total volume of data:}  84 MB
+	\item{Note:} 1035 new fields (12.5 MB) are entered into the 
+DBMS/day.  Some are retained for two days and some for thirty days.
+\medskip
+	\item{Type of data:}  SSM/I (SDRs, TDRs and EDRs)
+	\item{Inventory Meta Data?}  yes
+	\item{Digital data, data products?}  yes
+	\item{Number of data granules:}  14 satellite passes/day
+	\item{Total volume of data:}  150 MB
+	\item{Note:}  This data changes daily.
+\medskip
+	\item{Type of data:}  Synoptic ocean and atmospheric observations
+	\item{Inventory Meta Data?}  yes
+	\item{Digital data, data products?}  yes
+	\item{Number of data granules:}  16,000 observations
+	\item{Total volume of data:}  1.8 MB
+	\item{Note:}  Observations are retained for two days.
+\medskip
+	\item{Type of data:}  DMSP IR and visual images
+	\item{Inventory Meta Data?}  yes
+	\item{Digital data, data products?}  yes
+	\item{Number of data granules:}  79 images
+	\item{Total volume of data:}  1.6 MB
+	\item{Note:}  Images are retained for two days in compressed 
+format.
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\bigskip
+
+\noindent{\bf BACKGROUND}
+\bigskip
+
+	The Naval Research Laboratory (NRL) in Monterey CA has developed a 
+powerful database management system for environmental data called the 
+Naval Environmental Operational Nowcasting System (NEONS).  The system 
+was developed to manage the three basic types of environmental data; 
+observations, images and gridded data.  NRL uses NEONS to support 
+research and development programs such as the development of satellite 
+data processing software.  A typical R\&D application of the system at NRL 
+is to develop "virtual sensor" information based on combinations of 
+satellite data that do not exist from any single satellite.  It is the design 
+of NEONS, however, and not the NRL applications that makes the system of 
+interest to others including NOAA facilities.
+
+	Unlike most data management initiatives, which are developed for a 
+specific application, NEONS was developed to be very flexible and 
+versatile.  As a result other institutions have found the system to be 
+useful and because of the Navy's Technology Transfer program NRL has 
+been very cooperative in making the software available.  Recently the Navy 
+announced that NEONS will be used for operational database management 
+on Cray supercomputers at the Fleet Numerical Oceanography Center 
+(FNOC) and the Naval Oceanographic Office at Stennis, MS.  Within NOAA 
+the NEONS software was first installed at the Ocean Applications Branch 
+(OAB) of the National Ocean Service.  OAB was established in Monterey to 
+support Navy/NOAA cooperative programs and NEONS is being used to 
+support civilian distribution of FNOC data, analyses and forecasts via the 
+Navy/NOAA Oceanographic Data Distribution System (NODDS).  OAB later 
+contacted other NOAA offices to make them aware of the availability of 
+NEONS and to promote sharing of software and data resources between 
+Navy and NOAA.  In late 1991 OAB arranged for the installation of NEONS 
+at the National Climatic Data Center (NCDC) in Asheville NC for support of 
+the Global Climate Perspectives System (GCPS).  Other participants in 
+GCPS are the NOAA Climate Monitoring and Diagnostics Lab (CMDL) in 
+Boulder CO and the Climate Analysis Center (CAC) in Washington DC.  In 
+February 1992 OAB helped install NEONS at CMDL and in August 1992 at 
+CAC.  In December of 1992 there was a second installation in Boulder at 
+the
+Forecast Systems Laboratory where NEONS will be used in the MADER 
+project.  The most recent NEONS installation in NOAA was at the NMFS 
+Laboratory in Hawaii.  In addition to installations in the Navy and in NOAA, 
+the system has been provided to; 1) Canadian Atmospheric and 
+Environmental Services in Toronto and Vancouver, 2) Bureau of 
+Meteorology in Melbourne, Australia, 3) South Dakota School of Mines and 
+Technology, 4) Woods Hole Oceanographic Institution, 5) Cray Research 
+Inc, 6) British Meteorological Office, 7) French Meteorological service and 
+8) World Laboratory in Italy.  
+ 
+\bigskip
+\noindent {\bf NEONS TECHNICAL DESIGN}
+\bigskip
+
+	NRL designed NEONS for fast, efficient operation and compatibility 
+with computer industry and international data exchange standards such as 
+BUFR and GRIB.  The system is built around the commercial database 
+management system, EMPRESS, and operates on a variety of computers, 
+from UNIX workstations to Cray supercomputers.  Computer industry 
+standards used in the design of NEONS include UNIX and SQL.
+
+	An important feature of NEONS is the storage of data in variable 
+length binary strings.  This is important because environmental data 
+comes in a variety of record lengths.  Another important advantage of the 
+way in which NEONS stores data is that the data are addressed only to a 
+minimal level of information in contrast to many other database systems 
+which address data deeply, down to the report or even data value level.  
+The approach used by NEONS greatly speeds up searches compared to other 
+systems that are often burdened with high system overhead and frequent 
+disk accesses.  The third advantage of the NEONS approach is that by using 
+binary compaction the system takes advantage of the great CPU speed of 
+new RISC computers while at the same time minimizing the I/O time 
+which is the critical limiting factor in modern DBMS systems.   
+
+	The international data exchange standards used by NEONS are the 
+binary formats adopted by the World Meteorological Organization (WMO) 
+for global exchange of real-time weather data:  Binary Universal Format 
+for data Representation (BUFR) for observations and GRIB for GRIdded 
+Binary numerical fields.  
+ 
+\bigskip
+\noindent {\bf A NEONS NETWORK}
+\bigskip
+
+	With the expanding use of NEONS within the Navy, in NOAA and in 
+other countries such as Canada and Australia, NRL and OAB have promoted 
+the concept of a distributed network of NEON systems to facilitate the 
+global exchange of weather and ocean data.  In this concept, each office 
+would continue to load and process its own data and in addition, would 
+make the data easily available to others over INTERNET.  
+
+	NRL has developed an X-Windows Data Browser to interactively 
+browse files on NEON systems, search for particular data sets, and 
+download data of interest.  Using the browser, a user can specify the time 
+and area where he wishes information.  The browser then searches the 
+database, either locally or remotely over INTERNET, to find satellite 
+images, gridded model outputs or observations that fall in the desired 
+time/space window.  The user then interacts with the database to narrow 
+the search to the actual data required.
+
+	The data can be downloaded in any of a wide variety of formats.  The 
+potential for such a network can be demonstrated by considering the 
+gigabytes of climate data now being loaded by NCDC into their NEONS.  
+Early this year NCDC described their work in the GCPS as follows:  "NEONS 
+is up and running.  Sequences and parameters have been defined for the 
+Global Historical Climatological Network (GHCN) data set (monthly global 
+surface temperature, precipitation, and station and sea level pressure), 
+Global Precipitation (GCPC) dataset, Cooperative Summary of the Day 
+(TD3200) (daily max and min temps, precipitation, snow fall and snow 
+depth), and CARDS.  We are presently working on tying in the system with 
+the Metadata portion of the STORM system (also an EMPRESS database 
+system) to link the data to the station histories. We are also discussing 
+with NRL the strong possibility of working with them on the development 
+of an interactive interface between NEONS and NCAR Graphics for 
+Lat/Lon/Time data) a system like the one they have developed for gridded 
+data."
+
+	To promote the idea of a network of NEON systems, OAB started an 
+OMNET bulletin board for NEONS users and, in cooperation with NRL and 
+FNOC, hosted a NEONS Users Conferences in April 1992 and again in April 
+1993.  The next NEONS users meeting will be held in conjunction with the 
+AMS conference in January 1994.
+
+\bigskip
+\noindent {\bf SUMMARY}
+\bigskip
+
+	The Navy, through the Naval Space Warfare Systems Command, has 
+invested over \$4M in the NEONS program.  Other government agencies 
+should and can take advantage of this investment.  Offices wanting more 
+information about NEONS or wanting to install the system should write to 
+OAB/NOAA, 2560 Garden Road, Monterey CA 93940.
+\newpage
+
+
+\begin{center}
+\LARGE
+{\bf Nancy Soreide}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Nancy Soreide
+\item{Title:}  System Analyst
+\item{Affiliation:}  NOAA/PMEL
+\item{Address:}  7600 Sand Point Wy NE, Seattle WA 98115
+\item{email:}  nns@noaapmel.gov
+\item{phone:}  206-526-6728
+\item{fax:}  206-526-6774
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  TOGA-TAO Display Software, EPIC
+\item{Discipline:}  Oceanogaphy
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  oceanographic time series
+	\item{Inventory Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  aprox 3000 time series
+	\item{Total volume of Data [Megabytes]:}  aprox 175 MBytes
+\medskip
+	\item{Type of Data:}  oceanographic profile (depth-indexed) data
+	\item{Inventory Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  aprox 35,000 profiles (1 CTD=1
+			profile) 
+	\item{Total volume of Data [Megabytes]:}  aprox 530 MBytes
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+
+\bigskip
+\noindent {\bf TOGA-TAO DISPLAY SOFTWARE}
+\bigskip
+
+	The TOGA-TAO Array consists of 63 moored ATLAS wind and 
+thermistor chain and current meter buoys, spanning the Pacific Basin from 
+95W in the eastern Pacific to 137E in the west, transmitting data in real-
+time via the Argos satellite system.  PMEL has developed the TAO 
+workstation display software for distribution, and display, of the TOGA-
+TAO buoy data in a point-and-click environment.  Data displays include 
+buoy summary plots, buoy sensor plots, vertical stacks of plots from any 
+collection of buoy/sensor pairs, as well as animations of TAO buoy data, 
+operational ocean model analyses from NMC, TOGA drifting buoys, and 
+climatological averages.  TOGA-TAO buoy data displayed on the 
+workstation are updated by acquisition from the Argos satellite shore-
+based computer during the previous night.  The TOGA-TAO data sets and 
+display software are available on PMEL's anonymous FTP on the Internet 
+network, and have been distributed world-wide.  Automated procedures 
+provide remote users with updated data and graphics files. The TAO 
+software is based on X-windows, and can be run on a local or wide-area 
+network.
+
+
+\bigskip
+\noindent {\bf EPIC}
+\bigskip
+
+
+	The EPIC system was designed to manage the large volume of 
+oceanographic time series and hydrographic data being collected by PMEL 
+oceanographers participating in NOAA's large scale ocean climate study 
+programs, such as EPOCS and TOGA.  At present, over 35,000 data sets are 
+on-line in EPIC at PMEL for retrospective analysis.  EPIC is a complete 
+system including a data selection module and a suite of over 100 graphics 
+display and analysis programs.  Supported data types include time series 
+data, (such as temperature, wind and current time series from moored 
+buoys), drifter data, acoustic doppler data, and profile data, (such as CTD, 
+bottle and XBT data).  System elements for data selection, data display, 
+and data analysis, function independently.  The system is well 
+documented, with a user manual and extensive on-line help.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  Robert Starek}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Robert Starek
+\item{Title:}  Program Manager
+\item{Affiliation:}  Naval Oceanographic Office
+\item{Address:}  Code OTM, 1002 Balch Blvd, Stennis Space Center, MS  
+39522
+\item{phone:}  (601)688-5189
+\item{fax:}  (601)688-5701
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	I am the program manager for an effort to develop a geo-referenced, 
+multi-disciplinary data base for the Naval Oceanographic Office.  The 
+system, entitled the Integrated Data Base Management System (IDBMS), 
+will consist of Department of Defense (DoD) oceanographic and Mapping, 
+Charting and Geodesy data.  The architecture of the IDBMS is distributed in 
+that data will be physically located closest to the point of greatest use on 
+server class computers.  A majority of the data will be stored in a 
+relational data base and will be accessed and managed using a client-
+server based concept.  Tightly coupled to the actual data will be a catalog 
+consisted of meta data.  A graphical user interface using visual references 
+such as maps will allow for spatial browse and query of the catalog.  
+Access to IDBMS data by non-Naval Oceanographic Office persons will 
+require explicit DoD approval.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  Leonard Walstad}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Leonard Walstad
+\item{Title:}  Dr.
+\item{Affiliation:}  College of Oceanic and Atmospheric Science, Oregon 
+State U.
+\item{Address:}  Ocean Admin Bldg 104, Corvallis, OR  97331-5503  
+\item{email:}  lwalstad@oce.orst.edu  l.walstad/omnet
+\item{phone:}  (503) 737-2070
+\item{fax:}  (503) 737-2064
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	I am currently chairman of the GLOBEC data management committee.  
+The GLOBEC steering committee has endorsed the objective of choosing a 
+data management framework which makes use of a distributed data 
+management system.  Furthermore, we believe that the system must 
+encourage interaction, rather than hinder the exchange of data.  
+
+	As an ocean modeler, my data sets are generally stored as flat files 
+in machine format floating point and integer numbers.  However, I 
+generally make extensive use of the output of these numerical models for 
+purposes beyond the usual graphical display.  Typical uses are forcing of 
+biological systems,  analysis of float tracks, and vorticity and energy 
+dynamics.  Because I make extensive use of the output and use several 
+numerical models, an analysis system would be of great benefit.  A key 
+concern is the ability of databases to deal with single entities which 
+involve hundreds of MB of data (i.e. the output of a single snapshot of a 
+biophysical model).
+
+	I use data assimilation to provide initial and boundary conditions, 
+and also to update the physical fields within numerical models.  This 
+component of my research would be substantially simplified if an 
+efficient interface to data was provided.
+
+	I believe that oceanographers need communication tools more than 
+traditional database tools. Several key components of a valuable system 
+are:
+\begin{description}
+	\item {1.} extensibility
+	\item {2.} explorability
+	\item {3.} modularity
+	\item {4.} efficiency 
+	\item {5.} abstraction
+\end{description}
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  Warren B. White}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  Warren B. White
+\item{Title:}  Physical Oceanographer
+\item{Affiliation:}  Scripps Institution of Oceanography
+\item{Address:}  SIO/UCSD, La Jolla, CA 92093-0230
+\item{email:}  wbwhite@ucsd.edu
+\item{phone:}  619-534-4826
+\item{fax:}  619-534-8041
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  JEDA Center
+\item{Discipline:}  quality-controled temperature-depth observations over 
+the globe; monthly mean global upper ocean temperature gridded fields 
+(1979-1993) 
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  temperature-depth observations
+	\item{Inventory Meta Data [Y/N]:}  yes, in the GTSPP format
+	\item{Digital Data, Data Products [Y/N]:}  yes, in the NetCDF format
+	\item{Number of Data Granules:}  1-2 million
+	\item{Total volume of Data [Megabytes]:}  1.5-2.0 GBytes
+	\end{description}
+\end{description}
+
+\medskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	We are a WOCE DAC for upper ocean temperature profiles collected 
+for the period 1990-1995. Presently, we have conducted quality control on 
+the historical file for the 11-year period 1979-1989. We are presently 
+conducted QC on the delayed-mode data collated by NODC for the period 
+1990. One of the steps in quality control is the gridding of upper ocean 
+temperature anomalies. We have accomplished this for the period 1979-
+1989 at 11 standard levels in the upper 400 m. The standard grid is 2o 
+latitude by 5o longitude by month over as much of the ocean as the 
+observations will allow.  Interpolation errors also accompany these 
+gridded estimates. Our climatological reference is computed on this same 
+spatial grid each month for the 10-year period from 1979-1988.  We plan 
+to publish to the oceanographic community (over the Internet) the QC 
+profiles, the gridded anomaly products, and the climatological reference.
+\newpage
+
+\begin{center}
+\LARGE
+{\bf  J. R. Wilson}
+\end{center}
+\large
+\noindent{\bf Personal-}
+\normalsize
+\smallskip
+\begin{description}
+\item{Name:}  J. R. Wilson
+\item{Title:}  Director
+\item{Affiliation:}  Marine Environmental Data Service
+\item{Address:}  Department of Fisheries and Oceans, 200 Kent Street, 
+Ottawa, Ontario, K1A   0E6, Canada
+\item{email:}  R.Wilson.MEDS (Omnet)
+\item{phone:}  (613)990-3009
+\item{fax:}  (613)990-5510
+\end{description}
+\medskip
+\large
+\noindent{\bf Data System-}
+\normalsize
+\medskip
+\begin{description}
+
+\item{Data system name:}  MEDS Oceanographic Database
+\item{Discipline:}  Physical Oceanography
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  Water column phy and chem properties
+	\item{Inventory Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  600,000 multi-variable stations
+	\item{Total volume of Data [Megabytes]:}  1,000
+\medskip
+	\item{Type of Data:}  Drifting buoy data
+	\item{Inventory Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  5,000,000 observations
+	\item{Total volume of Data [Megabytes]:}  2,000
+\medskip
+	\item{Type of Data:}  Wave measured and hindcast data
+	\item{Inventory Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  4000 station years
+	\item{Total volume of Data (Megabytes]:}  30,000
+\medskip
+	\item{Type of Data:}  Inland and coastal water levels
+	\item{Inventory Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  7,500 station years
+	\item{Total volume of Data [Megabytes]:}  1,000
+	\end{description}
+\medskip
+\item{Data system name:}  DFO Chemical Contaminants Data Directory
+\item{Discipline:}  Chemical Oceanography
+\item{Data Managed:}
+	\begin{description}
+	\item{Type of Data:}  National Directory of Data Sources in DFO
+	\item{Inventory Meta Data [Y/N]:}  Y
+	\item{Digital Data, Data Products [Y/N]:}  Y
+	\item{Number of Data Granules:}  7 regional inventories
+	\item{Total volume of Data [Megabytes]:}  .05
+	\end{description}
+\end{description}
+
+\bigskip
+\large
+\noindent {\bf Data Management Activities Summary-}
+\normalsize
+\medskip
+
+	MEDS is involved in the acquisition, processing, quality control, 
+archival, and dissemination by broadcast and on request of ocean station, 
+wave, and water level data.  These activities support national and 
+international research, engineering, regulation, and management 
+activities.
+
+	Typical applications of our data include, real time water level data 
+for use in setting flow rates along the St. Lawrence Seaway, real time 
+wave data for forecasts and warnings, engineering quality wave data for 
+design of fixed and floating structures and ships, data in support of 
+national research activities, and regulation and management of fisheries.  
+MEDS also provides data management and dissemination services in 
+support of international data exchange programs in general and the WOCE 
+Surface Velocity and Upper Ocean Thermal Programs.
+
+	Data systems used include sequential tape systems for the 
+voluminous wave and water level time series data, on-line VMS ISAMs for 
+the drifting buoy, ocean station, water level, and wave spectral data, and 
+Oracle relational databases for inventories and the contaminants data 
+directory.
+
+	Over the past two years work has been carried out on the 
+development of distributed client/server database capabilities using 
+commercial software such as Oracle and SQLnet, and on a more general 
+system utilizing the exchange of standard request, menu, raster, graphic, 
+text, and data objects in a style that accommodates dissimilar database 
+technologies including home built ones.
+
+Design criteria for the system are as follows:
+\begin{description}
+\item {1.} Client/Server Architecture (minimize network traffic).
+
+\item {2.} Software in the field (client) not data or product specific.  Host
+or server services can be changed and enhanced without modifying client
+software.
+
+\item {3.} Not necessary for user to have a personal account and password on 
+the server.  User does not login on the server in the traditional fashion.
+
+\item {4.} System allows a user to browse an inventory, identify data, and
+copy data back to the client from an associated database.
+
+\item {5.} The client will be a workstation operating in a "windows" mode 
+usually with various tools available for such things as GIS, spreadsheet, 
+database.
+\end{description}
+
+	Implementation of such a system was found to involve the 
+development of a number of standard objects including the list given 
+above.  Objects are passed in both directions between client and server.  
+Both client and server have installed processing and communications 
+modules.  The communications modules consist of network "listeners" 
+which detect the arrival of standard objects in some fashion.  In the 
+prototype system in DEC VMS the "listener" consisted of a DCL procedure 
+which woke up every 10 seconds and tested for the presence of a file with 
+a certain name.  Once the file was detected a program was invoked that 
+opened the file and discovered the type of data, the type of product 
+required, space-time ranges, parameter identifications, etc.  The arriving 
+object also carried the node address to which the reply object would be 
+sent.  Menu and request objects carried further information such as 
+programs to be run to process the request or reply.
+
+	Such a system was found to be relatively generic and simple.  It 
+relieved the need for someone to login to the server in the traditional 
+sense and the associated security risks.  It also relieved the need for 
+large number of user licenses on the server as the listener/processor 
+operated as a single user.  Since the standardization was in the exchange 
+objects and their format was cast in concrete, software could be coded on 
+the server to deal with any type of database including home built ones 
+such as the ISAMs used in MEDS.
+
+	One purpose of the system and the design was to facilitate the 
+development of ad hoc GIS databases.  Point or polygon data could be 
+returned to the client with raster, text, or vector graphic objects 
+attached to it.  The point and polygon data would be loaded up into the GIS.  
+The user could click on a point or polygon on the map, see what raster, 
+text, or vector objects were attached to it, select one, and have a window 
+popped with a photograph, vector graphic, or textual information 
+displayed.  Similarly the user could have retrieved an object from the 
+server formatted for uploading into a spreadsheet or Dbase application on 
+the client.
+
+	This development and the pilot project were done over the past two 
+years.  We have not yet managed to find the resources to code and 
+implement a production system.
+\newpage

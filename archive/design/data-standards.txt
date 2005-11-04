@@ -1,0 +1,82 @@
+
+	$Id$
+
+Standards for DODS Datasets
+
+Abstract
+
+This document lists various data standards for DODS. Until I can come up with
+a more lucid organization, it will be a simple list. These are inspired by
+the standard names in the paper ``A Usage Specification for DODS'' by Tom
+Sgouros. 
+
+Datasets
+
+These attributes should be stored in the global attribute container `DODS'.
+
+Dataset: Name for the dataset
+Description: Paragraph of text describing this dataset
+
+Variables
+
+These attributes should be stored in a container named `DODS' local to the
+specific variable. Each attribute, if present, has the following meaning:
+
+Name: A DODS standard name. Use GCMD names until we find a way to break that.
+
+Units: What units are used to express values for this variable. If absent
+       then this variable is unitless.
+
+Minimum: Smallest value of this variable in this dataset, expressed in Units.
+Maximum: Largest value of this variable in this dataset, expressed in Units.
+	 Note: In Tom's paper these are rolled into one attribute called
+	 Range. That might make promoting them from a dataset to that
+	 dataset's catalog simpler but it will mean adding a `within'
+	 operator to the CE. Regardless I think that Range/Min-Max and Values
+	 should be separate. It would be hard to tell a two-valued Values
+	 from a Range if both values and ranges were stored in only one
+	 attribute. 
+
+Values: A vector of values, expressed in Units, that enumerates the possible
+	values for this variable. This is optional. This attribute, along
+	with Minimum and Maximum, replaces Range in the Usage paper.
+
+Period: Values of this variable can be calculated by adding an increment
+	value (expressed in Units) to Minimum. This is optional. This
+	replaces part of the Granule name in the Usage paper.
+
+Conversion: A function that can be used to covert values from one set of units
+	  to the units used by this dataset. This is tabled for now.
+	  
+	  Possible definition: An attribute container that has either:
+	  1) y = an x^n + a(n-1) x^(n-1) + ... + a0, where we supply the `a's
+	     and units of y (x is in Units).
+	  2) An exectuale function (Java, Tcl, bc, ...) that the client can
+	     get and run on the data. It would convert from Units to some
+	     other unit
+	  3) The name of a server-side function which can transform the data. 
+
+Specific Attribute Values
+
+This section contains lists of specific values encountered for the various
+attributes. This my give way to something better than a list in the future...
+
+Names
+
+Sea Surface Temperature: `Sea Surface Temperature'
+
+Units
+
+Dates: Calendar date: yyyy/mm/dd
+       Julian date: yyyy/ddd
+       Most dataset should probably convert back and fourth between these via
+       CE functions. Thus, both types of dates should be supported in all
+       user interfaces.
+Time: GMT: hh:mm:ss Z
+      Local time: hh:mm:ss LT
+      Time in GMT or local time. Fields not present default to 00.
+
+Temperature: Degrees Celsius: degrees_C
+	     Degrees Fahrenheit: degrees_F
+
+Count: Pixel counts. Assumed to be an integer

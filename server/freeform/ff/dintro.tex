@@ -1,0 +1,300 @@
+%CHAPTER 1       
+%
+% $Id$
+%
+
+
+\chapter{Introduction}
+\label{ff,dintro}
+
+The \ffs\ is a DODS server that uses \ffnd\ software to serve data
+from files in almost any format.  The FreeForm ND Data Access System
+is a flexible system for specifying data formats to facilitate data
+access, management, and use.  Since DODS allows data to be translated
+over the internet and read by a client regardless of the storage
+format of the data, the combination allows several format restrictions
+to be overcome.
+
+The large variety of data formats is a primary obstacle in the way of
+creating flexible data management and analysis software. FreeForm ND
+was conceived, developed, and implemented at the National Geophysical
+Data Center (NGDC) to alleviate the problems that occur when you need
+to use data sets with varying native formats or to write
+format-independent applications.
+
+DODS was originally conceived as a way to move large amounts of
+scientific data over the internet.  As a consequence of establishing a
+flexible data transmission format, DODS also allows substantial
+independence from the storage format of the original data.  Up to now,
+however, DODS servers have been limited to data in a few widely used
+formats.  Using the \ffs , many more datasets can be made available
+through DODS.
+
+%\section{The Format Problem}
+
+%Programmers can readily describe a format for a specific data set, but
+%a compiled application cannot be used with other data sets until
+%either the data or the program is modified. Two possible methods for
+%handling data in a variety of formats are to reformat all the data
+%into a standard format or to develop programs that can read data in
+%many different formats.
+
+%\subsection{Standard Formats}
+
+%A number of standard formats have been proposed over the years and the
+%specifications for these formats have generally improved. However,
+%standard formats do not enjoy widespread use, which will probably
+%continue to be the case.
+
+%Many scientists have large amounts of data on hand in non-standard
+%formats. Converting to standard formats is cumbersome and
+%time-consuming. In addition, there are so many standard formats that
+%format-independent applications are required even if only standard
+%formats are used.
+
+%\subsection{Smart Programs}
+
+%Software developers can create programs that use data in many
+%different formats. This approach has several advantages:
+
+%\begin{itemize}
+%\item The programs are flexible enough to allow the introduction of
+%  new data formats.
+  
+%\item The scientist collecting the data is not forced to conform to
+%  any single data format.
+  
+%\item The information contained in the original data is not lost
+%  through reformatting.
+%\end{itemize}
+
+\section{The FreeForm ND Solution}
+
+\ffnd\ uses a \new{format descriptor} file to describe the format
+of one or more data files.  This descriptor file is a simple text file
+that can be created with a text editor, describing the structure of
+your data files.  
+
+A traditional DODS server, illustrated in \figureref{fig,regular},
+receives a request for data from a DODS client who may be at some
+remote computer\footnote{The request comes via http.  The DODS server is, in
+reality, an ordinary http server, equipped with a set of CGI programs
+to process requests from DODS clients. See \sectionref{ff,install} and
+\DODSuser\ for more information.}.  The data served by this server
+must be stored in one of the data formats supported by DODS (such as
+netCDF, HDF, or JGOFS), and the server uses specialized software to
+read this data from disk.
+
+When it receives a request, the server reads the requested data from its
+archive, reformats the data into the DODS transmission format (also
+called the DODS Data Access Protocol, or DAP), and sends the data back
+to the client.
+
+\figureplace{A Traditional DODS Server}{htb}{fig,regular}
+{regular.ps}{regular.gif}{}
+
+The \ffs\ works in a similar fashion to a traditional DODS server, but
+before the server reads the data from the archive, it first reads the
+data format descriptor to determine how it should read the data.  Only
+after it has absorbed the details of the data storage format does it
+attempt to read the data, pack it into the transmission format and
+send it on its way back to the client.
+
+\figureplace{The \ffs}{htb}{fig,ff}{ff.ps}{ff.gif}{}
+
+\section{The FreeForm ND System}
+
+The \ffs\ comprises a format description mechanism, a set of programs
+for manipulating data, and the server itself.  The software was built
+using the FreeForm ND library and data objects.  These are documented
+in \ffbook .
+
+The \ffs\ includes the following programs:
+
+\begin{description}
+\item[\lit{nph-ff}] The \ffs\ \new{dispatch script}.  This Perl script
+  (requires Perl version 5 or greater) receives the data request from
+  the client, and dispatches it to one of several filter programs.
+  For definitions of dispatch script and filter programs, and other
+  details of the implementation of a DODS server, see \DODSuser .
+  
+\item[\lit{ff-dods}] This filter program reads a \ffnd\ format
+  description, and then reads data from the specified source, packs it
+  into the transmission format, and sends it back to the client.
+  
+\item[\lit{ff-dds}] In order to process the data stream correctly, the
+  client first asks the server for a description of the data it will
+  send.  This description, called the Data Description Structure (DDS)
+  is created and sent by this filter program.
+  
+\item[\lit{ff-das}] Other metadata that may be useful to the user of
+  this data may be sent to the client in the Data Attribute Structure
+  (DAS), created and sent by this program.  \sectionref{ff,das}
+  contains information about how to include metadata in this
+  structure.
+  
+\item[\lit{asciival}] This filter program allows data to be sent back
+  to the user in ASCII format.  This allows a wide variety of clients
+  to access this data, including simple web browsers, such as Netscape
+  Navigator.
+  
+\item[\lit{usage}] This filter provides a way to get information about
+  the data and about the server itself to a curious user.  See
+  \sectionref{ff,usage} for information about what can be sent and how
+  to set it up.
+\end{description}
+
+The \ffs\ distribution also includes the following \ffnd\ utilities.
+These are quite useful to write and debug format description files.
+
+\begin{description}
+\item[\lit{newform}] This program reformats data according to the
+  input \emph{and output} specifications in a format description file.
+
+\item[\lit{chkform}] After writing a format description file, you can
+  use this program to cross-check the description against a data file.
+
+\item[\lit{readfile}] This program is useful to decode the format used
+  by a binary file.  It allows you to try different formats on pieces
+  of a binary file, and see what works.
+\end{description}
+
+
+\section{Installing the \ffs}
+\label{ff,install-dods}
+
+If you don't have the \ffs , and want it, follow these directions.  If
+you have a copy of the \ffs , and want to know how to use it, see
+\chapterref{ff,dquick} for quick instructions and examples of its use, and
+\chapterref{ff,ff-server} for further information.
+
+You can get the \ffs\ from the \DODShome . Follow the links to
+``Download Software'' and then to ``Current Release.''  If your
+computer is one of the platforms for which we provide a binary release,
+get that, otherwise get the source code.
+
+To get a binary release, go to that page, click on the computer you
+use, and click on the ``FreeForm'' button in the ``Servers'' box.
+Click the \but{Download} button, and follow the directions.  The
+server will make a custom binary file for you, which you then
+download.
+
+To install the \ffs , first make sure you have an http server running
+on the machine where you plan to serve the data.  If you are unsure
+whether one is running, you can use a web client, like Netscape, to
+send an http request to your own machine.  \DODSuser\ contains some
+hints about installing a web server.
+
+When you are sure a web server is properly installed and running,
+unpack the archive file you downloaded from the \DODShome .  You will
+find a directory called \lit{DODS}, containing \lit{etc} and
+\lit{bin}.
+
+\begin{enumerate}
+\item Copy all the files in the \lit{etc} directory into your web
+  server's CGI directory (see \DODSuser\ for tips on how to find this
+  directory)
+  
+\item Make sure the permissions of those files will allow the web
+  server to execute them.  Typically you might type use a command
+  like:
+
+\begin{example}
+> chmod 555 cgi-bin/*    
+\end{example}
+
+\item While you are here, copy the files in the \lit{bin} directory to
+  somewhere in your command \lit{PATH}, or modify your command
+  \lit{PATH} to include the DODS \lit{bin} directory.  This is not
+  strictly necessary to use the server, but will allow you to use the
+  \ffnd\ tools that come with the \ffs\ distribution\footnote{There is
+    a utility called \lit{newform} that comes as part of the Solaris
+    OS.  This conflicts with the \ffnd\ utility of the same name.
+    When installing this package on Solaris, make sure to put the
+    \lit{bin} directory before the \lit{/usr/bin} directory in your
+    \lit{PATH}, or change the name of the \ffnd\ \lit{newform} program.}.
+
+\end{enumerate}
+
+The \ffs\ is now installed.  You can confirm the installation with a
+web client like Netscape.  Enter a URL containing your machine
+address, the CGI directory name, and then \lit{nph-ff}, like this:
+
+\begin{vcode}{ib}
+http://dods.gso.uri.edu/cgi-bin/nph-ff
+\end{vcode}
+
+This is not a complete DODS URL, so you will get some kind of error
+message\footnote{The example is from a working DODS server.  Try this
+  example and compare it with the result from your own server.}.  If
+the message you see mentions DODS, however, you have successfully
+installed the server.  If it doesn't, and says something like ``The
+requested URL was not found on this server,'' than you need to
+re-check your installation.  (Check the permissions first, then make
+sure all the files from the \lit{etc} directory were copied, then
+check the installation of the web server.  Remember that the
+\lit{nph-ff} program requires Perl v5.0 or greater; this is a common
+problem.  There is a FAQ list at \DODShome\ that may have useful
+suggestions.)
+
+Now that the \ffs is installed, \chapterref{ff,ff-server} will explain
+how to use it to serve your data.  It may be a good idea to
+familiarize yourself with the information in the intervening chapters,
+which will explain how to specify your data's format.
+
+\subsubsection{Compiling the \ffs}
+
+If the computer and operating system combination you use is not one of
+the ones we own, you will have to compile the \ffs\ from its source.
+Go to the ``Download Source'' page, and click on the ``Core'' button,
+the ``FreeForm Server'' button, and the ``Packages'' button.
+
+When you have downloaded the source archive (it may be quite large),
+unpack it by typing:
+
+\begin{example}
+> tar xf DODS-3993.tar
+\end{example}
+
+This archive file is made up of several other compressed archive
+files, so after this step you will need to unpack each of those files
+individually: 
+
+\begin{example}
+> gzip -dc DODS-dap-2.22.tar.gz | tar xf -
+> gzip -dc DODS-ff-dods-2.22.tar.gz | tar xf -
+\end{example}
+
+and so on.
+
+When all the archive files are unpacked, move to the
+\lit{DODS/packages/src} directory, and type:
+
+\begin{example}
+> ./configure
+> make World
+> make install
+\end{example}
+
+Each of these packages has a \lit{README} and \lit{INSTALL} file
+containing directions in case of any trouble.
+
+After the packages have been installed, go to the top DODS directory
+(wherever you have installed it), and type:
+
+\begin{example}
+> ./configure
+> make World
+\end{example}
+
+Then see \sectionref{ff,install-dods} for instructions on the final
+installation. 
+
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

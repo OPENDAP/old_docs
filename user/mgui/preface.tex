@@ -1,0 +1,164 @@
+% Preface to the Matlab GUI User Guide
+%
+% $Id$
+%
+
+\T\chapter*{Preface}
+\T\addcontentsline{toc}{chapter}{Preface}
+
+\newcommand{\MGUIversion}{6.0}
+\newcommand{\DAPversion}{2.0}
+\newcommand{\loaddodsversion}{3.4.5}
+\newcommand{\loaddapversion}{3.4.4}
+
+This document describes version \MGUIversion\ of the \OPD\ (OPeNDAP)
+Matlab Graphical User Interface (GUI), a system intended to allow
+researchers transparent access to earth science data---stored in any
+of several different file formats---across the Internet. The \GUI\ was
+originated by Deirdre Byrne and Peter Cornillon.
+
+This document is relevant to the following software versions:
+
+\begin{tabular}{ll} \\
+\GUI\ & \MGUIversion \\
+OPeNDAP data access protocol & \DAPversion \\
+loaddods (Matlab command-line client) & \loaddodsversion \\
+loaddap (enhanced Matlab command-line client) & \loaddapversion 
+\end{tabular}
+
+We are interested in feedback and bug reports about the \GUI\
+Please send them to: \OPDsupport .
+
+\begin{ifhtml}
+  \htmlmenu{4}
+  \chapter*{Preface}
+\end{ifhtml}
+
+Using the \GUI, a researcher can browse and retrieve earth
+science data from many different sources, importing it directly into
+Matlab, where it is available for display or for further
+manipulation.  The \GUI\ provides a graphical environment within which
+a researcher can browse many datasets to find appropriate data, can
+select or subsample that data, and can display it as well, all by
+using a simple point-and-click user interface.
+
+An overview of the system's use is presented, and specific tasks
+illustrated, for data providers as well as for users.
+
+This document also covers the \OPD\ Matlab command-line clients, with
+which a researcher can download data directly into Matlab, for further
+analysis.  The \GUI\ provides a graphical front-end to such a client,
+but you can use them directly as well, which can be of use in
+automating data analysis, for example.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Tasks Illustrated in this Guide}
+\label{pref,tasks}
+
+For a quick start to getting, installing, and using \GUI\
+software, see the list below of tasks described in this document.
+
+\begin{itemize}
+
+\item Quick start. (\pagexref{gui,quickstart}) (You may also
+  appreciate \OPDquick for a quick overview of the \OPD.)
+
+\item Getting and installing the \GUI\ software. 
+(\pagexref{gui,install})
+
+\item Installing the rest of the OPeNDAP software. 
+(\pagexref{gui,install})
+
+\item Updating the dataset list to include the most recent versions of
+all the datasets. (\pagexref{gui,intro,update})
+
+\item Reading your own datasets into the browser. 
+(\pagexref{gui,adding})
+
+\item Using OPeNDAP from the \matlab\ command
+  line. (\pagexref{gui,intro,loaddods}) 
+
+% \item Troubleshooting. (\pagexref{gui,trouble})
+
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Who is this Guide for?}
+\label{pref,who}
+
+This guide is for people who wish to use Matlab to browse and retrieve
+data from existing on-line OPeNDAP datasets. Scientists who wish
+to share their data with colleagues may also find this a useful
+system, since it is a relatively simple matter to set up a server that
+can allow remote access to your data.
+
+This documentation assumes that the readers are familiar with
+computers and the internet, but are not necessarily programmers. More
+than a passing familiarity with Matlab will be useful, as will an
+understanding of elementary internet concepts, such as URLs and http.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Organization of this Document}
+
+This book contains both introductory and reference material. There is
+also a description of the installation procedure.
+
+\begin{description}
+
+\item[\chapterref{gui,intro}] provides an overview 
+of the entire system, including an introduction to its use, and some
+tutorial-style examples.
+
+\item[\chapterref{gui,ref}] Provides a reference to the menus
+and operations used in the \GUI.
+
+\item[\chapterref{gui,adding}] Describes how to add your own
+datasets to the \GUI.
+
+\item[\appref{gui,install}] Contains the instructions 
+for installing the \GUI, and the related OPeNDAP software you may
+require.
+
+%\item[\appref{gui,trouble}] Presents a guide to trouble 
+%shooting, in case you have trouble with the \GUI.
+
+%  \item[\bf Glossary] A small but useful collection of terms.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\listconventions
+
+%\W\section{Notices}
+
+% $Log: preface.tex,v $
+% Revision 1.8  2004/12/09 03:04:14  tomfool
+% updated for GUI 6
+%
+% Revision 1.7  2002/02/10 02:59:47  tom
+% updated for GUI version 5 and dods-book2 templates
+%
+% Revision 1.6  1999/05/27 15:58:39  tom
+% expunged remaining references to "dods.gso.uri.edu"
+%
+% Revision 1.5  1999/05/25 20:47:47  tom
+% modifications for DODS release 3.0
+%
+% Revision 1.4  1999/02/04 17:42:13  tom
+% modified to use dods-book.cls and Hyperlatex
+%
+% Revision 1.3  1999/01/20 15:18:39  tom
+% updated, and changed for dods-book.cls and hyperlatex
+%
+% Revision 1.2  1998/12/07 15:41:15  tom
+% updated for DODS v2.19 and GUIv0.7
+%
+% Revision 1.1  1998/02/12 18:10:42  tom
+% added to CVS archive
+%
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

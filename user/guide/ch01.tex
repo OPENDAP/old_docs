@@ -1,0 +1,520 @@
+% Chapter one to the OPeNDAP User Guide
+%
+% $Id$
+%
+
+\chapter{What is \opendap?}
+\label{intro,opd}
+
+The \opendap provides a way for ocean researchers to
+access oceanographic data anywhere on the Internet from a wide variety of new
+\emph{and existing} programs. By developing network versions of commonly used
+data access Application Program Interface (API) libraries, such as
+\xlink{NetCDF}
+{http://www.unidata.ucar.edu/packages/netcdf/guide.txn_toc.html}\ ,
+\xlink{HDF}
+{http://www.ncsa.uiuc.edu/SDG/Software/HDF/HDFIntro.html}\ ,
+\xlink{JGOFS} {http://www1.whoi.edu/jgofs.html}\ , and others,
+the \opendap project can capitalize on years of development of data analysis and
+display packages that use those APIs, allowing users to continue to use
+programs with which they are already familiar.
+
+The \opendap \ind{architecture} uses a client/server model, with a {\em
+  {\ind{client}}} that sends requests for data out onto the network to some
+{\em {\ind{server}}}, that answers with the requested data. This is exactly
+the model used by the \xlink{World Wide Web}
+{http://www.w3.org/hypertext/WWW/TheProject.html}\ where client programs
+called browsers submit requests to web servers for the data that make up web
+pages. Of course, \opendap clients can do much more than browse this data.  Using
+flexible data types suitable for many uses, including scientific data, the
+\opendap servers deliver real data directly to the client program in the format
+needed by that client.
+
+In fact, the network communication model used by \opendap uses URL
+addresses and web servers ({\tt httpd}) to deliver data to the
+researcher.  This is done by using the \opendap software to convert a
+researcher's data analysis software into a sophisticated (though
+specialized) web browser. In addition to providing network-compatible
+versions of popular data access APIs, the \opendap project also
+provides a software client and server toolkit to help other developers
+create network-compatible \opendap versions of other APIs.
+
+To expand the universe of data available to a user, \opendap incorporates
+a powerful data translation facility, so that data may be stored in
+data structures and formats defined by the data provider, but may be
+accessed by the user in a manner identical to the access of local data
+files on the user's own system. Though there are limitations on the
+types of data that may be translated (See \sectionref{data,trans}),
+the facility is flexible and general enough to handle many of the
+possible translation.  There are two important results:
+
+\begin{itemize}
+
+\item A user may not need to know that data
+from one set are stored in a format different from data in another
+set. Further, it may be possible that {\em neither} data set is
+stored in a format readable by the original (i.e. without \opendap)
+version of the data analysis and display program he or she uses.
+
+\item No segment of \opendap users will be effectively cut off from 
+accessing data because of its storage format. A scientist who wishes
+to make his or her data available to other \opendap users may do so while
+keeping that data in what may actually be a highly idiosyncratic
+storage format. Of course, it doesn't have to be in a highly
+idiosyncratic format.  The point is that \opendap can handle a wide variety
+of possible cases.
+
+\end{itemize}
+
+The combination of the \opendap network communication model and the data
+translation facility make \opendap a powerful tool for the retrieval,
+sampling, and display of large distributed datasets. Though \opendap was
+developed by oceanographers, its application is not constrained to
+oceanographic data. The organizing principles and algorithms may be
+applied to many other fields where data can be stored on computers.
+
+The population of people who may be interested in a system such as
+\opendap may be divided into data consumers and data providers. Though it
+was an important observation to the development of \opendap that the two
+roles are often assumed by the same scientists, the division is a
+useful one for the introduction of the system. The following two
+sections provide a broad introduction to the roles of data consumer
+and data provider. The remainder of this guide is organized around
+this distinction between classes of users.
+
+\section{Why Use \opendap to Read Data?}
+\label{intro,consumer}
+
+A scientist wishing to examine and sample some dataset will typically
+be comfortable using a relatively small number of data analysis and
+display programs or packages. Some of these packages will use one of
+the popular data access APIs currently available. However, few data
+access APIs provide direct access to \ind{distributed data}
+\indc{remote data}\footnote{The phrase {\em distributed data\/}
+refers to datasets that reside on different computers which are linked
+by a network such as the Internet. The computers may or may not be
+physically remote from each other. The main point is that the
+computers manage their data resources independently. In this guide the
+terms {\em remote\/} and {\em distributed\/} are used to imply
+independently managed resources.}, so this access must be made with
+network tools, such as web browsers or {\tt ftp}. While
+relatively straightforward in principle, this process can nonetheless
+become time-consuming and somewhat challenging in practice.
+
+The following example illustrates some of the differences between
+accessing distributed data with the tools currently in widespread use,
+and the same operation using \opendap.
+
+\subsection{An Example: Using ftp}
+\label{intro,ftp-example}
+
+The advent of the WWW has made possible simple data browsers that
+allow sophisticated interactive sampling of on-line datasets. Using a
+web browser and {\tt{\ind{ftp}}}, a user can sample any of several large
+oceanographic datasets available on the Internet. However, there are
+several problems with these data search engines that may only become
+apparent when a user actually tries to use the data.
+
+Among the problems that can arise are those that appear when a user
+tries to use the results of one dataset to search a second
+dataset. Suppose that a user wishes to choose a sea-surface
+temperature image from the NOAA/NASA Pathfinder AVHRR archive at:
+
+\begin{vcode}{ib}
+http://podaac-www.jpl.nasa.gov/mcsst/mcsst_subset.html
+\end{vcode}
+
+using the results of a
+time-series generated from the COADS Climatology archive at:
+
+\begin{vcode}{ib}
+http://ferret.wrc.noaa.gov/fbin/climate_server   
+\end{vcode}
+
+The steps are theoretically straightforward:
+
+\begin{enumerate}
+
+\item Create the time series from the COADS Climatology archive. This
+is done by answering the menu of options on the COADS web page.
+
+\item Import the time series from step 1 to the user's local data
+analysis system.  Note that this step may itself require several steps:
+
+\begin{enumerate}
+\item The data must be down-loaded, using {\tt ftp} or a similar
+program.
+
+\item Once down-loaded, the data may have to be converted into a format
+that can be read by the data analysis program.
+\end{enumerate}
+
+\item Examine the data and formulate a request to the AVHRR archive. This
+is again done by answering the menu of option on the AVHRR Web page.  Note
+that the COADS and AVHRR pages are not completely compatible in this respect.
+For example, the date formats of the two pages are different.
+
+\item Import the result of step 3 to the user's local data display system.
+This may also require several steps:
+
+\begin{enumerate}
+\item The data must be down-loaded again.
+
+\item And again, once down-loaded, the data may have to be converted
+into a format that can be read by the data analysis program.  Note that
+the set of available formats on the COADS page are distinct from the available
+options from the AVHRR archive.
+\end{enumerate}
+\item Think about the results.
+
+\end{enumerate}
+
+Though the procedure is straightforward and the web servers designed
+to make sampling the datasets a simple task, upon close examination,
+the combination of the steps may create unforeseen difficulties. For
+example, a request to the COADS server will return either a spreadsheet 
+suitable for use on a PC, a netCDF format file, or a file in one
+of a selection of simple ASCII formats.
+If the user is fortunate, the returned file will already be in a
+format compatible with the desired analysis package. But not all users
+will be so fortunate.  Often this file must be converted to some
+other file format before it can be imported to the user's analysis
+program. This may or may not be a simple task.
+
+Even a file format for which a user is properly equipped may be used
+in an unfamiliar manner. For example, the independent and dependent
+variables might be in a different order or an ASCII data file may use
+tabs instead of spaces.
+
+Assuming the import of the COADS data has been accomplished and
+boundaries for the AVHRR search identified, the task of selecting from
+the second archive may begin. Unfortunately, the request to the AVHRR
+archive will return either a GIF picture, an HDF format file, or a raw
+(binary) data file. Again, importing this output into the user's
+analysis program may or may not be simple, but it will not be the same
+procedure as the one used for the first data request.
+
+Other problems are also apparent. The COADS Climatology sampling
+program requests the user supply dates (month and day), whereas the
+AVHRR archive asks for the ``Julian day'' (an integer between 1 and
+365 or 366). One server will accept ``S'' and ``W'' to indicate South
+latitudes and West longitudes, while the other requires that these be
+indicated with negative coordinate values. The sampling of the COADS
+dataset, while flexible, may not allow sampling in the manner the user
+needs. It cannot, for example, provide a section except along a line
+of constant latitude or longitude. If a user wanted to see a section
+along a NE-SW line, it would be a challenging and time-consuming
+task to assemble one from many small data requests.
+
+Further, it might be desirable to use the results of sampling these
+two databases to construct a time series. This could conceivably mean
+repeating the entire procedure many times.
+
+\subsection{An Example: Using \opendap}
+\label{intro,opd-example}
+
+To produce the same data selection using \opendap, a user would follow
+essentially the same steps. However, the steps themselves would be
+performed differently. Once the user's data analysis package has been
+converted to an \opendap client\tbd{fix this xref?}
+(\sectionref{opd-client,link}), the \tbd{add xref to install GUI
+  clients} 
+accesses to the remote datasets are made through the analysis package
+itself. Instead of specifying a data file by a pathname reference to
+some local disk file, the user specifies a URL, which may point to
+either a local or a remote dataset.  Here is a re cap of the same operation,
+outlined as they would be performed by an \opendap application program:
+
+\begin{enumerate}
+
+\item Create the time series from the COADS Climatology archive. This is
+done by using the sampling facilities of whatever data analysis program
+a scientist is familiar with.  If desired, \opendap constraint expressions
+may be used to reduce the network load, or to provide a sampling scheme
+not supported by the data analysis program.
+
+\item The data need not be imported to the user's data analysis program,
+since it was down-loaded and converted automatically in step 1.
+
+\item Examine the data and formulate a request to the AVHRR archive. This
+is again done through the sampling facilities of whatever data analysis
+program the user is using, and \opendap constraint expressions.  Note that,
+whatever their actual format, both COADS and AVHRR archives appear to the
+\opendap client to be stored in identical formats.
+
+\item The data need not be imported to the user's data analysis program,
+since it was down-loaded and converted automatically in step 3.
+
+\item Think about the results.
+
+\end{enumerate}
+
+It is important to note that {\em any} data analysis package that can
+handle one of the DODS-supported data access APIs can be converted
+into an \opendap client program capable of reading data stored by {\em all}
+of the DODS-supported data access APIs. (There are some limitations on
+translation. See \sectionref{intro,opd-client} and
+\sectionref{data,trans} for more information.) Therefore, assuming
+the user has some analysis package capable of doing the required
+sampling and analysis on local data, all the steps would be performed
+from within that package, just as if the user were operating on local
+files. The result is a simpler procedure, even though the same 
+essential steps are followed.
+
+The \opendap scenario has, among others, the following advantages:
+
+\begin{itemize}
+
+\item The user need not learn about any of the archival formats, since
+the \opendap server and client cooperate to deliver the data in the format
+in which the analysis package expects to see it. Whereas the user of
+the ftp server has to worry about importing the data into the analysis
+program, the \opendap client program imports it transparently.
+
+\item The user can sample the distant datasets in any fashion supported
+by his or her own (local) analysis package. Unnecessary data need not
+be sent over the Internet.
+
+\item By appending a {\em{\ind{constraint expression}}}
+to the URLs given to
+the analysis program, the user can sample data using techniques that
+their analysis program \emph{cannot} do.\footnote{For example, suppose
+a user wishes to access the NODC XBT database using a program that
+uses the netCDF API. A program that can process the arrays that netCDF
+manipulates are largely unsuitable for XBT station data. However, a
+user can define constraint expressions in the URL to sample the data
+and deliver it in a form the netCDF API can use. For more information
+about constraint expressions, see
+Section~\ref{opd-client,constraint}. For more information about data
+models and translation, see Chapter~\ref{data}.}\tbd{Use a different
+example in the footnote}
+
+\item A substantial amount of the searching and sampling is performed
+on the server machines. This reduces Internet traffic, as well as
+decreasing the load on the local machine.
+
+\end{itemize}
+
+\subsection{The \opendap Client}
+\label{intro,opd-client}
+
+\opendap uses a client/server model. As mentioned, the \opendap
+servers are simply {\tt httpd} web servers, equipped to interpret an \opendap URL sent to them. (See \chapterref{opd-server}.) The \opendap client
+program can be any program that uses one of the supported APIs, such
+as JGOFS or netCDF.\footnote{Or a program specially developed to 
+read data from \opendap servers.}
+
+Without \opendap, an application program that uses one of the common data
+access APIs such as netCDF will operate as shown in \figureref{intro,fig,unlinked}.  
+The user
+makes a request for data from the application program.  The program in turn
+uses procedures defined by the data access API to access the data,
+which is stored locally on the host machine.  Some APIs are somewhat more
+sophisticated than this, of course, but their general operation is
+similar to this outline.
+
+\figureplace{The Architecture of a Data Analysis Package.}{htbp}
+{intro,fig,unlinked}{unlinked.ps}{unlinked.gif}{}
+
+The operation of an \opendap client is illustrated in \figureref{intro,fig,linked}.  
+Here, the
+\emph{same application program} that was used in \figureref{intro,fig,unlinked} 
+has been linked
+with an \opendap version of the data access API.  Now, in addition to being
+able to use local data as before, the application program is able to access
+data from \opendap server anywhere on the Internet in the same manner as the
+local data.
+
+To make some program into an \opendap client, it must only be re-linked with
+the \opendap implementation of the supported API library. This is a simple
+process, generally requiring only a few minutes. The process will
+create a program that accepts URLs, specifying a location for the data
+somewhere on the Internet, in addition to file pathnames which only
+specify a location on the local platform's file system. (See
+\sectionref{opd-client,link}.) 
+
+\figureplace{The Architecture of a Data Analysis Package Using \opendap.}{htbp}
+{intro,fig,linked}{linked.ps}{linked.gif}{}
+
+\opendap also provides a data translation facility. Data from the original
+data file is translated by the \opendap server into an \opendap data model for
+transmission to the client. Upon receiving the data, the client
+translates the data into the data model it understands. (See
+\chapterref{data} for more information about the \opendap data model.)
+Because the data transmitted from an \opendap server to the client travel
+in the \opendap format, the data set's original storage format is completely
+irrelevant to the user of an \opendap client. If the client was originally
+designed to read netCDF format files, the data returned by the
+\opendap-netCDF library will appear to have been read from a netCDF file,
+whatever the actual format of the files from which the data were
+read\footnote{Note that there is a limit to what can be translated. An
+API meant to support two-dimensional arrays may be able to handle
+one-dimensional vector data, but a program designed to process
+one-dimensional vector data will not know what to do with a
+two-dimensional array. The set of data access APIs supported by \opendap
+contain several such mismatches. See
+Section~\ref{data,trans} for more information.}. If the
+program expects JGOFS data, the DODS-JGOFS library will return data
+that seem to have come from a JGOFS dataset, again, no matter what the
+actual input file format.
+
+\opendap does not pretend to remove all the overhead of data searches. A
+user will still have to keep track of the URLs of interesting data
+sets in the same way a user must now keep track of the names of files
+containing interesting data.  an \opendap \new{catalog service} is in the
+process of being constructed that will help users scan the available
+datasets.  
+
+\section{Providing Data with \opendap}
+
+The \opendap data provider is the person or organization willing to make
+their digital datasets available to the community with an \opendap server.
+
+The designers of \opendap recognized that many of the data users are also
+the data providers, and \opendap was built with a recognition that
+providing the data should be as simple and as straightforward as
+possible. In many cases, once a local web server is equipped to become
+an \opendap server, a scientist need do very little beyond what must
+be done simply to make the data available locally. (i.e., Put the data
+into a file format that can be read by the locally used data analysis
+and display programs.) The tasks of a data provider can be separated
+into three parts:
+
+\begin{itemize}
+\item Install and configure the \opendap server.
+  (\sectionref{opd-server,install}.)
+
+\item Create whatever ancillary data files are needed by the data
+set (if any). (\sectionref{intro,ancillary}.)
+
+\tbd{Information here about registering the data set/server.}
+%\item Register the data set with the master directory (optional).
+%(\chapterref{register}.) 
+
+\tbd{Information here about the data catalog.}
+%\item Create the data catalog.
+
+\end{itemize}
+
+\subsection{The \opendap Server}
+\label{intro,opd-server}
+
+The \opendap data server is simply made up of a regular \lit{httpd} server
+equipped with CGI programs (or filters) that will respond to requests
+for dataset structure, data attributes, and data itself. (See
+\sectionref{data,dap} for a description of the data returned by these
+requests and see \sectionref{opd-client,url} for a description of the
+\opendap URL syntax used to send these requests.)  Most of the task of a
+data provider consists of configuring this server.  While perhaps not
+a trivial task, it potentially represents far less effort than
+packaging a dataset for submission to some central data archive.
+Furthermore, modifying a server's configuration to accommodate new
+data will be an almost trivial task, involving the simple editing of a
+configuration file.
+
+\subsection{Ancillary Data}
+\label{intro,ancillary}
+
+In order for an \opendap client to accept data from an \opendap server, it must be able
+to allocate the data structures and arrange internal labels to organize the
+incoming data.  The information the client library needs to do this
+organizing is called the ancillary data\footnote{It is also referred to as
+  the Data Descriptor Structure and the Data Attribute Structure.  See
+  Chapter~\ref{data} for more details about these structures.}.  For many
+APIs, the ancillary data is inherent in the data files themselves, and the
+\opendap server can glean that information by scanning the data files.  For large
+data archives, where scanning the data files is impractical, and that might
+not change often, \opendap can cache the ancillary data to speed access times.
+When a client requests the ancillary data, the \opendap server can check this
+data cache first before scanning the data files.
+
+This feature is useful in other cases because not all data file formats
+are self-describing.  For example, a data set might contain several files of 
+time vs. temperature data; the header information describing which numbers
+are temperature and which time may be in a different file or may simply
+be understood by the user of the local data analysis program equipped
+to look at this data.  As an example, data accessed by \opendap servers using
+the FreeForm data access API require provider-created ancillary data files.
+
+\subsection{Administration and Centralization of Data}
+\label{intro,admin}
+
+Under \opendap, there is no central archive of data.  Data under \opendap
+is organized in a manner similar to the World Wide Web itself.  That
+is, all one need do to make one's data available is to start up a
+properly configured {\tt httpd} server on an Internet node that has
+access to the data to be served.  Each data provider is free to join
+and to leave the system when it is convenient, just as any proprietor
+of a web page is free to delete it or add to it as whimsy demands.
+
+Of course, as can also be seen on the World Wide Web, there are some
+disadvantages to the lack of central authority.  If no one knows about
+a web site, no one will visit it.  Similarly, listing a dataset in a
+central data catalog, such as the Global Change Master Directory
+(\xlink{\lit{http://gcmd.gsfc.nasa.gov/}}{http://gcmd.gsfc.nasa.gov}),
+can make data available to other researchers in a way that simply
+configuring an \opendap server does not.  \opendap provided a facility for
+registering a data set with the GCMD catalog, which makes the data set
+known to the \opendap data location service.
+
+\tbd{Information here about the catalog server and data location.}
+%OPeNDAP provides a data locator component to be a ``search engine'' to 
+%help researchers find an use the available data sets.  A data provider
+%must register a data set with the data locator service in order to make
+%it available to the public.  See Chapters~\refl{locator} and \refl{register} 
+%for more information about this tool.
+
+%The data catalog\footnote{Don't confuse the central data catalog
+%at the Global Change Master Directory with the data catalog maintained
+%by an OPeNDAP provider.  The first is a list of OPeNDAP data servers, available
+%in a single central location, whereas the second is the list of data 
+%available from each server.} used by the data locator may be important to
+%the ultimate success of the OPeNDAP project.  Setting up an OPeNDAP server and
+%creating OPeNDAP clients to use these data is a process requiring some 
+%investment in time.  In order for OPeNDAP to become widely used, a substantial
+%number of users must believe it is worth that investment.  The availability
+%of a large number of datasets through OPeNDAP can provide that incentive,
+%but only if they are known to a large number of researchers.
+
+The remainder of this book will be divided into three major sections:
+instructions on the building and operating of \opendap clients; a tutorial
+and reference on running \opendap servers and making data available to \opendap
+clients; and technical documentation describing the implementation details
+(and the motivation behind many of the design decisions) of the \opendap
+software.
+
+
+
+\tbd{Move Preface ``getting started with \opendap'' section to here?}
+
+
+% $Log: ch01.tex,v $
+% Revision 1.10  2004/11/09 14:43:58  tomfool
+% forgot a DODS reference
+%
+% Revision 1.9  2004/08/24 22:51:32  jimg
+% Fixed broken label/refs.
+%
+% Revision 1.8  2003/09/04 19:42:06  tom
+% DODS->OPeNDAP
+%
+% Revision 1.7  2000/10/04 15:02:13  tom
+% changed \figureplace definition, misc other cleaning
+%
+% Revision 1.6  2000/03/23 18:26:14  tom
+% misc. updates
+%
+% Revision 1.5  1999/08/30 14:19:27  tom
+% updates prior to DODS release 3.0
+%
+% Revision 1.4  1999/02/04 17:42:13  tom
+% modified to use dods-book.cls and Hyperlatex
+%
+%
+%
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

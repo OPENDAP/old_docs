@@ -1,0 +1,1530 @@
+%
+% This file contains the report of the first DODS Workshop.
+%
+% $Id$
+% 
+% From grf
+%
+% I changed - to -- so that it prints as a dash
+%
+% changed text - sections marked by %grf In some cases, these were
+% just to avoid ``he'' --- after all, we had a fair number of female
+% participants.
+% In the minutes:
+% p2 l7 G. Flierl - question 
+% p3 mid looses <- loses
+% p5 near bottom  polymorphism [one word]
+% p6 mid H. Debaugh - concern about data server doing compression ...
+% p8 mid but you can't take the entire image archive and download
+% it...
+% p8 bottom Timliness <- Timeliness
+% p9 bottom finable <- findable
+% p10 bottom Need an order function ...
+%            Services a server can provide may vary, ...
+% p12 middle all ASCII doesn't fully deal with matrices/tensors
+% p14 figure needs caption - suggest
+%   Top figure illustrates an RPC-based system while the lower
+%   illustrates the data-stream aaproach
+% p15 top differernt <- different
+% p17 bottom peoplewho <- people who
+% p18 - perhaps delete the reference to minutes being distributed the
+% next week!
+% switch Slide 10 and Slide 11 ?
+%
+%
+% jhrg:
+% I merged my changes with Glenn's. 
+% I made all the hyphens, en-dashes, ... consistent with each-other and with
+% Knuth's description in the TeXbook. `-' for hyphenated words, -- to
+% separate ranges and --- for the sentence punctuation symbol.
+%
+% ********* To switch from \input to \postscript fig, change the comments
+% where the figures are added (appendix III).
+%
+% 12/22/93:
+% Fixed appendix numbering (used \appendix correctly)
+% Fixed figure placement (well sort of...). The figures a;; appear together,
+% but the first one is not at the bottom of the page as per grf's suggestion.
+
+\documentstyle[12pt,html,psfig]{article}
+\input{margins.tex}
+% Adding this fixes the top and bottom margin sizes. jhrg
+
+\textheight 8.75in
+
+\newcommand{\postscript}[2]{
+        \par
+        \hbox{
+                \vbox to #1{
+                        \vfil
+                        \special{ps: plotfile #2.ps}
+                }
+        }
+}
+
+\begin{document}
+\pagenumbering{roman}
+
+\begin{titlepage}
+
+\begin{latexonly}
+
+% Title page for hard copy
+
+\vbox{}
+\vskip 1in
+\begin{center}
+\begin{LARGE}
+Report on the First Workshop for the 
+
+\vskip 1ex
+Distributed Oceanographic Data System
+\end{LARGE}
+\begin{large}
+\vskip 1ex
+29 September -- 1 October 1993
+
+\vskip 1ex
+W. Alton Jones Campus
+
+\vskip 1ex
+University of Rhode Island
+
+\vskip 1ex
+West Greenwich, Rhode Island
+\end{large}
+\end{center}
+
+\vskip 3in
+\hskip 3in
+Edited by:
+
+\hskip 3.25in
+Peter Cornillon
+
+\hskip 3.25in
+Glenn Flierl
+
+\hskip 3.25in
+James Gallagher
+
+\hskip 3.25in
+George Milkowski
+
+\end{latexonly}
+
+\begin{htmlonly}
+
+% Title page that latex2html will understand
+
+\title{Report on the First Workshop for the \\
+Distributed Oceanographic Data System}
+
+\author{Peter Cornillon\\
+\and Glenn Flierl\\
+\and James Gallagher\\
+\and George Milkowski}
+
+\date{29 September -- 1 October 1993}
+
+\maketitle
+
+\end{htmlonly}
+
+\end{titlepage}
+
+\newpage
+
+\begin{center} 
+{\bf EXECUTIVE SUMMARY}
+\end{center}
+
+\noindent
+The Oceanography Society, with funding from NASA and NOAA, is
+planning a workshop series to define the structure of a client-server based
+distributed system for access to oceanographic data over the Internet and to
+develop and test a prototype.  The underlying idea of such a system is that
+individual scientists as well as national archives will become providers of
+data.  Any scientist or archive willing to make their data generally
+available over the network would install a server on their CPU providing
+access to their data. Researchers would then be able to obtain any of the
+data available to this system through a client running on their own CPU.
+
+The series will consist of three workshops.
+
+The first workshop was held at the University of Rhode Island's Alton
+Jones Campus from 28 September to 1 October 1993, reported herein. The
+first day was dedicated to questions related to system architecture.
+The second day focused on communication objects and the third on
+defining a prototype based on the previous day's discussions. A system
+programmer hired as part of this effort will be responsible for
+implementing the prototype.
+
+The second workshop will be held in the summer of 1994. It will focus 
+on progress made in implementing the plans/issues discussed in the first 
+workshop or problems encountered in this. In particular, the prototype 
+outlined in the first meeting will be presented and discussed with some 
+data sets. At this point it should be clear what needs to be done at 
+each data archive site. Following the second workshop, the programmer 
+will go for short periods to the participants' labs to help them get 
+things going or will work with them over the Internet.
+
+The third workshop will be held at the next TOS meeting, late spring 1995. 
+Its purpose will be to present the model to the oceanographic community.
+
+The workshops will be run administratively by The Oceanography Society. 
+Scientific direction will be provided by a steering committee consisting 
+of Glenn Flierl of MIT, Ken MacDonald of NASA (EOSDIS), Jim Holbrook of 
+NOAA's Pacific Marine Environmental Laboratory and Peter Cornillon of the 
+University of Rhode Island.
+
+This is the report of the first workshop, intended to begin the
+development of a Distributed Oceanographic Data System (DODS). The
+body of the report is a summary with liberal interpretation of the
+proceedings of the workshop. Appendix A is a list of requirements that
+was abstracted from the minutes of the workshop (Appendix B) and from
+the flip charts developed in each of the breakout groups.
+
+During the meeting, we developed a set of requirements --- what the
+users and data providers would like to see from a DODS. These can be
+summarized as follows:
+
+\begin{list}{--}{}
+
+\item To be successful, scientists must find the system useful and turn
+to it when they wish to collect data together for their research. This
+implies that the system must provide access to both archive and PI-held
+data sets. It must be easy and natural to work with, not only for
+other persons' data but for their own as well. The system must provide
+simple ways for scientists to distribute their data and to submit it
+to the archive centers.
+
+\item The system must make it easy to locate the appropriate information.
+Various procedures for searching, browsing, and refining searches must
+be possible.
+
+\item Interfaces for programming languages must be provided so that
+data can be incorporated directly into analysis routines. The system
+must support multiple interfaces, from simple commands to a GUI.
+
+\item To be successful, archive centers must perceive the system as a
+good way for individuals to retrieve information from their archives.
+In addition, it should encourage and facilitate submission of data.
+
+\item The system must be easy to install and extensible (meaning that new
+servers, new data types, new browsing procedures, new user interfaces,
+new data filters, ... can be added at any time).
+
+\end{list}
+
+Originally it was intended that the architecture to be used for this
+system would be defined at the workshop. This was however
+not practical given the time available, and discussions with regard to 
+system architecture begun at the meeting have continued in the 
+interim. Appendix C contains a brief outline of the three different 
+systems under consideration. The prototyping effort has begun and the
+communications structure for the system is being defined and
+implemented.
+
+Each participant was asked to prepare a short summary of their current 
+interests. Appendix E contains these summaries. Appendix D is a 
+listing of the participants.
+
+Everyone involved in the meeting with an Internet address was placed on a
+distribution list. The purpose of this list was for messages of very broad
+interest to the group such as when the next meeting would be held.  In
+addition, several participants expressed an interest in being involved in the
+more detailed discussions related to the development of the DODS that were to
+follow the meeting. A smaller distribution list was formed for this
+group. Some of the discussions alluded to in the previous paragraph have
+taken place via this list. There has also been some discussion in this forum
+related to data structures. 
+
+To receive reports and other updates via the dods-report distribution list,
+send an email message to {\tt dods-report-request@dcz.gso.uri.edu} with
+`subscribe' as the subject or in the body of the message. If you would like
+to participate in the more detailed discussions between designers and
+implementors, join the `dods' list by sending a similar message to\\
+{\tt dods-request@dcz.gso.uri.edu}.
+
+A postscript version of this report can be obtained via anonymous ftp at\\
+{\tt zeno.gso.uri.edu} in {\tt pub/workshop1/}.
+\newpage
+
+\tableofcontents
+\listoffigures
+
+\newpage
+
+\section{\bf Introduction}
+\pagenumbering{arabic}
+
+The Oceanography Society, with funding from NASA and NOAA, organized a
+workshop to explore issues associated with a distributed data management
+system for oceanographic researchers.  The workshop took place at the
+W. Alton Jones Campus of the University of Rhode Island on 29, 30 October and
+1 September 1993. The workshop was the first in a series to promote the
+development of a Distributed Oceanographic Data System (DODS). The long term
+goal of this series of workshops is to develop a system which will provide
+direct access to oceanographic research data over the Internet. The first
+workshop focused on the specification of the system requirements as the
+initial step in the development of the DODS.
+
+Data providers, systems developers and research scientists from government
+agencies, academic institutions and private corporations attended the
+workshop. They provided a comprehensive perspective on the current state of
+oceanographic data management systems as well as the expertise for productive
+discussions. The format of the workshop included both small focus groups
+tasked to address specific issues in detail and plenary sessions which
+provided a forum for the general discussion of topics and review of
+presentations made by the focus groups.
+
+This report of the first DODS workshop summarizes the discussions that took
+place at the meeting and documents the system requirements derived from those
+discussions. The report is organized into six sections: Workshop Goals,
+Workshop Organization, Motivation, Vision, General Implementation Issues and
+Requirements.
+
+\section{\bf Workshop Goals}
+
+The three primary goals of the workshop were: 1) to develop a vision of a
+distributed oceanographic data system, 2) to specify the requirements for
+that system, and 3) to define a system architecture capable of accommodating
+these requirements. The vision expresses the overall objective of the
+workshop series. It also provides a model that can be decomposed into its
+separate parts for the purposes of planning a development strategy.
+Specifying the system requirements and system architecture are tangible,
+short term goals that are viewed as the necessary first steps in the
+development of the DODS.
+
+\subsection {System Vision}
+
+Developing a vision of the DODS at the workshop was important for a number of
+reasons, it helped to:
+\begin{itemize}
+
+\item Define the problem
+
+\item Clarify the solution 
+
+\item Abstract different functions
+
+\item Show the synergism of components
+
+\item Form the foundation of the workshop discussions
+\end{itemize}
+\medskip
+
+The first two points were critical to establishing a common level of
+understanding regarding the purpose of the meeting as a whole. This was a
+difficult task considering the diverse perspectives and backgrounds of the
+attendees. For example the term `distributed system' has one meaning to a
+systems engineer and a very different meaning to a person who is principally
+a data provider. Systems engineers who work with computer networks generally
+think of a distributed system as a system where ``...the existence of
+multiple autonomous computers is transparent to the user'' (Tanenbaum,
+1989). Many data providers use a much broader definition which includes
+multiple data systems residing on different computers that may be connected
+via a computer network.  The vision helped to clarify the meaning of words
+and concepts.
+
+As expected, the system vision continuously evolved throughout the course of
+the workshop. However, considerable emphasis was placed on maintaining a
+research oceanographer's perspective as the focus during the vision's
+development. There was a simple reason for this; the purpose of the workshop
+was to develop a system that will be used! Intentionally focusing on
+researchers' problems helped ensure that the requirements produced by the
+workshop would address those issues. This problem-oriented approach provides
+a basis for developing tools that address a known research problem and are
+immediately useful for that purpose.
+
+Feedback from system developers and data center managers, within the
+framework of the research oceanographer's perspective, was used to constrain
+the system vision. By constantly referencing the system vision, the
+discussions were prevented from becoming debates of system applications in
+the abstract. By participating in the development of the vision, meeting
+attendees were encouraged to explore new and innovative solutions to
+scientific data management problems. Defining these solutions lead to
+descriptions of the requirements necessary to develop a system.
+
+\subsection {System Requirements}
+
+The second goal of the the workshop was the specification of requirements for
+a system based on the vision. The requirements for the DODS are derived from
+the discussions that took place at the workshop and are meant to describe the
+external behavior of the system. Most were formulated within the focus groups
+and then presented in the plenary sessions for general discussion and
+review. This process was very dynamic since there were significant
+interdependencies between how one focus group's requirement would modify the
+issues another focus group was addressing. Therefore, the plenary sessions
+served as a forum to resolve discrepancies between different focus group
+approaches. Appendix I gives the raw requirements as extracted from the
+meeting. The raw requirements were used to develop the formal set of
+requirements which are presented in the Requirements Section. These
+requirements are the basis for the development of the DODS design plan, to be
+generated following the workshop.
+
+\subsection {System Architecture}
+
+The final goal of the workshop was to specify a system architecture that
+would support the DODS vision and satisfy the requirements. Constraints
+placed on the architecture are that it must be compatible with current
+systems that would participate in the DODS and be capable of accommodating
+future systems (large and small) as based on the system vision. This is
+obviously an important consideration if the DODS is to be successful.
+
+Discussions related to the system architecture helped to resolve where in the
+system specific functions might take place. In some instances this provided
+relevant feedback to the requirements specification process. For example, we
+considered whether data manipulation functions, such as file decompression,
+should take place at the remote or local CPU and the trade off in each
+instance.
+
+\section{\bf Workshop Organization}
+
+The workshop was two and a half days long. The first two days were devoted to
+the discussion of oceanographic data systems and their functions. The half
+day session at the end of the meeting was spent summarizing the previous two
+days' discussions and synthesizing them into requirements for the development
+of a distributed oceanographic data system. Each of the first two days
+focused on a single topic. The topic for Day One was system architecture,
+and for Day Two it was data objects and communication protocols.
+
+Each of the main topics for the first and second day of the workshop was
+initially introduced by a plenary session. These introductions framed the
+topic in the perspective of a research oceanographer. Following the morning
+plenary sessions, the workshop participants broke up into focus groups to
+examine the topic from a different and more narrowly focused perspective.
+Afternoon or evening plenary sessions were used to summarize the results of
+each of the focus groups to the workshop as a whole.
+
+There were three focus groups which met on both of the first two days of the
+workshop; data providers, system developers and data users. Each of these
+groups corresponded loosely to the different roles of participants at the
+workshop. A fourth focus group met on the first day of the workshop to
+discuss data objects and protocols in use by existing distributed data
+systems. Each focus group had a group leader who stimulated discussion and
+summarized the groups' debates for the plenary sessions.
+
+\section{\bf Motivation}
+
+The workshop series was motivated by the rapid increase in the number of 
+data sets available on the Internet coupled with a lack of coordination 
+in the systems being developed to access and/or distribute these data.
+
+Recently, many oceanographers with large data sets have been making 
+their data sets available on-line. At the same time federal agencies 
+have begun exploring the development of a distributed data system for 
+global change research and federal archivists have begun investigating 
+on-line access to data in federal archives. These efforts are 
+however being undertaken with little to no coordination. For example,
+most research oceanographers are potential data providers as well as 
+data users; a point overlooked by the federal agencies in their 
+development of an earth science data system for the 1990's. In 
+addition, because research oceanographers collect, calibrate, 
+process and analyze their own data, they are intimately familiar with 
+its strengths and weaknesses. This means that data sets derived from 
+the raw data by the researcher/collector often include his largely 
+``undocumented'' knowledge of the raw data. So, although the raw data 
+may be transferred to federal archives for distribution to the 
+community at large, oceanographers will often prefer to deal with data 
+sets that are acquired from a colleague whom they know and whose judgment 
+about data quality they accept. This is especially true in large 
+interdisciplinary experiments such as SYNOP, JGOFS, or WOCE that have 
+been conceived and undertaken by a group of scientists at a number of 
+different institutions. To make full use of their data, each of the 
+scientists will in general require data from one or more of their 
+colleagues. In order to address this problem, groups of researchers 
+have begun investigating or have already developed data systems that 
+provide for easy distribution of data between colleagues on the same 
+project. The JGOFS data system is an example of this. The difficulty 
+is that these systems are being developed independently and, in 
+particular, accessing data held in one of these systems by another 
+system is difficult to impossible. 
+
+Although many research efforts require the acquisition of new data, 
+most also make use of existing data held in the national archives. 
+Access to these data is an absolute necessity. A consortium of federal 
+agencies recognize this and have indicated that they will work toward a 
+system providing seamless access to data held in federal archive, but
+progress toward the actual development of such a system has been slow at 
+best. The perception from the outside is that each agency is focusing 
+on systems that will meet their needs with little actual interaction 
+between the agencies with regard to these systems and how they will 
+operate together. 
+
+Much of the above became evident through a group of demonstrations 
+of on-line data systems assembled at the recent Oceanography Society 
+meeting held in Seattle. Of the eighteen systems presented, ten of 
+which were operational at the time of the meeting, no pair could 
+communicate with ease! It also became evident at the meeting that the 
+rate of development of such systems was going to increase rapidly over 
+the next several years. The potential explosion of available 
+data sets along with the fact that there currently exist few systems 
+capable of delivering the data, point to the present as a window of 
+opportunity with regard to the development of a truly distributed 
+data system: the hardware exists, individuals as well as institutions 
+are willing to make their data widely available and advances in software 
+design make a distributed system practical. This workshop, the
+development effort following, and the later workshops in the series
+have been designed to address the remaining required ingredient --- 
+cooperation in the design of a system to access these data.
+
+\section{\bf Vision}
+
+The vision of data access that emerged from the workshop was that of
+oceanographers interactively moving data from data sets located on remote
+systems directly into their analysis packages for examination or using local
+applications to acquire and process these data in programs tailored to their 
+research problems.  From the oceanographer's perspective, the distributed data
+to be accessed has a consistent form and structure making it straightforward 
+to locally manipulate data from different sources.  The system is viewed
+as being integrated with the oceanographer's own data system and applications
+environment so that commands, operations and applications for accessing,
+processing and analyzing research data are the same whether accessing 
+locally stored data or data held remotely.  In addition, the system is a tool
+which enables researcher to solve problems by providing access to data both
+as they experiment with analysis ideas and when they are ready to actually
+process the data.
+
+It became clear at the workshop that this last point, the research
+scientist's approach to problem solving was not well understood.  Scientific
+research is generally carried out in a tentative fashion at first and, as the
+researcher gains a better understanding of the issues and the data involved,
+in a more assertive mode.  In the early stages the scientist repeatedly asks
+``what if'' questions, often searching out additional data to corroborate an
+observation or to answer a question not originally posed but clearly related
+to the problem at hand.  This approach to problem solving is seen as being
+fundamental to the design of a system that will efficiently meet the
+scientist's research needs.
+
+To help render the vision presented in the first paragraph of this section
+more tangible, we present it in the context of a system in which all data are
+either held locally or reside on remotely mounted disks.  First, however,
+consider how a scientist accesses and analyzes data held locally on-line;
+this may help clarify the point raised in the previous paragraph. There are
+two general models to data access in commercially available and/or public
+domain analysis packages.  We refer to those based on an
+identify-load-command-manipulate paradigm (e.g., MatLab) as Class I
+systems, and those based on an identify-command-load-manipulate paradigm
+(e.g., FERRET) as Class II systems.  The major distinctions between the two
+classes are when and where data that the user wants to access can be
+sub-sampled.  In Class I applications the user defines the data (location
+and format), the identify step, then directs the application to load the
+data.  The application reads the entire data resource into memory; then the
+user is free to issue commands and manipulate, sub-sample or display the
+data.  For Class II applications the user again identifies the data resource
+location and format, but instead of loading the data immediately, the
+application provides verification of the resource's existence.  When the user
+issues a command to manipulate and/or display the data, the application
+retrieves only the data which has been specified.  In Class I systems the
+data are sub-sampled within the application program's memory, for Class II
+systems the data are sub-sampled prior to being placed in memory.  In both
+cases, the user identifies the data resources of interest and then specifies
+operations to be performed with the data.  Both systems allow the researcher
+to easily access locally held data and provide a straightforward method for
+operating on multiple types and multiple formats of data resources.
+
+Now consider the case where one of the data resources resides on a disk 
+that is connected to another, remote system.  Assuming that the 
+structure of these data is well defined (and known) and that the data 
+can be ingested by the analysis package, the disk containing the data
+might be remotely mounted via the network file system (NFS\footnote{NFS, 
+because it is widely used and well known, is used here to
+illustrate the concept of a virtual file system.  There are other
+implementations of virtual file systems that may in fact be more appropriate
+to the case in hand}) at which point the data appear as a locally accessible
+resource to the researcher's analysis application (regardless of class).  The
+user specifies these data resources in the same fashion as was done in the
+simple case of locally held data and the same range of operations is available.
+
+Next, imagine that all disks with oceanographic data are NFS mounted to the
+user's system and that the analysis application contains a listing of all
+data sets, their formats and the NFS mounted disk on which they 
+reside. In such a world, if the
+researcher was interested in contouring all XBT derived temperatures at 500m
+and plotting the results on a satellite derived SST field, the 
+analysis application would access all the NFS mounted disks with XBT data,
+import the appropriate subsets, remove duplicate XBT values from different
+sources, perform the 2D contouring and plot the results on the SST derived
+field.  Conceptually, all oceanographic data resources are local and
+available to the investigator's analysis application.
+
+\section{\bf General Notes on Implementation of the DODS}
+
+The DODS is envisioned as a system with the functionality presented in the
+previous section. The actual implementation of the system need not however
+rely on remote mounting of disks containing the data of interest; there are
+other software implementations that would accomplish the same objectives. The
+image of remotely mounted disks was used in that it is a simple extension of
+concepts that we all use in our current approach to data analysis and hence
+renders an understanding of the vision straightforward.
+
+In choosing an actual implementation strategy, an important underlying 
+principle of the DODS effort is the belief that much
+of the work of putting the system together will also be distributed (as are
+the data).  How compatible specific system implementations, such as the NFS
+virtual file system example above or an object oriented client-server system,
+either of which could support the functionality required for the DODS, are
+with regards to distributed development must be considered in the design of
+the DODS.  The relevant issues are how will DODS evolve within a rapidly
+changing technological environment and how the responsibility for that 
+evolution is distributed? Virtual file systems or client-server approaches 
+will provide different answers to these problems.  For example, in the case 
+of virtual file system packages, system-to-system communication software is
+maintained and controlled by a third party, whereas a client-server system
+developed in-house would presume that the communication software is developed
+by the DODS development team and maintained by the DODS community.  This
+issue brings to light questions concerning software maintainability,
+extensibility and obsolescence.  
+
+A second consideration with regard to the choice of a system relates to the
+requirement that it handle very large data sets, data volumes too large to
+acquire over communal networks. In these cases, data would be staged by the
+resource system to removable media (e.g., tape, CD-ROM or optical disk) that
+are then made accessible to the user's local system.  Sophisticated users,
+who must process large volumes of data in the assertive phase of their
+research, will require DODS to provide such capabilities. This means that the
+system must be capable of dealing not only with random access devices, but
+serial devices and, more importantly, there must be a way of transferring
+along with the data a means of accessing it. In a client-server
+implementation, the server, providing data from a remote system, resides on
+that system. The server may perform format transformations when the data are
+requested by a client. If a request for a large volume of data on removable
+media does not pass through the server, (i.e., if it is a straight file
+transfer to the media) a format transformation may be required on the user's
+system. Without knowledge of the structure of the data this is impossible.
+Furthermore, moving the server to the user's system may be quite
+difficult. There are several different fashions in which this problem could
+be addressed; some impact the architecture of the system itself while others
+impact the supplier or the user.
+
+As indicated above, central to the success of the DODS is cooperation; 
+the hardware, approaches to the software and accessibility of data are 
+all realities. Although oceanographers require data from other 
+disciplines and those in other disciplines may require access to 
+oceanographic data, it was agreed at the meeting that the system would 
+be designed to meet the needs of the oceanographer and would focus on 
+access to oceanographic data. The group felt that a larger audience 
+would jeopardize the success of the effort. This does not mean that 
+non-oceanographers would be denied access to the system, nor that 
+non-oceanographic data would be excluded from it.
+
+Clearly, in developing the DODS different approaches must be investigated
+within the context of the issues raised above while at the same time
+satisfying to the extent possible the requirements defined at the meeting and
+presented in the following section.
+
+\section{\bf Requirements}
+
+Software requirements describe the external behavior of a system.  Ideally,
+requirements reduce ambiguity in the description of work to be done so that
+developers can evaluate the completeness of a design and users know what to
+expect in the finished system.
+
+This section contains the requirements for the DODS as described by the DODS
+Workshop minutes.  These requirements were developed by refining basic
+questions about the system's existence. The answers to 
+those questions came both from the minutes and from our vision of the system.
+
+The basic question that emerged at the workshop was: {\it What will it 
+take to make the DODS to succeed?} It quickly became clear that the answer 
+is quite straightforward. The scientist must want to use the system; 
+it must be the first place that he or she will think of going to satisfy 
+a data need. This then gave rise to a host of other questions: why 
+will the scientist want to use the system? why will data archives want 
+to make data accessible to the system? etc. The answer to each of 
+these raises still more questions. This section is organized in terms 
+of these questions beginning with the most general and moving to the 
+requirements. The section is divided into subsections defined by a set 
+of high level questions. For clarity, these are listed below prior to 
+entering into the details of the responses.
+
+Many of the items in this section have a tag that shows which items from the
+minutes match them. Appendix I contains a numbered list of requirements taken
+from the minutes (Appendix II). The tag numbers in this section match the 
+item numbers in Appendix I. 
+
+\subsection {Why will scientists want to use the system?}
+
+\subsubsection {It provides access to data sets held by other scientists
+and to data sets held in the archives.}
+
+\newcounter{e}
+\begin{list}{\arabic{e}.}{\usecounter{e}}
+
+\item The system provides a self-consistent view of data.  
+
+\item The system supports browsing and searching the data. R:~21
+
+\item The system provides a straightforward API that lets scientists write
+FORTRAN subprograms and C functions for use with off-the-shelf analysis
+packages as well as their own in-house analysis software. R:~23,~29,~51
+
+\item The system provides command line interface tools that can be used
+from the UNIX shell. R:~51
+
+\item The system will support other types of user interfaces including a
+GUI. R:~50
+
+\item Data accessed are presented in a consistent, usable form,
+regardless of their storage form or location. R:~16
+
+\end{list}
+
+\newcounter{m}
+\begin{list}{}{\usecounter{m}}
+
+\item To obtain a self-consistent view of  data requires:
+\newcounter{f}
+\begin{list}{--} {\usecounter{f}}
+
+\item All data (remote and local) are accessed using the same commands.
+R:~12,~13  
+
+\item The system can resolve synonyms when getting data. R:~6
+
+\item The system will support data set version numbering. R:~54
+
+\item The data can be selected with a simple query
+
+\begin{list}{--} {\usecounter{f}}
+
+     \item Using boolean, relational, and functional operators.
+
+     \item The result of a query is the data it describes. R:~58
+
+\end{list}
+
+\item The storage format of the data is hidden from the user.
+
+\end{list}
+
+\item To support browsing requires:
+\begin{list}{--}{\usecounter{f}}
+
+\item Individual datasets may provide browse capabilities in various forms;
+the user should be able to take advantage of these
+
+\end{list}
+
+\item To support searching and location of data requires:
+\begin{list}{--}{\usecounter{f}}
+
+\item The system provides a system-wide directory function.  R:~2,~3,~7
+
+\begin{list}{--}{\usecounter{f}}
+
+     \item The system knows about all of its available resources.
+
+     \item The system's data-set database is fully distributed (i.e., it
+           is transparently spread out over some or all of the machines
+           which make up the system). R:~8
+
+     \item The system's directory information is maintained dynamically. R:~9
+
+     \item The system automatically propagates information about additions,   
+           modifications or deletions to its data resources to the
+           rest of the system.
+
+     \item The system may support search refinement. R:~5
+
+\end{list}
+
+\item The location of the data is hidden --- Software that the scientist
+uses will know how to communicate with other parts of the system --- the
+scientist does not have to know. The scientist never has to think `this is on
+another CPU'.
+
+\item The system enables querying of its data resources with user defined, 
+multi-parameter searches. 
+
+\begin{list}{--}{\usecounter{f}}
+
+     \item The scientist can search `keyword {\tt relop$|$binop} value' of
+           information extracted from data sets managed by the system.
+
+     \item The system supports `unknown parameter' searches. R:~10
+
+     \item The system is able to resolve keyword synonyms in queries. R:~6
+
+\end{list}
+
+\item The scientist can search plain text descriptions of data holdings.
+
+\item Co-located searches are fully supported by the system. R:~4
+
+\item If more than one data set must be used to satisfy a query, then the
+system must do that. R:~11
+
+\item Once found, the same data set may be accessed may times without
+repeating the initial search process. R:~24
+
+\item If a scientist knows exactly where a data set resides, the system can
+go directly to that data set without searching. R:~18
+
+\item Whenever data are managed by the system, they are automatically
+accessible to other users of the system. R:~30
+
+\item A provider may set limits to the remote access of his or her data sets
+managed by the system. Such access limits may apply to everyone or to
+everyone except a group of privileged users.  R:~48,~56
+
+\end{list}
+
+\item The data is usable because:
+\begin{list}{--}{\usecounter{f}}
+
+\item The system provides direct electronic access to data. The system
+       uses the Internet to move data to the user. The existence of
+       multiple computers within the system is transparent to the user.
+       R:~28
+
+\begin{list}{--}{\usecounter{f}}
+
+     \item There may be limits on the total quantity of information
+           that can be transmitted over the network in response to
+           any single query. These will be set by the individual
+           provider.
+           R:~25
+
+     \item Very large data sets may be transferred by mail; the user
+           will be able to use these when they arrive with the same
+           commands used over the network.
+
+     \item The scientist can access parts of a data set using a query.
+
+\end{list}
+
+\item When the scientist gets data, it is returned in a self-describing
+      form. By transforming all data, regardless of storage format,
+      into a (canonical) self describing form the system only has to
+      provide a parser for that form to correctly handle all data
+      managed by the system. 
+
+\item For this reason, it is simpler to combine different data sets and
+      to co-locate data from two or more data sets. 
+
+\item Once data has been accessed, the system makes it easy to import data 
+      into other applications. The operations performed to retrieve
+      data make it straightforward to use those data with analysis
+      packages. The API interface makes it simple to use systems like
+      MatLab, ... and the command line interface makes it simple to
+      pipe a data stream into UNIX or home-made filter programs. 
+      R:~50
+
+\item Data can be saved in files. The resulting files are self-describing
+      and may accessed using the same API as remote data.
+
+\item Data users will be allowed to provide comments regarding individual 
+      data resources.
+      R:~47
+
+\begin{list}{--}{\usecounter{f}}
+
+     \item Feedback to data providers on problems with data quality or
+           access. 
+
+     \item Comments will be attributed to their authors, so the incentive to 
+           make meaningful comments will be fairly great.
+
+     \item The user comment capability would be enabled at the discretion of
+           the data provider.
+           R:~26
+\end{list}
+
+\end{list}
+
+\subsubsection {It provides an easy tool for managing their own data.}
+
+\newcounter{g}
+\begin{list}{\arabic{g}.}{\usecounter{g}}
+
+\item A single `interface semantics' is used to locate and access data.
+
+\item The system can use already developed data management tools or work
+       with data organized using files and the UNIX file system.
+       R:~50
+
+\item The scientist can choose to ignore any of the features of the system
+       while using any other features.
+       R:~17,~20
+
+\item Analysis tools can be added
+
+\begin{list}{--}{\usecounter{f}}
+
+     \item The system's transformation of data includes format translation
+           and subsampling. 
+           R:~55
+
+     \item The system includes the capability of adding new
+           transformations
+
+\end{list}
+
+\item All data sets managed by the system are uniquely identified.
+       R:~31
+
+\item Although the system supports many features, a scientist is never
+{\em required\/} to make use of those features --- A choice of options is
+always given. These options allow the scientist to choose a level of
+participation in the system.  R:~26
+      
+\end{list}
+
+\subsubsection {It provides an easy means for them to make their data 
+available to others.}
+
+\newcounter{h}
+\begin{list}{\arabic{h}.}{\usecounter{h}}
+
+\item Scientists may choose from self describing data formats --- both
+       standard and language-based types. 
+       R:~14,~22
+
+\item Other storage formats may be added at any time
+
+\item The system will be able to support providing data in a DBMS.
+
+\item Data providers retain complete control of their data resources
+
+\end{list}
+
+\item The self-describing formats are often what the scientist is
+already using; then, files need only be moved to the appropriate
+directories within the system. Formats to be considered initially
+include
+\begin{list}{--}{\usecounter{f}}
+
+\item netCDF, HDF, GRIB/BUFR, various ASCII tables
+       R:~34
+
+\item Data providers will be encouraged to write text describing each data 
+       set and to use a self describing data format.
+
+\item Choosing to make the data set description file and/or using a
+       self-describing data format will make it possible to use more of
+       the system's features with the data. This is true for both local
+       and remote users.
+
+\end{list}
+
+\item For data not already stored in a supported format, language tools
+will be provided so that the scientist can describe the data's
+structure to the system.
+\begin{list}{--}{\usecounter{f}}
+
+\item Some ways of structuring data can be described to the system by
+       creating template files using a text editor. This will {\em not\/}
+       require any programming knowledge at all.
+
+\item Other ways of structuring data can only be described by writing
+       programs.
+
+\begin{list}{--}{\usecounter{f}}
+
+     \item If data needs unusual access procedures (e.g. to be accessed
+           efficiently) the scientist will have to write a program that
+           implements that procedure. We will make documented source
+           code available to the scientist that will illustrate how we
+           wrote the code that access files.  The documentation will
+           be more than just commented source code, it will be both
+           annotated source code and a reference manual. 
+             R:~35
+
+\end{list}
+
+\end{list}
+
+\item Data providers can include general and/or technical documentation on
+their data resources as an aid to users accessing their resources.
+Such documentation is provided at the discretion of the data provider
+for data users.  They can choose to limit access to the data
+to only designated users.
+       R:~26
+
+
+\subsubsection {It provides an easy method for submitting data to the 
+archives.}
+
+\begin{list}{--}{\usecounter{f}}
+
+\item Since the national archives will be on the system, the archive
+       center can use it to transfer data and write it into their
+       own storage system. 
+       R:~57
+
+\end{list}
+
+\subsection {Why will the data archive centers want to use the system?}
+
+\begin{list}{$\bullet$}{\usecounter{f}}
+
+\item It allows them to distribute data with minimum effort and expense.
+
+\item It allows them to acquire datasets with little work.
+
+\end{list}
+
+\begin{list}{--}{\usecounter{f}}
+
+\item Data centers still have difficulties fulfilling their mandate ---
+        to provide data. 
+        R:~19,~30
+
+\begin{list}{--}{\usecounter{f}}
+
+     \item Most data centers currently provide data through hard media
+           (i.e., tapes and CD-ROMS).  A number recognize the
+           advantage to the research community of having data on-line
+           and accessible over the Internet.
+
+\end{list}
+
+\item Many data sets held in data center archives are high profile items.
+       Providing access to these data sets will jump start the system.
+
+\item  One of the responsibilities of data archival centers is to acquire 
+       data from scientist and programs.  The system supports data
+       centers not only providing data but also acquiring data for
+       archival purposes.
+
+\item Data centers do not have to make use of all of the system's
+       features when managing a given data set with the system.
+       R:~17
+
+\item The system will support different kinds of data resource documentation. 
+
+\begin{list}{--}{\usecounter{f}}
+
+     \item The system will support maintenance of access statistics.  Use
+           statistics will be internally maintained at the discretion of
+           the data provider. 
+           R:~53
+
+     \item The usage log for each data set will be available to the same set of
+           users as the associated data set.
+           R:~49
+
+\end{list}
+
+\end{list}
+
+\subsection {How will the system be installed?}
+
+\newcounter{i}
+\begin{list}{\arabic{i}.}{\usecounter{i}}
+
+\item Installing the system is easy
+
+\item Extending the system is straightforward
+
+\item The system is an open system.
+
+\end{list}
+
+\item The system is only supported on the UNIX operating system. Some
+features may not be available without a workstation and X11R5.
+       R:~1
+\begin{list}{--}{\usecounter{f}}
+
+\item All the programs that make up the system can be copied from an 
+       anonymous ftp server. Any third party libraries required to
+       build the software will be available at this site as well.
+       R:~36
+
+\item The system will be distributed in two forms: 1) precompiled binaries
+       for popular workstations, and 2) source code.
+       R:~36
+
+\begin{list}{--}{\usecounter{f}}
+
+     \item The (supported) workstations include
+           Sun Sparc: SunOS 4.x; DECstation: Ultrix; DEC alpha:
+           OSF/1; SGI: IRIX; IBM RS6000: AIX
+           R:~37
+
+     \item Source code will be available so that other platforms can run
+          the system, but we will only support additional UNIX
+          platforms if there is a significant call for such support
+          and we have the resources.
+          R:~38
+
+\end{list}
+
+\item The bulk of the system will be written in ANSI C. Parts may use
+       FORTRAN if standard, widely used, source code exits for common
+       algorithms and if there are significant reasons not to recode
+       it in ANSI C. We may also use a different language for any X11
+       interface we produce. Whether the system {\em can\/} be ported to OS `Q'
+       depends mostly on how similar `Q' is to UNIX. Without knowing `Q' in
+       advance, it is impossible to say if the port can be done easily. Any
+       cross-OS port will almost certainly require a systems programmer
+       with experience.
+
+\item The software used to manage data may be more complex to build on
+       unsupported platforms than the software used to access data on
+       supported platforms. R:~38
+
+\item Enough system documentation will be provided so that others may develop
+       software that will work with `stock' parts of the system. This
+       explicitly includes user interface software.
+       R:~39,~50,~51
+
+\end{list}
+
+\item There will be no central management authority for the system. All
+nodes on the system appear equal. Responsibility for how the system is
+used and evolves is shared mutually by all participants in the system.
+
+\subsection {Possible design features of the system.}
+\newcounter{j}
+\begin{list}{\arabic{j}.}{\usecounter{j}}
+
+\item The system will not exclude the use of protocol translators located at
+  the data source.
+  R:~40
+
+\item The design will not preclude adding protocol translators for
+  efficiency on the user's software, but those translators must be optional
+  (i.e., they must not be required to access any data).  R:~41
+
+\item The system must support filtering the data stream, both at the data and
+  at the user end.
+  R:~42
+
+\item The system must support a base level communication procedure by which
+  all parts of the system may communicate.
+  R:~43
+
+\begin{list}{--}{\usecounter{f}}
+
+   \item This communication procedure must include: Data set documentation
+    (which may be null), Identifiers, attributes, data values/types, and
+    structure.
+    R:~44
+
+   \item This does not have to be the most efficient means of communication
+    between parts of the system.
+    R:~46
+ 
+\end{list}
+
+\item The system's components must support negotiation. Each component
+must be able to determine from other parts what level of support they provide
+for the various features of the system.  R:~45
+
+\item The design of the system must be both extensible and scalable. R:~52
+
+\end{list}
+
+\end{list}
+
+\newpage
+\begin{thebibliography}{99}
+\bibitem{1} Tanenbaum, Andrew S. 
+{\em Computer Networks, 2ed.},
+Prentice-Hall:1989
+\end{thebibliography}
+
+\newpage
+
+% appendix introduces the appendix section of a document --- each appendix is
+% startes with section.
+
+\appendix
+
+\section{\bf DODS Requirements from the Minutes}
+
+\bigskip
+
+The following are requirements for the DODS from the workshop minutes. The
+list is complete in the sense that everything in the minutes that is clearly
+a requirement is included here. However, there may be important requirements
+that are not on this list. See Section 7 of this report for the complete
+requirements. 
+
+\begin{enumerate}
+
+\item The system must be accessible from a workstation.
+
+\item The system must make the location of remote data easy.
+
+\item The system must make the location of local data easy.
+ 
+\item The system must be capable of performing searches and co-location
+searches. 
+
+\item Refined searches are optional.
+
+\item The system must be able to resolve keyword synonyms. This is true for
+both the object locator and data queries.
+
+\item The system must provide `meta data' in some way (i.e., location of data
+through descriptions of each server site's contents).
+
+\item Data location will be supported with a distributed database.
+
+\item The distributed locator database will be automatically updated.
+
+\item The system must be flexible enough to handle unknown parameter searches.
+
+\item If several data sets should be examined to satisfy a given query, the
+system must facilitate that.
+
+\item The system must make acquisition of remote data easy.
+
+\item The system must make acquisition of local data easy.
+ 
+\item The system must support a variety of different data types.
+
+\item The system must provide access to field/project data.
+
+\item Data Providers --- PI and centers --- can provide a range of services.
+
+\item The system will provide access to data held by individual scientists.   
+
+\item The system will provide access to data from government archive centers.
+
+\item Not all data sets will be treated equally by the system.
+
+\item The system will be able to browse data.
+
+\item Data will be provided in a small set of standard formats.
+
+\item Data will be directly accessible via API without first saving it to a
+file. 
+
+\item Data must be accessible via the search process or directly without first
+searching.
+
+\item Servers may respond to some queries with a message rather than data
+(e.g., ``You requested too much data'', ``Get data by ftp'',...).
+
+\item Data servers can provide varying service depending on the data set.
+
+\item The system must support redundant data screening.
+
+\item The system must deliver data electronically when possible.
+
+\item Data acquired should be easily accessible to analysis packages (e.g.,
+MatLab).
+
+\item The system reduce the load of providing data to others.
+
+\item The system must provide a global naming procedure for data sets (reduce
+name-space pollution). 
+
+\item The system is specifically for oceanographic data.
+
+\item The system will allow other types (i.e., non-oceanographic)  of data, but
+will not be deliberately designed with such data in mind.
+
+\item The system must provide data translators for at least the following file
+formats: GRIB/BUFR, HDF, netCDF.
+
+\item The system will provide support for data-archive resident software (e.g.,
+servers) written by the DODS development team, others working in conjunction
+with the DODS Development Team, and others all on their own.
+
+\item Software distribution must be easy for users to build --- it must not
+require that they have a suite of other libraries. Instead use binary
+distribution or source distribution with all of the necessary libraries
+included.
+
+\item Source code can be non-trivial to build if binary software is provided
+for Sun Sparc SunOS 4.1.x, DECstation Ultrix, Alpha OSF, IBM RS6000 AIX, SGI
+IRIX.
+
+\item Server source code and/or binary software can be more complex to
+build/install than client given the relative complexities of the systems (but
+not more than 1 Programmer-Day).
+
+\item The system should provide enough support for programmers that additional
+user interfaces can be constructed.
+
+\item The design will not preclude accessing existing systems via protocol
+translators located at the server.
+
+\item The design will not preclude {\em optional\/} client side protocol
+translators that improve efficiency. However, such translators {\em must\/} be
+entirely optional. 
+
+\item The system must support pre and post filters for the data stream.
+
+\item The system must support a base level communication procedure.
+
+\item The server's responses must include: Data set documentation, identifiers,
+attributes, data values/types, and structure.
+
+\item The system's servers must support protocol negotiation.
+
+\item The base level communication procedure does not have to be `efficient'.
+
+\item The system's log file allows users to comment on data sets.
+
+\item The data provider must be able to determine what data objects are
+available and the order in which those data objects are delivered.
+
+\item Usage log should be centralized (physically or logically).
+
+\item The system must provide easy-to-use features for the novice and
+sophisticated features for advanced users.
+
+\item The system must support several user interfaces: menus/hypertext and
+a programming language API.
+
+\item The system design must be both extensible and scalable.
+
+\item PI/providers must be credited for making data sets accessible.
+
+\item The system must provide data set version numbers (along with processing
+algorithm version/revision control).
+
+\item The system's distributed computing capabilities are limited to format
+translation and subsampling.
+
+\item The provider must be able to restrict access in a flexible way.
+
+\item The system should support data transmission from servers to national
+archives.
+
+\item The system should not make unnecessary distinctions between `data' and
+`metadata'.
+
+\end{enumerate}
+
+\newpage
+
+\section{\bf Meeting Minutes}
+
+
+\input{minutes.tex}
+\newpage
+\section{\bf Proposed System Architectures}
+
+%\addtocounter{page}{27}
+
+One of the explicit goals of the workshop was to recommend a system
+architecture for the implementation of the DODS. The system developers focus
+group discussed in detail several different system models on the first day.
+In their report to the plenary session, they recommended the client-server
+model as appropriate for the implementation of DODS. In this Appendix we
+elaborate on the client-server architecture and show three different ways in
+which it can be implemented.
+
+The system shown in Figure 1 has translators located at the data servers
+which translate the format of the data resource into a canonical intermediate
+format used for transmission. The client component of this system reads and
+parses the data stream. User programs access the parsed data using a
+API. The data model implicit in the semantics of this API will closely match
+that of the canonical format used for transmission (although it could, in
+theory, be quite different, there is little reason to make it so).
+
+In figure 2, the read and parse operations are moved  out of the client API
+and into the data server. The data format implicit in the API is mapped to
+the data resource format either directly or using an intermediate format.
+Using an intermediate format would add complexity to design and might
+restrict the total number of data resource formats accessible. However, the
+presence of an explicit intermediate format would no doubt simplify support
+for different data resource formats and (possibly) APIs. This design is also
+capable of supporting limited random file access calls since it is not
+constrained by a serialized intermediate format.
+
+The system in Figure 3 is significantly different from either of two
+preceding figures. Both figures 1 and 2 share a crucial feature; the
+lowest level of access to the system is through an API we provide. In order
+for programs to make use of the system directly they must be, at minimum,
+relinked with our API. The system in Figure 3 is designed to overcome this
+problem. Rather than develop a data specific API, the system in Figure 3 uses
+a special file system which has translators located in both the client and
+server components. The translators on the server side produce a data stream
+in response to requests for data from the translators on the client side. The
+translators on the client side are accessed not from an API we supply but
+from the UNIX file system calls (open(), read(), ...). In this system, users
+could choose from one of several translators on the client side so that the
+same file could be accessed as ascii, html, or netcdf, for example. The
+choice of translators would be accomplished using a special syntax for the
+file names.  Implementation of this system requires modification to the Unix
+kernel.
+
+Each of the three systems pictured here represent different tradeoffs in
+extensibility, generality and simplicity. The last design is the most complex
+to implement and maintain, since creating a file system and supporting that
+file system on several platforms is complex. System 1 and 2, however, are
+fairly simple to implement. This is balanced by the relative generality of
+the three basic designs. Systems 1 and 2 can only be used with programs we
+(or others) explicitly modify to use the DODS API. System 3, however, provides
+access to DODS data using Unix system calls (think of NFS) so programs which
+access DODS data will not have to be specially modified. Existing software
+would access DODS data using a special pathname which specifies the remote
+data (like pathnames of NFS volumes specify remote data) and both client and
+server format translators.
+
+The above discussion presumes that arbitrary format translation can be
+accomplished (i.e., that any format can be translated to any other format).
+This is not true. However, if the choice of intermediate format(s) in the above
+systems is made wisely, a wide variety of data formats can be supported.
+
+
+\begin{figure}[btp]
+\psfig{figure=fig1a.xfig.ps}
+\caption{The Data Stream Client-Server Model for DODS}
+\end{figure}
+
+\begin{figure}[btp]
+\psfig{figure=fig2a.xfig.ps}
+\caption{The API Client-Server Model for DODS}
+\end{figure}
+
+\begin{figure}[btp]
+%\postscript{4.3in}{fig3}
+\psfig{figure=fig3a.xfig.ps}
+\caption{The Virtual File System Client-Server Model for DODS}
+\end{figure}
+
+
+
+
+% clearpage tells latex to put the remaining figures on blank pages, newpage
+% does not. That causes all sorts of unpleasentness (figure pop up at the top
+% of the next appendix, ...). Always put clearpage at the end of a section
+% with figures if you don't want the figures to bleed over into the next
+% section.
+
+\clearpage
+
+\section{\bf Participants}
+
+Addresses of participants can be found with their background statements.
+
+\begin{htmlonly}
+\begin{description}
+\item{\htmladdnormallink{BACON, Ian}{file://localhost/home/dcz/george/tex/dods/html/bacon/bacon.html}} ian@getafix.tsg.com \\
+\item{\htmladdnormallink{BASS, Bill}{file://localhost/home/dcz/george/tex/dods/html/bass/bass.html}}  bill@eos.hac.com \\
+\item{\htmladdnormallink{BROWN, Wendell}{file://localhost/home/dcz/george/tex/dods/html/brown/brown.html}}  wsb@panthr.unh.edu \\
+CHINMAN, Richard  chinman@ucar.ncar.edu \\
+\item{\htmladdnormallink{COLLINS, Donald}{file://localhost/home/dcz/george/tex/dods/html/collins/collins.html}}  djc@shrimp.jpl.nasa.gov \\
+\item{\htmladdnormallink{CORBIN, Jim}{file://localhost/home/dcz/george/tex/dods/html/corbin/corbin.html}}  corbin@cast.msstate.edu \\
+\item{\htmladdnormallink{CORNILLON, Peter}{file://localhost/home/dcz/george/tex/dods/html/cornillon/cornillon.html}}  pete@petes.gso.uri.edu \\
+\item{\htmladdnormallink{DEBAUGH, Henry}{file://localhost/home/dcz/george/tex/dods/html/debaugh/debaugh.html}}\\
+\item{\htmladdnormallink{DOBINSON, Elaine}{file://localhost/home/dcz/george/tex/dods/html/dobinson/dobinson.html}}  elaine\_dobinson@isd.jpl.nasa.gov \\
+DOUGLAS, Bruce B. DOUGLAS@omnet.nasa.gov \\
+ENLOE, Yonsook  yonsook@killians.gsfc.nasa.gov \\
+\item{\htmladdnormallink{FLIERL, Glenn}{file://localhost/home/dcz/george/tex/dods/html/flierl/flierl.html}}  glenn@lake.mit.edu \\
+\item{\htmladdnormallink{FRANK, George}{file://localhost/home/dcz/george/tex/dods/html/frank/frank.html}}  george@galaxy.ngs.noaa.gov \\
+\item{\htmladdnormallink{FULKER, Dave}{file://localhost/home/dcz/george/tex/dods/html/fulker/fulker.html}}  dfulker@unidata.ucar.edu \\
+\item{\htmladdnormallink{GALLAGHER, James}{file://localhost/home/dcz/george/tex/dods/html/gallagher/gallagher.html}}  jimg@dcz.gso.uri.edu \\ 
+GILL, Bob  gill@colts.nodc.noaa.gov \\
+\item{\htmladdnormallink{GIVEN, Jeffrey}{file://localhost/home/dcz/george/tex/dods/html/given/given.html}}  jeff@gso.saic.com \\
+\item{\htmladdnormallink{GLOVER, Dave}{file://localhost/home/dcz/george/tex/dods/html/glover/glover.html}}  david@plaid.whoi.edu \\
+\item{\htmladdnormallink{HANKIN, Steve}{file://localhost/home/dcz/george/tex/dods/html/hankin/hankin.html}}  hankin@ferret.pmel.noaa.gov \\
+\item{\htmladdnormallink{HOGG, Roen}{file://localhost/home/dcz/george/tex/dods/html/hogg/hogg.html}}  roen@oce.orst.edu \\
+HOLBROOK, Jim J. HOLBROOK@omnet.nasa.gov \\
+\item{\htmladdnormallink{IRISH, Jim}{file://localhost/home/dcz/george/tex/dods/html/irish/irish.html}}  jirish@whoi.edu \\
+KELLEY, Tim  kelley@sanddunes.scd.ucar.edu \\
+MAIRS, Rob  rmairs@saars1.fb4.noaa.gov \\
+\item{\htmladdnormallink{MILKOWSKI, George}{file://localhost/home/dcz/george/tex/dods/html/milkowski/milkowski.html}}  george@zeno.gso.uri.edu \\
+\item{\htmladdnormallink{MILLER, Chris}{file://localhost/home/dcz/george/tex/dods/html/miller/miller.html}}  miller@esdim1.nodc.noaa.gov \\
+McCONAUGHY, Gail  gailmcc@boa.gsfc.nasa.gov \\
+McDONALD, Ken  mcdonald@nssdca.gsfc.nasa.gov \\
+NEKOVEI, Reza  reza@uri.gos.uri.edu   \\
+OLSEN, Lola  olsen@eosdata.gsfc.nasa.gov \\
+RHODES, Judi  OCEANOGRAPHY.SOCIETY@omnet.nasa.gov \\
+\item{\htmladdnormallink{SCHRAMM, Bill W.}{file://localhost/home/dcz/george/tex/dods/html/schramm/schramm.html}} SCHRAMM@omnet.nasa.gov \\ 
+SCHWENKE, George G. schwenke@se.hq.nasa.gov \\
+\item{\htmladdnormallink{SOREIDE, Nancy}{file://localhost/home/dcz/george/tex/dods/html/soreide/soreide.html}}  nns@noaapmel.gov \\
+\item{\htmladdnormallink{STAREK, Bob}{file://localhost/home/dcz/george/tex/dods/html/starek/starek.html}}\\
+\item{\htmladdnormallink{WALSTAD, Leonard}{file://localhost/home/dcz/george/tex/dods/html/walstad/walstad.html}}  walstad@oce.orst.edu \\
+\item{\htmladdnormallink{WHITE, Warren}{file://localhost/home/dcz/george/tex/dods/html/white/white.html}}  wbwhite@ucsd.edu \\
+\item{\htmladdnormallink{WILSON, J. R.}{file://localhost/home/dcz/george/tex/dods/html/wilson/wilson.html}}  R.WILSON.MEDS@telemail.nasa.gov 
+\end{description}
+\end{htmlonly}
+
+\begin{latexonly}
+\begin{tabbing}
+namezzzzzzzzzzzzzzzzzzzz \= address \kill
+
+BACON, Ian \> {\tt ian@getafix.tsg.com} \\
+BASS, Bill \> {\tt bill@eos.hac.com} \\
+BROWN, Wendell \> {\tt wsb@panthr.unh.edu} \\
+CHINMAN, Richard \> {\tt chinman@ghoti.coare.ncar.edu} \\
+COLLINS, Donald \> {\tt djc@shrimp.jpl.nasa.gov} \\
+CORBIN, Jim \> {\tt corbin@cast.msstate.edu} \\
+CORNILLON, Peter \> {\tt pete@petes.gso.uri.edu} \\
+DEBAUGH, Henry \\
+DOBINSON, Elaine \> {\tt elaine\_dobinson@isd.jpl.nasa.gov} \\
+DOUGLAS, Bruce B.\> {\tt DOUGLAS@omnet.nasa.gov} \\
+ENLOE, Yonsook \> {\tt yonsook@killians.gsfc.nasa.gov} \\
+FLIERL, Glenn \> {\tt glenn@lake.mit.edu} \\
+FRANK, George \> {\tt george@galaxy.ngs.noaa.gov} \\
+FULKER, Dave \> {\tt dfulker@unidata.ucar.edu} \\
+GALLAGHER, James \> {\tt jimg@dcz.gso.uri.edu} \\
+GILL, Bob \> {\tt gill@colts.nodc.noaa.gov} \\
+GIVEN, Jeffrey \> {\tt jeff@gso.saic.com} \\
+GLOVER, Dave \> {\tt david@plaid.whoi.edu} \\
+HANKIN, Steve \> {\tt hankin@ferret.pmel.noaa.gov} \\
+HOGG, Roen \> {\tt roen@oce.orst.edu} \\
+HOLBROOK, Jim J.\> {\tt holbrook@pmel.noaa.gov} \\
+IRISH, Jim \> {\tt jirish@whoi.edu} \\
+KELLEY, Tim \> {\tt kelley@sanddunes.scd.ucar.edu} \\
+MAIRS, Rob \> {\tt rmairs@saars1.fb4.noaa.gov} \\
+MILKOWSKI, George \> {\tt george@zeno.gso.uri.edu} \\
+MILLER, Chris \> {\tt miller@esdim1.nodc.noaa.gov} \\
+McCONAUGHY, Gail \> {\tt gailmcc@boa.gsfc.nasa.gov} \\
+McDONALD, Ken \> {\tt mcdonald@nssdca.gsfc.nasa.gov} \\
+NEKOVEI, Reza \> {\tt reza@uri.gos.uri.edu  } \\
+OLSEN, Lola \> {\tt olsen@eosdata.gsfc.nasa.gov} \\
+RHODES, Judi \> {\tt OCEANOGRAPHY.SOCIETY@omnet.nasa.gov} \\
+SCHRAMM, Bill W.\> {\tt SCHRAMM@omnet.nasa.gov} \\
+SCHWENKE, George G.\> {\tt schwenke@se.hq.nasa.gov} \\
+SOREIDE, Nancy \> {\tt nns@noaapmel.gov} \\
+STAREK, Bob \\
+WALSTAD, Leonard \> {\tt walstad@oce.orst.edu} \\
+WHITE, Warren \> {\tt wbwhite@ucsd.edu} \\
+WILSON, J R. \> {\tt R.WILSON.MEDS@telemail.nasa.gov}
+\end{tabbing}
+
+\end{latexonly}
+
+\newpage
+
+\section{\bf Participant Background Statements}
+\begin{htmlonly}
+\htmladdnormallink{BACON, Ian}{file://localhost/home/dcz/george/tex/dods/html/bacon/bacon.html} \\
+\htmladdnormallink{BASS, Bill}{file://localhost/home/dcz/george/tex/dods/html/bass/bass.html} \\
+\htmladdnormallink{BROWN, Wendell}{file://localhost/home/dcz/george/tex/dods/html/brown/brown.html} \\
+\htmladdnormallink{COLLINS, Donald}{file://localhost/home/dcz/george/tex/dods/html/collins/collins.html} \\
+\htmladdnormallink{CORBIN, Jim}{file://localhost/home/dcz/george/tex/dods/html/corbin/corbin.html} \\
+\htmladdnormallink{CORNILLON, Peter}{file://localhost/home/dcz/george/tex/dods/html/cornillon/cornillon.html} \\
+\htmladdnormallink{DEBAUGH, Henry}{file://localhost/home/dcz/george/tex/dods/html/debaugh/debaugh.html}\\
+\htmladdnormallink{DOBINSON, Elaine}{file://localhost/home/dcz/george/tex/dods/html/dobinson/dobinson.html} \\
+\htmladdnormallink{FLIERL, Glenn}{file://localhost/home/dcz/george/tex/dods/html/flierl/flierl.html} \\
+\htmladdnormallink{FRANK, George}{file://localhost/home/dcz/george/tex/dods/html/frank/frank.html} \\
+\htmladdnormallink{FULKER, Dave}{file://localhost/home/dcz/george/tex/dods/html/fulker/fulker.html} \\
+\htmladdnormallink{GALLAGHER, James}{file://localhost/home/dcz/george/tex/dods/html/gallagher/gallagher.html}\\ 
+\htmladdnormallink{GIVEN, Jeffrey}{file://localhost/home/dcz/george/tex/dods/html/given/given.html} \\
+\htmladdnormallink{GLOVER, Dave}{file://localhost/home/dcz/george/tex/dods/html/glover/glover.html} \\
+\htmladdnormallink{HANKIN, Steve}{file://localhost/home/dcz/george/tex/dods/html/hankin/hankin.html} \\
+\htmladdnormallink{HOGG, Roen}{file://localhost/home/dcz/george/tex/dods/html/hogg/hogg.html} \\
+\htmladdnormallink{IRISH, Jim}{file://localhost/home/dcz/george/tex/dods/html/irish/irish.html} \\
+\htmladdnormallink{MILKOWSKI, George}{file://localhost/home/dcz/george/tex/dods/html/milkowski/milkowski.html} \\
+\htmladdnormallink{MILLER, Chris}{file://localhost/home/dcz/george/tex/dods/html/miller/miller.html} \\
+\htmladdnormallink{SCHRAMM, Bill W.}{file://localhost/home/dcz/george/tex/dods/html/schramm/schramm.html}\\ 
+\htmladdnormallink{SOREIDE, Nancy}{file://localhost/home/dcz/george/tex/dods/html/soreide/soreide.html} \\
+\htmladdnormallink{STAREK, Bob}{file://localhost/home/dcz/george/tex/dods/html/starek/starek.html}\\
+\htmladdnormallink{WALSTAD, Leonard}{file://localhost/home/dcz/george/tex/dods/html/walstad/walstad.html} \\
+\htmladdnormallink{WHITE, Warren}{file://localhost/home/dcz/george/tex/dods/html/white/white.html} \\
+\htmladdnormallink{WILSON, J. R.}{file://localhost/home/dcz/george/tex/dods/html/wilson/wilson.html} \\
+ 
+\end{htmlonly}
+
+% Input files for Participants abstracts in Latex Version of Document
+\begin{latexonly}
+\input{pa_inputs.tex}
+\end{latexonly}
+
+\end{document}
+
+

@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Client/Server and Program/Library Interfaces</TITLE>
+<META NAME="description" CONTENT="Client/Server and Program/Library Interfaces">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="previous" HREF="node3.html">
+<LINK REL="up" HREF="node2.html">
+<LINK REL="next" HREF="node5.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html153"
+  HREF="node5.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html149"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html145"
+  HREF="node3.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html151"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html154"
+  HREF="node5.html">Data Servers</A>
+<B> Up:</B> <A NAME="tex2html150"
+  HREF="node2.html">Introduction</A>
+<B> Previous:</B> <A NAME="tex2html146"
+  HREF="node3.html">Process Configuration</A>
+ &nbsp; <B>  <A NAME="tex2html152"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00022000000000000000">
+Client/Server and Program/Library Interfaces</A>
+</H2>
+
+<P>
+The DODS client library and data server programs communicate information
+using URLs and MIME documents.
+Figures&nbsp;<A HREF="#fig:data-transport"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>&nbsp;and&nbsp;<A HREF="#fig:url-params"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> show these two
+communication paths.
+
+<P>
+All information sent from the filter programs to the client library is
+enclosed in a MIME document. Two of the three programs return information
+about the variables contained in the data set as <TT>text/plain</TT> MIME
+documents. These documents can then be parsed by software in the client
+library. In addition, these text documents can be read by any software that
+can process <TT>ASCII</TT> text. Thus, the responses made by the server are
+specifically suited to use by the DODS client libraries, they can also be
+used by many more general programs. For example, it is possible the use a
+general purpose World Wide Web browser to `read' these documents.
+
+<P>
+The third filter program returns binary data encoded using Sun Microsystems
+External Data representation (XDR) scheme prefixed with text which descibes
+the data type of the binary information<A NAME="tex2html30"
+  HREF="footnode.html#foot481"><SUP>3</SUP></A>. The data
+is enclosed in a binary MIME document whose subtype is experimental. This
+document can be read by software that is part of the client library using
+additional information about the data set that is stored as state information
+by the client library. Because correct interpretation of this document
+requires knowledge of the format of the binary information, it is not
+possible for general purpose WWW browsers to interpret this file (although
+most browsers can read and save to disk any arbitrary data).
+
+<P>
+In order to provide link-time compatibility with the original API libraries,
+the DODS client libraries must present <EM>exactly</EM> the same external
+interface as the original libraries. However, these new libraries perform
+very different operations on the data (although, for a API used to access a
+self-describing data format the operations are analogous). One difference
+between the two is that most data access APIs use file names to refer to data
+sets. In the simplest case these file names are given on the command line by
+the user and passed, without modification, to the API. The API uses the file
+name to open a file and returns an identifier of some type to the user
+program. Subsequent access to the data are made through this identifier.
+
+<P>
+In this simple scenario, it is possible to substitute a URL in place of a
+file name (in part because both are stored in string-type variables). This
+same user program can be invoked, on the command line, using a URL in place
+of the file name. The program will, in almost all cases, pass the URL to the
+API to open the data set. However, since the user program has been re-linked
+with the DODS re-implementation of the API, the functions in the API will
+correctly interpret the URL as a remote reference (see
+Section&nbsp;<A HREF="node15.html#ddd:client-lib-open"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>). Clearly, one requirement that a user
+program must meet in order to be re-linked with DODS is that it must not
+itself try to open or otherwise manipulate the `file name' which will be
+passed to the API<A NAME="tex2html31"
+  HREF="footnode.html#foot484"><SUP>4</SUP></A>.
+
+<P>
+As shown in Figure&nbsp;<A HREF="#fig:url-params"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>, the client library does manipulate
+the URL used to access the data set. A DODS data server is actually comprised
+of three programs which each respond to a different type of data as described
+by the <A NAME="tex2html34"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">Data Access Protocol</A>. These programs are accessed as WWW documents via the HTTPD using
+the CGI mechanism. By <EM>convention</EM> the data set name consists of the
+HTTP access string (<TT>http://</TT>) followed by the machine name and a string
+which the data providers choose depending on the name and location of the
+dispatch CGI and the data. In order to read the DAS, DDS or data, this URL is
+modified, again by convention, by adding a suffix. The three suffixes
+currently (as of 23 August 1996) recognized are <TT>.das</TT> for the dataset attribute
+structure, <TT>.dds</TT> for the dataset descriptor structure, and <TT>.dods</TT>
+for binary data.
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:data-transport"></A><A NAME="493"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+MIME documents are used by the server programs to return information
+  to the client processes.</CAPTION>
+<TR><TD><IMG
+ WIDTH="119" HEIGHT="14" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=data-transport.ps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+
+<DIV ALIGN="CENTER"><A NAME="fig:url-params"></A><A NAME="498"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure:</STRONG>
+URLs are used in place of filenames to reference remote data sets
+  accessible via a DODS data server.</CAPTION>
+<TR><TD><IMG
+ WIDTH="119" HEIGHT="14" BORDER="0"
+ SRC="img4.png"
+ ALT="\begin{figure}\centerline{\psfig{figure=url-params.ps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html153"
+  HREF="node5.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html149"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html145"
+  HREF="node3.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html151"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html154"
+  HREF="node5.html">Data Servers</A>
+<B> Up:</B> <A NAME="tex2html150"
+  HREF="node2.html">Introduction</A>
+<B> Previous:</B> <A NAME="tex2html146"
+  HREF="node3.html">Process Configuration</A>
+ &nbsp; <B>  <A NAME="tex2html152"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

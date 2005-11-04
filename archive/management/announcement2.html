@@ -1,0 +1,35 @@
+     This is an announcement of the first beta release of the netCDF
+client-server libraries of the Distributed Oceanographic Data System (DODS).
+The software is freely available via anonymous ftp in both source form (you
+will need the GNU C++ compiler and libg++) or binary form for selected
+platforms.
+
+The Distributed Oceanographic Data System (DODS) facilitates direct access to
+on-line scientific data sets over the Internet.  Its design takes advantage
+of existing data access APIs and the transfer protocol of the World Wide Web.
+DODS enables netCDF data files, when served by a DODS data server, to be
+directly accessed over the Internet by existing netCDF API that have been
+relinked with DODS/netCDF client libraries.  In principle, any program
+written that uses netCDF can be adapted to read data from a DODS data server
+and become a client in the DODS client-server system.  Included in the source
+and binary distributions are versions of ncview and ncdump two useful netCDF
+tools that have already been linked to DODS client libraries.
+
+The design and implementation of DODS provides a number of benefits to
+researchers accessing on-line distributed data resources.  A netCDF client
+program accessing data from a DODS/netCDF server will be able to subset large
+datasets over the Internet without the need to transfer the entire dataset as
+is required with with FTP or AFS.  In addition the client can determine
+updates or changes to the netCDF dataset directly, (e.g.  new records)
+something which can only be infered with FTP.  Finally, the client does not
+require paging large amounts of data across the network, as is needed with
+NSF mounted data volumes, when performing complex data extractions such as
+hyper-slabs of variable data.
+
+While DODS currently solely supports netCDF, we plan support for other data
+access APIs including JGOFS and HDF.  As these new APIs are added, DODS will
+enable existing DODS clients to directly access the data sets being made
+available in these new `foreign' APIs or formats.
+
+DODS is being developed by the University of Rhode Island and the
+Massachusetts Institute of Technology.

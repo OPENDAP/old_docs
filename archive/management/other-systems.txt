@@ -1,0 +1,356 @@
+-*-Mode: Outline-*-
+
+$Id$
+
+* A Comparison of Distributed Data Systems
+
+This is a comparison of some existing systems which are similar in function
+to the DODS we envision. Each of the systems is different in some important
+way or ways and that is what this paper will discuss. This is not meant to be
+an exhaustive analysis of each of the systems.
+
+There are six systems which we have sufficient information to analyze and
+which we feel warrant inclusion in this paper: JGOFS, EOSDIS, MEDS, WWW,
+WAIS, and Gopher. Each of these systems are briefly described in the
+following paragraphs. After the descriptions, a table compares various
+aspects of the systems.
+
+** EOSDIS - Earth Observing System Data and Information System
+
+EOSDIS is designed to handle all phases of data management for the NASA EOS
+mission. In its current design there are 8 main archive facilities that it
+will access along with archive facilities at other government agencies,
+organizations and countries.  The archiving facilities will each have
+separate responsibility for the collection, processing and archiving of their 
+own data while at the same time providing integrated general user access via
+the EOSDIS Information Management System (IMS). 
+
+The EOSDIS/IMS will facilitate access to the distributed data resources of
+EOSDIS through the specification of a common system communications protocol
+for information and data exchange among the distributed archives. The major
+components of the EOSDIS/IMS implementation include a client interface layer,
+the IMS Common Search and Order layer, a Mapping Layer (archive specific) and
+the archive systems themselves.
+
+The EOSDIS V0 IMS has a user interface system, the V0 IMS Client, which
+formats search queries for the user.  Each EOSDIS IMS archive has an IMS
+Server that receives IMS search messages from the IMS Clients, maps the IMS
+search messages into archive-specific search messages, and then returns the
+search results to the IMS Clients.  The IMS Client has no knowledge of how
+the datasets are stored at the DAACs.
+
+The messages passed between the IMS Client and Servers are in `keyword equals
+value' format.  Because the V0 IMS Client is designed for multi-disciplinary
+searches, an IMS search is broad-based and very general.  The datasets held
+at the DAACs are defined through parameter value IDs (Source, Sensor,
+Geophysical, Dataset ID, and Data Center ID).  There are predefined valid
+values for each IMS search field.
+
+The IMS Client sends the search message to all DAACs that could have a
+possibility of having the dataset.  The DAACs respond with either the
+granules that "hit" on the search or with null response.
+
+EOSDIS V0 IMS provides access to metadata and browse data.
+
+The EOSDIS/IMS application layer protocol is a state machine.
+
+** JGOFS - Joint Geophysical Ocean Flux Study
+
+In the JGOFS design, each user is also a possible source of data. Each
+user has a communications server running on his or her machine used to
+access both local and remote data sets. The servers connect a user
+program (either one of a number of clients within the system or a
+program written for a specific analysis) to a separate program (the
+"method") which transfers the data. 
+
+Scientists are the primary data providers in the JGOFS model. Data are
+added to the JGOFS system without performing any transformations on
+the data files stored by the scientist-provider. Instead, a program
+that can interpret the structure of the data archive and translate it
+to a standard transmission protocol is created (the method), and this
+is used for all data access over the network. The transmission
+protocol uses a structured data model which is flexible enough to
+accommodate many different kinds of data. A "data object" is a 
+combination of the method and the data. 
+
+The communication protocol used within the JGOFS system also defines
+the types of queries which the clients can use to subselect the
+information from the data object.  Each data set in the entire JGOFS
+system can have its own set of search variables based on the data
+contained in the database; nothing in either the JGOFS servers or
+clients dictates what these fields are. The protocol includes both
+boolean and relational operators for composing queries.
+
+The JGOFS system development has concentrated on data access, rather
+than the problem of finding applicable data, although a simple data
+object providing metadata has been constructed and more complex ones
+could be built. The servers use dictionaries which map between short
+names and more detailed location information. For example, short names
+for local data objects translate to the name of the executeable
+translation program -- the method -- and any parameters such as
+filenames it requires. On the other hand, short names for remote data
+sets generally map to an Internet address and the short name known to
+the server on that machine; the second server is responsible for
+locating and  starting up the method and passing it the parameters.
+
+JGOFS has been primarily used for in-situ data. 
+
+The JGOFS protocol has a small number of states. 
+
+** MEDS - Marine Environmental Data Services 
+
+MEDS is a client-server system for access to Canadian distributed
+oceanographic data centers. It is currently in the design phase of
+development. The Department of Oceans and Fisheries of MEDS has established
+an electronic network connecting these centers called DFOnet. A recent design
+document for a DFOnet client-server protocol defines several types of
+communication objects.  The protocol is flexible enough to support the
+transfer of user interface, graphic, text, system message, GIS and raw
+objects between individual data center servers and client applications. The
+protocol supports a dynamic GUI environment which enables the execution of
+system applications for data analysis and visualization.
+
+** Gopher - Gopher information service
+
+Gopher is a system for distributed document retrieval. It was developed by
+researchers at the University of Minnesota Microcomputer and Workstation
+Network Center. Gopher uses a hierarchical schema to present lists of items,
+directories and other resources to the user. Gopher servers (>700 on the
+Internet) provide either directory lists or documents in response to client
+requests. Embedded within the directory list are Uniform Resource Locator
+(URL) references which point to either documents or other directory
+lists. Using these references, Gopher can be used to link sites together.
+Gopher is designed primarily for hierarchical information and uses an
+`outline' form of presentation. Gopher also supports two special server
+types, CSO nameservers for phone books and a search service called veronica.
+
+Veronica is used to search all gopher servers for files with names that match
+a boolean query (NB: veronica searches only on the file names, not the
+contents of files). It uses a database that is updated weekly by querying all
+gopher servers that can be reached (directly or indirectly) from the master
+server at the U. of Minnesota. Veronica was developed separately (at the
+Univ. of Nevada) from Gopher and illustrates the flexibility of the Gopher
+protocol. Gopher's protocol provides the ability to identify other types of
+servers and protocols to the client application.
+
+Gateways link Gopher to both WAIS and WWW.
+
+The Gopher protocol itself is state-less.
+
+** WAIS - Wide Area Information Server
+
+WAIS is a client-server system for searching remote databases. A database in
+WAIS is a collection of files which are indexed using a special program
+developed as part of the wais system. A WAIS client can be used to search the
+database. A typical WAIS search consists of a string of keywords.  The WAIS
+search will strip out all common words in the string and retain only the
+keywords.  Thus, natural language queries are possible with WAIS.  WAIS
+reports each hit from the search with a score indicating how closely the hit
+matched the search criteria. Some WAIS clients allow feedback from previous
+searches to influence future searches.
+
+To conduct a typical search, a user first begins by posing a general query to
+a registry where all known WAIS data sources are recorded. There are
+currently two such registries: at Thinking Machines Co. and at CNIDR. A hit
+from either of these sources is a pointer to a more specific data source which
+the user then searches to obtain specific documents. The central registries
+link the distributed data sources into a coherent (to the user) search space.
+However, each individual data source in the WAIS system is independent of all
+others with the exception of the central registries (call the `directory of
+servers' in WAIS terms). When a user poses a query to WAIS, he/she typically
+specifies more than one database; WAIS will search all the specified
+databases regardless of the number of hits each individual database produces.
+
+The WAIS protocol is based on the ISO Z39.50 library and information systems
+protocol. It is state-less.
+
+The WAIS Client can display both text and images.
+
+Gateways exist that link WAIS to Gopher and WWW.
+
+** WWW - World Wide Web
+
+The World-Wide Web (WWW) is a client-server system for hypermedia search and
+information retrieval. WWW models data as documents and links. A link may be
+followed and a document may be read or (possibly) searched. The WWW system is
+very simple for data providers to set up -- they can make data available to
+the WWW system by placing a WWW server on a computer which supports anonymous
+ftp. Any file in the anonymous ftp file system can then be accessed by WWW
+clients as a hypertext document. Large databases can be integrated into WWW
+using search indexes so that the database does not need reformatting. It is
+also possible to write hypermedia documents for WWW and incorporate them into
+existing data sets or to create entirely new data sets consisting of
+documents written especially for WWW. 
+
+The WWW system can use several protocols which significantly predate the
+system's development in addition to its own HTTP protocol (e.g., WWW can use
+FTP, NNTP, Gopher, and WAIS). This makes it possible to refer (using a link)
+to any file available by anonymous ftp or with the Usenet news hierarchy
+within provided data. In addition, WWW can search both Gopher-space and the
+extant WAIS data sources. While WWW can use protocols such as FTP and NNTP, its
+base protocol is state-less.
+
+WWW can make direct use of Gopher and WAIS servers without using a gateway.
+
+HTTP (the main WWW protocol) is state-less. However, WWW uses other protocols,
+some of which are state machines.
+
+
+** Comparisons:
+
+++ Comparisons:  
+
+The following tables compare the six systems.  In the first table the types
+and access to data as well as implementations are compared.  In the second
+table the systems' searching and the scope of their resource domains are
+compared.
+
+                                   Table 1
+
+    Data Type -- What data types can be accessed by this system ?
+    Data Analysis -- Does the system support data analysis ?
+    Search Capability -- Types of searching supported; metadata, data ?
+    Protocol -- Characteristics of the `application layer' communications
+    Modularization -- User Interface and Communications separate ?
+
+
+    	    	    	    	    	    	       Protocol	      UI/comm
+    	Data Types  Browse  Analysis  Search   state-less complexity* separate
+ ------------------------------------------------------------------------------
+EOSDIS/IMS image**,   Y	       N    	MD	   N         High        Y
+    	   in situ
+
+JGOFS	 in situ      Y	       Y	MD, D	   N	     Low         Y
+    
+
+MEDS	 image,       ?        Y        MD, D      N         High        N
+    	 in situ
+
+Gopher   Text, image  Y	       N  	MD	   Y	     Low         N
+    	 Sound
+
+WAIS	 Text, image  Y	       Y    	MD, D	   Y	     High        Y
+    	 Sound
+
+WWW 	 Text, image  Y	       N    	MD, D	   Y	     Low         Y
+    	 Sound, MPEG
+
+ * Complexity = the number of `objects' defined by the application protocol
+ ** Image includes both raw satellite data and processed data
+ *** Different DAACs will provide different levels of support for the
+     EOSDIS/IMS 
+
+                                    Table 2
+
+    Mapping - Refers to the range of a single search.
+    Resolution - Searches performed by a single server or many servers.
+    Type - Query method.
+    Implementation - How is the search implemented.
+    Result Type- What does the system supply as a result to a search event.
+
+
+                            Search
+                   ____________________________
+                  /         |       |          \ 
+    	      Mapping   Resolution  Type   Implementation    Result type  
+ ------------------------------------------------------------------------------
+EOSDIS/IMS  One-to-Many  Multiple  N-Dimension   SQL          Meta Data
+                                                              Browse
+
+
+JGOFS	    One-to-One   Single    N-Dimension   QL*          Meta Data
+                                                              Data
+
+
+MEDS	    One-to-Many  Single    N-Dimension   QL*          Meta Data
+                                                              Data
+                                                              Browse
+
+
+Gopher**    One-to-One   Single    Hierarchical  URL***       Document
+                                                              List
+
+WAIS**	    One-to-Many  Multiple  Text          Match        Document
+                                                              List
+
+WWW** 	    One-to-One   Single    Hypertext     URL          Document
+                                                              List
+
+*   Query Language: These systems do not use SQL, rather they use a
+    non-standard query language.
+**  Each of these three systems can access the other two (e.g., Gopher
+    can access WAIS and WWW).
+*** Universal Reference Locator: A reference that specifies protocol, network
+    address and file name.
+
+* Sources
+
+*** Only a partial list of sources ***
+
+Berners-Lee, Tim. ``The World-Wide Web Initiative'', info.cern.ch
+
+Flierl, Glenn. ``UNIX: Beginner's Guide'' JGOFS Data System.
+
+Flierl, Glenn. ``UNIX: User's Guide'', JGOFS Data System.
+
+``HTTP: A protocol for networked information'',
+http://info.cern.ch/hypertext/WWW/Protocols/HTTP/HTTP2.html 
+
+Davis, Franklin, Brewster Kahle, Harry Morris, Jim Salem, Tracy Shen.
+``WAIS Interface Protocol Prototype Functional Specification'', Version 1.5,
+April 23, 1990. Thinking Machines Corporation.
+
+Alberti, Bob, Farhad Anklesaria, Paul Linder, Mark McCahill, Daniel Torrey.
+``The internet Gopher protocol a distributed search and retrieval protocol"
+Revised Spring 1992. University of Minnesota Microcomputer and Workstation
+Networks Center.
+
+``EOSDIS Version 0 Information Management System Documentation Package''.
+June 1993. Code 902.1 Goddard Space Flight Center.
+calvo@killians.gsfc.nasa.gov 
+
+``Detailed Design Specifications, DF0NET Object Protocol and Data
+Formatter''. March 30, 1992. Department of Fisheries and Oceans, Data Service
+Development, Marine Environment Data Service (MEDS), Ottawa, Ontario Canada.
+
+Yonsook Enloe commented on an earlier copy of this document.
+
+* Revisions
+
+$Log: other-systems.txt,v $
+Revision 1.1  1998/02/11 19:03:26  tom
+moved to archive branch
+
+Revision 1.2  1997/03/25 22:59:42  jimg
+*** empty log message ***
+
+# Revision 1.1  1993/12/17  18:44:12  jimg
+# Software Engineering and management docs for the DODS
+#
+Revision 1.8  1993/10/07  20:04:02  george
+Insert Glenn F corrections to JGOFS section
+
+Revision 1.7  1993/10/07  19:16:23  jimg
+Fixed emacs outline mode regex; I was using `+' while the default value emacs
+provides is `*'. I changed each of teh DODS/doc outline-mode files so that
+`*' was used.
+
+Revision 1.6  1993/09/28  20:17:34  jimg
+Proofread.
+
+Revision 1.5  1993/09/25  14:52:35  george
+Added Systems Search Characteristics Table
+
+Revision 1.4  1993/09/25  12:16:00  george
+Added Bibliographic references
+
+Revision 1.3  1993/09/24  19:54:14  jimg
+Added information from Yonsook Enloe.
+Added information about JGOFS.
+
+Revision 1.2  1993/09/21  21:30:05  jimg
+Corrected table entries.
+
+Revision 1.1  1993/09/21  18:40:06  jimg
+Created this file to compare some distributed data systems. This should change
+as we learn more about these systems.

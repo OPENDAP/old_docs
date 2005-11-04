@@ -1,0 +1,375 @@
+%
+% This file describes the software development environment used to build DODS
+% here at URI. 
+%
+% $Id$
+%
+
+\documentstyle[12pt,html,psfig,margins]{article}
+
+\input{../boiler/html-refs}
+
+\input{program-names}
+
+\begin{document}
+
+\title{DODS---Software Development Environment and Tools}
+\author{}
+\date{\today}
+
+\maketitle
+
+\begin{abstract}
+
+  This document describes software tools used to build the Distributed
+  Oceanographic Data System. The nature of this project, as described in the
+  report of the First Workshop on the Distributed Oceanographic Data System,
+  makes it very difficult to rely on commercial software to design and
+  implement the system. We have assembled a collection of freely available
+  tools which are being used to design and implement DODS\@. Organizations
+  that want to contribute to the development of this system should consider
+  using these tools so that their efforts can be focused on developing
+  components for the system rather than working around differences between
+  the development environments.
+
+\end{abstract}
+
+\input{../boiler/warning}
+\input{../boiler/dev-manage.tex}
+\begin{htmlonly}
+\pslink{file://dods.gso.uri.edu/pub/DODS/software.ps}
+\end{htmlonly}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+\label{introduction}
+
+This document describes the software development tools used by \DODS
+(DODS) developers at the University of Rhode Island. Most of the tools used
+are listed here, but some tools that are of general use outside software
+development are not. The purpose of this document is to provide people
+working with the DODS team at URI a picture of software development within
+the group, and to streamline collaborative work with those groups.  This
+document does not describe how to use these tools (e.g., how to use a \Cpp
+compiler). 
+
+
+The remainder of this document is broken into two sections: an overview of
+the DODS development process and a listing of the tools along with very
+brief explanatory notes about them. 
+\begin{htmlonly}
+The latter contains links to each package in either the DODS software tools
+ftp site or, for those that are actively maintained, their home ftp site.
+\end{htmlonly}
+
+\section{Software Development Outlook}
+
+The design, development, and testing of DODS is principally carried out by
+four people with varying levels of help from many other people in the
+oceanographic community. Because the goals of DODS, as described in the
+``\wrkshp'' require a fairly complex system, it is important to streamline
+as much of the implementation phase as possible. However, DODS is a research
+effort, and it does not make sense to treat the development of DODS as if it
+were a commercial venture.
+
+Some important characteristics of the DODS effort:
+
+\begin{itemize}
+
+\item DODS is intended for use on UNIX workstations that are connected to the
+  Internet. We assume that any graphical interface software will use the X
+  Window System.
+
+\item The DODS design and implementation will strive to reuse as much
+  software as possible. In a similar vein, it will try to generate as much
+  reusable software as is practical.
+
+\item DODS will work towards a modular design. Components may be usable as
+  stand alone programs or tools as well as an integrated system.
+
+\item DODS will automate as many of the implementation and maintenance tasks
+  as is practical within the scope of the project. This includes version
+  control for source code and documentation, automated testing, problem
+  reporting, etc.
+
+\item All DODS source code must be freely distributable.
+
+\item DODS will be developed in an open manner. Documentation of the design
+  is made available as it is produced. Software components are made available
+  for testing/use as they are built.
+
+\end{itemize}
+
+\section{Software Tools}
+
+This section lists tools that we have assembled to build DODS\@. Some of the
+tools listed here might not be used at all during the first year of the
+effort, but they are included because when the whole group is taken together
+they make an implied development plan for DODS\@. Virtually all the tools
+listed here are freely available. All of the tools may be obtained using \ftp
+from the DODS \ftp\ archive at 
+\htmladdnormallink{ftp://dods.gso.uri.edu/pub/tools}
+{ftp://dods.gso.uri.edu/pub/tools}.
+
+\subsection{Design and Documentation}
+
+The tools listed here are grouped according to function within the area of
+software design and documentation. Some of these tools are used for other
+things as well, and in those cases they may be listed elsewhere too. It is
+very tempting to break away from our goal of using only freely available
+tools in this area since many relatively inexpensive programs are available
+for text and graphics work. However, it has been our experience that these
+(free) tools afford us the best mix of short term usefulness and long term
+reuse of our papers, figures, etc.
+
+\subsubsection{Text}
+
+Gnu Emacs is used for most text preparation. In addition to excellent support
+for many programming related activities, Gnu Emacs is extensible using a
+built in lisp dialect called {\em elisp}. If you are willing to forgo emacs'
+extensibility, any text or word processing program will pose no compatibility
+problems as long as it can produce ASCII text as output.
+
+\subsubsection{Mark up languages}
+
+\TeX\ and \LaTeX\ are used for almost all of our document preparation. All
+our online documentation is in HTML\@. Glenn Flierl has a set of \TeX\ macros
+that simplify using \TeX\ for short documents. He also has a set of elisp
+functions which automate translation of documents written using those macros
+into HTML\@.  For documents written in \LaTeX, we use \latextohtml to produce
+the online versions.
+
+\subsubsection{Network Access to Documentation}
+
+World Wide Web browsers and \httpd\ are used to provide online access to HTML
+documents. In addition, \ftp\ and \ftpd\ are used to provide access to
+postscript files which may be downloaded and printed by a user.
+
+\subsubsection{Figures}
+
+Line drawings are done using \xfig. A number of specialized graph drawing
+tools have been investigated, but although many support special operations
+for creating structure charts, etc., none seemed easier or faster than \xfig.
+A freely available bit and pixmap editor named \xpaint\ has also proved useful.
+
+\subsubsection{Source Code Documentation}
+
+Functions in DODS specific libraries need to be documented. It is best to
+keep documentation for library functions together with the source code that
+implements those functions. \cextdoc\ can be used to extract comments from
+source files to automatically create documentation for the functions they
+contain. Of course, those comments must be accurate for this to work.
+
+\subsubsection{Version Control}
+\label{cvs}
+
+The Concurrent Version System (CVS) is used for version control of all
+documentation, both text and figures\footnote{HTML documents are not under
+CVS control if they are generated from controlled source documents.}.  CVS
+manages a single repository for the documents which can be shared by several
+machines.  People on any one of those machines can work with the
+documentation and be sure that changes they make will be both documented and
+will not be lost as others simultaneously work on the documents. CVS is used
+for source code management as well.
+
+\subsection{Program Development, Testing and Maintenance}
+
+This section describes many tools that are being used or are planned to be
+used during the program development, testing and maintenance phases of work
+on DODS.
+
+\subsubsection{Programming language compilers and interpreters}
+
+There are many tools used by DODS that fall into the compiler or interpreter
+category. However, the majority of source code used to build DODS is \Cpp
+and ANSI C source code. This source code is written with the explicit
+knowledge that it will be compiled with \gcc\ version 2.7.x or greater. In
+addition to C and \Cpp, other languages used are the \flex, \bison, {\tt
+awk}, \perl\ and the Bourne shell. Note that \flex\ and \bison\ are compiled
+languages while {\tt awk}, \perl\ and {\tt sh} are interpreted.
+
+While not compilers themselves, \cproto\ and \cextract\ are two tools that
+can be used to automatically generate ANSI C function prototypes. These are
+used to build prototype include files for modules which use a set of function
+defined in another module or for library header files. Other developers do
+not need to use these, but they should still generate ANSI prototypes for
+functions used outside their own module.
+
+\subsubsection{Debugging}
+
+\gdb\ is used for interactive debugging of C programs. \guidebugger\ is a
+free GUI interface to \gdb\ and {\tt dbx} which makes following data
+structures simpler. The library \dmalloc\ is used to find problems with
+dynamically allocated memory. Since \dmalloc\ requires modifications to
+source code, and because it is very useful to retain such test code so that
+it may be re-tested when changes are made, other DODS developers should use it
+rather than something else. We chose \dmalloc\ over other tools because it
+works on all our development platforms (Sun4, Alpha and Dec Mips).
+
+\subsubsection{Testing, Analysis and Maintenance}
+
+We use \dejagnu\ to build test suites for DODS\@. While \dejagnu\ is required
+to run these, they are very useful. Every piece of software that is part of
+DODS should have associated with it test. 
+
+There are several tools that can be used to analyze source files for
+programs. \kdsi\ is a source line counter which also returns simple statistics
+on comments. \halstead\ and \mccabe\ return various measurements of functional
+and modular complexity for C source files. Simple function call graphs may be
+built using the \calls\ tool. In addition, the emacs source file tag program
+\etags\ can be used to ease navigation through someone else's source files by a
+maintainer that is unfamiliar with those source files.
+
+All though we have not used a problem report database on other projects, the
+distributed development plan for DODS indicates that such a problem tracking
+tool might be of considerable benefit. \gnats\ is such a tool.
+
+\subsubsection{Version Control}
+
+As described in section~\ref{cvs}, we use \cvs\ for version control.
+
+\subsubsection{Program builds}
+
+DODS will use Gnu Make to direct the compilation and linkage of programs and
+libraries. People (users or developers) that want to build DODS from the
+source code must be willing to use Gnu Make since it supports features DODS
+may use that are not part of many other make utilities. 
+
+DODS may use Gnu's \autoconf\ system to port DODS from its development platform
+to other intended platforms.
+
+\section{Concise Listing of Tools}
+
+These tables summarize the tools used to build DODS.
+
+\begin{table}[hp]
+\caption{Tools used for documentation and design}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+{\em Name} & {\em Use} \\ \hline
+
+\htmladdnormallink{Gnu Emacs}{ftp://prep.ai.mit.edu/pub/gnu} 
+& Text editing \\
+
+\htmladdnormallink{\TeX}{ftp://ftp.cs.umb.edu:pub/tex/unixtex.ftp} 
+& Typesetting \\
+
+\htmladdnormallink{\LaTeX}{ftp://ftp.cs.umb.edu:pub/tex/unixtex.ftp} 
+& Typesetting \\
+
+\htmladdnormallink{\TeX\ $\rightarrow$ html macros}
+{ftp://dods.gso.uri.edu/pub/tools/grf-tex-example.tex}
+& Online HTML generation \\
+
+\htmladdnormallink{\latextohtml}
+{http://www-dsed.llnl.gov/files/programs/unix/latex2html/}
+& Online HTML generation\\
+
+\htmladdnormallink{NetScape}{http://home.netscape.com/}
+& Access to documents; GUI construction \\
+
+\htmladdnormallink{\httpd}{http://hoohoo.ncsa.uiuc.edu/}
+& Provide online documents \\
+
+\htmladdnormallink{\ftpd}{http://wuarchive.wustl.edu/packages/wuarchive-ftpd/}
+& Provide postscript documents \\
+
+\htmladdnormallink{\xfig}
+{ftp://ftp.x.org/contrib/applications/drawing_tools/xfig/}
+& Figure generation \\
+
+\htmladdnormallink{\cextdoc}{ftp://dods.gso.uri.edu/pub/tools/}
+& Source code documentation \\
+
+\htmladdnormallink{\cvs}{ftp://prep.ai.mit.edu/pub/gnu/} 
+& Version control \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[hp]
+\caption{Tools used for development, testing and maintenance}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+{\em Name} & {\em Use} \\ \hline
+\htmladdnormallink{\gcc}{ftp://prep.ai.mit.edu/pub/gnu/} 
+& ANSI C compiler \\
+
+\htmladdnormallink{\Gpp}{ftp://prep.ai.mit.edu/pub/gnu/}
+& C++ compiler \\
+
+\htmladdnormallink{\libGpp}{ftp://prep.ai.mit.edu/pub/gnu/}
+& General C++ class library \\
+
+\htmladdnormallink{\flex}{ftp://prep.ai.mit.edu/pub/gnu/} 
+& Lexical scanner generator \\
+
+\htmladdnormallink{\bison}{ftp://prep.ai.mit.edu/pub/gnu/} 
+& Parser generator \\
+
+\htmladdnormallink{sed}{ftp://prep.ai.mit.edu/pub/gnu/}
+& Pattern based text manipulator \\
+
+\htmladdnormallink{awk}{ftp://prep.ai.mit.edu/pub/gnu/}
+& Pattern based scripting language \\
+
+\htmladdnormallink{\perl}{ftp://prep.ai.mit.edu/pub/gnu/}
+& General scripting language \\
+
+\htmladdnormallink{\cproto}{ftp://dods.gso.uri.edu/pub/tools/} 
+& C function prototype extractor \\
+
+\htmladdnormallink{\cextract}{ftp://dods.gso.uri.edu/pub/tools/} 
+& C function prototype extractor \\
+
+\htmladdnormallink{\gdb}{ftp://prep.ai.mit.edu/pub/gnu/} 
+& Runtime debugger \\
+
+\htmladdnormallink{\guidebugger}
+{ftp://ftp.x.org/contrib/utilities/ddd-1.4a.README}
+& GUI debugger interface \\
+
+\htmladdnormallink{\dmalloc}{ftp://ftp.letters.com/src/dmalloc/} 
+& Dynamic memory debugger \\
+
+\htmladdnormallink{\calls}{ftp://dods.gso.uri.edu/pub/tools/} 
+& Simple function call graphs \\
+
+\htmladdnormallink{\kdsi}{ftp://dods.gso.uri.edu/pub/tools/} 
+& C source line counting \\
+
+\htmladdnormallink{\mccabe}{ftp://dods.gso.uri.edu/pub/tools/} 
+& C source complexity statistics \\
+
+\htmladdnormallink{\halstead}{ftp://dods.gso.uri.edu/pub/tools/} 
+& C source complexity statistics \\
+
+\htmladdnormallink{\gnats}{ftp://prep.ai.mit.edu/pub/gnu/} 
+& Problem report database \\
+
+\htmladdnormallink{\etags}{ftp://prep.ai.mit.edu/pub/gnu/} 
+& Function tags \\ 
+
+\htmladdnormallink{\cvs}{ftp://prep.ai.mit.edu/pub/gnu/} 
+& Version control \\ 
+
+\htmladdnormallink{\make}{ftp://prep.ai.mit.edu/pub/gnu/}
+& Program builds \\
+
+\htmladdnormallink{\autoconf}{ftp://prep.ai.mit.edu/pub/gnu/} 
+& Source code porting \\
+
+\htmladdnormallink{\dejagnu}{ftp://prep.ai.mit.edu/pub/gnu/}
+& Test managment \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\end{document}

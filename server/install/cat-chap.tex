@@ -1,0 +1,121 @@
+% $Id$
+
+\chapter{The Catalog Server}
+\label{dods-server,catalog}
+
+\indc{server!file}\indc{server!catalog} Some data servers are
+responsible for serving data from thousands of data files. Trying to
+assert some kind of order to a dataset like this can be a challenge.
+You can create a catalog of these data files, which will allow a user
+to select among the data files according to variables or variable
+ranges.
+
+\subj{A catalog server is just a server that serves URLs.} A
+\new{catalog server}, or \new{file server}, is just a collection of
+DAP URL's, compiled into a big list, along with some data a user might
+use to select among these data files. Typically the \new{selection
+  data} is data not included in the files themselves, but is data
+\emph{about} the file. For example, the URI AVHRR archive records the
+time each file was recorded next to the file's name.
+
+The good thing about catalog servers is that they are just vanilla
+data servers, but used to serve information about data, rather than
+the data themselves. The only requirement is that they serve Sequence
+data, and that one of the fields be called \lit{DODS\_URL}. This means
+that the procedures you've used to get your data served are exactly
+the same procedures you will use to get your data catalog served. The
+steps that are already done will not need to be done again.
+
+Here are the steps in the process.
+
+\section{Step One: Install the FreeForm Data Handler}
+
+The catalog server typically uses the FreeForm handler, though it
+could use the JGOFS handler too, or any handler that can serve
+Sequence data. This guide shows how to use the FreeForm handler to
+make a catalog server, since that's what most sites choose to do.
+
+\subj{Any handler that serves Sequences can be a catalog server.} If
+you haven't done so already, download and install the FreeForm handler
+(or whatever server you intend to use). If you're using the FreeForm
+handler, move on to the next section. If not, look at the file server
+chapter in \DODSquick\ and make your catalog output look like that.
+
+\section{Step Two: Make Your Catalog and Format File}
+
+\subj{Make a catalog text file.}
+Once you've got the FreeForm handler installed and working (check it
+out with one of the sample data and format files that come with it),
+compile a list of all the URLs of all the files you need to serve.
+Put this in a text file, along with the selection data you intend to
+use, one file per line.
+
+Here's a part of the AVHRR archive catalog file used at URI:
+
+\begin{vcode}{xib}
+1979/04/11:18:53:59  http://dods.gso.uri.edu/cgi-bin/nph-dods/avhrr/1979/4/t79101185359.pvu.Z
+1979/04/15:19:48:52  http://dods.gso.uri.edu/cgi-bin/nph-dods/avhrr/1979/4/t79105194852.pvu.Z
+1979/04/16:19:40:24  http://dods.gso.uri.edu/cgi-bin/nph-dods/avhrr/1979/4/t79106194024.pvu.Z
+1979/04/17:08:00:11  http://dods.gso.uri.edu/cgi-bin/nph-dods/avhrr/1979/4/t79107080011.pvu.Z
+1979/04/17:09:49:59  http://dods.gso.uri.edu/cgi-bin/nph-dods/avhrr/1979/4/t79107094959.pvu.Z
+1979/04/17:19:28:33  http://dods.gso.uri.edu/cgi-bin/nph-dods/avhrr/1979/4/t79107192833.pvu.Z
+1979/04/18:07:50:34  http://dods.gso.uri.edu/cgi-bin/nph-dods/avhrr/1979/4/t79108075034.pvu.Z
+1979/04/18:20:57:43  http://dods.gso.uri.edu/cgi-bin/nph-dods/avhrr/1979/4/t79108205743.pvu.Z
+\end{vcode}
+
+Now you need to create a \new{format file} that describes the layout
+of the data file to the FreeForm handler.  The first row of the format
+section should read \lit{ASCII\_input\_data}, and be followed by the
+name of the Sequence.  (You choose it, it doesn't really matter what
+it is.)
+
+\subj{Make a format file to match.}
+After the first line, each row of the format file describes another
+data value, and the columns that contain it.  The indexes start at
+one, and are inclusive.  Here is the format file for the AVHRR archive
+shown above:
+
+\begin{vcode}{sib}
+ASCII_input_data "URI_Avhrr"
+year     1 4    int32 0
+month    6 7    int32 0
+day      9 10   int32 0
+hours    12 13  int32 0
+minutes  15 16  int32 0
+seconds  18 19  int32 0
+DODS_URL 21 92  text  0
+\end{vcode}
+
+The \lit{year} variable is in columns one through four, the
+\lit{month} variable in columns six and seven and so on.  The data
+type is also indicated in the format table.  The last column in the
+format table is for scaling.  All numeric data are scaled by the given
+power of ten.
+
+\note{The FreeForm format is quite flexible, and can handle many more
+  cases than the ones shown.  \DODSffbook\ contains examples and
+  complete descriptions of all the FreeForm capabilities, as well as
+  tools you can use to check your format files.  Refer to that book
+  for more information about the server or writing format files.}
+
+\subj{Install them.  You're done.}
+Once you've created a file containing your data files, and created a
+format file describing them, you need only find a place to park them.
+Give the catalog file some name ending in \lit{.dat}, and the format
+file the \emph{same name}, but ending in \lit{.fmt}.  Put them both in
+the same directory, somewhere in your document root directory tree,
+and test them by requesting a list of URLs.
+
+The URI archive shown above is sampled in the \DODSquick .  That book
+explains how to construct a \new{constraint expression}, and gives
+examples of them for use with a catalog server.
+
+% $Log: cat-chap.tex,v $
+% Revision 1.1  2000/11/30 15:25:12  tom
+% added the catalog server chapter as a separate document
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

@@ -1,0 +1,136 @@
+% This is the Matlab DODS GUI User guide
+%
+%    begun in earnest 10/2/97, tom sgouros
+%
+%
+\documentclass{dods-book2}
+\usepackage{xspace}
+
+\rcsInfo $Id$
+\newcommand{\DOCversion}{Version \rcsInfoRevision}
+
+\include{../boiler/layout}
+\include{../boiler/dods-def}
+\include{mgui/mgui-def}
+
+\htmldirectory{mgui-html}
+\htmlname{mgui}
+\htmltitle{Matlab GUI Documentation}
+\htmladdress{Tom Sgouros, \today}
+\htmlcss{http://opendap.org/resources/dods-book.css}
+
+\W\renewcommand{\figureref}[1]{\link{the figure}{#1}}
+\W\renewcommand{\Figureref}[1]{\link{The Figure}{#1}}
+
+\figpath{mgui/figs}
+
+\makeindex
+
+\begin{document}
+%------------------------------------front matter
+\title{OPeNDAP Matlab Interface Handbook\\\DOCversion}  
+\author{Tom Sgouros}
+\pagenumbering{roman} 
+\maketitle
+
+% \W\pslink{ftp://ftp.unidata.ucar.edu/pub/dods/ps-docs/mgui}
+\W\pslink{http://www.opendap.org/pdf/mgui.pdf}
+
+\include{mgui/preface}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\clearemptydoublepage
+%------------------------------------book body
+
+\pagenumbering{arabic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 1 introduces the GUI, as well as loaddods.
+\include{mgui/ch01}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 2 is the function reference.
+\include{mgui/ch02}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 3 explains how to add datasets to the GUI.
+\include{mgui/ch03}
+
+%------------------------------------back matter
+%\part{Appendices}
+\appendix
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendix A contains the instructions for getting and installing the
+% DODS Matlab GUI, and the associated DODS software.
+\include{mgui/appa}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendix B contains the troubleshooting hints.
+%\include{mgui/appb}
+
+%\include{mgui/glossary}
+
+%\addcontentsline{toc}{chapter}{Bibliography}
+%\bibliographystyle{plain}
+%\bibliography{../boiler/dods}
+
+\printindex
+
+\end{document}
+
+% $Log: mgui.tex,v $
+% Revision 1.15  2004/12/21 18:21:01  jimg
+% Updated pslink (which is really a pdf file).
+%
+% Revision 1.14  2004/12/09 21:02:19  tomfool
+% adjusted CSS reference
+%
+% Revision 1.13  2004/12/09 15:01:27  tomfool
+% changes for v6
+%
+% Revision 1.11  2004/04/24 21:37:23  jimg
+% I added every directory in preparation for adding everyting. This is
+% part of getting the opendap web pages going...
+%
+% Revision 1.10  2002/03/14 12:51:53  tom
+% various bugs, including bugzilla number 374
+%
+% Revision 1.9  2002/02/10 03:00:19  tom
+% updated for GUI version 5 and dods-book2 templates
+%
+% Revision 1.8  1999/10/18 21:39:43  tom
+% updated for new services, fixed server test section, add ifh intro.
+%
+% Revision 1.7  1999/08/30 21:01:39  tom
+% incorporated rcsInfo stuff.
+%
+% Revision 1.6  1999/08/30 15:18:48  tom
+% updated
+%
+% Revision 1.5  1999/02/04 17:42:12  tom
+% modified to use dods-book.cls and Hyperlatex
+%
+% Revision 1.4  1999/01/20 15:19:43  tom
+% modified for dods-book and hyperlatex
+%
+% Revision 1.3  1998/12/07 15:41:14  tom
+% updated for DODS v2.19 and GUIv0.7
+%
+% Revision 1.2  1998/11/13 16:22:00  edavis
+% Change ftp site for PostScript file to Unidata.
+%
+% Revision 1.1  1998/02/12 18:10:40  tom
+% added to CVS archive
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
+
+
+
+

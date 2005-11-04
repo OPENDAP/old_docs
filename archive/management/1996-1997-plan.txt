@@ -1,0 +1,47 @@
+
+$Id$
+
+Outline of plans for DODS from 6/96 to 1/97.
+
+Finite duration tasks:
+	Develop interfaces for IDL & MatLAB
+		These would ideally provide access w/o using an intermediate
+		API library (although we might build a first version that uses
+		one of the existing client-libraries). 
+	Continue developing the data locator
+		This includes refining the HTML interface, building a Java
+		interface, working with the GCMD people and looking into
+		other online catalogs (e.g., Alexandria).
+	Translation of data objects
+		Move this from the client-libraries into the core software.
+		This was supposed to have been done for version 2, but we ran
+		out of time. This will include both the translation mechanism
+		and an interface that will allow users to control the
+		translation process .
+	Bring on-line various GSO datasets:
+		These include: Various DSP datasets (satellite images)
+		Edge datasets
+		Oleander
+		RAFOS
+		IES (maybe)
+	Bring on-line other datasets
+		JGOFS (through the JGOFS project office)
+		netCDF (through Unidata)
+		OF course, this is also an ongoing task for datasets in
+		general. 
+	Build a list of datasets
+		Initially this will be a simple list of datasets; later we
+		will need to migrate the information to the locator.
+	PR for Version 2
+		Send messages to various email lists and in general try to
+		drum up support for the system. 
+	Freeform and CDF servers
+		Migrate the version 1 servers for FF and CDF to version 2
+
+Ongoing tasks:
+	Improve the core software
+		There is a huge TODO list; it is a never ending task.
+	Build/Maintain a list of freeware programs that work with DODS.
+	Provide user support
+	Provide developer support
+	Recruit datasets

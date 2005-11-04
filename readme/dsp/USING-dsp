@@ -1,0 +1,38 @@
+
+$Id$
+
+This file describes how to set up a dsp-dods image servers. 
+
+Note: this discussion assumes that the NCSA World Wide Web server (httpd) is
+installed on the workstation which is to be used to serve data. If that is
+not the case first install the WWW server and then proceed. For information
+on getting and installing the NCSA httpd server, see:
+http://hoohoo.ncsa.uiuc.edu/.
+
+To set up a DODS data server using the DSP image server implementation, first
+follow the instructions in the INSTALL document. Four programs comprise the
+data server: a CGI (dsp) which is used to dispatch each data request to the
+correct filter program and three filter programs (dsp_das, dsp_dds,
+dsp_dods). Make sure that the CGI module `nph-dsp' is somewhere where the
+http server can run CGI modules (cgi-bin).
+
+Data that are to be served by the DODS server must either be within the http
+server's document root directory or they must be in files/directories that
+are linked to files/directories within the document root directory. To find
+out which directory is the http server's document root, look in the httpd
+configuration file srm.conf.
+
+For example, to make the file "east.coast" available to users it must be either
+placed or linked within the document root directory. On my workstation
+the document root directory is /usr/local/spool/http so the file must be
+moved or copied to that directory or one of its subdirectories or I must
+create a symbolic link in that directory or one of its subdirectories to the
+file. I have created a directory `data' in the http server's document root
+directory and copied the file "east.coast" there. The URL to that data file is:
+
+	  http://dods.gso.uri.edu/cgi-bin/dsp/data/east.coast
+
+Note that after the machine name (dods.gso.uri.edu) the URL contains the path
+to the DODS data server CGI and that the path to the data (relative to the
+document root directory) *follows* the CGI name.
+

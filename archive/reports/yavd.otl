@@ -1,0 +1,649 @@
+-*-Mode: Outline-*-
+
+$Id$
+
+* Introduction
+
+** Describe the contents of this paper
+
+*** Workshop Goals
+    What are the goals of the workshop?
+
+*** Motivation
+    What is the motivation for those goals?
+
+*** Vision
+    What would solve the problems described in `motivation'?
+
+*** Unique Attributes of the DODS
+    How is the DODS vision different from other systems?
+
+*** Requirements
+    What are the requirements necessary to realize the vision?
+
+** Workshop organization
+
+*** Who
+    TOS with funding from NASA and NOAA
+
+*** What
+    Begin development of the DODS
+    The first in a series
+
+*** When
+    29, 30 Sept, 1 Oct 1993
+
+*** Where
+    URI
+
+*** Why
+    To develop a data access system for research oceanographers
+
+* Workshop Goals
+
+** Develop a vision of the DODS
+
+*** Keep the perspective of a research oceanographer.
+
+*** Use feedback from programmer/analysts and data center managers to
+    tune vision.
+
+** Specify requirements for the development of DODS
+
+*** The requirements should be derived from the vision.
+
+*** The result of writing the requirements is a functional description
+    of the system.
+
+* Motivation
+
+** Characteristics of research oceanography
+
+*** Experiment with data in many different ways
+    Try different types of data.
+    Try different combinations of data.
+    Try different uses for data.
+
+*** Complex science scenarios
+
+*** Large quantities of data as input to models
+
+** Limitations of current systems
+
+*** Researchers want ready access to on-line data
+
+*** Primary method of data distribution is through mail
+
+*** Data comes in many media formats 
+
+*** Data is often very hard to decode and integrate
+
+*** Only large centralized data centers are data providers
+
+*** Many important oceanographic data sets are held by individual PIs
+
+*** Client--server systems being developed are not integrated
+
+** Evolving system capabilities
+
+*** Advances in technology
+    Hardware, software and networks can now provide truly distributed data
+    management capability  
+
+*** Significant shift in who provides resources
+    Small systems, individuals
+
+*** Significant shift in how resources can be acquired
+    Internet
+
+*** On-line access to oceanographic data sets is increasing
+    Individual oceanographers are making their data available
+
+*** Success of network information resource tools
+    Gopher, World-Wide-Web
+
+* Vision
+
+** Access data
+
+*** Equal access to data managed by data centers and individuals
+
+*** Single interface for data location and acquisition 
+
+*** Provide a consistent and uniform view of system-wide resources
+
+*** Used to manage and access local and remote data
+
+*** Directly interfaces with user specified data analysis applications
+
+*** Easy to use, install and maintain
+
+** Grow
+
+*** Not continuing centrally-managed development
+
+*** Easy for researchers to modify to their own unique requirements
+
+*** Components that can be used in new ways
+
+*** New components independently developed
+
+*** Increase number and variation of data sets accessible
+
+* Unique Attributes of the DODS
+
+** What about the vision makes this approach different from other systems?
+
+*** The system allows users to access data resources directly
+
+*** The system allows equal access to PIs and data center data
+
+*** The system imports data resources directly in user's applications
+
+*** The system provides a uniform view and method for accessing local
+    and remote data resources
+
+
+
+* Requirements
+  What does this vision mean?
+
+** The system exists.
+
+?What does it mean for this system to exist?
+
+*** Scientists want to use it.
+
+?What causes scientists to want to use it?
+
+**** Scientists can access data held by others (scientists and data centers).
+     R: 2, 12
+
+?How is the system useful for accessing remote data?
+       
+***** The system provides a self-consistent view of data.  
+
+****** All data (remote and local) are accessed using the same commands.
+       R: 12, 13
+      
+****** The system can resolve synonyms when getting data.
+       R: 6
+
+****** The system provides a straightforward API that lets scientists write
+       FORTRAN and C subprograms and functions for use with off-the-shelf
+       analysis packages as well as their own in-house analysis software.
+       R: 23, 29, 51
+
+****** The system provides a command line interface tool that can be used from
+       the UNIX shell. 
+       R: 51
+
+****** Data accessed are presented in a single form, regardless of their
+       storage form.
+
+?What data will the scientist be able to access?
+
+****** The system is designed for oceanographic data.
+       R: 32
+
+****** Non-oceanographic data may be accessible using the system, but it is
+       not actively targeted at other types of data.
+       R: 33
+
+****** The system will be able to manage data held by individual scientists.
+       R: 18
+
+****** The system will be able to manage data held by government archive
+       centers. 
+       R: 19
+
+****** The scientist can also access local data if they are managed by the
+       system.
+       R: 13
+
+?How does data become available to the system? 
+
+***** Whenever data are managed by the system, they are automatically
+      accessible to other users of the system. 
+      R: 30
+
+?What if a provider wants to prevent others from accessing a particular data
+set?
+
+****** A provider may set limits to remote access of any of the data sets
+       managed by the system. 
+       R: 48
+
+****** Access limits may apply to everyone or to everyone except a group of
+       privileged users. 
+       R: 56
+
+**** The system simplifies managing oceanographic data.
+
+?What does it do to help manage data?
+
+****** The system provides a command line interface that can be used from
+       a UNIX shell. 
+       R: 50, 51
+
+****** The system supports other types of user interfaces including a GUI.
+       R: 51
+
+****** The system can use already developed data management tools or work
+       with data organized using files and the UNIX filesystem.
+       R: 50
+
+****** The system will support data set version numbering.
+       R: 54
+
+****** The system will support transmission of data from individual
+       scientist's computer to computers at a national archive center.
+       R: 57
+
+?Does the scientist have to learn how to use all these features of the system
+to manage data?
+
+****** The scientist can choose to ignore any of the features of the system
+       while using any other features.
+       R: 17, 20
+
+?What else about the system simplifies data management?
+
+****** It will be easy for scientists to add data to the system.
+
+?Why will that be?
+
+******* Scientists may choose from self describing data formats - both
+	standard and language-based types. 
+	R: 14, 22
+
+?How does this make it easy to add data?
+
+******** The supported standard formats are often what the scientist is
+	 already using, thus, files need only be moved to the appropriate
+	 directories within the system.
+
+?What formats?
+
+********* netCDF, HDF, GRIB/BUFR.
+	  R: 34
+
+?What if the data is not in one of these self describing formats?
+
+******** For data not already stored in a supported format, language tools
+	 will be provided so that the scientist can describe the data's
+	 structure to the system.
+
+?Will this really be easy for the scientist to use?
+
+******** Some ways of structuring data can be described to the system by
+	 creating template files using a text editor. This will NOT require
+	 any programming knowledge at all. Given the complexity of the
+	 problem and that it is only slightly more work than for the standard
+	 formats, it is easy.
+
+******** Other ways of structuring data can only be described by writing
+	 programs.
+
+?What sort of `Other ways' are you talking about?
+
+******** If data needs unusual access procedures (e.g. to be accessed
+	 efficiently) the scientist will have to write a program that
+	 implements that procedure.
+
+?Is there any way to simplify that?
+
+******** We will make documented source code available to the scientist that
+	 will illustrate how we wrote the code that access files.  The
+	 documentation will be more than just commented source code, it will
+	 be both annotated source code and a reference manual.
+	 R: 35
+
+?What else about the system will make scientist want to use it?
+
+**** Data Managed by the system is easy to use.
+
+?What makes using the data easier?
+
+***** The system supports browsing data sets.
+      R: 21
+       
+***** The system provides direct electronic access to data.
+      R: 28
+
+?How does the system support direct access?
+
+****** The system uses the Internet to move data to the user.
+       R: 28
+
+?Couldn't that take a lot of time - what if the data are large?
+
+******* There will be limits on the total quantity of information that can
+	be transmitted over the network in response to any single query.
+	R: 25
+	
+?Who will decide what those limits are?
+
+******** The individual provider of a data set can set transmission limits.
+	 R: 56
+
+?Getting back to direct access, does the scientist have to access the whole
+data set?
+
+****** The scientist can access parts of a data set using a query.
+       
+?How does the scientist describe data with a query?
+
+******* Using boolean, relational, and functional operators.
+
+******* The result of a query is the data it describes.
+       R: 58
+       
+?How does the scientist get the data?
+
+******* The system provides at least two interfaces a scientist can use to
+	get data values: A command line interface and an API.
+	R: 51
+
+?Does the system also provide analysis tools?
+
+******** The system's transformation of data is limited to format translation
+	 and subsampling. 
+	 R: 55
+
+?In addition to direct access, what else makes managed data easier to use?
+
+***** The entire mass of data appears cohesive.
+      
+?What makes the entire collection of managed data appear cohesive?
+
+****** The system is fully distributed.
+       
+?What does it mean for a system to be `fully distributed'?
+
+****** The existence of multiple computers within the system is transparent
+       to the user.
+
+****** There is a single `interface semantics' used for all data access. 
+
+****** The storage format of the data is hidden from the user.
+
+?How is the storage format hidden from the user?
+
+******* The scientist does not need to know what format the remote data 
+        are in in order to access them.
+
+?Why not?
+
+******** The system automatically delivers data in a usable form.
+
+?What do you mean by usable?
+
+********* When the scientist gets data, it is returned in a self-describing
+	  form.  
+
+?How does this make data more usable?
+
+********** By transforming all data, regardless of storage format, into a
+	   (canonical) self describing form the system only has to provide a
+	   parser for that form to correctly handle all data managed by the
+	   system.
+
+********** This will make it simpler to combine different data sets.
+
+********** This will make it simpler to co-locate data from two or more data
+	   sets. 
+
+***** Once data has been accessed, the system makes it easy to import data 
+      into other applications.
+      
+?For example?
+
+****** The operations performed to retrieve data make it straightforward to 
+       use those data with analysis packages. The API interface makes it
+       simple to use systems like matlab, ... and the command line interface
+       makes it simple to pipe a data stream into UNIX or home-made filter
+       programs. 
+       R: 50
+
+?Can't I save the data in a file?
+
+******* Data can be saved in files. The resulting files are self-describing
+	and may accessed using the same API as remote data.
+
+?How hard is it to make data available to others using this system?
+
+***** Once data is managed by the system, it is automatically available to
+      all users of the system.
+      R: 30
+
+***** The system will support different kinds of data resource documentation. 
+      
+?What are they?
+
+****** The system will support maintenance of access statistics.
+       R: 53
+
+******* Use statistics will be internally maintained at the discretion of 
+        the data provider.
+     
+******* The usage log for each data set will be available to the same set of
+	users as the associated data set.
+	R: 49
+
+****** Data providers can include general and/or technical documentation 
+       on their data resources as an aid to users accessing their resources.
+
+******* This documentation is provided at the discretion of the data provider
+        for data users
+	R: 26
+
+****** Data users will be allowed to provide comments regarding individual 
+       data resources.
+       R: 38
+
+?What kinds of comments?
+
+******* Feedback to data providers on problems with data quality or access.
+
+******* Comments will be attributed to their authors, so the incentive to 
+        make meaningful comments will be fairly great.
+
+******* The user comment capability would be enabled at the discretion of the
+	data provider.
+        R: 26
+
+**** Finding data sets is easy.
+
+?What makes finding data sets easy?
+
+***** The system provides a system-wide directory function.
+      R: 7
+
+?How complete is the directory information? 
+
+****** The system knows about all of its available resources.
+
+?What about new data being added or data that has been modified or removed?
+
+******* The system's data set database is fully distributed (i.e., it is
+	transparently spread out over some/all of the machines which make up
+	the system).
+	R: 8
+
+******* The system's directory information is maintained dynamically.
+	R: 9
+
+******* The system automatically propagates information about additions,  
+        modifications or deletions to its data resources to the rest of the
+        system. 
+
+?How does the system's directory function make finding data easier?
+
+****** The system enables querying of its data resources with user defined, 
+       multi-parameter searches. 
+
+****** The scientist can search `keyword <relop|binop> value' of information
+       extracted from data sets managed by the system.
+
+****** A single interface is used to locate and access data.
+
+****** The system can resolve synonyms used in its search specifications to 
+       refer to a particular type of data.
+       R: 6
+
+****** The scientist can search plain text descriptions of data holdings.
+
+?Can a scientist perform a search for co-located data?
+
+****** Co-located searches are fully supported by the system.
+       R: 4
+
+?Can a single query be used to access more than one data set?
+
+****** If more than one data set must be used to satisfy a query, then the
+       system must do that.
+       R: 11
+       
+?What else makes locating data easier?
+
+***** Once found, the same data set may be accessed may times without
+      repeating the initial search process.
+      R: 24
+
+***** If a scientist knows exactly where a data set resides, the
+      system can go directly to that data set without searching.
+      R: 18
+
+***** The scientist never has to think `this is on another CPU'.
+
+?What keeps the location hidden?
+
+****** Software that the scientist uses will know how to communicate with
+       other parts of the system - the scientist does not have to know.
+
+**** Installing the system is easy
+
+?Are there any caveats?
+
+***** The system is only supported on the UNIX operating system. Some
+      features may not be available without a workstation and X11R5.
+      R: 1
+
+?How does the scientist get a copy of the system?
+
+***** All the programs that make up the system can be copied from an
+      anonymous ftp server. Any third party libraries required to build the
+      software will be available at this site as well.
+      R: 36
+
+?Will the scientist have to compile a bunch of programs?
+
+****** The system will be distributed in two forms: 1) precompiled binaries
+       for popular workstations, and 2) source code.
+       R: 36
+
+?What are the popular (supported) workstations?
+
+******* Sun Sparc: SunOS 4.x; DECstation: Ultrix; DEC alpha:
+	OSF/1; SGI: IRIX; IBM RS6000: AIX
+	R: 37
+
+******* Source code will be available so that other platforms can run the
+	system, but we will only support additional UNIX platforms if there is
+	a significant call for such support and we have the resources.
+
+?How hard will it be to port the system to a new operating system?
+
+******** The bulk of the system will be written in ANSI C. Parts may use
+	 FORTRAN if standard, widely used, source code exits for common
+	 algorithms and if there are significant reasons not to recode
+	 it in ANSI C. We may also use a different language for any X11
+	 interface we produce. Whether the system CAN be ported to OS `X'
+	 depends mostly on how similar `X' is to UNIX. Without knowing `X' in
+	 advance, it is impossible to say if the port can be done easily. Any
+	 cross-OS port will almost certainly require a systems programmer
+	 with experience.
+
+**** Extending the system is straightforward
+
+***** The software used to manage data may be more complex to build on
+      unsupported platforms than the software used to access data.
+      R: 38
+
+***** Enough system documentation will be provided so that others may develop
+      software that will work with `stock' parts of the system. This
+      explicitly includes user interface software.
+      R: 39, 50, 51
+      
+
+**** The system is an open system.
+     
+?What does this mean?
+
+***** There is no central management authority for the system.
+
+***** All nodes on the system appear equal.
+
+***** Responsibility for how the system is used and evolves is shared mutually
+      by all participants in the system.
+
+***** Data providers maintain complete control of their data resources.
+      
+?How do they do that?
+
+****** Data is made available to the system at the discretion of each data 
+       provider.
+
+****** Data providers may choose to limit access to the data to only designated
+       users.
+
+****** Although the system supports many features, a scientist is never
+       REQUIRED to make use of those features - A choice of options is always
+       given. These options allow the scientist to choose a level of
+       participation in the system.  
+       R: 26
+       
+?In what ways beside providing access does the data provider choose their
+level of participation?  
+
+******* Data provider can maintain their data in whatever format they deem
+        appropriate.
+        
+?If data providers maintain data in their own formats, won't this make
+accessing the data more difficult?
+
+******** Data providers will be encouraged to write text describing each data 
+         set and to use a self describing data format.
+	 
+?Do they have to do either of these?
+
+********* Choosing to make the data set description file and/or using a
+          self-describing data format will make it possible to use more of
+          the system's features with the data. This is true for both local
+          and remote users.
+
+*** Data centers can use it
+
+?What does it mean for data center to use the system?
+
+**** Data centers partially fulfill their mandate -- to provide data.
+     R: 30
+
+?Don't data centers provide data already?
+
+***** Yes and no, most data centers currently provide data through hard media
+      (i.e., tapes and CD-ROMS).  A number recognize the advantage to the
+      research community of having data on-line and accessible over the
+      Internet.  
+
+**** Many data sets held in data center archives are high profile items.
+     Providing access to these data sets will jump start the system.
+
+**** One of the responsiblities of data archival centers is to acquire 
+     data from scientist and programs.  The system supports data centers not
+     only providing data but also acquiring data for archival purposes. 
+     
+**** Data centers do not have to make use of all of the system's features when
+     managing a given data set with the system.
+     R: 17

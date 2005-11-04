@@ -1,0 +1,1663 @@
+% This file contains the beginning of an overview of the entire DODS
+% system. It is intended to be a first stab at the introductory
+% chapters of the DODS user guide. - tom sgouros
+%
+% $Id$
+
+\documentstyle[code,12pt,html,psfig,margins]{article}
+% removed a4paper style. jhrg 2/22/96
+%\setpapersize{Afour}
+\psfigurepath{../design/api-figs}
+
+\input{../boiler/html-refs}
+
+\begin{document}
+
+%\textheight=9.75in commented-out. jhrg 2/22/96
+%\textwidth=7.5in
+%\oddsidemargin=.1in
+
+\title{DODS---The Distributed Oceanographic Data System}
+\author{}
+\date{\today}
+
+\maketitle
+
+\begin{abstract}
+
+  This document describes version 2.0 of the \DODS\ (DODS), a data
+  system intended to allow researchers transparent access to
+  oceanographic data---stored in any of several different file
+  formats---across the internet. Using DODS function libraries, many
+  existing data analysis programs can be easily modified to
+  accommodate access of distant datasets in a manner identical to the
+  access of local datasets. DODS includes a protocol for the
+  transmission of data across the internet, and supports selection of
+  data using constraint expressions. An overview of the system's use
+  is presented, and the rationales for important system design
+  decisions are described.
+
+\end{abstract}
+%\input{../boiler/warning}
+%\input{../boiler/developers}
+\begin{htmlonly}
+\pslink{file://dods.gso.uri.edu/pub/DODS/overview.ps}
+\end{htmlonly}
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\section{Introduction}
+
+The Distributed Oceanographic Data System (DODS) provides a way for
+ocean researchers to access oceanographic data anywhere on the
+internet from a wide variety of new and existing programs. By
+developing network versions of commonly used data access Application
+Program Interface (API) libraries, such as netCDF and JGOFS, the DODS
+project can capitalize on years of development of data analysis and
+display packages, allowing users to continue to use programs with
+which they are already familiar. DODS incorporates a powerful data
+translation facility, so that data may be stored in data structures
+and formats defined by the data provider, but may be accessed by the
+user in a manner identical to the access of local data files on the
+user's own system. A user may not need to know that data from one set
+are stored in a format different from data in another set.
+
+The network communication model used by DODS uses URL addresses and
+web servers ({\tt httpd}) to deliver data to the researcher, allowing
+the DODS project to take advantage of the tremendous design and
+development being applied to the World Wide Web. In addition to
+creating network-compatible versions of popular data access APIs, the
+DODS project also provides a software \toolkit\ to help other
+developers create network-compatible DODS versions of other APIs.
+
+The population of people who may be interested in a system such as
+DODS may be divided into data consumers and data providers. Though it
+was an important observation to the development of DODS that the two
+roles are often assumed by the same scientists, the division is a
+useful one for the introduction of the system. The following two
+sections examine the tasks of data consumers and data providers.
+
+\section{Data Consumer}
+
+A scientist wishing to examine and sample some dataset will typically
+be comfortable using a relatively small number of data analysis and
+display packages. Some of these packages will use one of the popular
+data access APIs currently available. However, few data access APIs
+provide direct access to distributed data\footnote{The phrase {\em
+distributed data\/} refers to datasets that reside on different
+computers which are linked by a network such as Internet. The
+computers may or may not be physically remote from each other. The
+main point is that the computers manage their data resources
+independently. In this paper the terms {\em remote\/} and {\em
+distributed\/} are used to imply independently managed resources.}, so
+this access must be made with network tools, such as web browsers or
+{\tt ftp}. While relatively straightforward in principle, this process
+can nonetheless become time-consuming and somewhat challenging.
+
+DODS can be used with both new and existing software to provide
+transparent access to distributed datasets, and provides data
+translation, so that datasets stored in different formats can be
+accessed by the same program.
+
+The following example illustrates some of the differences between
+accessing distributed data with the tools currently in widespread use,
+and with DODS.
+
+\subsection{An Example: Using ftp}
+
+The advent of the WWW has made possible simple data browsers that
+allow sophisticated interactive sampling of on-line datasets. Using a
+web browser and ftp, a user can sample any of several large
+oceanographic datasets available on the internet. 
+
+Among the problems that can arise are those seen when a user tries to
+use the results of one dataset to search a second dataset. Suppose
+that a user wishes to choose a sea-surface temperature image from the
+NOAA/NASA Pathfinder AVHRR archive at {\tt
+http://podaac.www.jpl.nasa.gov/} using the results of a time-series
+generated from the COADS Climatology archive at {\tt
+http://ferret.wrc.noaa.gov/}. The steps are straightforward:
+
+\begin{enumerate}
+
+\item Create the time series from the COADS Climatology archive.
+
+\item Import it to the user's local data analysis system. This may
+require several steps to convert the data into the appropriate
+format. Examine it.
+
+\item Formulate a request to the AVHRR archive.
+
+\item Import that to the user's local data display system. This may
+also require several steps. 
+
+\item Think about the displayed data.
+
+\end{enumerate}
+
+Though the procedure is straightforward, and the web servers designed
+to make sampling the datasets a simple task, upon close examination,
+the combination of the steps may create unforeseen difficulties. For
+example, a request to the COADS server will return either an ASCII
+file, a spreadsheet, or a netCDF format file. If the user is
+fortunate, the returned file will already be in a format compatible
+with the desired analysis package. But not all users will be so
+fortunate, and often this file must be converted to some other file
+format so it may be imported to the user's analysis program. This may
+or may not be a simple task.
+
+Even a file format for which a user is properly equipped may be used
+in an unfamiliar manner. For example, the independent and dependent
+variables might be in a different order, or the ASCII data may use
+tabs instead of spaces.
+
+Assuming the import of the COADS data has been accomplished, and
+boundaries for the AVHRR search identified, the task of selecting from
+the second archive may begin. Unfortunately, the request to the AVHRR
+archive will return either a GIF picture, an HDF format file, or a raw
+(binary) data file. Again, importing this output into the user's
+analysis program may or may not be simple, but it will not be the same
+procedure as the one used for the first data request.
+
+Other problems are also apparent. The COADS Climatology sampling
+program requests the user supply dates (month and day), whereas the
+AVHRR archive asks for the julian day (an integer between 1 and 365 or
+366). One server will accept ``S'' and ``W'' to indicate South
+latitudes and West longitudes, while the other requires that these be
+indicated with negative coordinate values.
+
+Other problems may become apparent. The sampling of the COADS dataset,
+while somewhat flexible, may not allow sampling in the manner the user
+needs. It cannot, for example, provide a section except along a line
+of constant latitude or longitude. If a user wanted to see a section
+along a NE-SW line, it might be necessary to request several N-S
+sections to piece together enough of a picture to construct a rough
+version of the desired section. The net effect would be several more
+requests for data---involving increased load on the internet and on
+the database server---than is strictly necessary.
+
+Further, it might be desirable to use the two databases to construct a
+time series. This could conceivably mean repeating the entire
+procedure many times.
+
+\subsection{An Example: Using DODS}
+
+To produce the same data selection using DODS, a user would follow
+essentially the same steps. However, the steps themselves would be
+performed differently. Once the user's data analysis package has been
+converted to a DODS client (Section~\ref{dods client}), the accesses
+to the remote datasets are made through the analysis package
+itself. Instead of specifying a data file by a pathname, the user
+specifies a URL, which may point to a local or a remote dataset.
+
+It is important to note that {\em any} data analysis package that can
+handle one of the DODS-supported data access APIs can be converted
+into a DODS client program capable of reading data stored by {\em all}
+of the DODS-supported data access APIs. Therefore, assuming the user
+has some analysis package capable of doing the required sampling and
+analysis on local data, all the steps would be performed from within
+that package, just as if the user were operating on local files. The
+result is a simpler procedure, even though the same steps are
+followed.
+
+\begin{enumerate}
+
+\item The user need not learn about any of the archival formats, since
+the DODS server and client cooperate to deliver the data in the format
+in which the analysis package expects to see it. Whereas the user of
+the ftp server has to worry about importing the data into the analysis
+program, the DODS client program imports it transparently.
+
+\item The user can sample the distant datasets in any fashion supported
+by the local analysis package. Unnecessary data need not be sent over
+the internet.
+
+\item A substantial amount of the searching and sampling is performed
+on the server machines.
+
+\end{enumerate}
+
+\subsection{The DODS Client}
+\label{dods client}
+
+DODS uses a client/server model. As mentioned previously, the DODS
+servers are simply {\tt httpd} web servers, equipped to interpret a
+DODS URL sent to them. (See Section~\ref{dods server}) The DODS client
+program can be any program that uses one of the supported APIs, such
+as JGOFS or netCDF.
+
+To make some program into a DODS client, it must only be relinked with
+the DODS implementation of the supported API library. This is a simple
+process, generally requiring only a few minutes.
+
+As an example, consider some program that uses the netCDF API to
+access a datafile. Somewhere in the program, there is a call to the
+netCDF-defined function {\tt ncopen()}, with a netCDF filename
+(e.g. {\tt xbt29.nc}) specified as the argument. After relinking with
+the DODS version of the netCDF library, the {\tt ncopen()} function
+will accept a URL (e.g. {\tt
+http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc}) instead of a simple
+filename. Aside from this difference, however, the program will seem
+to function in the same way it had with the simple netCDF library.
+
+DODS also provides a data translation facility. Data from the original
+data file is translated by the DODS server into a DODS data model for
+transmission to the client. Upon receiving the data, the client
+translates the data into the data model it understands. (See
+Section~\ref{dap} for more information about the DODS data model.)
+Because the data transmitted from a DODS server to the client travel
+in a common format, it doesn't matter which of the supported formats a
+dataset is stored with. If the DODS client is designed to read netCDF
+format files, the data returned by the DODS-netCDF library will appear
+to have been read from a netCDF file, whatever the actual format of
+the files from which the data were read\footnote{Note that there is a
+limit to what can be translated. An API meant to support
+two-dimensional arrays may be able to handle one-dimensional vector
+data, but a program designed to process one-dimensional vector data
+will not know what to do with a two-dimensional array. The set of data
+access APIs supported by DODS contain several such mismatches.}. If
+the program expects JGOFS data, the DODS-JGOFS library will return
+data that seem to have come from a JGOFS dataset, again, no matter
+what the actual input file format.
+
+DODS does not pretend to remove all the overhead of data searches. A
+user will still have to keep track of the URLs of interesting data
+sets in the same way a user must now keep track of the names of files
+containing interesting data. DODS will provide a data locator service,
+in cooperation with the Global Change Master Directory ({\tt
+http://gcmd.gsfc.nasa.gov/}), a DODS server designed to respond with
+the URLs of datasets satisfying the query criteria. A user
+can also use some less formal avenue to find the URLs.
+
+\section{Data Provider}
+
+The DODS data provider is the person or organization willing to make
+their digital datasets available to the community with a DODS
+compliant server.
+
+DODS is a system that recognizes that many of the data users are also
+the data providers, and it is built with a recognition that providing
+the data should be as simple and as straightforward as possible. In
+many cases, once a local web server is equipped to become a DODS
+server, a scientist need do only very little beyond what must be done
+simply to make the data available locally. (i.e., Put the data into
+a file format that can be read by the locally used data analysis and
+display programs.)
+
+\subsection{The DODS Server}
+\label{dods server}
+
+The DODS data server is simply made up of a regular httpd server
+equipped with a CGI program that uses three filters, to respond to
+requests for dataset structure, data attributes, and data itself. (See
+Section~\ref{dap} for a description of the data returned by these
+requests, and see Section~\ref{url:introduction} for a description of
+the DODS URL syntax, used to send these requests.) Most of the task of
+a data provider consists of configuring this server. While perhaps not
+a trivial task, it represents far less effort than packaging a dataset
+for submission to some central data archive. Furthermore, modifying a
+server's configuration to accommodate new data will be an almost
+trivial task, involving the simple editing of a configuration file.
+
+\subsection{Administration and Centralization}
+
+Under DODS, there is no central archive of data; data under DODS is
+organized in a manner similar to the internet itself. That is, all one
+need do to make one's data available is to start up a properly
+configured httpd server that has access to the data on the local
+internet node. Each data provider is free to join and to leave the
+system when it is convenient, just as any proprietor of a web home
+page is free to delete it or add to it according to whimsy.
+
+Of course, as can also be seen on the World Wide Web, there are some
+disadvantages to the lack of a central authority. If no one knows
+about a web site, no one will visit it. Similarly, listing a dataset
+in a central data catalog, such as the Global Change Master Directory
+({\tt http://gcmd.gsfc.nasa.gov/}), can make data available to other
+researchers in a way that simply configuring a DODS server does not.
+
+The central data catalog may be important to the success of the DODS
+project in a related way. Setting up a DODS server and creating DODS
+clients to use this data is a process requiring some investment in
+time. In order for DODS to become widely used, a substantial number of
+users must believe it is worth that investment. The availability of
+a large number of datasets through DODS can provide that incentive,
+but only if they are known to a large number of researchers.
+
+\section{Data Access Protocol}
+\label{dap}
+
+The DODS Data Access Protocol (DAP) is a {\em lingua franca\/} for
+reading earth science datasets. It is used as an intermediate representation
+for data which are nominally accessed using an established third-party
+Application Programmer Interface (API) (e.g., netCDF). Because, in addition
+to a method for data access, the DAP defines the content of ancillary
+information about datasets, it provides the means to access datasets
+through a single protocol using any of the DODS supported APIs. Because the
+\dap\ serves as an intermediate representation for several different APIs, it
+can be used to translate between any two of those APIs.
+
+Once users have the power to access remotely stored data they realize
+that not all data are available using the API that they use. In fact,
+many datasets' storage formats are incompatible with third party APIs
+altogether because they are stored using conventions independently
+developed at the site where the data were first analyzed, collected,
+or archived. While those in charge of the data at a remote site may be
+very willing to provide remote access, they will probably not be
+willing to reformat their data for most off-site users. The problem
+the DODS data translation servers address is how do users access
+remote data when it is not stored in a format or data model their
+programs understand?
+
+The DODS Data Access Protocol provides a means to access datasets using any
+one of a set of supported APIs by defining an intermediate representation for
+datasets, and components of datasets, that is API and format independent.
+Using the DODS DAP as an intermediate representation, software components can
+be built which translate a user program's API calls into DAP calls. Data
+servers can be built which accept DAP calls and, either by translating
+into a third-party API or using dataset-local access methods, read the data.
+Thus software which uses any one of a set of APIs can be used to read data so
+long as a DODS server for that data exists---even if the data is stored in an
+API different from the one used by the display or analysis software.
+
+\subsection{Rationale}
+
+Most data access APIs are targeted at application writers---they provide
+powerful tools to read, write, and process one specific type of scientific
+data and are typically specialized so that software in one application domain
+is easy to write. In order to fulfill this function, APIs are typically
+`feature rich' (i.e., they provide many ways to perform similar tasks). This
+characteristic causes APIs that maintain this level of flexibility over a
+wide range of data types to become very complex. Because simplicity and
+ease-of-use are two characteristics that make APIs attractive to application
+programmers, most API designers try to limit the scope of an API so that it
+can provide the features application programmers want, at the level of detail
+they want, without becoming excessively large and thus burdensome to use.
+The netCDF and JGOFS APIs are good examples of APIs designed for a specific
+type of application.  Each is used to access earth-science datasets, but
+netCDF is most suited to gridded model data, and JGOFS has direct support
+only for relational data.
+
+However, the netCDF API cannot be directly used to access datasets produced
+by the JGOFS API and vice versa. An application using either one of these
+APIs would need to be modified if a user wanted to integrate both netCDF and
+JGOFS compliant datasets. Modifying a program so that the data access API it
+uses matches with the API used to write a dataset is an expensive process
+and one which is exacerbated by the fact that more and more users do not
+write their own software. Modifying someone else's software can be very
+complex and costly at best; at worst it is not possible at all.  Moreover,
+when the datasets are remote it may be impossible to convince their
+maintainers to replicate them for another API since this, too, is very
+costly.
+
+One alternative to rewriting application software or replicating data is to
+define an intermediate representation which can be used to access data stored
+in any one of a number of APIs.  If the intermediate representation is based
+on a data model that encompasses the abstractions of a certain set of APIs,
+then the intermediate representation can be used to translate between those
+APIs. The implementation of an intermediate representation interface need not
+be an application interface itself; instead it can be a set of tools used to
+build application-level components. These components can then be combined at
+link-time and/or runtime with user-programs to access data.
+
+An interface which is to be used as a translation mechanism cannot
+afford to present the rich set of access functions that the individual
+APIs, which it subsumes, present. It must control the size and
+complexity of its interface by removing features while still providing
+the capability to transparently interoperate between several data
+models. The DODS DAP is such an interface.  It is designed to be used
+in the construction of system components which are configured at
+runtime by users, maintainers or other software components.  Thus, the
+DODS DAP is not a separate addition to the set of interfaces formed by
+JGOFS, netCDF, and others.  Instead it is an intermediate
+representation which can be used to translate between those different
+APIs.
+
+\subsection{Requirements}
+
+This section presents the requirements that must be met for an intermediary
+representation for any of the DODS supported APIs. Currently, two APIs are
+supported by DODS: netCDF and JGOFS\@. As additional APIs are incorporated
+into the system (e.g., HDF), the DAP may add support for the data types those
+handle.
+
+\begin{enumerate}
+
+\item The DODS DAP can be used to map data stored using one API to
+  calls in a second API so long as both APIs are supported by DODS\@.
+
+\item It must be possible to add new data types and operators to the DAP
+  without changing the external interface it presents.
+
+\item The DAP does not characterize the dataset based on its native
+  implementation. The DAP supports access to datasets that consist of a
+  single file, several files, a relational database, a set of relational
+  databases, or any other reasonable representation.
+
+\item The DAP makes all datasets appear cohesive---they always appear as a
+  single store of data regardless of their actual implementation. 
+%Not yet satisfied (\today).
+
+\item The DAP supports datasets which consist of one or more variables.
+
+\item When a dataset contains two or more variables, the DAP makes their
+  relationship explicit. The relations are precisely described using a syntax
+  which other computer systems can analyze.
+
+\item The DAP describes each variable in a dataset by its:
+
+\begin{enumerate}
+\item Name
+\item Type
+\item Shape
+\item Units. 
+% Not yet satisfied (\today)
+\item Type-dependent characteristics
+\item \ldots zero or more attribute-value pairs
+\end{enumerate}
+
+\item The characteristics of the different variable types are given by the
+  \dm.
+
+\item The DAP can perform the following operations on a dataset:
+
+\begin{enumerate}
+\item Get dataset structure description
+\item Get dataset attribute list
+\item Send arguments to a dataset
+\item Get values from the dataset
+\end{enumerate}
+
+\end{enumerate}
+
+\subsection{Design}
+\label{design}
+
+The DODS DAP design contains three important parts: A data model which
+describes data types that can be supported by the protocol and how they are
+handled, the dataset description and dataset attribute structures which
+describes the structure of datasets and the data they contain, and a small
+set of messages that are used to access data. Each of these components are
+described in the following subsections along with a summary of the runtime
+process configuration needed for DODS to translate from a dataset API to a
+user program API\@. The discussion of the runtime process configuration
+frames each of the three design components and is used to explain why they
+are needed.
+
+\subsubsection{Process and Module Configuration}
+\label{process}
+
+The set of processes and modules needed to access a dataset is shown in
+Figure~\ref{fig:structure}. In the figure two processes are shown. Process 1
+contains the user program, a surrogate library implementation of the data
+access API used by that program, and translator component which uses the DODS
+DAP to request data used to satisfy calls from the user-program API calls.
+This process, called the {\em user process\/} communicates with the second
+process, the {\em translating server\/} process.  The translating server
+contains two modules---one to recast the incoming DODS DAP calls into calls
+in the the dataset's API and a second module that implements that API\@. In
+the figure all data is transmitted over the network using the DODS DAP
+regardless of the API used by the user program or used to store the data,
+even if the APIs are the same.
+
+\begin{figure}
+\centerline{\psfig{figure=structure.ps}}
+\caption{Two processes are used to translate API Y calls from the user
+  program to API X calls for the dataset. These same two processes are the
+  client and server in a distributed data system. Note that DODS does not
+  supply either the complete client or the complete server---rather DODS
+  software consists of modules that can be combined with existing software
+  (user programs, third party libraries) to build distributed systems. In
+  this figure, {\em Module\/} refers to a conceptual unit (e.g., a library),
+  not just a compile-time unit.}
+\label{fig:structure}
+\end{figure}
+
+The DODS DAP's main function is to facilitate translation between two
+different data access APIs. In order to read data stored in API X as in
+Figure~\ref{fig:structure} a server which provides access using the DAP can
+use the native implementation of API X to read information from the dataset.
+
+In addition to the data accessible via the native API, each dataset will
+contain ancillary data. These data will be directly accessed by some of the
+DAP calls. It will be used by both the local implementation of the DAP to aid
+in translating the DAP calls into the dataset's native API calls and by
+the remote translation process.
+
+In order to effectively translate the user program API calls into DODS
+DAP calls, the translator module must have some knowledge of the
+source dataset's structure. This structural information will comprise
+part of the ancillary data that is accessed directly by the DODS
+DAP\@. Based on this information, which can be accessed using DAP
+calls, the translator can choose how to best translate the user
+programs data-access calls. In effect, the translator must map one
+data access API onto a data model to which it may not be well suited
+(either because the implementors of the user program or the dataset
+have chosen an inappropriate interface).
+
+Finally, in order to be useful by many user programs, particularly those
+written by a third party development team for a group of users, the
+translator must have some additional information about the representation of
+certain data objects expected by the user program. This information, called
+{\em Usage Data\/} in Figure~\ref{fig:structure}, will allow the user to
+specify the format of dates and similar information which has many different
+common forms but no universally accepted format. It is stored in a file
+created by the user or developers of the {\em user program}. This
+information is defined by DODS outside of the definition of API Y and will be
+used by the translator module when data requests are made by the user program
+or when data is returned to the user program in response to one of those
+requests.
+
+\subsubsection{The Data Model}
+
+Data models provide a way to organize scientific datasets so that useful
+relationships between individual datum are evident. Many data models have
+been specifically designed to make using the data in a computer program
+simpler. Examples of computationally oriented data models for scientific data
+are hierarchical, sequential, and gridded data models. 
+
+Data models are abstract, however, and to be used by a computer program they
+must first be implemented by a programmer. Often this implementation takes
+the form of an API---a library of functions which can read and write data
+using a data model or models as guidance. Thus every data access API can be
+viewed as implementing some data model, or in some cases several data models.
+
+Because DODS needs to support several very different data models, it is
+important to design it around a core set of concepts that can be applied
+equally well to each of those data models. If that can be done, then
+translation between data represented in those different models may be
+possible.
+
+Currently DODS supports two very different data access APIs: netCDF
+and JGOFS\@. The netCDF API is designed for access to gridded data,
+but has some limited capabilities to access sequence data (although
+not with all of its supported programming language interfaces). The
+JGOFS API provides access to relational or sequence data\footnote{In
+  the remainder of this document, the phrase {\em sequence data}, or
+  just {\em sequence}, will mean an ordered set of elements each of
+  which contains one or more sub elements where all of the sub-elements
+  of an element are explicitly related to each other.}.  Both APIs
+support access in several programming languages (at least C and
+Fortran) and both provide extensive support for limiting the amount of
+data retrieved.  For example a program accessing a gridded dataset
+using netCDF can extract a subsampled portion or {\em hyperslab\/} of
+that data.  Likewise, the JGOFS API provides a powerful set of
+operators which can be used to specify which type of sequence elements
+to extract (e.g., only those corresponding to data captured between
+12:01am and 11:59am) as well as masking certain parameters from the
+returned elements so that only those parameters needed by the program
+are returned.
+
+The DODS DAP uses the concepts of variables and operators as the base for the
+data model. Within the data model, a dataset consists of one or more
+variables where each variable is described formally by a number of
+attributes.  Variables associate names with each component of a dataset, and
+those names are used to refer to the components of the dataset. In addition
+to their different attributes, it is possible to operate on individual
+variables or named collections of variables. The principal operation is {\em
+  access}, although this can be modified in a number ways.
+
+\subsubsection{Base-Type Variables}
+\label{base-type-variables}
+
+Variables in the DODS DAP have two forms. They are either base types or type
+constructors. Base type variables are similar to predefined variables in
+procedural programming languages like C or Fortran (e.g., {\tt int} or {\tt
+  integer*4}).  While these certainly have an internal structure, it is not
+possible to access parts of that structure using the DAP\@. Base type
+variables in the DAP have three predefined attributes (or characteristics):
+Name, Type, and Unit.  They are defined as follows:
+
+\begin{description}
+
+\item [Name] A unique identifier that can be used to reference the part of
+  the dataset associated with the variable.
+
+\item [Type] The data type contained by the variable. This can be one of {\tt
+    byte}, {\tt int32}, {\tt float64}, {\tt string}, and {\tt URL}\@.
+  Where:
+
+\begin{description}
+\item [byte] is the same as unsigned char in ANSI C\@.
+\item [int32] is a 32 bit integer---it is synonymous with long in
+  ANSI C when that type is implemented as 32 bits.
+\item [float64] is the IEEE 64 bit floating point data type.
+\item [string] is a sequence of bytes terminated by a null character.
+\item [URL] is a string as defined in \URL\@.
+\end{description}
+
+\item [Unit] This contains the name of the units of the value contained in
+  the variable.  Examples of typical units are degrees Celsius, degrees
+  Kelvin, \ldots If a variable is unit less, then this is null.
+
+\end{description}  
+
+\subsubsection{Type Constructor Variables} 
+
+Type constructor variables describe the grouping of one or more variables
+within a dataset. These classes are used to describe different types of
+relations between the variables that comprise the dataset. This information
+can be useful to people who would like to understand more about the dataset
+than can be conveyed with implicit relations. It is also designed to be
+useful to other programs/processes in the data access chain.  There are six
+classes of type constructor variables defined by the DAP: lists, arrays,
+structures, sequences, functions, and grids. The type constructor classes
+besides structure provide information that is used in the translation of
+subsetting operations (hyperslabbing or selections and projections in netCDF
+or JGOFS parlance, respectively). The types are defined as:
+
+\begin{description}
+
+\item [List] The {\bf List} type constructor is used to hold lists of 0 or
+  more items of one type. Lists of {\tt int32}, \ldots, {\tt grid} are
+  specified using the keyword {\tt list} before the variable's class. Access
+  to an element of a list is possible using one of the five operators given
+  in Table~\ref{api:tab:class-ops}.
+
+\item [Array] An {\bf Array} is a one dimensional indexed data
+  structure as defined by ANSI C\@. Multidimensional arrays are
+  defined as arrays of arrays. In addition to element access using
+  subscripts enclosed in brackets ({\tt []}), an array may be accessed
+  using only its name to return the entire array or using a hyperslab
+  operator to return a rectangular section of the array. In the later
+  case, the hyperslab is defined for each dimension by a starting
+  index, and ending index, and a stride value.  Specifying a stride
+  $>$ 1 will cause the dimension to be subsampled by the stride value.
+  Table~\ref{api:tab:class-ops} shows the syntax for array accesses
+  including hyperslabs.
+
+  In addition to its magnitude, every dimension of an array may also
+  have a name. It is possible to find the name for any given dimension
+  (e.g., the $i^{th}$ dimension) and thus write software which access
+  the $3^{rd}$ element of the dimension {\em cast\/}.
+
+\item [Structures] A structure is a class that conveys no relational
+  information and may contain several variables of different classes. It is
+  used to supply information to other parts of the data access and
+  translation system that may be useful in optimizing the access or
+  translation operations. The structure type can also be used to group a set
+  of unrelated variables together into a single dataset.
+
+\item [Sequences] A sequence is an ordered set of $N$ variables which
+  has several instantiations (or values). Variables in a sequence may
+  be of differing classes.  Each instance of a sequence is one
+  instantiation of the variables. Thus a sequence can be represented
+  as:
+
+\begin{displaymath}
+\begin{array}{ccc}
+  s_{0 0} & \cdots & s_{0 n} \\
+  \vdots & \ddots & \vdots \\
+  s_{i 0} & \cdots & s_{i n}
+\end{array}
+\end{displaymath}
+
+\noindent Every instance of sequence $S$ has the same number, order,
+and class of variables. A sequence implies that each of the variables
+is related to each other in some logical way. A sequence is different
+from a structure because its constituent variables have several
+instances while a structure's variables have only one instance (or
+value). Because a sequence has several values for each of its
+variables it has an implied {\em state}, in addition to those values.
+
+\item [Functions] Functions are a subclass of Sequences and are used to
+  indicate that one set of variables has a functional relation to a second
+  set of variables. Variables in a function may be of differing classes. The
+  mathematical description of this functional relation is not
+  specified. Instead the function type is used to indicate that one of the
+  two sets constitute the independent variables and the other the dependent
+  variables.  Typically, the variables defined by a function have more than
+  one instance---functions are similar to sequences but have additional
+  information about the functional dependency of variables.
+
+\item [Grid] A grid is an association of an $N$ dimensional array with $N$
+  named vectors, each of which has the same number of elements as the
+  corresponding dimension of the array. Each vector is used to map indices of
+  one of the array's dimensions to a set of values which are normally
+  non-integral (e.g., floating point values). The $N$ (map) vectors may be
+  members of different classes. Grids are similar to arrays of base type
+  variables, but add named dimensions and maps for each of those dimensions.
+  \label{page:grids} 
+
+\end{description}
+
+\subsubsection{Operators}
+\label{api:operators}
+
+The principal operation performed on any variable is to access that variable
+and retrieve its value or values.  For a base type variable, access is the
+implied operation and is achieved by passing the name of the variable to a
+data server using the access protocol (see Section~\ref{entry}). For an
+instance of a type constructor class, the variable name will access the
+entire object and return it in an array (or C struct)\footnote{If a variable
+  contains elements of different types then an instance of it {\em must\/} be
+  returned in a {\tt struct} and not an array.  This implies that the
+  receiving program must dynamically allocate storage for the variable and
+  then correctly access the fields.  This implies sophisticated programming
+  (beyond the `user' level) or an interpreter---or both.}. Fields of type
+constructors may also be accessed using the dot ({\tt.}) operator or the
+virtual file system syntax. If a structure {\tt s} has two fields {\tt time}
+and {\tt temperature}, then those fields may be accessed using {\tt s.time}
+and {\tt s.temperature} or as {\tt s/time} and {\tt s/temperature}.
+
+All of the classes listed in section~\ref{base-type-variables} are local to
+the dataset except the {\tt URL} type. When an object of type URL is
+accessed, the server must open the dataset referenced by that URL and read
+its values such that the structure of that referenced dataset replaces the
+URL in the current dataset. In practice this is most useful in a constraint
+expression when the value of a variable is compared with the value of another
+variable in a different dataset. If the URL cannot be referenced, then the
+type of the URL degrades to {\em string\/} and an access to that element of
+the dataset returns that string.
+
+Access to variables can be modified using selection operators. Each
+type of variable has its own set of selection and projection operators
+which can be used to modify the result of accessing a variable of that
+type.  Table~\ref{api:tab:class-ops} summarizes the types and the
+operators applicable to them. In the table, operators have the meaning
+defined by ANSI C except as follows: the array hyperslab operators are
+as defined by netCDF\cite{netcdf} (where {\tt a} is the start index,
+{\tt b} is the stride, and {\tt c} is the end index), the string
+operators are as defined by AWK\cite{kern:upe}, and the list operators
+are as defined by Common Lisp\cite{steele:clisp}.
+
+\begin{table}
+\caption{Classes and operators in the DAP\@.}
+\label{api:tab:class-ops}
+\begin{center}
+\begin{tabular}{|| l | l ||} \hline
+\multicolumn{1}{|| c}{\sc Class} & \multicolumn{1}{c ||}{\sc Operations} \\
+\hline \hline
+\multicolumn{2}{|| l ||}{\em Base Type} \\ \hline
+{\tt byte}, {\tt int32}, {\tt float64} & {\tt < > = != <= >=} \\ \hline
+{\tt string} & {\tt = != } $=\sim$ \\ \hline
+{\tt URL} & {\tt *} \\ \hline
+\multicolumn{2}{|| l ||}{\em Constructor\/} \\ \hline
+{\tt array} & {\tt [start:stop] [start:stride:stop]} \\ \hline
+{\tt list} & {\tt length, car, cdr, nth, member} \\ \hline
+{\tt structure} & {\tt.} \\ \hline
+{\tt sequence} & {\tt.} \\ \hline
+{\tt function} & {\tt.} \\ \hline
+{\tt grid} & {\tt .} \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+The hierarchy of the type constructor classes in the DAP is shown in
+Figure~\ref{fig:class}. 
+
+\begin{figure}
+\centerline{\psfig{figure=class-hier.ps}}
+\caption{The hierarchy of classes in the DAP\@.}
+\label{fig:class}
+\end{figure}
+
+\subsubsection{The External Representation of Variables}
+\label{api:external-rep}
+
+Each of the base-type and type constructor variables has an external
+representation defined by the \dap. This representation is used when an
+object of the given type is transferred from one computer to another.
+Defining a single external representation simplifies the translation of
+variables from one computer to another when those computers use different
+internal representations for those variable types\cite{xdr}. 
+
+Constraint expressions, which are an important part of the \dap, do
+not affect {\em how\/} a base-type variable is transmitted. Constraint
+expressions only determine if, given a particular value for a
+variable, that variable should be transmitted. However, for
+constructor type variables constrained expressions may be used to
+exclude portions of the variable. In these cases, the constraint
+expressions can be used to change the way a particular variable is
+transmitted. For example, if a constraint expression is used to select
+the first three of six fields in a structure, the last three fields of
+that structure are {\em not\/} transmitted by the server.
+
+The \dap uses Sun Microsystems' XDR protocol\cite{xdr} for the external
+representation of all of the base type variables. Table~\ref{tab:base-xdr}
+shows the XDR types used to represent the various base type
+variables.
+
+\begin{table}
+\caption{The XDR data types used by the \dap as the external representations
+  of base-type variables}
+\label{tab:base-xdr}
+\begin{center}
+\begin{tabular}{|| l | l ||} \hline
+\multicolumn{1}{|| c}{\sc Base Type} & \multicolumn{1}{c ||}{\sc XDR Type} \\
+\hline \hline
+{\tt byte} & {\tt xdr byte} \\ \hline
+{\tt int32} & {\tt xdr long} \\ \hline
+{\tt float64} & {\tt xdr double} \\ \hline
+{\tt string} & {\tt xdr string} \\ \hline
+{\tt URL} & {\tt xdr string} \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+In order to transmit constructor type variables, the \dap defines how the
+various base type variables, which comprise the constructor type variable,
+are transmitted. Any constructor type variable may be subject to a constraint
+expression which changes the amount of data transmitted for the variable (see
+Section~\ref{api:constraints}). For each of the six constructor types these
+definitions are:
+
+\begin{description}
+
+\item [Array] An array is sent using the {\tt xdr\_array}
+  function. This means that an array of 100 {\tt Int32}s is sent as a
+  single block of 100 {\tt xdr long}s, not 100 separate {\tt xdr
+  long}s.
+
+\item [List] A list is sent as if it were an array.
+
+\item [Structure] A structure is sent by encoding each field in the order
+  those fields are declared in the DDS and transmitting the resulting block
+  of bytes.
+
+\item [Sequence] A Sequence is transmitted by encoding each instance as for a
+  structure and sending one after the other, in the order of their occurrence
+  in the dataset. The entire sequence is sent, subject to the constraint
+  expression. In other words, if no constraint expression is supplied then
+  the entire sequence is sent. However, if a constraint expression is given
+  all the records in the sequence that satisfy the expression are
+  sent\footnote{The client process can limit the information received by
+    either using a constraint expression or prematurely closing the I/O
+    stream. In the later case the server will exit without sending the entire
+    sequence.}.
+
+\item [Function] A function is encoded as if it is a Sequence (one component
+  after the other, in the order of their declaration).
+
+\item [Grid] A grid is encoded as if it is a Structure (one component
+  after the other, in the order of their declaration).
+
+\end{description}
+
+\subsubsection{Dataset Descriptor Structure}
+\label{api:dds}
+
+In order to translate from the user program's API to the dataset's API, the
+translator process must have some knowledge about the types of the variables,
+and their semantics, that comprise the dataset. It must also know something
+about the relations of those variables---even those relations which are only
+implicit in the dataset's own API\@. This knowledge about the dataset's
+structure is contained in a text description of the dataset called the {\em
+  Dataset Description Structure}.
+
+The dataset description structure (DDS) does not describe how the
+information in the dataset is physically stored, nor does it describe
+how the dataset's API is used to access that data. Those pieces of
+information are contained in the dataset's API and in the translating
+server, respectively.  The translating server uses the DDS to describe
+the structure of a particular dataset to a translator---the DDS
+contains knowledge about the dataset variables and the interrelations
+of those variables.  In addition, the DDS can be used to satisfy some
+of the DODS supported APIs dataset description calls. For example,
+netCDF has a function which returns the names of all the variables in
+a netCDF data file. The DDS can be used to get that information.
+
+The DDS is a textual description of the variables and their classes
+that comprise the entire dataset. The dataset descriptor syntax is
+based on the variable declaration/definition syntax of C and C++. A
+variable that is a member of one of the base type classes is declared
+by by writing the class name followed by the variable name. The type
+constructor classes are declared using C's brace notation. A grammar
+for the syntax is given in Table~\ref{tab:DDS}. Each of the keywords
+for the type constructor and base type classes have already been
+described in section~\ref{base-type-variables}. The {\tt dataset}
+keyword has the same syntactic function as {\tt structure} but is used
+for the specific job of enclosing the entire dataset even when it
+does not technically need an enclosing element (because at the
+outermost level it is a single element such as a structure or
+sequence).
+
+\begin{table}
+\caption{Dataset Descriptor Structure Syntax}
+\label{tab:DDS}
+\small
+\begin{center}
+\begin{tabular}{ll} \hline
+%
+% This syntax comes straight from the bison source code
+% (src/api.dds.y). Let's try *not* to change it, since reformatting is a
+% royal pain. jhrg 11/9/94
+%
+{\em data sets\/} & {\em data set\/} \\
+                 & {\em data sets} {\em data set\/} \\
+
+{\em data set\/}  & {\tt dataset} {\tt \{} {\em declarations\/} {\tt \}} 
+                   {\em  name\/} {\tt ;} \\
+
+{\em declarations\/} & {\em declaration\/} \\
+                 & {\em declarations} {\em  declaration\/} \\
+		 & {\em (empty list)} \\
+%                 &  $\delta$ \\
+
+{\em declaration\/} &   {\em list} {\em declaration\/}  \\
+                 & {\em base-type} {\em var\/} {\tt ;} \\
+                 & {\em structure\/}  {\tt \{} {\em declarations\/} {\tt \}} 
+                  {\em var\/} {\tt ;} \\
+                 & {\em sequence\/} {\tt \{} {\em declarations\/} {\tt \}} 
+                  {\em var\/} {\tt ;} \\
+                 & {\em function\/} {\tt \{} {\tt independent} {\tt :}
+                  {\em declarations} {\tt dependent\/} {\tt :} 
+                  {\em declarations\/} {\tt \}} 
+                  {\em var\/} {\tt ;} \\
+                 & {\em grid\/} {\tt \{} {\tt array} {\tt :} 
+                  {\em declaration\/} {\tt maps} {\tt :} 
+                  {\em declarations\/} {\tt \}} 
+                  {\em var\/} {\tt ;} \\
+
+{\em list\/}    & {\tt list} \\
+
+{\em structure\/} & {\tt structure} \\
+
+{\em sequence\/} & {\tt sequence} \\
+
+{\em function\/} & {\tt function} \\
+
+{\em grid\/}    & {\tt grid} \\
+
+{\em base-type\/} & {\tt byte} \\ 
+                  & {\tt int32} \\
+                  & {\tt float64} \\
+                  & {\tt string} \\
+                  & {\tt url} \\
+
+{\em var\/}     & {\tt id} \\
+                & {\em var} {\em array-decl\/} \\
+
+{\em array-decl\/} & {\tt $[$} {\tt integer} {\tt $]$} \\
+                   & {\tt $[$} {\tt id} {\tt =} {\tt integer} {\tt $]$} \\
+
+{\em name\/}    & {\tt id} \\
+\end{tabular}
+\end{center}
+\normalsize
+\end{table}
+
+An example DDS entry is shown in Figure~\ref{fig:dds}. Suppose that
+three experimenters have each performed temperature measurements at
+different locations and at different times. This information could be
+held in a dataset consisting of a sequence of the experimenter's
+name, the time and location of each measurement and the list of
+measurements themselves, and indicates that there is a relation
+between the experimenter, location, time and temperature called
+temp\_measurement.
+
+\begin{figure}
+\begin{code}{cb}
+              dataset {
+                  int catalog_number;
+                  function {
+                    independent:
+                      string experimenter;
+                      int time;
+                      structure {
+                          float latitude;
+                          float longitude;
+                      } location;
+                    dependent:
+                      sequence {
+                          float depth;
+                          float temperature;
+                      } temperature;
+                  } temp_measurement;
+              } data;
+\end{code}
+\caption{Example Dataset Descriptor Entry.}
+\label{fig:dds}
+\end{figure}
+
+\subsubsection{Dataset Attribute Structure}
+\label{api:das}
+
+The Dataset Attribute Structure (DAS) is used to store attributes for
+variables in the dataset. An attribute is any piece of information
+about a variable that the creator wants to bind with that variable
+{\em excluding\/} the characteristics type, shape, and units. The
+characteristics type, shape and units are always defined for every
+variable; they are data type information about the
+variable. Attributes, on the other hand, are intended to store extra
+information about the data such as a paragraph describing how it was
+collected or processed\footnote{To define attributes for the entire
+  dataset, create an entry for a variable with the same name as the
+  dataset.}. In principle attributes are not processed by software
+other than to be displayed. However, many systems rely on attributes
+to store extra information that is necessary to perform certain
+manipulations on data. In effect, attributes are used to store
+information that is used `by convention' rather than `by design'. DODS
+can effectively support these conventions by passing the attributes
+from dataset to user program via the DAS\@. Of course, DODS cannot
+enforce conventions in datasets where they were not followed in the
+first place.
+
+The syntax for attributes is given in Table~\ref{tab:DAS}. Every
+attribute of a variable is a triple: attribute name, type and
+value. Note that the attributes specified using the DAS are different
+from the information contained in the DDS\@. Each attribute is
+completely distinct from the name, type and value of its associated
+variable. The name of an attribute is an identifier, following the
+normal rules for an identifier in a programming language with the
+addition that the `/' character may be used. The type of an attribute
+may be one of: Byte, Int32, Float64, String or Url. An attribute may
+be scalar or vector. In the later case the values of the vector are
+separated by commas (,) in the textual representation of the DAS\@.
+
+When the \dap\ is used to read the attributes of a variable and that
+variable contains other variables, only the attributes of the named
+variable are returned. In other words, while the DDS is a hierarchical
+structure, the DAS is {\em not\/}; it is similar to a flat-file
+database.
+
+\begin{table}
+\caption{Dataset Attribute Structure Syntax}
+\label{tab:DAS}
+\small
+\begin{center}
+\begin{tabular}{ll} \hline
+{\em attributes\/} & {\em attribute\/} \\
+                 & {\em attributes} {\em attribute\/} \\
+
+{\em attribute\/} & {\tt attribute} {\tt \{} {\em var-attr-list\/} {\tt \}} \\
+
+{\em var-attr-list\/} & {\em var-attr\/} \\
+                 & {\em var-attr-list} {\em var-attr\/} \\
+		 & {\em (empty list)} \\
+%                 & $\delta$ \\
+
+{\em var-attr\/} & {\em var-name} 
+                {\tt \{} {\em attr-list\/} {\tt \}} \\
+
+{\em attr-list\/} & {\em attr-pair\/} \\
+                &  {\em attr-list} {\em attr-pair\/} \\
+		 & {\em (empty list)} \\
+%                & $\delta$ \\
+
+{\em attr-pair\/} & {\em attr-type} {\em attr-name} {\em attr-val\/} 
+                {\tt ;} \\
+
+{\em var-name\/} & {\tt identifier} \\
+
+{\em attr-name\/} & {\tt identifier} \\
+
+{\em attr-val-vec\/} & {\em attr-val\/} \\
+                     & {\em attr-val-vec\/} {\tt ,} {\em attr-val\/} \\
+
+{\em attr-val\/} & {\tt value} \\
+                 & {\tt identifier} \\
+                 & {\tt string} \\
+
+{\em attr-type\/} & {\tt Byte} \\
+                  & {\tt Int32} \\
+                  & {\tt Float64} \\
+                  & {\tt String} \\
+                  & {\tt Url} \\
+
+\end{tabular}
+\end{center}
+\normalsize
+\end{table}
+
+\subsubsection{Data Access Protocol Entry Points}
+\label{entry}
+
+The DAP is a stateless protocol. Each of the DAP's entry points (i.e.,
+the messages a data server will respond to) does a single isolated job
+and they can be issued in any order (although in many applications it
+will not make sense to get the values for a variable before finding
+out the name of the variable \ldots). The stateless nature of the DAP
+fits well within the context of the data delivery system described in
+\DDA\@.  In that paper a client-server architecture for remote access
+is described which relies on the HTTPD/CGI mechanism to build a data
+server. One implementation of that architecture is described in \DDD\
+uses three CGI modules, one of each of the three DAP entry points.
+
+In this paper we talk about messages to the data server as if it is a
+stateful server like {\tt ftpd}. However, that is merely a convenientway to
+phrase the discussion of the DAP---in fact the data server is a stateless
+machine accessed by getting the value of a URL\@. 
+
+Each DODS data server must respond to three URLs; one for each of the objects
+(DAS, DDS and variable) which the server returns. These URLs are formed by
+appending a suffix to the base URL which references the dataset. In
+addition, individual variables may be accessed using the constraint
+expression mechanism described here. The paper \URL\ contains more
+information on this scheme.
+
+Two messages are provided to access the dataset descriptor structure
+(DDS) and the dataset attribute structure (DAS)\@. The response to
+these messages is text formated using the respective grammars in
+Tables~\ref{tab:DAS}~and~\ref{tab:DDS}. This text can then be parsed
+by the caller to determine the structure of the dataset, types and
+sizes of each of its components and their attributes. These structures
+are derived both from information contained in the dataset and for
+ancillary information supplied by the dataset maintainers in separate
+text files (in the \ddd\ the origin of these structures is described
+in detail). They provide information that is often referred to as
+`metadata'\footnote{We have learned to shy away from this term since
+we have found that `metadata' to one person is `data' to another; the
+categorization often limits the usefulness of the underlying
+information.} and may be cached by the client system.  Future accesses
+to the same dataset can then skip the retrieval of these structures.
+
+All variables are read from a dataset individually using a single
+`read' message. The message must include the name of the variable to
+read, and optionally, may include an expression that describes the
+range of values desired. No other information need be sent to the
+server. In response to this message the value(s) of the variable(s)
+is/are then sent back to the client.  Base type variables return only
+a single value when accessed, but other types may return more
+values. For example, a {\tt structure} with three {\tt int32} and two
+{\tt float64} members will return five values (unless an expression
+constrains the access).
+
+One important capability of the DODS API, which it inherits from
+JGOFS, is the ability to set constraints on variables (JGOFS calls
+this `using selection and projection' operators).  Constraints are
+used to control the values and/or members of constructor types that
+are returned when a variable is accessed. For some datasets and some
+variables, constraints make little or no difference in how the
+variables are accessed.  However, for certain types of data,
+constraining access can vastly reduce the amount of data the
+application needs to process and, in DODS case, transmit over the
+network.
+
+\label{api:constraints}
+Constraint expressions provide more flexibility in the way data is
+accessed.  In a dataset with many interrelated variables, or with
+very large variables, these expressions are a way for the user program
+to move some of the complex logic needed to search data, in order to
+find those data with some desired set of properties, away from the
+user program and into the data supply system.  Different types of
+constraint expressions make sense for different types of data. The
+grammar for constraint expressions is given in
+Table~\ref{api:tab:expr}.  In the table {\em Operator\/} is one of the
+variable-class dependent operators listed in
+Table~\ref{api:tab:class-ops}, {\tt !} is boolean {\em not\/} and {\tt
+\&} is boolean {\em and}.
+
+\begin{table}
+\caption{Constraint Expression Syntax}
+\label{api:tab:expr}
+\begin{center}
+\begin{tabular}{ll} \hline
+
+{\em expression\/} & {\em projection} {\em selection \/} \\
+
+{\em projection\/} & {\em variable\/} \\
+                   & {\em variable} {\tt ,} {\em projection\/} \\
+		 & {\em (empty list)} \\
+%                   & $\delta$ \\
+
+{\em selection\/}  & {\em variable} {\em operator} {\em value\/} \\
+                   & {\em variable} {\em operator} {\em variable\/} \\
+		 & {\em (empty list)} \\
+%                   & $\delta$ \\
+
+{\em compound-sel\/} & {\em selection} {\em boolean-op} {\em compound-sel\/} \\ 
+                     & {\tt !} {\em selection} {\em compound-sel\/} \\
+                     & {\em selection\/} \\
+
+{\em boolean-op\/} & {\tt \&} \\
+\end{tabular}
+\end{center}
+\end{table}
+
+The Data Access Protocol is used to access datasets within the DODS data
+delivery system. It is not intended to be limited to DODS, but it is
+specialized for the system. Among those specializations are the stateless
+nature of the protocol. While the DAP could be used in many different
+contexts, it is principally designed to be the transmission protocol used by
+the data servers in the DODS data delivery system.
+
+\section{Universal Resource Locators}
+\label{url:introduction}
+
+In order to access remote data, DODS needs a syntax for names which
+describe the network location for different resources. There are many
+other systems which must solve a similar problem. Three different
+classes of solution to this problem have been implemented in existing
+systems: (1) The Network File System incorporates remote resources
+directly into the client computer's file system where they can be
+referenced as if they were local files, (2) {\tt ftp} prompts the user
+for an Internet address and then directs all user actions to that
+address until it is told to disconnect and (3) \www\ (WWW) clients use
+a string, called a \url\ (URL), which combines the protocol, host and
+pathname.  We choose the third approach after dismissing the first two
+as, respectively, too complex and too rudimentary.
+
+A URL is a generalization of file naming concepts which is already in
+common use on the Internet. A URL extends the filename/pathname
+concept used to refer to files on a computer by adding an Internet
+address and protocol component. A URL specifies the computer and
+access method (protocol) in addition to the filename and thus can be
+used to refer to files anywhere on a network. While they are used in
+various forms by many different systems, URLs, as such, are most
+closely associated with the WWW project.
+
+DODS chose the URL notation in part because it represents an evolving
+standard for resource specification on the Internet. Conforming, at least in
+spirit with this standard, puts DODS in a place to benefit from ongoing work
+to develop more general network resource names with minimal additional work.
+Because the existing definitions of resource locators (by both DODS and the
+WWW) do not adequately address some important issues, compliance with an
+existing {\em de facto\/} standard increases the chance that DODS will be
+able to take advantage of emerging solutions to those problems.
+
+In addition, the syntax of DODS URLs must match that used by the WWW
+because the DODS uses the WWW \HTTPD\ server as its base-communication
+module. While previous designs for the data delivery system outlined
+the construction of special DODS-only data servers using RPC
+technology, the most recent design uses NCSA's \HTTPD\ for the
+communication component of all DODS data servers. Thus, each URL that
+refers to a dataset must match the syntactical requirements of that
+software (see the documentation on \HTTP).
+
+The Common Gateway Interface (CGI) mechanism of HTTPD is flexible enough to
+allow sophisticated specialization of the semantics of WWW URLs without
+requiring a change in URL syntax. DODS can further restrict the WWW syntax
+for its URLs through conventions supported by the DODS server tool kit and by
+forcing all access to take place via the HTTPD's CGI mechanism.
+
+\subsection{Structure and Interpretation of URLs}
+\label{url:structure}
+
+A formal grammar for WWW \uri\ (URIs) exists and provides a framework
+for extending the meanings of URLs beyond those used by the WWW
+project. In this section the syntax for DODS URLs is described (See
+Table~\ref{url:tab:url}) and the differences between the WWW and DODS
+URLs are also discussed. This syntax is less formal than that
+presented in the CERN documentation, however, DODS servers must be
+able to parse this syntax. In the case where a DODS server forms an
+interface between other DODS components and a foreign system, the DODS
+server must first parse this syntax and then translate the parsed
+expression into the foreign system's syntax.
+
+\subsection{Syntax of the DODS URL}
+
+\begin{table}
+\caption{DODS URL Syntax}
+\label{url:tab:url}
+\begin{center}
+\begin{tabular}{ll} \hline
+{\em DODS URL\/} & {\em Access\/} {\tt ://} {\em Host\/} {\tt /} {\em CGI\/}
+{\tt /} {\em Args\/} \\
+{\em Access\/} & {\tt http} \\
+{\em Host\/} & {\em Domain name\/} \\
+{\em CGI\/} & {\em CGI-directory\/} {\tt /} {\em String\/} \\
+{\em Args\/} & {\em Pathname\/} \\
+             & {\em Pathname\/} {\em Constraint} \\
+             & {\tt (} {\em DODS URL\/} {\tt )} \\
+{\em Constraint\/} & {\tt ?} {\em Expression\/} \\
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{description}
+
+\item [Access] The access component of a DODS URL is always the
+  literal string {\tt http}. The DODS data delivery architecture uses
+  the World Wide Web \HTTPD\ server developed by NCSA to transport
+  data. Note that just about any WWW server will work for DODS as long
+  as it supports the CGI mechanism.
+
+\item [Host] The host component is an Internet-style host name that
+  can be resolved to an Internet address.
+  
+\item [CGI] The CGI directory is the directory where CGI programs are kept.
+  This varies from machine to machine but many UNIX computer use {\tt
+    cgi-bin}. In addition, it is possible to configure {\tt httpd} to search
+  several directories for CGI programs; the DODS dispatch CGI may reside in
+  any of these directories. The string is the name of the DODS dispatch
+  CGI\@. In the software distributed by URI/MIT this is an abbreviation for
+  the API (e.g., the dispatch CGI for NetCDF is {\tt nc}). However, server
+  implementors are free to choose any name they want. In addition, data
+  providers may rename this script if they want to.
+  
+\item [Args] The URL components named {\em Args\/} contains a pathname
+  used by the CGI to locate the dataset. This may or may not be an
+  actual path on the remote machine. In some cases the DODS server may
+  be an interface to a DBMS\@. In this case the pathname is used
+  (probably in conjunction with other information) by the CGI to
+  formulate a query to the DBMS\@. The pathname may have a constraint
+  expression appended to it. This is used either by the filter program
+  or the CGI to limit the data access beyond the pathname. It provides
+  additional flexibility in the way data is accessed through the
+  server. The arguments may also be a second URL\@. In this case the
+  {\em Access\/} and {\em Host\/} components of the outermost URL
+  (called an {\em envelope\/}) specify the target process (server)
+  which should receive the embedded DODS URL\@. The source process
+  (client) does not interpret this embedded URL at all---only the
+  target process attempts to evaluate it.  Embedded URLs may be nested
+  to any depth.
+
+\item [Constraint] The constraint is a boolean expression used to
+  constrain access to a variable. Different classes of variables can
+  have different types of constraints. 
+
+\end{description}
+
+\begin{table}
+\caption{Sample URLs which name resources; sometimes there is more than one
+  acceptable way to name a single resource.}
+\label{url:tab:examples}
+\footnotesize
+\begin{center}
+\begin{tabular}{| l | p{5cm} |} \hline
+\multicolumn{1}{| c}{\sc URL} 
+& \multicolumn{1}{ c |}{\sc References} \\ \hline \hline
+
+{\tt http://gso.uri.edu/cgi-bin/nc/data/fnoc1.nc} 
+& the entire dataset \\ \hline
+
+{\tt http://gso.uri.edu/cgi-bin/nc/data/fnoc1.nc?u} 
+& {\tt u} from the dataset \\ \hline
+
+{\tt http://gso.uri.edu/cgi-bin/nc/data/fnoc1.nc/u} 
+& {\tt u} using the virtual file system syntax \\ \hline
+
+{\tt http://gso.uri.edu/cgi-bin/nc/data/fnoc1.nc?u<10} 
+& all variables given that {\tt u} is $<$ 10 
+(Makes sense for sequence data only) \\ \hline
+
+{\tt http://lake.mit.edu/cgi-bin/jg/bloom/level1}
+& all variables in {\tt  level1} \\ \hline
+
+{\tt http://lake.mit.edu/cgi-bin/jg/bloom/level1/temp} 
+& only {\tt temp} in {\tt level1} \\ \hline
+\end{tabular}
+\end{center}
+\normalsize
+\end{table}
+
+\subsubsection{Characteristics of DODS and WWW URLs}
+\label{url:differences}
+
+DODS URLs are a proper subset of WWW URLs. URLs defined by the WWW project
+cover a wide variety of client-server systems while parts of DODS URLs are
+interpreted only to be DODS CGIs. WWW URLs include special cases for servers
+which support protocols such as {\tt ftp}, {\tt wais} and {\tt gopher}. In
+these cases, the {\em Access\/} component of a WWW URL is used to indicate
+which protocol to use. When {\em clients\/} receive URLs, they use this
+information to select which protocol should be used to access the data
+referenced by the URL (i.e., the {\em Access\/} information is used to select
+the type of server with which the client will communicate). DODS URLs are
+only meaningful to CGI modules accessible over the network via HTTP servers.
+Thus, there will never be any variation in the {\em Access\/} component of a
+DODS URL\@. It will always be {\tt http}.
+
+In addition to a protocol restriction, DODS URLs always reference a
+CGI module on the server. This is necessary because all DODS data
+access takes place via one or more CGI modules. The CGI specification
+must follow the {\em Host\/} component of the URL\@.
+
+While WWW URLs are the input to WWW browsers written with knowledge of
+URLs, and in many cases, the ability to parse parts of URLs, DODS URLs
+are passed to programs which nominally have no knowledge of URL
+notation. In \DDA\ a data system architecture is presented in which
+user programs are re-linked with new implementations of data-access
+APIs. These {\em client libraries\/} understand and can manipulate
+URLs (and in particular, understand the particular restrictions DODS
+places on URLs) but the user programs do not. Some of the user
+programs were written before any of the URL software even existed.
+
+A DODS URL references a dataset, or portion of a dataset. Accessing a DODS
+URL returns an experimental-type binary \MIME\ document. Such a document
+cannot be displayed by browsers nor does it contain URLs which link the
+document to other documents on the Internet. URLs that are part of the WWW
+system of HTTP servers reference documents which can be displayed by a large
+number of difference browsers. DODS URLs are not browsable at all, that is,
+they cannot meaningfully serve as input to one of the standard WWW
+browsers\footnote{However, it is possible to add one of several suffixes to a
+DODS URL and get text information which a browser can display. See
+Section~\ref{urls:user-vs-generated} for more information.}. DODS uses URLs
+simply to reference datasets on the Internet and not for the more general
+purpose of linking a document within the larger context of all documents
+publicly accessible on the Internet.
+
+There are two ways DODS CGI modules can interpret the part of the URL
+which the HTTP server passes to it; as a constraint expression or as
+an access to a virtual file system. This second method of
+interpretation is a specialization of the general behavior of HTTPD
+where the text following the CGI name is passed to the CGI module
+unprocessed. Accessing a dataset as if it were a virtual file system
+means specifying variables within the dataset as if they were files
+or files within directories subordinate to the CGI\@. For example in
+Table~\ref{url:tab:examples} the file name separator ({\tt /}) is used
+to indicate that the within the named dataset (the netCDF dataset
+called {\em CDT\/}) only the variable {\tt u1} is to be accessed. If
+the dataset contained several levels of variables, as in the examples
+for the three level JGOFS dataset, then a specific level or variable
+within a level may be specified.  However, the virtual file system
+syntax is not capable of specifying arbitrary set of variables from a
+dataset unless those variables happen to be the sole members of a
+structure of sequence (See \DTP\ for more information on data types
+DODS supports). The VFS syntax is a special case of constraint
+expressions. It is included in DODS because file systems are familiar
+tools to many users, much more so than boolean expressions, and
+because they are flexible enough for many user's demands.
+
+The second syntax DODS supports for the portion of the URL past the
+CGI name is the constraint expression syntax. Constraint expressions
+are a way of passing, along with the URL, a set of restrictions to be
+applied to the dataset when the client software (i.e., the surrogate
+library) accesses the dataset. These constraints will be used during
+access to the dataset to limit the variables and variable values
+extracted from it. The constraint expression, or portions of the
+constraint expression, will be evaluated {\em by the server\/} at the
+time of the data access. The syntax of the expression itself is
+dependent on the types of variables within the dataset (See \DTP).
+
+\subsection{Uses of URLs by DODS}
+
+This section briefly describes how URLs are used by the two major components
+of DODS: the Data Locator and the Data Delivery Mechanism.
+
+\subsubsection{URLs and the Data Locator}
+\label{url:locator}
+
+The Data Locator is used to find specific datasets within DODS\@. Users can
+query the Data Locator and expect that it will return a URL which can be used
+by other components in DODS to access that dataset. These URLs may be used
+as supplied to user programs or they may be edited first. Because the URLs
+are ASCII text strings, no special software is required to edit or store
+them. In addition, DODS URLs may be obtained using other methods such as
+Mosaic, e-mail, or personal communications.
+
+\subsubsection{Data Delivery and URLs}
+\label{delivery}
+\label{urls:user-vs-generated}
+
+The Data Delivery Mechanism consists of libraries with which users re-link
+their programs as well as stand alone utilities built at least partially from
+those libraries. URLs are used verbatim by the data delivery components of
+DODS\@. The URL is passed to the server or translator using the API {\em
+  open\/} call (e.g., {\tt ncopen()}). The client library stub is responsible
+for removing the envelope of the URL and sending either the path or embedded
+URL to the correct host/server or host/translator.
+
+When a user wants to access data via a DODS server they must give to a client
+(i.e., a program linked with one of the DODS reimplemented API libraries) A
+URL which references that data. Users may choose to supply a constraint along
+with that URL effectively limiting the parts of the dataset that the client
+can see. For example, suppose a dataset exists which contains several
+arrays:
+
+\begin{figure}
+\begin{code}{cb}
+    Dataset {
+        Int32 u[time_a = 16][lat = 17][lon = 21];
+        Int32 v[time_a = 16][lat = 17][lon = 21];
+        Float64 lat[lat = 17];
+        Float64 lon[lon = 21];
+        Float64 time[time = 16];
+    } fnoc1;
+\end{code}
+\caption{The DDS of a dataset.}
+\label{url:fig:dds}
+\end{figure}
+
+\begin{figure}
+\begin{code}{cb}
+    Dataset {
+        Int32 u[time_a = 1][lat = 17][lon = 21];
+    } fnoc1;
+\end{code}
+\caption{The DDS of a dataset constrained by $u[2:2][1:17][1:21]$.}
+\label{url:fig:dds2}
+\end{figure}
+
+The user can refer to the entire dataset using a URL without a constraint
+expression;
+\htmladdnormallink{http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc}
+{http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc.dds}. If the user were to
+specify this, then the client-library will receive from the server a DDS like
+the one in Figure~\ref{url:fig:dds}. However, if the user knows that they
+only want to work with a small part of the dataset they can supply a
+constraint expression along with the URL\@. For example, suppose that the
+user only wants the latitude and longitude values for $time_a = 2$, and
+furthermore that they are only interested in the array $u$. They could supply
+the user program with the following URL:
+
+\begin{code}{cb}
+\htmladdnormallink{http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc?u[2:2][1:17][1:21]}
+{http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc?u[2:2][1:17][1:21].dds}
+\end{code}
+
+\noindent The user program will receive DDS in
+Figure~\ref{url:fig:dds2}. For program which are designed to read the
+entire dataset without user interaction this is a powerful additional
+feature.
+
+However, constraint expressions have a second use in DODS\@. They are used by
+the reimplemented APIs to extract specific parts of a dataset when that is
+requested by the user program. Many APIs provide features which make it
+possible to write software which opens a dataset, presents the user program
+with a collection of variables and then provides a way for the program to
+read one or more of those variables. In an API reimplemented for DODS, those
+calls must all be satisfied by information the API receives from a DODS
+server.
+
+In order for the API to get information about the dataset the API
+must synthesize various URLs using the one given by the user as a
+base. For example, to get the DDS of the dataset referenced by 
+
+\begin{code}{cb}
+    http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc
+\end{code}
+
+\noindent the reimplemented API must append the suffix {\tt .dds}, as
+follows:
+
+\begin{code}{cb}
+    http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc.dds
+\end{code}
+
+\noindent Similarly, the DAS of that dataset is obtained by appending
+{\tt .das}.
+
+Getting data is a bit more work than getting the DAS or the DDS\@. The
+request for a particular variable must be translated into a DODS
+constraint expression. This constraint expression is then appended to
+the URL given by the user and then the suffix {\tt .dods} is appended
+to that. For example, suppose the user program makes an API function
+call requesting the value of the array $u$ in the preceding
+figures. What the API is supposed to return is the values of the
+entire array $u$, but no other values. The reimplemented API would
+build the URL {\tt
+http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc?u.dods} where the
+$?u.dods$ specify that the variable $u$ is to be the only variable in
+the projection and the {\tt .dods} selects the data filter from the
+DODS server. For more information on the constraint expression syntax,
+see \DAP; for more information on the DODS data servers, see \DDD\@.
+
+\subsection{Deficiencies of URLs}
+\label{url:deficiencies}
+
+There are several features which URLs as defined by either DODS or the WWW
+lack. These include:
+
+\begin{enumerate}
+
+\item Poor support for version information
+
+\item No support for location-independent naming
+
+\item No formal support for quality rating of datasets
+
+\item No support for binding extent information within the name-space (e.g.,
+  for how long will this dataset exist)
+
+\item No support for security information
+
+\end{enumerate}
+
+While these are important issues, many are being investigated by the
+Internet Engineering Task Force (IETF) and the evolving \urn\ (URN)
+standard. By following the de facto URL standard now, DODS is in a
+good position to benefit from the future standardization of
+URNs. Further, some of these deficiencies are not as severe as they
+might seem at first. For example, it is not clear that security
+information (providing access to a limited-access resource) belongs in
+a resource name. It might be more secure to design the resource so
+that it prompts specially for any security information
+required. Similarly, version and quality information may be
+incorporated informally to the existing URL syntax.  Finally, a crude
+type of location independence may be achieved using domain name
+service aliases for important resources. These approaches are already
+in widespread use with the WWW\@.
+
+Rather than form our own solutions for the deficiencies of URLs, DODS
+will wait until either the IETF or WWW community modifies URLs and/or
+adopts URNs or until continued development of DODS is significantly
+hampered by the problems.
+
+\section{Status}
+
+As of \today, there is a working version (1.1) of DODS available. This
+supports the netCDF and JGOFS data access APIs. The constraint
+expressions are being beta-tested, and the translation is being coded,
+and will be released this summer. A group at JPL is developing the HDF
+to DODS translators and URI/GSO is developing the data locator service
+in cooperation with the staff at the GCMD. A DODS-compliant server has
+been installed at the National Oceanographic Data Center to serve the
+data center's holdings of profile data.
+
+\section{Conclusion}
+
+DODS supports access to datasets stored in a number of established,
+third party APIs. In addition, it supports cross-access to those data
+sets. Thus data in any one of the supported APIs is accessible using
+any one of the supported APIs (at least in principle---some {\em
+possible\/} accesses may wind up returning meaningless, or null,
+data). The DODS Data Access Protocol facilitates this cross
+connections of user programs and datasets by providing a common
+access protocol for each API\@. Each data server will provide access
+to data using the DAP and each surrogate library will satisfy the
+supported API's function calls with information obtained via the
+DAP\@.
+
+The combination of the DODS network communication model and the data
+translation facility make DODS a powerful tool for the retrieval,
+sampling, and display of large distributed datasets.  Though DODS was
+developed by oceanographers, its application is not constrained to
+oceanographic data. The organizing principles and algorithms may be
+applied to many other fields where data is not concentrated in central
+repositories.
+
+\clearpage
+
+\addcontentsline{toc}{section}{Bibliography}
+\bibliographystyle{plain}
+\bibliography{../boiler/dods}
+
+\end{document}
+
+
+

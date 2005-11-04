@@ -1,0 +1,22 @@
+
+	$Id$
+
+Bugs.
+
+Version incompatibilities b/w client/server.
+
+Some URL requests do not complete (looks like a timeout)
+and returns status=0 (failure) - this is consistent result. The
+same URL (with a .dds filter for example) returns correctly in
+a browser window.  Suspect client/server version differences.
+
+Some versions of a server filter return incomplete DDS/data structures
+for a fixed version of the IDL DODS client. As far as can be
+determined, when the client and server are linked with the same
+version of the core, it works.
+
+Quite often (and to be documented), the CE option in the get_dods
+call does not get used, or causes an otherwise unqualified URL to
+return with status=0. If the CE value is added to the URL with a
+separating "?", the request nearly always (to be documented)
+works.

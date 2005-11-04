@@ -1,0 +1,63 @@
+
+$Id$
+
+	      			  ff-dods
+				Version 3.1.2
+				October 1999
+
+This file contains information about the DODS-FREEFORM server. 
+For information about building and using the software, see the files 
+INSTALL and USING. 
+
+DODS data servers make it simple to provide others with direct,
+over-the-network, access to your data. There is no need to reformat
+your data so that a new system can read it. Instead DODS uses the http server
+along with a dispatch script and a set of three server programs (Data
+Attribute Server, Data Structure Server, and Data Server) to make your
+existing data files available to anyone who has access to a program rebuilt
+with DODS components.
+
+For more information about DODS, see the URL
+
+    http://unidata.ucar.edu/packages/dods/
+
+ff-dods is a server implementation of National Geophysical Data Center's
+FreeForm/FFND, based on the Distributed Oceanographic Data System. The software
+contains data servers that can be used along with any DODS client program to 
+process data served by the ff-dods server.
+
+The server can handle binary, ASCII, and dBASE data files through
+FreeForm/FFND format descriptions. It can handle both array and sequence data
+types. The data in the data file is read then served using the appropriate
+type according to the format description in the required accompanying format
+file.
+
+In short, all the data associate blocks (header information) are processed.
+Basic information about the input file is given as Global attributes as is
+any header information. The file's data variables are mapped into the closest
+Dods data model using the FreeForm/FFND external format file. The data is
+reformatted to the Dods data model and served. The user can refer to the
+entire data variable using a URL and/or the local file name. Furthermore, if
+the user wants to work only with a small part of the data set, a constraint
+expression can be supplied along with the URL to save on network data
+transmission time. For more information see the file USING.
+
+You can obtain a copy of the latest version of ff-dods software from
+http://unidata.ucar.edu//packages/dods/.
+
+To build from the source, You need to have the latest version FreeForm and 
+maxmin libraries which are distributed with the latest version of DODS 
+FreeForm software. You also need the latest version of DODS core
+software.
+
+Included in this distribution are: 
+
+ - Server programs and their dispatch script (ff-dods, ff-das, ff-dds,
+ nph-ff)
+ - Test datasets and sample format files
+ - Tools to help in writing FreeForm format files
+
+Questions about ff-dods may be sent to support@unidata.ucar.edu.
+
+Good Luck :-)
+Reza Nekovei

@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:10 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- XDODS-Accept-Types</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_21.html"><img alt="Responses" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_16.html"><img alt="Request Headers" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_19.html"><img alt="User-Agent" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>XDODS-Accept-Types</b></td></tr></table>
+<h3>XDODS-Accept-Types</h3>
+
+The <tt>XDODS-Accept-Types</tt> experimental request-header is used by a
+DAP client to tell a DAP server which of the standard DAP
+datatypes the client can understand. The server SHOULD NOT return datatypes
+to the client that it does not understand. This header is OPTIONAL; if absent
+a server can assume that a client understands all the standard datatypes. 
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+XDODS-Accept-Types </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> [ "!" ] type&#95;list | all </td></tr>
+<tr><td colspan="1" align="LEFT">
+type&#95;list </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> type | type "," type&#95;list </td></tr>
+<tr><td colspan="1" align="LEFT">
+all </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "All" </td></tr>
+<tr><td colspan="1" align="LEFT">
+type </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "Byte" | "Int16" | "UInt16" | "Int32" </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> </td><td colspan="1" align="LEFT"> | "UInt32" | "Float32" | "Float64" </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> </td><td colspan="1" align="LEFT"> | "String" | "URL" | "Array" | "List" </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> </td><td colspan="1" align="LEFT"> | "Structure" | "Sequence" | "Grid" </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<p>A DAP server determines which datatypes are understood by a client using
+the following rules:
+<ol><li>If the value of the header is <tt>All</tt>, then the client understands
+  all the datatypes.
+<li>If a datatype is listed in the value-string, then that type is
+  understood, otherwise it is not understood.
+<li>If the value-string starts with the literal <tt>!</tt> then the type(s)
+  listed are <em>not</em> understood by the client and the remaining types are
+  understood. 
+</ol>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_21.html"><img alt="Responses" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_16.html"><img alt="Request Headers" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_19.html"><img alt="User-Agent" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>XDODS-Accept-Types</b></td></tr></table></body></html>

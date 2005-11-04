@@ -1,0 +1,10 @@
+This is makeindex, version 2.14 [02-Oct-2002] (kpathsea + Thai support).
+Scanning style file ./../latex/dods-book.ist...
+** Input style error (file = ./../latex/dods-book.ist, line = 19):
+   -- Unknown specifier \endinput.
+done (3 attributes redefined, 1 ignored).
+Scanning input file mgui.idx....done (146 entries accepted, 0 rejected).
+Sorting entries....done (1081 comparisons).
+Generating output file mgui.ind....done (292 lines written, 0 warnings).
+Output written in mgui.ind.
+Transcript written in mgui.ilg.

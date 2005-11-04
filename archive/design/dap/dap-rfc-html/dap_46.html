@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:13 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- Basic Rules</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_47.html"><img alt="Acronyms and Abbreviations" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_44.html"><img alt="Notational Conventions and Generic Grammar" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_45.html"><img alt="Augmented BNF" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Basic Rules</b></td></tr></table>
+<h2>Basic Rules</h2>
+<p>   The following rules are used throughout this specification to
+   describe basic parsing constructs. The US-ASCII coded character set
+   is defined by ANSI X3.4-1986&nbsp;<a HREF="dap_43.html#9">[9]</a>.
+<p><pre class="it">
+       OCTET          = &lt;any 8-bit sequence of data&gt;
+       CHAR           = &lt;any US-ASCII character (octets 0 - 127)&gt;
+       UPALPHA        = &lt;any US-ASCII uppercase letter "A".."Z"&gt;
+       LOALPHA        = &lt;any US-ASCII lowercase letter "a".."z"&gt;
+       ALPHA          = UPALPHA | LOALPHA
+       DIGIT          = &lt;any US-ASCII digit "0".."9"&gt;
+       CTL            = &lt;any US-ASCII control character
+                        (octets 0 - 31) and DEL (127)&gt;
+       CR             = &lt;US-ASCII CR, carriage return (13)&gt;
+       LF             = &lt;US-ASCII LF, linefeed (10)&gt;
+       SP             = &lt;US-ASCII SP, space (32)&gt;
+       HT             = &lt;US-ASCII HT, horizontal-tab (9)&gt;
+       &lt;"&gt;            = &lt;US-ASCII double-quote mark (34)&gt;
+</pre>
+<p>   HTTP/1.1 defines the sequence CR LF as the end-of-line marker for all
+   protocol elements except the entity-body (see appendix 19.3 for
+   tolerant applications). The end-of-line marker within an entity-body
+   is defined by its associated media type, as described in section 3.7.
+<p><pre class="it">
+       CRLF           = CR LF
+</pre>
+<p>   HTTP/1.1 header field values can be folded onto multiple lines if the
+   continuation line begins with a space or horizontal tab. All linear
+   white space, including folding, has the same semantics as SP. A
+   recipient MAY replace any linear white space with a single SP before
+   interpreting the field value or forwarding the message downstream.
+<p><pre class="it">
+       LWS            = [CRLF] 1*( SP | HT )
+</pre>
+<p>   The TEXT rule is only used for descriptive field contents and values
+   that are not intended to be interpreted by the message parser. Words
+   of *TEXT MAY contain characters from character sets other than ISO-
+   8859-1 [22] only when encoded according to the rules of RFC 2047
+   [14].
+<p><pre class="it">
+       TEXT           = &lt;any OCTET except CTLs,
+                        but including LWS&gt;
+</pre>
+<p>   A CRLF is allowed in the definition of TEXT only as part of a header
+   field continuation. It is expected that the folding LWS will be
+   replaced with a single SP before interpretation of the TEXT value.
+<p>   Hexadecimal numeric characters are used in several protocol elements.
+<p><pre class="it">
+       HEX            = "A" | "B" | "C" | "D" | "E" | "F"
+                      | "a" | "b" | "c" | "d" | "e" | "f" | DIGIT
+</pre>
+<p>   Many HTTP/1.1 header field values consist of words separated by LWS
+   or special characters. These special characters MUST be in a quoted
+   string to be used within a parameter value (as defined in section
+   3.6).
+<p><pre class="it">
+       token          = 1*&lt;any CHAR except CTLs or separators&gt;
+       separators     = "(" | ")" | "&lt;" | "&gt;" | "@"
+                      | "," | ";" | ":" | "\" | &lt;"&gt;
+                      | "/" | "[" | "]" | "?" | "="
+                      | "{" | "}" | SP | HT
+</pre>
+<p>   Comments can be included in some HTTP header fields by surrounding
+   the comment text with parentheses. Comments are only allowed in
+   fields containing "comment" as part of their field value definition.
+   In all other fields, parentheses are considered part of the field
+   value.
+<p><pre class="it">
+       comment        = "(" *( ctext | quoted-pair | comment ) ")"
+       ctext          = &lt;any TEXT excluding "(" and ")"&gt;
+</pre>
+<p>   A string of text is parsed as a single word if it is quoted using
+   double-quote marks.
+<p><pre class="it">
+       quoted-string  = ( &lt;"&gt; *(qdtext | quoted-pair ) &lt;"&gt; )
+       qdtext         = &lt;any TEXT except &lt;"&gt;&gt;
+</pre>
+<p>   The backslash character ("<code>\</code>") MAY be used as a single-character
+   quoting mechanism only within quoted-string and comment constructs.
+<p><pre class="it">
+       quoted-pair    = "\" CHAR
+</pre>
+<div class="quote" align="center">
+This appendix was copied verbatim from RFC 2616&nbsp;<a HREF="dap_43.html#rfc2616">[4]</a>.
+<p>Copyright (C) The Internet Society (1999).  All Rights Reserved.
+<div class="quote" align="center">
+   This document and translations of it may be copied and furnished to
+   others, and derivative works that comment on or otherwise explain it
+   or assist in its implementation may be prepared, copied, published
+   and distributed, in whole or in part, without restriction of any
+   kind, provided that the above copyright notice and this paragraph are
+   included on all such copies and derivative works.  However, this
+   document itself may not be modified in any way, such as by removing
+   the copyright notice or references to the Internet Society or other
+   Internet organizations, except as needed for the purpose of
+   developing Internet standards in which case the procedures for
+   copyrights defined in the Internet Standards process must be
+   followed, or as required to translate it into languages other than
+   English.
+</div>
+</div>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_47.html"><img alt="Acronyms and Abbreviations" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_44.html"><img alt="Notational Conventions and Generic Grammar" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_45.html"><img alt="Augmented BNF" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Basic Rules</b></td></tr></table></body></html>

@@ -1,0 +1,18 @@
+
+	$Id$
+
+About the Sequence length `operator'.
+
+In order to make sequence data simpler to translate into other data types
+(principally arrays), the translating software needs to know the length of
+the sequence. In some cases this may be hard or costly to determine. So,
+rather than require that every DDS bind length information with each instance
+of the Sequence data type, we have added a `length' operator to the CE
+evaluator. Each server (i.e., DSP, JGOFS, ...) must support this by
+specializing the Sequence::length() member function. Once specialized, the
+function will return the length of the named sequence given the current CE.
+If the length cannot be determined, will cost to much to determine or if the
+member function has not been specialized.
+
+Client programs must specifically query the server to get this length
+information. 

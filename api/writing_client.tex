@@ -1,0 +1,1344 @@
+%
+% A tutorial for writing a DODS client, using the Java or C++ class
+% libraries. 
+%
+\documentclass{dods-paper}
+% Uncomment this line to get a menu in a different  frame.  This makes
+% this book good for presentation.
+%\W\usepackage{frames
+
+\rcsInfo $Id$
+\newcommand{\DOCversion}{Document version \rcsInfoRevision}
+
+\include{../boiler/dods-def}
+
+\title{Writing an \opendap\ Client}
+\htmltitle{Writing an \opendap\ Client}
+
+\author{Dan Holloway}
+\T\date{Printed: \today \\ Revision: \rcsInfoRevision}
+\W\date{Revision: \rcsInfoRevision}
+\htmladdress{James Gallagher <jgallagher@gso.uri.edu>, \rcsInfoDate, 
+  Revision: \rcsInfoRevision}
+\htmldirectory{wc-html}
+
+\begin{document}
+
+\maketitle
+
+\T\tableofcontents
+
+\section{Preface}
+
+This tutorial describes the steps required to enable your client
+application to interact with the \opendap\ Data Access Protocol by using
+the Java or \Cpp\ classes provided in the \opendap\ class libraries. It also
+describes the trade offs between using these toolkits and a client-library
+interface such as netCDF.
+
+The \Cpp\ and Java toolkis are class libraries which provide for direct
+interaction with a remote \opendap\ server. You'll need to write some code.
+
+If your client application currently uses one of the netCDF, GDAL or OGR
+APIs, then you only need to relink your application with the \opendap-enabled
+version of the API library, allowing you to skip this tutorial entirely.
+  
+\section{Writing your own \opendap\ client}
+
+\subsection{Choose a language}  
+
+The \opendap\ project provides both \xlink{\Cpp}{\OPDapiUrl} and
+\xlink{Java}{\OPDjavaUrl} implementations of the DAP. Each library includes
+classes that implement the various objects which comprise the DAP software
+for building clients. Each also includes some extra software which simplifies
+building clients by managing virtual connections, handling data caching, et
+cetera. To choose one of the toolkits, several factors should be weighed.
+With which of the two programming languages are you most comfortable? What
+type of computer will the client run on? For client development, both Java
+and \Cpp\ are supported on win32 and Unix architectures. Java is more likely to
+be supported on other architectures, such as Mac.
+
+The DAP library is middle-ware. You can use it to build a completely new
+client or to add network data access to an existing program (making it a
+client). If you're interested in writing a client from scratch, simply choose
+the toolkit/language you feel most comfortable. If you're going to take an
+existing program and transform it into a client there are several
+additional factors beyond programming language you should consider.
+
+If the program you want to DAP-enable can read netCDF files, by far the
+easiest way to achieve your goal is to use our DAP-enable netCDF \emph{client
+library} (CL). This piece of software works like the standard netCDF CL but
+has been modified to recognize DAP URLs when they are presented in place of
+local file names. The \opendap\ netCDF CL has exactly the same functional
+interface as the standard netCDF library available from Unidata. That makes
+it a very powerful tool because it is possible to tap into a large number of
+existing programs and build \opendap\ clients. Ferret, GRrADS and IDV are
+complex programs which have been \opendap-enabled using the netCDF CL.
+
+Using the netCDF CL is not without its caveats. First netCDF does
+not do a good job of representing the entire \opendap\ data model (That's not
+a dig at netCDF, it's a reflection of different design goals for two pieces
+of software). It's very hard to access point data using the netCDF CL,
+although we're working on this problem. Second, the \Cpp\ DAP library is used
+to build the C version of the netCDF CL\footnote{Unidata bundles \opendap\
+access with their standard release of the Java version of netCDF.} which
+means that the application programs \emph{must} be linked use a \Cpp\
+compiler. Finally, it can be tricky to build a shared object (aka DLL) using
+the \Cpp\ DAP library.\footnote{As the \Cpp\ ABI becomes more widely supported,
+this situation should change.} If you're going to do that, please contact us
+through user support or the technical discussion list.
+
+However, while the previous points are true, the principle distinction
+between using the netCDF CL and one of the DAP class libraries is that with
+the netcDF CL you often do not have to write any new software at all! If you
+choose to use one of the DAP libraries, you're going to have to write some
+code. 
+
+If you plan to \opendap-enable an existing application using the Java
+toolkit, the application typically must provide a Java Virtual Machine (VM).
+You may be able to side-step this if you feel you can rely on the host OS to
+provide a JVM and/or your target program already has a JVM embedded in it.
+Still you must be sure there is a way to communicate data values between the
+DAP library and the application.
+
+To use the \Cpp\ toolkit you should insure that your client application can be
+built with, or link with libraries constructed using \Cpp
+compilers.\footnote{As of winter 2004 we're using gcc 2.95.x, 3.2, 3.3 and MS
+Visual \Cpp.} Check the current list of supported architectures on the
+web-site, or contact the DODS technical support (\OPDsupport), or write to
+the \OPDtechList\ mailing list for information and/or help.
+
+This tutorial will focus on using the \Cpp\ toolkit. In
+Section~\ref{sec:javadap} the main programmatic differences between the two
+class libraries is listed. Both toolkits are essentially the same, with only
+minor differences between them.
+
+\subsection{Client Architecture}  
+
+In essence, an \opendap-enabled client uses overloaded URLs to form the 
+requests to a remote data server.  Through the URL, the client connects to 
+the remote server and issues one of several requests.   In response to
+each request, the server will return a well-defined response that the client
+can use to intern the structure and content of the remote data into local
+data structures, as well as retrieve any attributes associated with the
+remote data.
+
+The \Cpp\ and Java toolkits share the same characteristics, though the
+names of the objects and their methods may be slightly different. If
+you understand how the clients are built, it will be easy to see how
+your own client application can be \opendap-enabled with minimal
+effort.  The \OPDapi\ provides a complete description of the \Cpp\
+Toolkit and the \OPDjavaUrl\ provides a complete description of the
+Java toolkit.
+
+\section{The DAP Architecture}
+
+The DAP can be thought of as a layered protocol composed of MIME, HTTP, basic
+objects, and complex, presentation-style, responses.
+
+\subsection{The DAP uses HTTP which in turn uses MIME}
+
+Clients use HTTP when they make requests of DAP servers. HTTP is a fairly
+straightforward protocol (\xlink{for general information on HTTP see
+http://www.w3.org/Protocols/}{http://www.w3.org/Protocols/}, \xlink{and for
+the HTTP/1.1 specification, see
+http://www.w3.org/Protocols/rfc2616/rfc2616.html}{http://www.w3.org/Protocols/rfc2616/rfc2616.html}).
+It uses pseudo-MIME documents to encapsulate both the request sent from
+client to server and the response sent back. This is important for the DAP
+because the DAP uses headers in both the \xlink{
+request}{http://www.unidata.ucar.edu/packages/dods/design/dap-rfc-html/dap\_16.html}
+and \xlink{
+response}{http://www.unidata.ucar.edu/packages/dods/design/dap-rfc-html/dap\_22.html}
+documents to transfer information. However, for a programmer who intends to
+write a DAP server, exactly what gets written into those headers and how it
+gets written is not important. Both the \Cpp\ and Java class libraries will
+handle these tasks for you (look at the \xlink{DODSFilter
+class}{http://www.unidata.ucar.edu/packages/dods/api/pref-html/DODSFilter.html}
+to see how). It's important to know about, however, because if you decide not
+to use the libraries, or the parts that automate generating the correct MIME
+documents, then your server will have to generate the correct headers itself.
+
+\subsection{The DAP defines three objects}
+
+To transfer information from servers to clients, the DAP uses three objects.
+Whenever a client asks a server for information, it does so by requesting one
+of these three objects (note: this is not strictly true, but the whole truth
+will be told in just a bit. For now, assume it's true). These are the Dataset
+Descriptor Structure (DDS), Dataset Attribute Structure (DAS), and Data
+object (DataDDS). These are described in considerable detail in other
+documentation. The Programmer's Guide contains a description of the
+\xlink{DDS and DAS objects (see
+http://www.unidata.ucar.edu/packages/dods/api/pguide-html/)}{http://www.unidata.ucar.edu/packages/dods/api/pguide-html/pguide\_6.html}.
+These objects contain the name and types of the variables in a dataset, along
+with any attributes (name-value pairs) bound to the variables. The DataDDS
+contains data values. We have implemented the SDKs so that the DataDDS is a
+subclass of the DDS object that adds the capacity to store values with each
+variable.
+
+\begin{tabular}[c]{lll} \\
+\xlink{COADS Climatology}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/nc/coads\_climatology.nc.html} &
+\xlink{DAS}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/nc/coads\_climatology.nc.das} &
+\xlink{DDS}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/nc/coads\_climatology.nc.dds} \\
+\xlink{NASA Scatterometer Data}{href="http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/hdf/S2000415.HDF.ascii?Wind\_Speed\%5B0:1:457\%5D\%5B0:1:23\%5D\%5B0:1:3\%5D,Wind\_Dir\%5B0:1:457\%5D\%5B0:1:23\%5D\%5B0:1:3\%5D} &
+\xlink{DAS}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/hdf/S2000415.HDF.das} &
+\xlink{DDS}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/hdf/S2000415.HDF.dds} \\
+Catalog of AVHRR Files &
+\xlink{DAS}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/ff/1998-6-avhrr.dat.das} &
+\xlink{DDS}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/ff/1998-6-avhrr.dat.dds} \\
+\xlink{AHVRR Image}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/dsp/east.coast.pvu.ascii?dsp\_band\_1\%5B0:1:511\%5D\%5B0:1:511\%5D} &
+\xlink{DAS}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/dsp/east.coast.pvu.das} &
+\xlink{DDS}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/dsp/east.coast.pvu.dds} \\
+\end{tabular}   
+
+The DAP models all datasets as collections of
+\xlink{variables}{http://www.unidata.ucar.edu/packages/dods/api/pguide-html/pguide\_9.html}.
+The \xlink{DDS and
+DataDDS}{http://www.unidata.ucar.edu/packages/dods/api/pref-html/DDS.html}
+objects are containers for those variables. How you represent your dataset
+using the three objects and the DAP's data type hierarchy is covered in
+\begin{iftex}
+``Implementing the DDS object'' in \emph{Writing an \opendap\ Server}.
+\end{iftex}
+\begin{ifhtml}
+\xlink{Implementing the DDS object}{../ws-html/server-implementing-dds.html}
+in \emph{Writing an \opendap\ Server}.
+\end{ifhtml}
+
+\subsection{The DAP also defines services}
+
+\note{Information of the DAP services is presented here for completeness and
+  because using these can help speed and simplify development of you client.
+  For example, you can use the HTML and ASCII services to look at a data
+  source using only a web browser. Similarly, the INFO response can be used
+  to look at the attributes and variables in a given data source.}
+
+In the previous section we said that the DAP defined three objects and
+all interaction with the server involved those three objects. In fact,
+the DAP also defines other responses. They are:
+
+\begin{description}
+\item[ASCII] Data can be requested in CSV form.
+\item[HTML] Each server can return an HTML form that facilitates building
+ URLs.
+\item[INFO] Each server can combine the DDS and DAS and present that as 
+HTML.
+\item[VERSION] Each server must be able to respond to a request for it's
+  version and the version of the DAP it implements.
+\item[HELP] Each server must be able to provide a rudimentary help response.
+\end{description}
+
+In each case the server's response to these requests is built using
+one or more of the basic three objects.  Here are some links to
+various datasets' ASCII, HTML and INFO responses:
+
+\begin{tabular}[c]{llll} \\
+\xlink{COADS Climatology}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/nc/coads\_climatology.nc.html} &
+\xlink{ASCII for the SST variable}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/nc/coads\_climatology.nc.asc?SST} &
+\xlink{HTML}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/nc/coads\_climatology.nc.html} &
+\xlink{INFO}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/nc/coads\_climatology.nc.info} \\
+\xlink{NASA Scatterometer Data}{ref="http://localhost/dods-3.4/nph-dods/data/hdf/S2000415.HDF.ascii?Wind\_Speed\%5B0:1:457\%5D\%5B0:1:23\%5D\%5B0:1:3\%5D,Wind\_Dir\%5B0:1:457\%5D\%5B0:1:23\%5D\%5B0:1:3\%5D} &
+\xlink{ASCII for wind speed and direction}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/hdf/S2000415.HDF.ascii?Wind\_Speed\%5B0:1:457\%5D\%5B0:1:23\%5D\%5B0:1:3\%5D,Wind\_Dir\%5B0:1:457\%5D\%5B0:1:23\%5D\%5B0:1:3\%5D} &
+\xlink{HTML}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/hdf/S2000415.HDF.html} &
+\xlink{INFO}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/hdf/S2000415.HDF.info} \\
+Catalog of AVHRR Files &
+\xlink{ASCII for values within a date range}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/ff/1998-6-avhrr.dat.ascii?year,day\_num,DODS\_URL&day\_num\%3C170} &
+\xlink{HTML}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/ff/1998-6-avhrr.dat.html} &
+\xlink{INFO}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/ff/1998-6-avhrr.dat.info} \\
+\xlink{AHVRR Image}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/dsp/east.coast.pvu.ascii?dsp\_band\_1\%5B0:1:511\%5D\%5B0:1:511\%5D} &
+\xlink{ASCII for the SST}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/dsp/east.coast.pvu.ascii?dsp\_band\_1\%5B0:1:511\%5D\%5B0:1:511\%5D} &
+\xlink{HTML}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/dsp/east.coast.pvu.html} &
+\xlink{INFO}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/data/dsp/east.coast.pvu.info} \\
+\end{tabular}
+  
+The VERSION and HELP responses can be see by appending \lit{help} or
+\lit{version} to the end of the server's base URL. For example:
+
+\begin{tabular}[c]{l} \\
+\xlink{HELP: http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/help}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/help}\\
+\xlink{VERSION: http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/version}{http://dodsdev.gso.uri.edu/dods-3.4/nph-dods/version}\\
+\end{tabular}
+
+\subsection{Connecting to the server}
+  
+To manage the connection between the client application and the remote
+server, the DAP uses two objects.  The \class{Connect} class manages
+one connection to either a remote data server, or a local access.  The
+\class{Connections} class is used to manage a set of instances to the
+class \class{Connect}.  For each data source that the client
+opens, there must be exactly one instance of the \class{Connect}
+class.  The \OPDapi\ provides a description for the \Cpp\ toolkit's
+usage.
+
+\section{Getting ready to write your client}
+  
+An \opendap-enabled client application creates a connection to the
+remote server using the \class{Connect} class, and then issues
+requests to the remote server through the \class{Connect} class
+methods. Please refer to the \xlink{\lit{Geturl.java}}{Geturl.java.html} and
+\xlink{\lit{geturl.cc}}{geturl.cc.html} sources as examples of command-line
+based DAP client applications written in Java and \Cpp\, respectively.
+
+Most of the software is boilerplate. Following are sections of the
+Geturl.java client application, later a description of the same
+example in \Cpp\ will be provided.  Again, please refer to the complete
+source listings referenced above.
+
+\begin{vcode}{sib}
+ DConnect url = null;
+ try {
+    url = new DConnect(nextURL, accept_deflate);
+ }
+\end{vcode}
+
+This code snippet instantiates a new instance of the \class{DConnect}
+class, passing the URL referencing the remote data server, and a
+boolean flag indicating that the client can accept responses from the
+server which are compressed.
+
+\begin{vcode}{sib}
+ if (get_data) {
+    if ((cexpr==false) && (nextURL.indexOf('?') == -1)) {
+        System.err.println("Must supply a constraint expression with -D.");
+        continue;
+    }
+    for (int j=0; j<times; j++) {
+        try {
+           StatusUI ui = null;
+           if (gui)
+             ui = new StatusWindow(nextURL);
+           DataDDS dds = url.getData(expr, ui);
+           processData(url, dds, verbose, dump_data, accept_deflate);
+        }
+        catch (DODSException e) {
+          System.err.println(e);
+          System.exit(1);
+        }
+        catch (java.io.FileNotFoundException e) {
+          System.err.println(e)
+          System.exit(1);
+        }
+        catch (Exception e) {
+          System.err.println(e);
+          e.printStackTrace();
+          System.exit(1);
+        }
+    }
+ }
+\end{vcode}  
+
+This compound statement block initiaties a data request to the remote
+server.  The \class{DConnect} method \lit{getData} forms the data
+request to the remote server by appending the string, \var{expr},
+containing the constraint-expression, onto the URL used in creating
+the initial \class{DConnect} to the remote site.  The parameter,
+\var{ui}, provides an optional \lit{StatusWindow} object to provide
+the status of the current request to the client.
+
+\begin{vcode}{sib} 
+ catch (DODSException e) {
+   System.err.println(e);
+   System.exit(1);
+ }
+ catch (java.io.FileNotFoundException e) {
+   System.err.println(e);
+   System.exit(1);
+ }
+ catch (Exception e) {
+   System.err.println(e);
+   e.printStackTrace();
+   System.exit(1);
+ }
+\end{vcode}
+  
+Completing the try block is a series of catch blocks that catch
+exceptions thrown by the DAP library code, and Java input/output and
+general exceptions.
+
+
+The \Cpp\ toolkit provides similar functionality as the Java toolkit
+though the parameters to the individual \class{Connect} methods may vary.
+The \Cpp\ client application \xlink{geturl.cc}{geturl.cc.html}
+uses the similar \Cpp\ toolkit classes as the Java toolkit to implement the
+Geturl client application:
+
+\begin{vcode}{sib}
+  string name = argv[i];
+  Connect url(name, trace, accept_deflate);
+\end{vcode}
+
+This code fragment declares an instance of the \class{Connect} class,
+passing the URL referencing the remote data server, and a boolean
+flag indicating that the client can accept responses from the server
+that are compressed.
+
+\begin{vcode}{sib}
+else if (get_data) {
+    if (expr.empty() && name.find('?') == string::npos)
+	expr = "";
+
+    for (int j = 0; j < times; ++j) {
+	DataDDS dds;
+	try {
+	    DBG(cerr << "URL: " << url->URL(false) << endl);
+	    DBG(cerr << "CE: " << expr << endl);
+	    url->request_data(dds, expr);
+
+	    if (verbose)
+		fprintf( stderr, "Server version: %s\n",
+			 url->get_version().c_str() ) ; 
+
+	    print_data(dds, print_rows);
+	}
+	catch (Error &e) {
+	    e.display_message();
+	    continue;
+	}
+    }
+}
+\end{vcode}
+
+This compound statement block initiaties a data request from the remote
+server. The \class{Connect} method \lit{request\_data} forms the data request
+to the remote server by appending the string, \var{expr}, containing the
+constraint-expression, onto the URL used in creating the initial
+\class{Connect} to the remote site.
+
+\begin{vcode}{sib}
+catch (Error &e) {
+    e.display_message();
+    continue
+}
+\end{vcode}
+ 
+Completing the try block is a catch block that picks up exceptions thrown by
+the DAP library code. The DAP \Cpp\ library throws several types of exceptions,
+the most common of which are \class{Error} and \class{InternalErr}. All of
+the exceptions are either instances of \class{Error} or are specializations
+of it, so catching just \class{Error} will get everything.
+
+\section{Subclassing the data types}
+
+The DAP defines a data type hierarchy as the core of its data model. This
+collection of data types includes scalar, vector and constructor types. Most
+of the types are available in all modern programming languages with the
+exceptions being \lit{Url}, \lit{Sequence} and \lit{Grid}. In the DAP
+library, the class \lit{BaseType} is the root of the data type tree.
+
+\subsection{A quick review of the data types supported by the DAP}
+
+The DAP supports the common scalar data types such as Byte, 16- and 32-bit
+signed and unsigned integers, and 32- and 64-bit floating point numbers. The
+DAP also supports Strings and Urls as basic scalar types. The DAP includes
+Arrays of unlimited size and dimensionality. The DAP also supports three
+type-constructors: \lit{Structure}, \lit{Sequence} and \lit{Grid}. A
+\lit{Structure} on the DAP mimics a struct in \lit{C}. A \lit{Sequence} is a
+table-like data structure inherited from the JGOFS data system. It can be
+used to hold information that might be stored in relational databases or
+tables, either flat or hierarchical. The JGOFS, FreeForm and HDF servers all
+use the \lit{Sequence} data type. Lastly, the \lit{Grid} data type is used to
+bind an array to a group of \emph{map vectors}, single dimension arrays that
+provide non-integral values for the indexes of the array. The most typical
+use of a Grid is to provide latitude and longitude registration for some
+georeferenced array data (e.g., a projected satellite image). The DAP does
+not have a pointer data type, but in some cases the \lit{Url} data type can
+be used as a pointer to variables between files. More information about the
+\xlink{DAP's data type
+hierarchy}{http://www.unidata.ucar.edu/packages/dods/api/pguide-html/pguide\_9.html}
+is given in the Programmer's Guide.
+
+\subsection{Creating the subclasses}
+
+When you build a DAP client, you must create a collection of data type
+subclasses.  That is each of the leaf classes in the preceding class
+diagram must be subclassed by your client. This is pretty easy since a
+good bit of the work is rote.
+
+First we'll illustrate the parts that are mechanical. Here's an example from
+the \Cpp\ Matlab client. The class is the Byte class. In the case of the matlab
+client, this class doesn't do anything beyond the bare minimum, so it's a
+good starting point:
+
+\begin{vcode}{sib}
+Byte *
+NewByte(const string &n)
+{
+    return new ClientByte(n);
+}
+
+BaseType *
+ClientByte::ptr_duplicate()
+{
+    return new ClientByte(*this);
+}
+
+bool
+ClientByte::read(const string &)
+{
+  throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
+}
+\end{vcode}
+
+To create a child of any of the data type leaf classes, you must define three
+methods and one function. Let's talk about the function first. The function
+\lit{NewByte} is what Meyers\cite{meyers:ecpp} calls a \emph{virtual
+constructor}. It's similar to a low-budget factory class (``low-budget''
+because it's not a class). This function is used at various places in the DAP
+library when it need to create instances of \lit{Byte} without knowing in
+advance the dynamic type of the object that actually will be created. If all
+this sounds a little weird, just remember that your \lit{Byte}, \lit{Int16},
+..., \lit{Grid} classes --- whatever they may be called --- must all contain
+an implementation of this function and each should all return a pointer to an
+instance of the appropriate child class. These functions will be used by the
+library to create instance of the classes you have defined when writing your
+server. In this case of the example Matlab server, it's an instance of the
+\lit{MATByte} class. If you look in the files for the Matlab server, you'll
+see that the function \lit{NewGrid} returns a pointer to a new \lit{MATGrid},
+and so on.
+
+Second, a constructor must be implemented and should take the name of the
+variable as its sole argument.
+
+Third, your child classes should also define the \lit{ptr\_duplicate()}
+method. This method returns a pointer to a new instance of an object in the
+same class. Occasionally, in the DAP library, objects are declared with
+pointers specified as \lit{BaseType *}. If the \lit{new} operator was used to
+copy such an object, the copied object would be an instance of BaseType (the
+static type of the object) not the type of the thing referenced (the dynamic
+type)\footnote{This is the oft discussed phenomenon of `slicing,' see
+Meyers\cite{meyers:ecpp}, Stroustrup\cite{stroustrup:cpp}, et c., for a
+complete explanation.}. By using the \lit{ptr\_duplicate()} method the DAP
+library is sure that when it copies an object, it's getting an instance of
+the subclass defined by your server.
+
+Unlike the case where you are subclassing the DAP variable classes to build a
+server, there's no need to implement \lit{read()} when building a client. The
+classes contain a default implementation od \lit{read()} that throws
+InternalErr if it is ever called (which no simple client should ever
+do.\footnote{If you're building a gateway, something that is both a client
+  and a server, you'll need to implement \lit{read()}.}
+
+%% The DAP Java Toolkit uses a similar mechanism to support subclassing
+%% of the DAP base classes.  Following is an example from the Java Matlab
+%% client application, from the source file \xlink{MatlabFactory.java}%
+%% {MatlabFactory.java.html}.  In the Java DAP toolkit, for those classes
+%% which are not required to be specialized for the underlying client
+%% application, an instance of the base class may be returned through the
+%% Factory interface.
+
+%% \begin{vcode}{sib}
+%% public class MatlabFactory implements BaseTypeFactory {
+%%   //..................................
+%%   /** 
+%%    * Construct a new DByte.
+%%    * @return the new DByte
+%%    */
+%%   public DByte newDByte() {
+%%     return new DByte();
+%%   }
+
+%%   /**
+%%    * Construct a new DByte with name n.
+%%    * @param n the variable name
+%%    * @return the new DByte
+%%    */
+%%   public DByte newDByte(String n) {
+%%     return new DByte(n);
+%%   }
+%% \end{vcode}
+
+%% For those classes specialized for the underlying client 
+%% application, an instance to the specialized class is returned 
+%% through the Factory interface.
+
+%% \begin{vcode}{sib}
+%%   //..................................
+%%   /** 
+%%    * Construct a new DArray.
+%%    * @return the new DArray
+%%    */
+%%   public DArray newDArray() {
+%%     return new MatlabArray();
+%%   }
+
+%%   /**
+%%    * Construct a new MatlabArray with name n.
+%%    * @param n the variable name
+%%    * @return the new MatlabArray
+%%    */
+%%   public DArray newDArray(String n) {
+%%     return new MatlabArray(n);
+%%   }
+%% \end{vcode}
+
+\section{Accessing the DDS object}
+\label{client-tut,implementing}
+
+The Data Descriptor Structure (DDS) is a data structure used by the
+DODS software to describe datasets and subsets of those datasets. The
+DDS may be thought of as the declarations for the data structures that
+will hold data requested by some DODS client. Part of the job of a
+DODS server is to build a suitable DDS for a specific dataset and to
+send it to the client. Depending on the data access API in use, this
+may involve reading part of the dataset and inferring the DDS.  Other
+APIs may require the server simply to read some ancillary data file
+with the DDS in it.
+
+For the client, the DDS object includes methods for reading the
+persistent form of the object sent from a server. This includes
+parsing the ASCII representation of the object and, possibly, reading
+data received from a server into a data object.
+
+Note that the class DDS is used to instantiate both DDS and DataDDS objects.
+A DDS that is empty (contains no actual data) is used by servers to send
+structural information to the client. The same DDS can be treated as a
+DataDDS when data values are bound to the variables it defines.
+
+For a complete description of the DDS layout and protocol, please
+refer to \OPDuser\ and \OPDapi .
+
+The DDS has an ASCII representation, which is what is transmitted from
+a DODS server to a client. Here is the DDS representation of an entire
+dataset containing a time series of worldwide grids of sea surface
+temperatures:
+
+\begin{vcode}{sib}
+Dataset {
+    Grid {
+      ARRAY:
+	 Int32 sst[time = 404][lat = 180][lon = 360];
+      MAPS:
+	 Float64 time[time = 404];
+	 Float64 lat[lat = 180];
+	 Float64 lon[lon = 360];
+    } sst;
+} weekly;
+\end{vcode}
+       
+If the data request to this dataset includes a constraint expression,
+the corresponding DDS might be different. For example, if the request
+was only for northern hemisphere data at a specific time, the above
+DDS might be modified to appear like this:
+
+\begin{vcode}{sib}
+Dataset {
+    Grid {
+      ARRAY:
+	 Int32 sst[time = 1][lat = 90][lon = 360];
+      MAPS:
+	 Float64 time[time = 1];
+	 Float64 lat[lat = 90];
+	 Float64 lon[lon = 360];
+    } sst;
+} weekly;
+\end{vcode}
+       
+The constraint has narrowed the area of interest; the range of latitude
+values has been halved and there is only one time value in the returned
+array. 
+
+See \OPDuser\ , \OPDapiref\ for descriptions of the DODS data types.
+
+Reading data from a DDS object is the heart of writing your own \opendap\
+client. To integrate the information contained in the DDS, you must do two
+things. First you must decide how the data type hierarchy that is part of the
+DAP can be represented in your client application. Some client applications
+cannot represent all possible DAP data types directly. Where possible the
+client developer should strive to support as many data types as possible to
+facilitate access to the wide variety of data accessible through \opendap\
+servers. In practice, once you know how to map variables from the DAP into
+your client application, writing code to build the DDS instance is easy.
+
+\begin{vcode}{sib}
+else if (get_dds) {
+    for (int j = 0; j < times; ++j) {
+	DDS dds;
+	try {
+	    url->request_dds(dds);
+	}
+	catch (Error &e) {
+	    e.display_message();
+	    delete url; url = 0;
+	    continue;	// Goto the next URL or exit the loop.
+	}
+
+	if (verbose) {
+	    fprintf( stderr, "Server version: %s\n",
+			     url->get_version().c_str() ) ; 
+	    fprintf( stderr, "DDS:\n" ) ;
+	}
+
+	dds.print(stdout);
+    }
+}
+\end{vcode}
+
+Above, the \class{Connect} method \lit{request\_dds} is called, passing a
+reference to a DDS object. Following is an example from the \Cpp\ Matlab client
+illustrates a simple traversal of the DDS object returned from the
+\lit{connect::request\_data} method.
+  
+\begin{vcode}{sib}
+static void
+process_data(Connect &url, DDS &dds)
+{
+   if (verbose)
+       cerr << "Server version: " << url.server_version() << endl;
+
+   for (DDS::Vars_iter i = dds.var_begin(); i != dds.var_end(); i++) {
+       BaseType *v = *i ;
+       v->print_decl(cout, "", true);
+       smart_newline(cout, v->type());
+   }
+}
+\end{vcode}
+
+In the \Cpp\ DAP classes STL iterators are used to iterate over the members
+(i.e., variables) in the DDS object. The iterator \lit{i} references pointers
+to the top-level \lit{BaseType} objects held by the DDS. See
+Jouspurtis\cite{josuttis:cpp-stl} for information about the Standard Template
+Library and STL iterators. The \OPDapi\ provides
+a description for the each of the data types, and the methods available to
+operate on them.
+
+%% In the Java DAP toolkit, an \lit{Enumeration} type is used to iterate over 
+%% the contents of the DDS class instance.
+ 
+%% \begin{vcode}{sib}
+%%  /*
+%%   * Return an Enumeration of the variables in the dataset.
+%%   */
+%%  public Enumeration getVariables() {
+%%     if(dds != null) 
+%%         return dds.getVariables();
+%%     else
+%%         return null;
+%%  }
+%% \end{vcode}
+
+%% The \lit{Enumeration} type can be used to iterate over
+%% the contents of the DDS instance with a simple loop
+%% construct:
+
+%% \begin{vcode}{sib}
+%%  private static void processData(DConnect url, DataDDS dds, boolean verbose,
+%%                                   boolean dump_data, boolean compress) {
+
+%%    Enumeration dodsVar = dds.getVariables();
+
+%%    while (dodsVar.hasMoreElements()) {
+%%       BaseType bt = (BaseType) dodsVar.nextElement();
+
+%%       bt.printDecl(System.out);
+%%       System.out.println();
+%%    }
+%% }
+%% \end{vcode}
+    
+%% The first line declares an \lit{Enumeration} type variable, \lit{dodsVar} and
+%% assigns the \lit{Enumeration} returned by the \class{DDS} \lit{ getVariables}
+%% method. While the enumeration has values remaining, the example function
+%% calls the \lit{printDecl} and \lit{printVal} methods of the underlying
+%% \class{BaseType} to print out the declaration and values of each variable
+%% referenced by the \lit{Enumeration} type.
+
+\section{Accessing the DAS object}
+
+The Data Attribute Structure (DAS) is a set of name-value pairs used to
+describe the data in a particular dataset.\footnote{Often this is referred to
+as the data set's \emph{meta data} or \emph{semantic meta data}.} The
+name-value pairs are called the \emph{attributes}. The values may be of any
+of the DODS simple data types (\lit{Byte}, \lit{Int16}, \lit{UInt16},
+\lit{Int32}, \lit{UInt32}, \lit{Float32}, \lit{Float64}, \lit{String} and
+\lit{URL}), and may be scalar or vector. (Note that all values are actually
+stored as string data.)
+
+A value may also consist of a set of other name-value pairs. This makes it
+possible to nest collections of attributes, giving rise to a hierarchy of
+attributes. The DAP uses this structure to provide information about
+variables in a dataset.
+
+In the following example of a DAS, several of the attribute collections have
+names corresponding to the names of variables in a hypothetical dataset. The
+attributes in that collection are said to belong to that variable. For
+example, the \lit{lat} variable has an attribute units of
+\lit{degrees\_north.}
+
+\begin{vcode}{sib}
+ Attributes {
+    GLOBAL {
+       String title "Reynolds Optimum Interpolation (OI) SST";
+    }
+    lat {
+       String units "degrees_north";
+       String long_name "Latitude";
+       Float64 actual_range 89.5, -89.5;
+    }
+    lon {
+       String units "degrees_east";
+       String long_name "Longitude";
+       Float64 actual_range 0.5, 359.5;
+    }
+    time {
+       String units "days since 1-1-1 00:00:00";
+       String long_name "Time";
+       Float64 actual_range 726468., 729289.;
+       String delta_t "0000-00-07 00:00:00";
+    }
+    sst {
+       String long_name "Weekly Means of Sea Surface Temperature";
+       Float64 actual_range -1.8, 35.09;
+       String units "degC";
+       Float64 add_offset 0.;
+       Float64 scale_factor 0.0099999998;
+       Int32 missing_value 32767;
+   }
+ }
+\end{vcode}
+
+Attributes may have arbitrary names, although in most datasets it is
+important to choose these names so a reader will know what they
+describe. In the above example, the GLOBAL attribute provides
+information about the entire dataset.
+
+Data attribute information is an important part of the the data
+provided to a DODS client by a server, and the DAS is how this data is
+packaged for sending (and how it is received).
+
+An example of Attribute handling in a client application is provided in
+the \lit{www-int} \Cpp\ source:
+
+\begin{vcode}{sib}
+void
+LoaddodsProcessing::print_attr_table(AttrTable &at, ostream &os)
+{
+    for (AttrTable::Attr_iter i = at.attr_begin(); i != at.attr_end(); ++i) {
+        int attr_num = at.get_attr_num(i);
+        switch (at.get_attr_type(i)) {
+          case Attr_container: {
+              AttrTable *cont_atp = at.get_attr_table(i);
+              os << "Structure" << endl << names.lookup(at.get_name(i), translate)
+                 << " " << cont_atp->get_size() << endl;
+              print_attr_table(*cont_atp, os);
+              break;
+          }
+
+          case Attr_string:
+          case Attr_url:
+            if (attr_num == 1) {
+                os << "String" << endl << names.lookup(at.get_name(i), translate) << endl
+                   << at.get_attr(i) << endl;
+            }
+            else {
+                os << "Array" << endl << "String " << names.lookup(at.get_name(i), translate)
+                   << " 1" << endl << attr_num << endl;
+                for (int j = 0; j < attr_num; ++j)
+                    os << at.get_attr(i, j) << endl;
+
+                os << endl;
+            }
+            break;
+
+          // The remainder of this method's code has been elided. To see the 
+          // complete method, look at the source file 
+          // DODS/src/clients/ml-cmdln/LoaddodsProcessing.cc
+        }
+    }
+}
+\end{vcode}
+
+As with the DDS, the DAS object is a container and STL iterators are used to
+access its members (the attributes). There are several differences, however,
+between the two containers. The DDS holds complete objects, each of which is
+an instance of the class \class{BaseType}. A DAS, however, holds a collection
+of attributes. Unless the attribute is itself a container for other attribute
+type-name-value tuples, there is no contained object to access with methods
+to run. Instead the DAS and AttrTable classes themselves provide methods that
+are used to access the type, name and value of the attributes. These accessor
+methods take as their arguments a STL iterator. 
+
+For example, in the first case, the method \lit{AttrTable::get\_attr\_table()}
+is used to get a pointer to an AttrTable (which is the `value' of a container
+attribute). In the second case the \lit{AttrTable::get\_name()} and
+\lit{AttrTable::get\_attr()} methods are used to get the name and value of
+simple attributes. In each case the \lit{Attr\_iter} \lit{i} is passed to the
+methods. 
+
+%% In the Java DAP toolkit, similar to the DDS class an \lit{Enumeration}
+%% type is used to iterate over the contents of the DAS and
+%% \class{AttrTable} class instances.  The \OPDjavaUrl\ provides a
+%% description of the Java DAP toolkits implementation of the DAS,
+%% \class{AttrTable}, and \class{Attribute} classes.
+
+%% \begin{vcode}{sib}
+%%  public void writeAttributes(AttributeTable aTbl, String indent) {
+
+%%     if(aTbl != null){
+
+%%        Enumeration e = aTbl.getNames();
+
+%%        while(e.hasMoreElements()){
+%%           String aName = (String)e.nextElement();
+%%           Attribute a = aTbl.getAttribute(aName);
+
+%%           if (a.isContainer()) {
+%%               pWrt.print(indent+aName+":\n");
+%%               writeAttributes(a.getContainer(),indent+"  ");
+%%           }
+%%           else {
+%%               pWrt.print(indent + aName + ": ");
+%%               if(_Debug) { System.out.println("Getting attribute value enumeration for \""+aName +"\"...");}
+
+%%               Enumeration es = a.getValues();
+%%               if(_Debug) { System.out.println("Attribute Values enumeration: "+es);}
+%%               int i = 0;
+%%               while(es.hasMoreElements()){
+%%                   String val = (String)es.nextElement();
+%%                   if(_Debug) { System.out.println("Value " + i + ": "+val);}
+
+%%                   pWrt.print(val);
+
+%%                   if(es.hasMoreElements())
+%%                      pWrt.print(", ");
+
+%%                   i++;
+%%               }
+%%               pWrt.println("");
+%%           }
+
+%%        }
+%%     }
+%%  }
+%% \end{vcode}
+
+%% The preceding Java example provides the same functionality as the \Cpp\
+%% example, but uses an \lit{Enumeration} type to iterate over the DAS 
+%% container classes.
+
+\section{Getting Data: Accessing the DataDDS object}
+
+Up till now we have talked about access to a data source's meta data. The DDS
+provides access to the syntactic meta data and the DAS provides semantic meta
+data. Use the DataDDS to access data values held by the data source.
+
+The \class{DataDDS} class is an extension of class \class{DDS} which 
+contains the binary data values returned by the remote server.  It supports
+the same methods as the class \class{DDS}, but the \lit{BaseType::buf2val()}
+methods can be used to extract data held in the variable instances of
+\class{BaseType}. Use the \class{DDS}, \class{BaseType} and their iterators
+to access the variables. 
+
+Use \class{Connect} to ask a remote server for a \class{DataDDS}. The
+\class{Connect} provides \lit{Connect::request\_data()} to get the
+\class{DataDDS}. The \lit{request\_data()} method accepts a constraint
+expression which can be used to restrict the data returned by the remote
+server. See \OPDuser\ for more information about constraint expression
+syntax.\footnote{The details of the constraint expression syntax are covered
+in The \xlink{DODS User Guide[constraint]} {\OPDuserUrl/constraint.html}.}
+
+%% \begin{vcode}{sib}
+%%  if (get_data) {
+%%     if ((cexpr==false) && (nextURL.indexOf('?') == -1)) {
+%%         System.err.println("Must supply a constraint expression with -D.");
+%%         continue;
+%%     }
+%%     for (int j=0; j<times; j++) {
+%%         try {
+%%            StatusUI ui = null;
+%%            if (gui)
+%%              ui = new StatusWindow(nextURL);
+%%            DataDDS dds = url.getData(expr, ui);
+%%            processData(url, dds, verbose, dump_data, accept_deflate);
+%%         }
+%%         catch (DODSException e) {
+%%           System.err.println(e);
+%%           System.exit(1);
+%%         }
+%%         catch (java.io.FileNotFoundException e) {
+%%           System.err.println(e)
+%%           System.exit(1);
+%%         }
+%%         catch (Exception e) {
+%%           System.err.println(e);
+%%           e.printStackTrace();
+%%           System.exit(1);
+%%         }
+%%     }
+%%  }
+%% \end{vcode}
+
+%% The \class{Connect} method \lit getData() is passed an optional constraint-expression
+%% requesting that a subsetting, or other server-side operation be performed on the
+%% data before returning it to the client application.
+%% The client application typically accesses the elements of the \lit{DataDDS} 
+%% using the subclassed DAP data types which the client has specified.
+
+%% In the Java DAP toolkit, an {\it Enumeration} type is used to iterate over 
+%% the contents of the \class{DDS}, and \class{DataDDS} class instance. 
+
+%% \begin{vcode}{sib}
+%%  private static void processData(DConnect url, DataDDS dds, boolean verbose,
+%%                                   boolean dump_data, boolean compress) {
+
+%%    Enumeration dodsVar = dds.getVariables();
+
+%%    while (dodsVar.hasMoreElements()) {
+%%       BaseType bt = (BaseType) dodsVar.nextElement();
+
+%%       bt.printDecl(System.out);
+%%       System.out.println();
+%%    }
+%% }
+%% \end{vcode}
+
+%% To access the value contained in the element referenced
+%% by the {\it Enumeration} type, the \class{BaseType} method
+%% \lit{getValue()} returns the contents of the data types
+%% data buffer.
+
+%% \begin{vcode}{sib}
+%%       DInt32 val = (DInt32) dodsVar.getValue();
+%% \end{vcode}
+
+Use iterators to traverse the \class{DataDDS} and access the individual DAP
+data variable objects. The following example
+prints the DAP data objects declaration, to access the binary data returned
+by the server the DAP provides access methods to retrieve the data object's
+buffer contents.
+
+\begin{vcode}{sib}
+static void
+process_data(Connect &url, DDS *dds)
+{
+   if (verbose)
+       cerr << "Server version: " << url.server_version() << endl;
+
+   for (DDS::Vars_iter i = dds.var_begin(); i != dds.var_end(); i++) {
+       BaseType *v = *i ;
+       v->print_decl(cout, "", true);
+       smart_newline(cout, v->type());
+   }
+}
+\end{vcode}
+
+The binary data returned by the server is stored in the \lit{\_buf} member of
+each of the DAP's atomic data types. To retrieve the atomic data type's
+buffer contents the \lit{BaseType::buf2val} method is used.
+
+\begin{vcode}{sib}
+n_bytes = dds->var(q)->buf2val((void **) &localVar);
+\end{vcode}
+
+%% The DAP \class{Sequence} data types can be visualized as a relational table 
+%% structure consisting of rows and columns.  To access the elements
+%% of the table the DAP provides accessor methods for each row and 
+%% column element.  The client application uses these methods to 
+%% reference the individual DAP data objects comprising the \class{Sequence}.
+
+%% The following Java example is from the Java Matlab client
+%% application and illustrates the use of the Java DAP classes
+%% and methods to access elements from a \class{Sequence} data type.
+ 
+%% \begin{vcode}{sib}
+%% /**
+%%  * This class takes a MatlabSequence object, and provides methods to return
+%%  * the columns of the sequence as arrays of atomic types.  I wrote this before
+%%  * I subclassed DSequence, so I may end up moving these functions into 
+%%  * MatlabSequence and doing away with this class.
+%%  *
+%%  * Note: Java doesn't have any unsigned types, so the getU* functions return
+%%  *       a signed variable
+%%  * 
+%%  */
+
+%% class DodsSequenceProcessor extends Object {
+%%     private MatlabSequence dodsSeq;
+
+%%     public DodsSequenceProcessor(MatlabSequence seq) {
+%%         dodsSeq = seq;
+%%     }
+
+%%     /** 
+%%      * Get a column of DBytes from the sequence and return it as an 
+%%      * array of bytes
+%%      * @param name The name of the column
+%%      * @return an array of bytes containing the data.
+%%      */
+%%     public byte[] getByte(String name) 
+%%         throws NoSuchVariableException 
+%%     {
+%%         int numVars = dodsSeq.getRowCount();
+%%         byte[] values = new byte[numVars];
+%%         BaseType temp[] = null;
+
+%%         try {
+%%             temp = dodsSeq.getColumn(name);
+%%         }
+%%         catch(NoSuchVariableException e) {
+%%             throw(e);
+%%         }
+        
+%%         if(temp[0] instanceof DByte) {
+%%             for(int i=0; i<numVars; i++) {
+%%                 values[i] = ((DByte)temp[i]).getValue();
+%%             }
+%%         }
+%%         return values;
+%%     }
+
+%%     ...
+%% \end{vcode}
+
+%% The code example illustrates accessing the values of a 
+%% \class{Sequence} element, in this example of type \class{Byte}.
+%% The first thing the client does is determine the number 
+%% of rows in the \class{Sequence} which was returned by 
+%% the server, and creates a vector of \lit{byte} of
+%% that size.  The client creates an empty array of type
+%% \class{BaseType} which is used to store the return values
+%% from the \class{Sequence} method \lit{ getColumn(name)}.
+%% Then for each \class{BaseType} element referenced in the
+%% array the client accesses its buffer values with the
+%% \class{BaseType} \lit{ getValue()} method.
+
+The following \Cpp\ example is from the \Cpp\ Matlab client
+application and illustrates the use of the \Cpp\ DAP classes
+and methods to access elements from a \class{Sequence} data type.
+
+\begin{vcode}{sib}
+void 
+ClientSequence::print_one_row(ostream &os, int row, string space,
+                              bool print_row_num)
+{
+
+    const int elements = element_count();
+    for (int j = 0; j < elements; ++j) {
+        BaseType *bt_ptr = var_value(row, j);
+
+        if (bt_ptr) {           // data
+            bt_ptr->print_val(os, space, true);
+        }
+    }
+
+}
+
+void 
+ClientSequence::print_val_by_rows(ostream &os, string space,
+                                  bool print_decl_p,
+                                  bool print_row_numners)
+{
+    const int rows = number_of_rows();
+    for (int i = 0; i < rows; ++i) {
+        print_one_row(os, i, space, false);
+    }
+}
+\end{vcode}
+
+The \Cpp\ client uses rows and columns to access the individual elements of the
+\class{Sequence}. The \Cpp\ Matlab client uses two methods to accomplish the
+extraction, the first, \lit{print\_val\_by\_row()} determines the number of
+rows in the \class{Sequence} and calls the \lit{print\_one\_row()} for each
+of the rows in the \class{Sequence}. The \Cpp\ DAP implementation of the
+\class{Sequence} data type provides the \lit{ var\_value(row,col)} method to
+access the individual elements of the \class{Sequence}. The
+\lit{var\_value()} method returns a \class{BaseType} pointer to the row,
+column element of the \class{Sequence}. To access the binary data value
+stored in that element, the \class{BaseType} method \lit{buf2val()} can be
+used. The preceding example simply prints the contents of the element, most
+client applications would assign the contents to a local variable in the
+workspace.
+
+%% \begin{vcode}{sib}
+%%     /** 
+%%      * Return the data held in the MatlabArray as an array of 
+%%      * atomic types.
+%%      * @return The data.
+%%      */
+%%     public Object getData() {
+%%         PrimitiveVector pv = getPrimitiveVector();
+%%         if( (pv instanceof BaseTypePrimitiveVector) == false) 
+%%             return pv.getInternalStorage();
+        
+%%         else {
+%%             BaseTypePrimitiveVector basePV = (BaseTypePrimitiveVector)pv;
+%%             BaseType varTemplate = (BaseType)basePV.getValue(0);
+%%             if(varTemplate instanceof MatlabString) {
+%%                 char[][] arrayData = new char[basePV.getLength()][];
+%%                 for(int i=0;i<pv.getLength();i++) {
+%%                     arrayData[i] = ((MatlabString)basePV.getValue(i)).getValue().toCharArray();
+%%                 }
+%%                 return arrayData;
+%%             }
+%%             else if(varTemplate instanceof MatlabURL) {
+%%                 char[][] arrayData = new char[basePV.getLength()][];
+%%                 for(int i=0;i<pv.getLength();i++) {
+%%                     arrayData[i] = ((MatlabURL)basePV.getValue(i)).getValue().toCharArray();
+%%                 }
+%%                 return arrayData;
+%%             }
+%%             else return null;
+%%         }
+%%     }
+%% \end{vcode}
+
+
+\begin{vcode}{sib}
+void
+ClientArray::print_val(ostream &os, string, bool print_decl_p)
+{
+    if (print_decl_p) {
+        os << type_name() << endl << var()->type_name() << " " 
+           << get_matlab_name() << " " << dimensions(true)
+           << endl;
+
+        // Write the actual dimension sizes on a separate line.
+        for (Pix p = first_dim(); p; next_dim(p))
+            os << dimension_size(p, true) << " ";
+
+        os << endl;
+    }
+
+    for (int i = 0; i < length(); ++i)
+        var(i)->print_val(os, "", false);
+}    
+\end{vcode}
+
+
+\section{Notes}
+
+Here's a collection of information that might be important to specific
+clients but is hard to fit into a general tutorial.
+
+\begin{itemize}
+  
+\item Because there are no meta data requirements to serve data via the
+  \opendap\ protocol, client applications may not find all the
+  information they require to make use of the data.  The DAP currently
+  supports ancillary DAS files at the remote server site.  In
+  development is an Ancillary Information Service (AIS) which will
+  permit these external meta data resources to be located with the
+  remote data itself, at other remote server sites, or on the client.
+  Any meta data augmented by the AIS will be clearly indicated in the
+  attributes.
+
+\item It is the client application's responsibility to provide the
+  initial base URLs to the remote server site.  In development are
+  data discovery services, including an ImportWizard which can query
+  existing directory services such as the GCMD, to provide the base
+  URLs to providers with installed \opendap\ data servers.
+
+\item The DODS Project has developed two tools to help with serving
+  datasets that contain many files. The first is to set up a `file
+  server' a kind of catalog of URLs that is itself a DODS data set.
+  The second is called the Aggregation Server (AS). The AS can
+  automatically aggregate discrete datasets, accessed as either as
+  files (in some cases) or URLs to produce a single data set. See the
+  \OPDhome\ and/or contact tech support (\OPDsupport) for help with
+  this.
+
+\item You can get help from the \OPDhome\, the \OPDtechList\
+  and the DODS user support desk (\OPDsupport).
+  
+\end{itemize} 
+
+\appendix
+
+\section{How the Java DAP library differs}
+\label{sec:javadap}
+
+Enumerations instead of iterators
+
+Factory classes instead of virtual constructors
+
+DAP core with separate client and server specializations via Java interfaces
+
+The constraint evaluator is an object passed into the DDS (Java) rather than
+a set of methods embedded in the DDS (\Cpp)
+
+\bibliographystyle{plain}
+\bibliography{../boiler/dods}
+   
+\end{document}
+
+% $Log: writing_client.tex,v $
+% Revision 1.10  2004/04/24 21:37:21  jimg
+% I added every directory in preparation for adding everyting. This is
+% part of getting the opendap web pages going...
+%
+% Revision 1.9  2004/02/12 17:15:23  jimg
+% Left the Java Geturl cde in place. I think this is better than the version of
+% geturl.cc that's been HTMLized. I'm not really sure how to tackle this
+% document...
+%
+% Revision 1.8  2004/02/12 16:53:43  jimg
+% Still more changes.
+%
+% Revision 1.7  2004/02/12 06:44:17  jimg
+% Almost done updating. I've commented out the Java examples. I'm not sure what
+% to do with them since they are based on a client we no longer support.
+%
+% Revision 1.6  2004/02/05 07:16:06  jimg
+% Changes up to page 9.
+%
+% Revision 1.5  2004/02/04 15:14:16  jimg
+% Changes up to page 5.
+%
+% Revision 1.4  2004/01/21 16:41:24  jimg
+% Change the date/revision thing for the web page version. Now it does not say
+% 'Printed: ...' since that doesn't quite make sense. There is a CVS date at
+% the bottom of the page.
+%
+% Revision 1.3  2004/01/21 16:38:11  jimg
+% Brought up-to-date WRT the new latex macros. May still need editing to match
+% what's going on in version 3.4.
+%
+% Revision 1.2  2004/01/16 18:06:00  jimg
+% Removed the newcommand opendap since it is now defined in dods-def.tex.
+%
+% Revision 1.1  2002/07/16 03:30:59  tom
+% moved writing_client from archive/workshops
+%
+
+% Old log
+% Revision 1.7  2002/05/13 19:35:15  tom
+% fixed some `_'s.  Changed htmldirectory
+%
+% Revision 1.6  2002/05/13 19:20:55  dan
+% Added information to the Accessing the DataDDS section.
+%
+% Revision 1.5  2002/05/13 17:50:53  tom
+% grammar, formatting
+%
+% Revision 1.4  2002/05/13 15:41:46  tom
+% fixed a couple of `_'s
+%
+% Revision 1.3  2002/05/13 14:31:50  dan
+% Added Accessing DataDDS section, needs better
+% examples for buf2val calls, with examples for
+% accessing Arrays, Grids, and Sequences.
+%
+% Revision 1.2  2002/05/13 02:53:55  tom
+% grammar checking, misc editing
+%
+% Revision 1.1  2002/05/12 23:29:12  dan
+% *** empty log message ***
+%
+
+% Started life as writing_server.tex...
+%
+% Revision 1.4  2002/05/11 22:40:27  jimg
+% Finished. Spell cheecked. Not read over, though.
+%
+% Revision 1.3  2002/05/10 23:26:25  jimg
+% Added text for the DAS section.
+%
+% Revision 1.2  2002/05/10 21:00:17  jimg
+% I ran a spell checker on this.
+%
+% Revision 1.1  2002/05/10 17:17:05  tom
+% converted from html, checked in.
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

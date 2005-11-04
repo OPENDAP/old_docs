@@ -1,0 +1,210 @@
+%
+% These are html links which are used often enough in writing about DODS to
+% merit an input file.
+% jhrg. 4/17/94
+%
+% File rationalized and updated while writing the DODS User
+% Guide. Also includes other useful abbreviations.
+% tomfool 3/15/96
+%
+% $Id$
+%
+% HTML references to DODS documents
+%
+% For most of the DODS documentation there are three html references defined:
+% 1) The upper case \newcommand produces the title of the paper, an
+%    html link in the online documentation and a footnote in the paper
+%    version.  
+% 2) A capitalized version produces a capitalized description of the
+%    paper and a link in the online version (but no footnote in the
+%    paper version). 
+% 3) A lower case version which produces a lower case description of
+%    the paper and a html link, but no footnote.
+
+% External references to documents:
+%
+% In order for external references to work (via latex2html) the labels used
+% throughout the documents must be unique. The text labels are all prefixed
+% with a document identifier (e.g., ddd) with a colon separater. The
+% \externalrefs below (way below...) includes the perl files html.sty uses to
+% make the cross refs.
+
+\newcommand{\DODS}{\htmladdnormallink{Distributed Oceanographic Data System}
+  {http://www.unidata.ucar.edu/packages/dods/}}
+
+\newcommand{\Dods}{\htmladdnormallink{DODS}{http://www.unidata.ucar.edu/packages/dods/}}
+
+\newcommand{\wrkshp}{\htmladdnormallink{Report on the First Workshop for the
+    Distributed Oceanographic Data System, Proposed System Architectures}
+  {http://www.unidata.ucar.edu/packages/dods/archive/reports/workshop1/section3.13.html}}
+
+% not DODS URLs, but useful all the same...
+
+\newcommand{\www}{\htmladdnormallink{World Wide Web} 
+  {http://www.w3.org/hypertext/WWW/TheProject.html}}
+\newcommand{\url}{\htmladdnormallink{Uniform Resource Locator}
+  {http://www.w3.org/hypertext/WWW/Addressing/URL/url-spec.html}}
+
+\newcommand{\uri}{\htmladdnormallinkfoot{Uniform Resource Identifiers}
+  {http://www.w3.org/hypertext/WWW/Addressing/URL/uri-spec.html}}
+
+\newcommand{\urn}{\htmladdnormallinkfoot{Uniform Resource Name}
+  {http://www.acl.lanl.gov/URI/archive/uri-archive.messages/1143.html}}
+
+\newcommand{\HTTPD}{\htmladdnormallinkfoot{HTTPD}
+  {http://hoohoo.ncsa.uiuc.edu/docs/Overview.html}}
+
+\newcommand{\HTTP}{\htmladdnormallinkfoot{HyperText Transfer Protocol}
+  {http://www.w3.org/hypertext/WWW/Protocols/HTTP/HTTP2.html}}
+
+%\newcommand{\HTML}{\htmladdnormallinkfoot{HyperText Markup Language}
+%  {http://www.w3.org/hypertext/WWW/MarkUp/MarkUp.html}}
+
+% CERN used to be `Conseil Europeen pour la Recherche Nucleaire'
+\newcommand{\CERN}
+  {\htmladdnormallink{European Laboratory for Particle Physics}
+  {http://www.cern.ch/}}
+
+\newcommand{\NCSA}
+  {\htmladdnormallink{National Center for Supercomputing Applications}
+  {http://www.ncsa.uiuc.edu/}}
+
+\newcommand{\WWWC}{\htmladdnormallink{World Widw Web Consortium}
+  {http://www.w3.org/}}
+
+\newcommand{\CGI}{\htmladdnormallinkfoot{Common Gateway Interface}
+  {http://hoohoo.ncsa.uiuc.edu/cgi/overview.html}}
+
+\newcommand{\MIME}{\htmladdnormallink{Multipurpose Internet Mail Extensions}
+  {http://www.cis.ohio-state.edu/htbin/rfc/rfc1590.html}}
+
+\newcommand{\netcdf}{\htmladdnormallink{NetCDF}
+  {http://www.unidata.ucar.edu/packages/netcdf/guide.txn_toc.html}}
+
+\newcommand{\JGOFS}{\htmladdnormallink{Joint Geophysical Ocean Flux Study}
+  {http://www1.whoi.edu/jgofs.html}}
+
+\newcommand{\jgofs}{\htmladdnormallink{JGOFS}
+  {http://www1.whoi.edu/jgofs.html}}
+
+\newcommand{\hdf}{\htmladdnormallink{HDF}
+  {http://www.ncsa.uiuc.edu/SDG/Software/HDF/HDFIntro.html}}
+
+\newcommand{\Cpp}{{\rm {\small C}\raise.5ex\hbox{\footnotesize ++}}}
+
+% Commands
+
+\newcommand{\pslink}[1]{\small
+\begin{quote}
+  A \htmladdnormallink{postscript}{#1} version of this document is
+  available.  You may also use \htmladdnormallink{anonymous
+  ftp}{ftp://ftp.unidata.ucar.edu/pub/dods/ps-docs/} to access postscript files
+  of all of the DODS documentation.
+\end{quote}
+\normalsize
+}
+
+\newcommand{\declaration}[1]{\small
+{\tt {#1}}
+\normalsize
+}
+
+% All the links from here down are for the white papers. I'm not sure that any
+% of these are still valid given the reorganization of the web site. 5/12/98
+% jhrg.
+
+\newcommand{\DDA}{\htmladdnormallinkfoot{DODS---Data Delivery Architecture}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-arch/data-delivery-arch.html}}
+\newcommand{\Dda}{\htmladdnormallink{Data Delivery Architecture}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-arch/data-delivery-arch.html}}
+\newcommand{\dda}{\htmladdnormallink{data delivery architecture}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-arch/data-delivery-arch.html}}
+
+\newcommand{\DDD}{\htmladdnormallinkfoot{DODS---Data Delivery Design}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-design/data-delivery-design.html}}
+\newcommand{\Ddd}{\htmladdnormallink{Data Delivery Design}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-design/data-delivery-design.html}}
+\newcommand{\ddd}{\htmladdnormallink{data delivery design}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-design/data-delivery-design.html}}
+
+\newcommand{\URL}{\htmladdnormallinkfoot{DODS---Uniform Resource Locator}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/urls/urls.html}}
+\newcommand{\Url}{\htmladdnormallink{Uniform Resource Locator}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/urls/urls.html}}
+\newcommand{\dodsurl}{\htmladdnormallink{uniform resource locator}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/urls/urls.html}}
+
+\newcommand{\DAP}{\htmladdnormallinkfoot{DODS---Data Access Protocol}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html}}
+\newcommand{\Dap}{\htmladdnormallink{Data Access Protocol}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html}}
+\newcommand{\dap}{\htmladdnormallink{data access protocol}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html}}
+
+\newcommand{\SOFT}
+        {\htmladdnormallinkfoot{DODS---Software Development Environment}
+  {http://www.unidata.ucar.edu/packages/dods/archive/managment/software/software.html}}
+\newcommand{\Soft}{\htmladdnormallink{Software Development Environment}
+  {http://www.unidata.ucar.edu/packages/dods/archive/managment/software/software.html}}
+\newcommand{\soft}{\htmladdnormallinkfoot{software development environment}
+  {http://www.unidata.ucar.edu/packages/dods/archive/managment/software/software.html}}
+
+% I used to call the DAP the API, then for a few days I called it the
+% DTP. These def's were used then. Rather than find everywhere they are used
+% (not that hard, but...) I just hacked the macros. NB: the source file for
+% the DAP document is still called `api.tex'
+
+\newcommand{\API}{\htmladdnormallinkfoot{DODS---Data Access Protocol}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html}}
+\newcommand{\api}{\htmladdnormallink{data access protocol}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html}}
+
+\newcommand{\DTP}{\htmladdnormallinkfoot{DODS---Data Access Protocol}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html}}
+\newcommand{\dtp}{\htmladdnormallink{data access protocol}
+  {http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html}}
+
+\newcommand{\TOOLKIT}{\htmladdnormallinkfoot{DODS---Client and Server Toolkit}
+  {http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html}}
+\newcommand{\Toolkit}{\htmladdnormallink{Client and Server Toolkit}
+  {http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html}}
+\newcommand{\toolkit}{\htmladdnormallink{client and server toolkit}
+  {http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html}}
+
+\newcommand{\TKR}{\htmladdnormallinkfoot{DODS---DAP Toolkit Reference}
+  {http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html}}
+\newcommand{\Tkr}{\htmladdnormallink{DAP Toolkit Reference}
+  {http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html}}
+\newcommand{\tkr}{\htmladdnormallink{DAP toolkit reference}
+  {http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html}}
+
+% I know that these are wrong. The papers have been moved to the gso web
+% site, but I'm not sure exactly where. 5/12/98 jhrg
+
+\newcommand{\DM}{\htmladdnormallinkfoot{DODS---Data Model}
+  {http://lake.mit.edu/dods-dir/dodsdm2.html}}
+\newcommand{\Dm}{\htmladdnormallink{Data Model}
+  {http://lake.mit.edu/dods-dir/dodsdm2.html}}
+\newcommand{\dm}{\htmladdnormallink{data model}
+  {http://lake.mit.edu/dods-dir/dodsdm2.html}}
+
+\newcommand{\DD}{\htmladdnormallinkfoot{DODS---Data Delivery}
+  {http://lake.mit.edu/dods-dir/dods-dd.html}}
+
+% external refs for DODS documents
+
+\externallabels{http://www.unidata.ucar.edu/packages/dods/design/api}
+  {/home/www/packages/dods/archive/design/api/labels.pl}
+\externallabels{http://www.unidata.ucar.edu/packages/dods/design/data-delivery-arch}
+  {/home/www/packages/dods/archive/design/data-delivery-arch/labels.pl}
+\externallabels{http://www.unidata.ucar.edu/packages/dods/design/data-delivery-design}
+  {/home/www/packages/dods/archive/design/data-delivery-design/labels.pl}
+\externallabels{http://www.unidata.ucar.edu/packages/dods/implementation/toolkits}
+  {/home/www/packages/dods/archive/implementation/toolkits/labels.pl}
+
+%\renewcommand{\externalref}[2]{#2}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

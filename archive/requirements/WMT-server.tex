@@ -1,0 +1,506 @@
+
+% Caching.
+% 1/11/2000 jhrg
+%
+% $Id$
+
+\documentclass{article}
+%\usepackage{html}
+\usepackage{psfig}
+\usepackage{changebar}
+\usepackage{acronym}
+\usepackage{gloss}
+%\input{../../boiler/html-refs}
+\psfigurepath{cache-figs}
+
+% Note: to get the gloosary to work, run bibtex in the registry.gls.aux file,
+% then latex registry, then bibtex *.gls, then latex. Also, make sure to set
+% your BST and BIBINPUTS environment variables so that the BST and BIB files
+% will be found.
+\makegloss
+
+% Change paragraph typesetting; eliminate indenting and add more space between
+% paragraphs. 2/15/2000 jhrg
+\setlength{\parindent}{0em}     % Amount of indentation
+\addtolength{\parskip}{1ex}     % Vertical separation
+
+\begin{document}
+
+\title{DODS World Mapping Testbed Server SRS}
+\author{James Gallagher\thanks{The University of Rhode Island,
+    jgallagher@gso.uri.edu}}
+\date{\today \\ $Revision$ }
+
+\bibliographystyle{plain}
+
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+\subsection{Purpose}
+This \ac{SRS} describes the required functions of the \acs{DODS} \ac{WMT}
+server. The initial versions will contain our best attempts to catpure the
+requirements of this software. However, it is likely that new requirements
+will be discovered and added as the server is built.
+
+This paper is intended for developers of the \acs{DODS} \ac{WMT} server and
+for people outside that group who are interested in the development of the
+software.
+
+\subsection{Scope}
+What is the name of the software?
+What will the software do? Not do?
+Describe the application of the software being specd, including relavent
+benefits, objectives and goals.
+Be consistent with similar statements in higher-level...
+
+> (1) Implementation of the simplest possible GetMap:  no reprojection,
+> conversion from numeric values to image to be handled by plug-in modules,
+> which we would write.  (Does DODS have a way of accommodating this?)
+>
+> (2) Proposal and demonstration of a GetData protocol.  For this to carry,
+> there would have to be a client-side proof-of-concept implementation that
+> demonstrates the ability to superimpose 2 separate geographic data sets
+> from 2 different sources (servers), ideally one from a GetData request and
+> one from a GetMap Request.
+>
+> Possibility #1 for this would be to start with Jeff's web-based Digital
+> Earth viewer.  Possibility #2 would be to have an IDL based application
+> that could do GetMaps and GetDatas.   The swing-for-the-fences possibility
+> would be to get it implemented within a GIS program, such as the IDL-based
+> Freelook program that ENVI has.
+>
+> For Item #1, we would need a Design Specification, Implementation of
+> necessary modifications/enhancements to the DODS server, and an example
+> plug-in module (the simplest possible).
+>
+> For Item #2, we would need a detailed standards proposal for a GetData
+> protocol, design specs and implementation of necessary enhancements to the
+> DODS server and the IDL loaddods program.  I'm thinking then we should work
+> the client end, but then we may need some recommendations or additional
+> consulting...
+>
+
+
+>          Fortunately, we have found a new contract vehicle that relieves us
+> somewhat of the rigidity in procurement, meaning that we can "loosen" what
+> you are committed to actually deliver.
+>          Given that, I would still like to make a stab at a "GetData" type
+> of request, with the understanding that it might have to be revised based
+> on: (a) whether the WMT community accepts it and (b) whether anyone else
+> gets there first with something as good or better.  (However, this whole
+> thing started as a prototype effort, which implies some trial and potential
+> error; it was primarily the funding vehicles that were torquing our
+> methodology.)
+>          I used "GetData" in quotes, because the recommended requirements
+> submitted by NASA for the next iteration of WMT (see one of the messages
+> forwarded a few days ago) seems to imply they/we expect to modify GetMap
+> instead or make one called GetCoverage:
+>
+> >2.1. Ability to request numeric data which covers an area.
+> >Extend the GetMap request to return a coverage of data values (i.e. not a
+> >graphic) for a geographic area specified in the request.
+> >2.1a.   Demonstrate the use of GetMap/Coverage for sensor data and
+> >thematic data
+> >2.1b.  Demonstrate the use of GetMap/Coverage using at least HDF-EOS and
+> >GeoTIFF
+> >return types
+> >2.1c.  Demonstrate the use of GetMap/Coverage on geolocated data, e.g.
+> >grid and
+> >potentially geolocatable data, e.g. swatch.
+>
+> To help stay within the NASA/WMT umbrella, we could coordinate with the
+> NASA Digital Earth folks (from which those requirements came), who are only
+> to happy to have us strike off in this direction.  Having said that, I
+> should mention that there is another NASA/GSFC group--the DIAL
+> group--attempting a similar effort, based on HDF-EOS (hence its inclusion
+> above).
+
+
+
+\subsection{Overview}
+
+The remainder of this document is organized as follows:
+\begin{enumerate}
+\item Section~\ref{sec:overall} provides background for the specific
+requirements and relates those requirements to the rest of DODS.
+\item Section~\ref{sec:specific} lists the specific requirements for the
+  Cache.
+\item Following Section~\ref{sec:specific} are a list of acronyms and
+  abbreviations, a change log, a glossary and references.
+This document conforms to the IEEE~830-1998 \ac{SRS} recommended practice.
+Since the recommended practice covers a wide range of possible projects, some
+of the information in it is not appropriate for this part of \acs{DODS}.
+Where that is the case, or I think it is the case, I have marked the section
+N/A.
+
+\textbf{Bold face} type is used to indicate a word or phrase that may be
+found in the glossary.
+
+\emph{Emphasized} text contained in square brackets ([]) is used to indicate
+an editorial comment about the information that should be provided in a part
+of the \ac{SRS}.
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Overall Description}
+\label{sec:overall}
+
+\emph{[This section of the SRS should describe the general factors that
+  affect the product and its requirements. This section should not state
+  specific requirements. Instead, it provides a background for those
+  requirements, which should be defined in Section 3.]}
+
+\subsection{Product perspective}
+
+The most important features of the client-side cache are that it be fast and
+that it return correct responses. Users expect network-aware software to be
+smart enough to reuse previously accessed information when that is possible.
+In addition, the cache \emph{must} return correct responses because to do
+otherwise will undermine user's faith in DODS. This is particularly true
+because DODS provides (at the present) no `control panel' that enables users
+to turn off caching. Users can disable caching using a configuration file,
+but such files are complicated and likely to be ignored. Thus the DODS
+client-side cache must be fast but if it returns invalid responses, users are
+likely to feel frustrated.
+
+DODS clients receive information from \textbf{DODS
+  servers}\onlygloss{dods-server} which are enhanced \textbf{HTTP
+  servers}\onlygloss{http-server}.  Since a DODS server uses an HTTP server
+for all the network operations, DODS servers, in theory, don't need to
+support caching.  DODS clients currently support a client-side cache and the
+HTTP implementation handles the caching operations. In its current
+implementation, this cache assumes that any document is valid for 24 hours
+after it was received. This is the simplest form of caching and is prone to
+failure if, for example, a document changes more frequently than once per
+day.
+
+The DODS servers must be involved in any caching scheme that bases
+expiration times or validation checks on the actual information being cached.
+
+Caching as described in the HTTP~1.1 specification provides several features
+which DODS should use. The HTTP~1.1 cache enables servers to set an
+expiration date and time for each document. This is sent in the HTTP response
+header. In addition, HTTP~1.1 provides for conditional requests where the
+server can return either a complete document or a header only with a
+directive to fetch the document from the client's cache\footnote{Of course,
+  the client must only send a conditional request if it has a potential hit
+  in the cached already.}. The latter is part of the HTTP~1.1 cache
+validation system.
+
+To make use of more advanced features of the HTTP~1.1 caching system some
+changes will be required of the DODS servers. These changes are minor
+relative to the benefits of client-side caching; the bulk of the caching
+software we inherit from the \acs{W3C}'s libwww package.
+
+The following sections describe how the software operates within various
+constraints.
+
+\subsubsection{System interfaces}
+The principle system interface is the set of MIME headers in the request sent
+to, and the response sent from, the DODS server . The DODS server will look
+at these headers and be responsible for setting parameters in responses which
+are used by the caching system. These include the date of the response, the
+expiration time of response, etc. The DODS server interface is described
+briefly in the DODS Programmer's Guide~\cite{DODS:prog-guide}.
+
+\subsubsection{User interfaces}
+\label{sec:ui}
+\paragraph{The client-side configuration file}
+The cache is configured using the \texttt{.dodsrc} file. Each user should
+have this file in their home directory. DODS clients automatically should
+create the configuration file with default values if it does not exist. The
+file should be an ASCII file and may contain parameters that are not used by
+the cache (i.e., it might be used by other parts of DODS). See
+Figure~\ref{fig:config-file}.
+
+\begin{figure}
+\begin{center}
+\begin{verbatim}
+USE_CACHE=1
+MAX_CACHE_SIZE=20
+MAX_CACHED_OBJ=5
+IGNORE_EXPIRES=0
+CACHE_ROOT=/home/jimg/.dods_cache/
+\end{verbatim}
+\end{center}
+\caption{A sample client-side cache configuration file.}
+\label{fig:config-file}
+\end{figure}
+
+\paragraph{The server-side configuration file}
+\label{sec:server-config}
+The server-side configuration file must be unique for each DODS server at a
+site where there are several different servers. This file should contain
+information about expiration times for various responses. The file might
+contain information that is not important for the client-side cache.
+
+The server-side configuration files should ASCII files.
+
+To ensure that the files are unique for each server, the files should be
+named after both DODS and the particular server they configure. For a server
+with the dispatch script \texttt{nph-<xxx>}, the server-side configuration
+file should be named \texttt{dodsxxx.rc}. Note that these file are \emph{not
+  invisible} in contrast to the client-side configuration files.
+
+\subsubsection{Hardware interfaces}
+N/A
+
+\subsubsection{Software interfaces}
+\paragraph{libwww, version 5.2.x}
+libwww is the reference implementation of HTTP and is freely available from
+the \ac{W3C}. The libwww cache interface provides a way to configure libwww's
+cache. The client can change the cache's configuration based on the server
+version and client configuration information using the libwww cache
+interface. The libwww cache interface is described in the libwww
+documentation.
+
+\subsubsection{Communications interfaces}
+\paragraph{HTTP~1.1} DODS clients and servers use HTTP for all their network
+I/O.
+
+\subsubsection{Memory}
+Users should be able to place a limit on the maximum size of the cache since
+the cache. The default maximum size of the cache should be 20MB.
+
+\subsubsection{Operations}
+N/A
+
+\subsubsection{Site adaptation requirements}
+Users must have both the client-side configuration file and the cache
+directory tree. When a client first starts, it must check for these and
+create them if they do not exist. In the case where they are created, the
+configuration file should be initialized to the default parameters. These
+are:
+\begin{itemize}
+\item use the cache: true
+\item cache max size: 20 MB
+\item item max size: 5 MB
+\item ignore expires: false (meaning honor expires headers)
+\item cache root: \$HOME/.dods\_cache (the root of the cache directory tree)
+\end{itemize}
+
+Several users may share a single cache directory tree but cached responses
+are lock by individual users while they are being used. This is to ensure
+consistency during (possible) updates due to validation.
+
+Servers will also need configuration files, see
+Section~\ref{sec:server-config}.
+
+\subsection{Product functions}
+Functions for the cache:
+\begin{enumerate}
+\item Store copies of responses in the cache.
+\item Compare cached responses against expiration times.
+\item Use remote servers to validate and/or update cached responses.
+\item Retrieve responses from the cache.
+\end{enumerate}
+
+\subsection{User characteristics}
+N/A
+
+\subsection{Constraints}
+\emph{[This section lists any other items that may limit the developer's
+  options.]}
+
+\subsubsection{Regulatory policies}
+N/A
+
+\subsubsection{Hardware limitations}
+N/A
+
+\subsubsection{Interfaces to other applications}
+N/A
+
+\subsubsection{Parallel operations}
+N/A 
+
+\subsubsection{Audit functions}
+N/A 
+
+\subsubsection{Control functions}
+N/A 
+
+\subsubsection{Higher-order language requirements}
+N/A 
+
+\subsubsection{Signal handshake protocols}
+N/A 
+
+\subsubsection{Reliability requirements}
+The client-side cache should never return invalid responses when a properly
+operating HTTP~1.1 compliant cache would have returned a correct response.
+
+\subsubsection{Criticality of the application}
+N/A 
+
+\subsubsection{Safety and security considerations}
+N/A
+
+\subsection{Assumptions and dependencies}
+\label{sec:assumptions}
+The system designers can assume that the following are true:
+\begin{enumerate}
+\item Clients are linked with libwww 5.2.x or greater.
+\item DODS servers less than version 3.2 provide neither validation services
+  nor expiration times and the cache must use a default expiration time.
+\end{enumerate}
+
+\section{Specific Requirements}
+\label{sec:specific}
+\emph{[This section of the \ac{SRS} lists all of the software requirements to
+  a level of detail sufficient to enable designers to design a system to
+  satisfy those requirements, and testers to test that the systems satisfies
+  those requirements.]}
+
+\subsection{External interfaces}
+\subsubsection{User interfaces}
+The only user interface for the client-side cache is through configuration
+files\footnote{Maybe we should add a button to the progress indicator that
+  clears the cache?}. See Section~\ref{sec:ui}
+and Figure~\ref{fig:config-file}. 
+
+\subsubsection{Hardware interfaces}
+N/A
+
+\subsubsection{Software interfaces}
+There are two software interfaces: MIME and \acs{CGI}~1.1\cite{w3c:cgi}. 
+
+The MIME standard describes how information about both requests and responses
+are passed to and from HTTP and DODS servers. The caching software is uses
+the following MIME headers:
+\begin{itemize}
+\item Server
+\item Date
+\item Expires
+\item Cache-Control
+\item If-Modified-Since 
+\end{itemize}
+
+libwww is an implementation of HTTP~1.1. It is used by the client-side parts
+of the DODS \ac{DAP}.
+
+The CGI~1.1 standard describes how CGI programs are passed information from
+the HTTP request (i.e., how the headers are passed to the CGI program).
+
+\subsubsection{Communications interfaces}
+The HTTP~1.1 standard describes how client programs interact with HTTP
+servers. DODS uses only a subset of HTTP. We use only the GET method and not
+POST, PUT, etc.
+
+\subsection{System features}
+In this part of the \ac{SRS} `3.1 servers' means any DODS server at or before
+version 3.1.x and `3.2 servers' means any DODS servers at or greater than
+version 3.2.0.
+
+The requirements in this section are ranked 1--5, where 1 is the highest
+importance and 5 of lowest importance.
+
+\subsubsection{3.1 servers}
+\begin{enumerate}
+\item Because 3.1 servers provide no support for expiration times or
+  validation, the cache must use a client-specified default expiration time.
+  $(1)$
+\item The default expiration time should be configurable on a per-client
+  basis using the client-side configuration file. $(2)$
+\item Different default expiration times may be listed in the default
+  configuration file for various URLs using UNIX file globbing patterns. $(5)$
+\end{enumerate}
+
+\subsubsection{3.2 servers}
+\paragraph{Expiration}
+\begin{enumerate}
+\item 3.2 servers will send an expiration header with all responses. $(3)$
+\item For any response which should not be cached, the expiration time will
+  be the current time plus the response will contain a \texttt{Cache-Control:
+    no-cache} header. $(3)$
+\item The expiration times for various responses from a specific server must
+  be configurable. The configuration should enable a person who installs or
+  maintains a server to set specific expiration times for groups of
+  responses, individual responses and a default. $(3)$
+\item The expiration times should be specified using the server-side
+  configuration file. They should use regular expressions or UNIX file
+  globbing to describe groups of responses. $(5)$
+\item Expiration header values should be set using a conservative algorithm
+  so that a client's cache never (or hardly ever?) will treat a cache entry
+  as valid when it is in fact bad. $(3)$
+\end{enumerate}
+
+\paragraph{Validation}
+\begin{enumerate}
+\item 3.2 servers must support conditional requests which use the
+  \texttt{If-Modified-Since} header. ``A \texttt{GET} method with an
+  \texttt{If-Modified-Since} header and no \texttt{Range} header requests
+  that the identified entity be transferred only if it has been modified
+  since the date given by the \texttt{If-Modified-Since}
+  header''\cite{w3c:http}. $(3)$
+\item Servers must support \texttt{Last-Modified} headers since these are
+  requied for conditional requests. (3)
+\item A more advanced server could set the value of the
+  \texttt{Last-Modified} header based on the constraint since one variable in
+  a dataset might have been modified more recently than others. If a client
+  is only interested in an older variable, it should be able to use a cached
+  value if one exists, even if some other variables have changed more
+  recently.\footnote{Thanks to Benno Blumenthal for bringing
+    \texttt{Last-Modified} to my attention.} (5)
+\item Clients which communicate with 3.2 servers may use conditional requests
+  for any entity which they have previously cached, even if that cache entry
+  has gone stale. $(3)$
+\item 3.2 servers which serve data stored in files should use file
+  modification times to answer a conditional \texttt{GET}. $(3)$
+\item 3.2 servers which serve data from stores other than files (e.g., RDBs)
+  should use the latest modification time for the requested data. These
+  servers should do the best they can, always erring on the side of not
+  validating an old entry. $(4)$
+\item Validation for time series data should take into account that older
+  data may be reprocessed so actual modification times should be used, not
+  the times associated with data collection. $(4)$
+\end{enumerate}
+
+\paragraph{Cached Data}
+Data responses can be cached just as all other responses. However, because
+one data request might be subsumed by another, the HTTP~1.1 exact-match
+algorithm for detecting cache hits will result in unnecessary network
+accesses. 
+\begin{enumerate}
+\item When a cache-aware client makes a data request, it should determine if
+  a previously received response can be used to satisfy that request. $(4)$
+\item To reduce the complexity of the cache, the client should only check for
+  older, cached, data responses that completely subsume the current request.
+  $(4)$
+\item When a subsuming response is found, the client must read that response
+  and use it to fulfill the request. $(4)$
+\end{enumerate}
+
+\subsection{Performance requirements}
+\subsection{Design constraints}
+\subsection{Software system attributes}
+\subsection{Other requirements}
+
+\appendix
+
+\section{Acronyms and Abbreviations}
+\begin{acronym}
+\input{../../boiler/acronyms.tex}
+\end{acronym}
+
+\section{Change log}
+
+\begin{verbatim}
+$Log: WMT-server.tex,v $
+Revision 1.2  2000/07/20 21:35:58  jimg
+Minor changes
+
+Revision 1.1  2000/06/28 22:05:54  jimg
+Added
+\end{verbatim}
+
+\printgloss{dods-glossary}
+
+\raggedright
+
+\bibliography{dods}
+
+\end{document}

@@ -1,0 +1,215 @@
+
+% Intellectual Property Inventory for DAS, llc
+%
+% 8/23/2000 jhrg
+
+\documentclass{article}
+%\usepackage{html}
+%\usepackage{psfig}
+%\usepackage{changebar}
+%\usepackage{acronym}
+\usepackage{gloss}
+\usepackage{xspace}
+
+% Note: to get the gloosary to work, run bibtex in the registry.gls.aux file,
+% then latex registry, then bibtex *.gls, then latex. Also, make sure to set
+% your BST and BIBINPUTS environment variables so that the BST and BIB files
+% will be found.
+\makegloss
+
+% Change paragraph typesetting; eliminate indenting and add more space between
+% paragraphs. 2/15/2000 jhrg
+\setlength{\parindent}{0em}     % Amount of indentation
+\addtolength{\parskip}{1ex}     % Vertical separation
+
+\newcommand{\dap}{\rm {\small DAP}\raise.5ex\hbox{\footnotesize ++}\xspace}
+
+\begin{document}
+
+\title{DAS Intellectual Property Inventory}
+\author{James Gallagher\thanks{Data Access Software, {\sc L.L.C.}, 
+    jgallagher@gso.uri.edu}}
+\date{\today \\ $Revision$ }
+
+\bibliographystyle{plain}
+
+\maketitle
+\tableofcontents
+
+\section{Software by Creation Date}
+
+This section lists each individual software component developed by DODS.
+Unless otherwise noted, all the software is copyright URI/MIT. See
+Appendix~\ref{URI-copyright}. For each piece of software the date given is
+the date on which the software was completed. If substantial changes were
+made to the software after that date, those changes and their dates are also
+given. 
+
+ \subsection{The DAP++ library}
+
+\begin{itemize}
+\item 1994/8 The transport modules
+\item 1995/12 The constraint expression evaluator
+\end{itemize}
+
+\subsection{Servers}
+
+\begin{itemize}
+\item 1994/12 NetCDF. This server was upgraded from using the netCDF
+    2.x API to the netCDF 3.x API on 1999/7.
+\item 1995/1 JGOFS
+\item 1996/9 DSP
+\item 1996/9 HDF\footnote{California Institute of Technology holds the
+    copyright to this software. See Appendix~\ref{HDF-copyright}.}
+\item 1996/10 Matlab
+\item 1998/4 FreeForm
+\end{itemize}
+
+\subsection{Tools}
+
+\begin{itemize}
+\item 1998/3 \texttt{asciival}
+\item 1999/4 \texttt{www\_int}\footnote{Based on a design from 1997/7.}
+\end{itemize}
+
+\subsection{Clients}
+
+\begin{itemize}
+\item 1995/7 NCView X Window system client
+\item 1996/10 Matlab command line client
+\item 1997/6 Matlab graphical client
+\item 1999/6 IDL command line client\footnote{This is the CVS entry date; the
+    software was written under contract to URI by Research Systems, Inc.
+    a few months earlier.}
+\end{itemize}
+
+\section{Features by date of introduction}
+
+This section lists dates features were introduced into different software
+components. 
+
+N.B.: This is very slow going. I'll do this for the \dap code and we can all
+decide if this needs to be done for the other software. 
+
+\subsection{The DAP++ library}
+\begin{table}[h]
+\caption{Features in the \dap and the date they were added}
+\label{tab:dap-features}
+\begin{minipage}{\linewidth}
+\begin{center}
+\begin{tabular} {|rl|} \hline
+1994/12 & Attribute vectors \\ \hline
+
+1995/3 & Changes to the transmission and representation of strings \\
+%1995/11 & Vector class introduced \\ 
+\hline
+
+1996/1 &  Multiple virtual connections \\
+%1996/2 &  Parser argument class\\
+1996/3 &   Constraint expressions \\
+1996/5 &   Constraint expression functions\\
+1996/6 &  First version of the progress indicator\\
+1996/8 &   Int16, Float32 types\\ \hline
+
+1997/5 &   Aliases to the attributes \\
+1997/5 &   Lexical scoping to the attributes \\
+%1997/8 &   DODSFilter class (Unfies some server operations)\\
+%1997/9 &   DataDDS class\\
+1997/9 &  Constraint expressions fully realized\footnote{The earlier
+  implementation did not handle all possible operations as described in the
+  design, only the more common ones.} \\
+1997/12 &   Reference manual comments to header files\\ \hline
+
+1998/2 &  Negotiated compression of data responses \\
+1998/9 &  Shorthand variable names in CEs \\
+1998/10 & Synthetic variables for CEs \\ \hline
+
+1999/1 &  Grid Selection Expressions constraint function \\
+1999/1 &   UInt16 datatype \\
+1999/2 &   Accept-Types MIME header to HTTP request \\
+1999/3 &   Int16, \ldots, types to the attributes \\
+%1999/3 &  Constraint relational operators implemented as templates\\
+%1999/5 &  InternalErr class\\
+1999/12 &   Client-side caching \\ \hline
+
+%2000/1 &  Exception handling\\
+2000/3 &  \dap split into gui and non-gui versions \\
+2000/4 &  New progress indicator \\
+2000/6 &  PC Port \\ \hline
+\end{tabular}
+\end{center}
+\end{minipage}
+\end{table}
+
+\clearpage
+\appendix
+
+\section{URI-MIT Copyright}
+\label{URI-copyright}
+\begin{verbatim}
+(c) Copyright 1994-2000 by
+The University of Rhode Island and The Massachusetts Institute of Technology
+
+Portions of this software were developed by the Graduate School of
+Oceanography (GSO) at the University of Rhode Island (URI) in collaboration
+with The Massachusetts Institute of Technology (MIT).
+ 
+Access and use of this software shall impose the following obligations and
+understandings on the user. The user is granted the right, without any fee
+or cost, to use, copy, modify, alter, enhance and distribute this software,
+and any derivative works thereof, and its supporting documentation for any
+purpose whatsoever, provided that this entire notice appears in all copies
+of the software, derivative works and supporting documentation.  Further,
+the user agrees to credit URI/MIT in any publications that result from the
+use of this software or in any product that includes this software. The
+names URI, MIT and/or GSO, however, may not be used in any advertising or
+publicity to endorse or promote any products or commercial entity unless
+specific written permission is obtained from URI/MIT. The user also
+understands that URI/MIT is not obligated to provide the user with any
+support, consulting, training or assistance of any kind with regard to the
+use, operation and performance of this software nor to provide the user
+with any updates, revisions, new versions or "bug fixes".
+
+THIS SOFTWARE IS PROVIDED BY URI/MIT "AS IS" AND ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+EVENT SHALL URI/MIT BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL
+DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTUOUS
+ACTION, ARISING OUT OF OR IN CONNECTION WITH THE ACCESS, USE OR PERFORMANCE
+OF THIS SOFTWARE.
+\end{verbatim}
+
+\section{Caltech Copyright}
+\label{HDF-copyright}
+\begin{verbatim}
+Copyright (c) 1996, California Institute of Technology.  
+ALL RIGHTS RESERVED.   U.S. Government Sponsorship acknowledged. 
+
+THESE TERMS APPLY TO ALL USERS OF THIS SOFTWARE.  Access and use of
+this software shall impose the following obligations and
+understandings on the user.  The user is granted the right, without
+any fee or cost, to use, copy, modify, enhance and distribute this
+software, and any derivative works thereof, and its supporting
+documentation for research purposes only, provided that this entire
+notice appears in all copies of the software, derivative works and
+supporting documentation.  The names Caltech or JPL however, may not 
+be used in any advertising or publicity to endorse or promote any
+products or commercial entity unless specific written permission is
+obtained from Caltech. The user also understands that Caltech/JPL is
+not obligated to provide the user with any support, consulting,
+training or assistance of any kind with regard to the use, operation
+and performance of this software nor to provide the user with any
+updates, revisions, new versions or "bug fixes".
+
+THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL CALTECH BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE
+ACCESS, USE OF PERFORMANCE OF THIS SOFTWARE.
+\end{verbatim}
+
+\end{document}

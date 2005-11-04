@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- XML file produced from file: release-process.tex
+     using Hyperlatex v 2.6 (c) Otfried Cheong
+     on Emacs 21.3.1, Tue Jun 22 17:33:20 2004 -->
+<head>
+<title>OPeNDAP Software Release Process -- 3 CVS Checklists</title>
+
+<style type="text/css">
+.maketitle { align : center }
+div.abstract { margin-left: 20%; margin-right: 10%; }
+h3.abstract  { align : center }
+div.verse, div.quote, div.quotation {
+  margin-left : 10%; 
+  margin-right : 10%;
+}
+</style>
+
+<link rel=stylesheet
+        href="http://unidata.ucar.edu/packages/dods/css/dods-paper.css" type="text/css">
+</head>
+<body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="rel_4.html"><img border="0" alt="4 Version Numbers" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="rel.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="rel_2.html"><img border="0" alt="2.1.3 Making source and binary distribution files for a formal release" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>3 CVS Checklists</b></td></tr></table>
+<h1>3 CVS Checklists</h1>
+<p>Using CVS can be complicated. This section contains some short checklists for
+common CVS operations.
+
+<h2><a name="id1">3.1 Prepare the code to be a Release Candidate</a></h2>
+
+<p>  <p class="note"><b>NOTE: </b>For the DAP software, some of these steps must be done in the
+  <tt>DODS&#95;ROOT</tt> and <tt>DODS&#95;ROOT/etc</tt> directories in addition to
+  <tt>DODS&#95;ROOT/src/dap</tt>. For the other software, follow these in just
+  the <tt>DODS/src/<em>component</em></tt> directory.</p>
+<ol><li>Check that the <tt>configure</tt> script is up-to-date WRT
+  <tt>etc/aclocal.m4</tt>. Use <tt>make configure</tt>.
+<li>Rebuild the dependencies using <tt>make depend</tt>.
+<li>Examine the directory for files that should have been removed or are
+  leftover from development/testing and remove those by hand. In some cases
+  files will need to be removed from CVS also (<tt>cvs rm -f <em>files</em></tt>).
+<li>Run the tests. Do this starting from a clean set of sources
+  (<tt>make clean; make check</tt>).
+<li>Update release number in <tt>version.h</tt>. Use the three part version
+  numbers. Check this file in and add today's date as the log entry. This
+  makes figuring out when a particular version was made simpler (although
+  there are other ways). See Appendix&nbsp;<a href="rel_4.html">4</a> for information
+  about version numbers.
+<li>Update the <tt>ChangeLog</tt>. Scan changed log files using
+  <tt>cvsdate "&gt;<em>date of last version</em>"</tt>.<sup><a href="rel_8.html#id4">4</a></sup>
+<li>Make sure that all files in the directory are checked into CVS. Use
+  <tt>cvs ci</tt>. Use the <tt>-l</tt> flag with <tt>cvs ci</tt> in
+  <tt>DODS&#95;ROOT</tt> to check in only that directory and avoid recurring
+  through all the software.
+<li>Examine the INSTALL and README files. Are they correct? Anything new
+  missing?
+<li>Look at the README/INSTALL files in DODS/etc <em>and</em> DODS/docs. Are
+  they correct? The first set of README/INSTALL files are sent with both
+  source and binaries, the second set are bundled into the binary
+  distributions only.
+</ol>
+
+<h2><a name="id2">3.2 Tag and merge the branch</a></h2>
+
+<ol><li>Go to the CVS directory that holds the release code and tag it with the
+  same release number as is in the version.h file.
+<li>Merge back into the trunk. To merge the changes made in the branch
+  software back to the trunk, do the following: 
+  <ol><li>Go to the CVS directory that holds the trunk software.
+  <li>Use <tt>cvs update -j <em>release-branch-tag</em></tt> for the first
+    merge
+  <li>Use <tt>cvs update -j <em>previous-merge-tag</em> -j <em>release-branch-tag</em></tt> for subsequent merges<sup><a href="rel_8.html#id5">5</a></sup>
+  </ol>
+  See Appendix&nbsp;<a href="rel_4.html">4</a> for an explanation of the relation
+  between version numbers and CVS tags.
+<li>In the <CODE class="literal">ChangeLog</CODE> file in the trunk software, record the cvs command
+  used to do the merge and the arguments to <tt>-j</tt> that should be used
+  for the next merge.
+<li>To test for conflicts use: 
+<p>  <pre class="ti">
+    alias conflict='grep -l "&lt;&lt;&lt;&lt;&lt;&lt;" `find ! -type d ! -name *.cft`'
+  </pre>
+<p>  and run the results through the
+  <tt>resolve&#95;conflicts.pl</tt> script. Some files get munged by this so
+  examine the result.<sup><a href="rel_8.html#id6">6</a></sup>
+<li>After merging each directory, add a note in ChangeLog and check in the
+  code using <tt>Merged with <tt>release-&lt;rev&gt;</tt></tt> as the log entry.
+<li>Save and check in the changes that result from the merge.
+<li>Try to compile the newly merged code. Resolve problems introduced by
+  the merge.
+</ol>
+
+<hr /><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, 
+  2004/01/09, Revision: 1.18</address><br />
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="rel_4.html"><img border="0" alt="4 Version Numbers" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="rel.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="rel_2.html"><img border="0" alt="2.1.3 Making source and binary distribution files for a formal release" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>3 CVS Checklists</b></td></tr></table></body></html>

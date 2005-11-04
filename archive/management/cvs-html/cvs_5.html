@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- XML file produced from file: using-cvs.tex
+     using Hyperlatex v 2.6 (c) Otfried Cheong
+     on Emacs 21.3.1, Wed Jun 23 13:54:09 2004 -->
+<head>
+<title>Using CVS -- 5 Merging</title>
+
+<style type="text/css">
+.maketitle { align : center }
+div.abstract { margin-left: 20%; margin-right: 10%; }
+h3.abstract  { align : center }
+div.verse, div.quote, div.quotation {
+  margin-left : 10%; 
+  margin-right : 10%;
+}
+</style>
+
+<link rel=stylesheet
+        href="http://unidata.ucar.edu/packages/dods/css/dods-paper.css" type="text/css">
+</head>
+<body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="cvs_6.html"><img border="0" alt="6 Useful commands" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="cvs.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="cvs_4.html"><img border="0" alt="4 Branching" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>5 Merging</b></td></tr></table>
+<h1>5 Merging</h1>
+
+<p>Suppose you create a branch and make several releases from it. All the while,
+other developers are adding changes to the trunk and changes/fixes to the
+released code. As each successive release is made, the changes associated
+with that release should be merged back into the trunk software. However, if
+the entire branch is merged back onto the trunk some changes/fixes will be
+lost -- they will be undone.<sup><a href="cvs_8.html#id3">3</a></sup> Here's
+how to work around that.
+<pre>
+
+                   --------------------------------
+                  /       ^           ^           ^
+                 /        3-1-RC1   3-1-0       3-1-1
+                /
+     3-1       /
+       \      /
+        \--&gt; /
+   -------------------------------------------------------
+                  Trunk --&gt;
+</pre>
+<p>Figure: The CVS trunk and several tags. The 3-1 tag defines the code that
+forms the basis for a release, 3-1-RC1 is the first release candidate for
+version 3.1, the tag 3-1 is the first code sent to users and 3-1-1 is first
+set of fixes for that code. (The tags in the figure don't include the word
+<CODE class="literal">release</CODE> because that made it too crowded.)
+<p>First, tag every release point. Second only merge revisions with tags -- this
+will keep things reasonably sane. Referring to the figure above, once the
+3-1-RC1 tag is created (but before any further work is done) the software
+could be diagrammed as:
+<pre>
+                   --------
+                  /       ^
+                 /        3-1-RC1
+                /
+     3-1       /
+       \      /
+        \--&gt; /
+   -------------------------------------------------------
+                  Trunk --&gt;
+</pre>
+<p>The command to merge the `3-1-RC1 changes' back onto the trunk is:
+<p><pre class="it">
+cvs update -j 3-1
+</pre>
+<p>This command is run in a directory that contains the trunk software.
+<p>After a while more changes are made and the 3-1-0 tag is created. A diagram
+of the software now looks like:
+<pre>
+                   --------------------
+                  /       ^           ^
+                 /        3-1-RC1   3-1-0
+                /
+     3-1       /
+       \      /
+        \--&gt; /
+   -------------------------------------------------------
+                  Trunk --&gt;
+</pre>
+<p>To merge the changes made between the 3-1-RC1 and 3-1-0 tags, use:
+<p><pre class="it">
+cvs update -j 3-1-RC1 -j 3-1
+</pre>
+<p>this command merges the changes between the two tags without removing the
+changes between the start of the branch and the tag 3-1-RC1 (which have
+already been merged). Note that the 3-1-0 tag is not used in this command. It
+is, however, a good idea to make it before doing the merge to make sure that
+the tag is created since subsequent merges will depend on it.
+<hr /><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, 
+  2004/06/23, Revision: 1.8</address><br />
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="cvs_6.html"><img border="0" alt="6 Useful commands" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="cvs.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="cvs_4.html"><img border="0" alt="4 Branching" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>5 Merging</b></td></tr></table></body></html>

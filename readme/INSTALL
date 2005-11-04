@@ -1,0 +1,214 @@
+
+$Id$
+
+To build and install DODS you should only need to type a few commands. In
+fact, if you're working on one of our supported platforms, you can get
+pre-built software and skip the building steps altogether. This can simplify
+getting and using DODS because it will save time and means that you do not
+need various tools required to build DODS.
+
+If the build fails in one of the subdirectories, change to that directory and
+read the README and INSTALL files there. They may contain information that
+will help you. If not and you cannot get that part of DODS to build send
+email to support@dods.gso.uri.edu describing the problem and we will try to
+get it sorted out.
+
+NOTE: The following directions titled `BUILDING DODS' describe how to build
+DODS from the DODS_ROOT directory. There a single `configure' script and
+Makefile will build and install the entire system. However, each of the
+subdirectories within DODS_ROOT contains parts of DODS and they have their own
+configure scripts and Makefiles. You *can* run each of these individually if
+you want to. If so, look in the master Makefile for the variable CORE; build
+the core software in those directories in the order they are listed there. In
+addition, you should run both `make' and `make install' if you build each
+directory by hand. Thus to build the core software you would cd to dap and
+run `make' followed by `make install'.
+
+GETTING DODS:
+
+1) ftp the DODS core software and one or more of the sample servers and
+client libraries. You may also want to get the documentation, but currently
+user documentation is rather limited. You should transfer two to three
+compressed tar files named `DODS-core-<version>.tar.gz',
+`DODS-packages-<version>.tar.gz', `DODS-netcdf-<version>.tar.gz', etc. All
+the files that end with `.gz' are compressed using the GNU compress utility
+`gzip'. If you don't have gzip you can get the uncompressed source code from
+our ftp site as well as the main GNU ftp site prep.ai.mit.edu. Make sure to
+transfer the compressed files using ftp's binary mode. When expanded, DODS
+will take up about 35 MB of space (this includes the core software, packages
+and all the components). Most people are not interested in building all of
+DODS so the space required will be less.
+
+2) Many people ask `What files do I need?'. When building from the source
+code you *need* the DODS-packages-<ver>.tar.gz and DODS-core-<ver>.tar.gz
+tar files. Beyond that all the components are independent except for the
+Matlab GUI. So, if you want the netCDF server you only need to get the
+DODS-netcdf-* tar file. Similarly, for the HDF server all you need (beyond
+the core and packages code) is the DODS-hdf-* tar file. 
+
+For the Matlab GUI you must get both the matlab gui code itself
+(DODS-matlab-gui-*) and the writeval client software (DODS-writeval-*).
+
+Note: If you use our web page for downloading the software (either binaries
+of source code) you can pick and choose by component and the get a tar file
+that includes all the pieces you need. It is simpler than doing the ftp
+manually. However, if you are working with a beta release of DODS you cannot
+use the web page since beta software is not available that way.
+
+3) Choose a place to uncompress and expand the tar files. When the DODS-core
+tar file is expanded, it will create a directory `DODS' in the current
+directory which contains various subdirs like `src', `doc', etc. You don't
+need to create the top-level DODS directory
+
+    % gzip -c -d DODS-core-2.14c.tar.Z | tar -xf -
+
+In the rest of this file, the DODS directory will be referred to as
+DODS_ROOT.
+
+BUILDING DODS:
+
+0) Steps 1, 2 and 3 describe building DODS using the top level makefile.
+However, you can build it by hand by first running `configure' at the top
+level and then descending into each subdirectory in DODS_ROOT/src, running
+configure there and then running `make' followed by `make install'. The one
+caveat is that you must first compile, link and install the software in
+DODS_ROOT/src/dap before any of the other software. This is exactly what the
+top level makefile does, but performing the steps by hand helps when there's a
+problem with building DODS on you system.
+
+1) First build the packages required by DODS.
+ 
+1a) CD to DODS_ROOT/packages and run configure. This script will properly
+configure the third-party packages for use with DODS. For now this means that
+DODS has its own copies of libwww, libz and tcl/tk and that they are
+installed in the DODS_ROOT/packages tree. This keeps them from messing up
+other copies of these packages you might already have on your computer.
+
+1b) make World. This will make, install and clean up all of the third-party
+code. Once make World completes look in DODS_ROOT/packages/lib and include.
+You should see libwww.a, libz.z, libtcl.a, ... in the lib directory and
+related include files in the include directory.
+
+If you want to make a log of the make process you can do that by typing:
+   
+   csh: make World |& tee World.log 
+
+or
+
+   sh: make World 2>&1 | tee World.log 
+
+2) Build the DODS software.
+2a) Run configure in DODS_ROOT. That script will create the top level Makefile
+tailored to your system. 
+
+2b) Run `make World' (synonymous with just `make') in this directory. You'll
+need a total of about 150 MB to build and install *all* of DODS. The complete
+build takes about half an hour on a Sun SparcStation 5 
+
+    % make World
+
+Note that `make World' will run configure in each of the subdirectories of
+DODS_ROOT/src and then perform the compilation and linking operations in
+each of those directories. 
+
+2c) if all of this has gone according to plan, there should be some libraries
+in DODS_ROOT/lib and some programs in DODS_ROOT/etc and DODS_ROOT/bin. 
+
+    % ls $(DODS_ROOT)/lib
+    CVS/          libdap++.a    libnc-dods.a
+
+    % ls $(DODS_ROOT)/etc
+    COPYING		 README		  install-sid*	   nc_dods*
+    COPYING.LIB-2.0	 configure.in	  localize.sh*	   send-pr*
+    CVS/		 depend.sh*	  nc*		   send-pr.el
+    Makefile.in		 geturl*	  nc_das*
+    Makefile.in~	 install-sh*	  nc_dds*
+
+    % ls $(DODS_ROOT)/bin
+    CVS/	  dncdump*  dncview*
+
+or something similar. You might not have exactly the same files since these
+listings are from my copies of the development version, but it should be
+close. 
+
+The `DODS_ROOT/etc' directory contains support files (used during the build)
+as well as the data servers (in the above listing the four programs `nc',
+`nc_das', `nc_dds' and `nc_dods' comprise a server - the sample netcdf
+server). 
+
+The `DODS_ROOT/bin' directory contains user programs which have been re-linked
+with the DODS surrogate library implementation of an API. In the listing
+above the two netcdf user programs `ncdump' and `ncview' have be re-linked wit
+the DODS-netcdf library (and the resulting two programs have been renamed
+`dncdump' and `dncview' so as not to confuse them with the original
+programs).
+
+For more information on these programs (both the server and the two user
+programs) see the README and INSTALL files included with the netcdf sample
+software (in DODS_ROOT/src/http/nc-dods and DODS_ROOT/src/http/jg-dods).
+
+See the `NOTE' above about building each directory separately by hand. If you
+plan on doing any development work with DODS, you should at least look into
+this option. In particular, that are some special targets in the individual
+makefiles that are not in the master makefile. The most important of these is
+`check' and/or `test'. These targets build (and run if you have the DejaGNU
+testing framework) various tests of the software. You don't need to build
+these tests to report a bug - but if you are developing your own software
+based on DODS, they could prove very valuable.
+
+If you want to compile DODS from the source code here is what you'll need:
+       
+       GNU gcc/g++ version 2.8.x: You may be able to use another C++ compiler,
+       but we don't have the resources to check them all out - we know g++ is
+       available for all of our supported machines. You *should* be able to
+       use later versions of g++ and gcc 2.7.x may work too. DODS won't build
+       with gcc 2.6 or earlier.
+
+       GNU libg++ version 2.8.x: The DODS core software is written in C++ and
+       makes use of classes in libg++. You must have this, even if you don't
+       compile it with g++.
+
+       GNU Make version 3.72: You need a Make tool that supports VPATH; many
+       modern ones do, but we are certain about GNU's.
+
+       GNU Flex and Bison (lex and yacc clones). Flex 2.5.x and Bison 1.24 or
+       later. 
+
+To run DODS and make all use of its features you will need the following
+software:
+
+       libraries for tcl/tk and expect: In order to use the GUI built into
+       the DODS core software you must have the tcl/tk libraries (versions
+       7.6/4.2 or later) and version 5.21 or later of libexpect. These are
+       available at http://www.sunlabs.com/research/tcl/ and
+       http://elib.cme.nist.gov/pub/expect/index.html in addition to the DODS
+       support-packages directory. At build-time the configure script will
+       try to locate these libraries and will configure the source code
+       appropriately - if the libraries cannot be found support for the GUI
+       will *not* be enabled in the software. These libraries are required
+       when relinking programs with DODS libraries.
+
+       In addition, you will need the tcl/tk interpreter `wish'. This, as
+       with gzip, must be available at runtime. It may be either on the
+       user's path or in the DODS_ROOT/etc directory.
+
+Notes:
+1) You may be able to use versions of the compiler/libg++ or make that are
+newer than those listed here.
+
+2) You need libg++.a to re-link existing user programs for use with DODS -
+*even* if you do not compile the DODS source code.
+
+3) All of the GNU development tools may be ftp'd from GNU at prep.ai.mit.edu
+or one of their many mirror sites (in addition to the sites listed in their
+ftp banner message, you can try ftp.orst.edu, wuarchive.wustl.edu or
+ftp.uu.net). 
+
+4) We welcome contributions to DODS.  If you want to contribute to the body
+of DODS software, either by helping us with the continued development of the
+core software or by developing your own server or API reimplementation, we
+suggest that you get a more complete GNU development environment. The WWW
+page http://dods.gso.uri.edu/DODS/manage/software/software.html describes the
+DODS development environment.
+
+jhrg

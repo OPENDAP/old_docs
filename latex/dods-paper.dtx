@@ -1,0 +1,1954 @@
+% \iffalse
+%
+%  Tools for short DODS papers.
+%  adapted from dods-book.dtx
+%
+%  $Id$
+%
+% \fi
+
+% \MakeShortVerb\|
+%
+%
+% \DoNotIndex{\@@par,\@M,\@afterindenttrue,\@dotsep,\@dottedtocline}
+% \DoNotIndex{\@plus,\@pnumwidth,\relax,\rulewidth,\setlength,\\}
+% \DoNotIndex{\@restonecolfalse,\@restonecoltrue,\@svsechd,\@tempdima}
+% \DoNotIndex{\@tempskipa,\@tocrmarg,\@xsect,\addtolength,\advance,\ }
+% \DoNotIndex{\begin,\begingroup,\bf,\bfseries,\bgroup,\c@secnumdepth}
+% \DoNotIndex{\c@tocdepth,\def,\egroup,\else,\em,\end,\endgroup,\ensuremath}
+% \DoNotIndex{\fi,\hb@xt@,\hbox,\hfil,\hfill,\hrule,\hskip,\hss,\ht}
+% \DoNotIndex{\if@mainmatter,\if@restonecol,\if@twocolumn,\ifdim,\ifnum}
+% \DoNotIndex{\ifodd,\ifthenelse,\interlinepenalty,\kern,\leavevmode}
+% \DoNotIndex{\m@ne,\m@th,\mkern,\newcommand,\newcounter,\newlength}
+% \DoNotIndex{\newpage,\nobreak,\noindent,\normalcolor,\normalsize}
+% \DoNotIndex{\onecolumn,\p@,\parfillskip,\penalty,\renewcommand}
+% \DoNotIndex{\renewenvironment,\rule,\ruledist,\strut,\textbf,\textheight}
+% \DoNotIndex{\sffamily,\@minus,\@mkboth,\arabic,\EmptyP,\index}
+% \DoNotIndex{\setcounter}
+% \DoNotIndex{\textsc,\textsf,\the,\tt,\twocolumn,\unhbox,\vbox,\vfil}
+% \DoNotIndex{\vfilneg,\vskip,\vspace,\wd,\z@,\DoNotIndex}
+%
+% \iffalse
+%<*driver>
+\documentclass{ltxdoc}
+
+\EnableCrossrefs         
+ %\DisableCrossrefs % Say \DisableCrossrefs if index is ready
+\CodelineIndex
+\RecordChanges                  % Gather update information
+ %\OnlyDescription  % comment out for implementation details
+ %\OldMakeindex     % use if your MakeIndex is pre-v2.9
+\setlength\hfuzz{15pt}  % dont make so many
+\hbadness=7000          % over and under full box warnings
+\begin{document}
+   \DocInput{dods-paper.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+%
+% \GetFileInfo{dods-paper.cls}
+% \title{Tools for Writing DODS Papers}
+% \author{Tom Sgouros}
+% \maketitle
+%
+% \begin{abstract}
+%    This is a collection of tools and templates for generating
+%    postscript and html versions of various kinds of documents 
+%   written by the DODS group.
+% \end{abstract}
+%
+% \changes{1.0}{03/05/12}{Created}
+%
+%
+% \newcommand{\hlx}{Hyperlatex}
+% \newcommand{\latex}{\LaTeX}
+% \newcommand{\bck}{$\backslash$}
+%
+% {\parskip 0pt \tableofcontents }
+%
+% \section{Introduction}
+%    This file contains a collection of \latex\ macros and \hlx\ 
+%    definitions and assorted instructions for their use.  The whole
+%    is designed to enforce a set of fairly sturdy document templates
+%    for my writing.  Documentation written with these
+%    templates can be easily transformed into either PostScript, PDF or
+%    HTML output.
+%
+%    (To be done:  Include direct PDF output, instead of via ps2pdf.)\index{PDF}
+%
+%    These are the files defined here.
+%
+%    \begin{description}
+%      \item[dods-paper.cls] The definition of the \latex\ dods-paper
+%        class.  This should appear in the search path for these things:
+%        \$TEXINPUTS.  The directory \$DODS\_ROOT/doc/latex is usually
+%        on the search path.
+%      \item[dods-paper.hlx] These are \hlx\ definitions that match the
+%        \latex\ definitions in the .cls file.  \hlx\ reads this file
+%        when it parses an input file with |\documentclass{dods-paper}|.
+%        This and other |.hlx| files must be put in the \hlx\ class
+%        directory.
+%      \item[dods-paper.css] A style sheet to use with the converted
+%        \hlx\ files.  
+%      \item[mktextex] A little script to get file names on the pages
+%        for draft output.  If you never use draft mode, you can safely
+%        ignore this.  Some versions of docstrip make this come out as
+%        |mktextex.tex|, and have \latex-style comments, so be warned.
+%      \item[dods-ex.tex] A (too-simple) example document using these
+%        styles.  Gives the basic idea, but no more than that.  You
+%        still need to read this document.
+%    \end{description}
+%
+%    The files are not described in order.  Rather, the functions are
+%    described in order, and the \latex\ and \hlx\ solutions are
+%    described under each section.  This may be confusing to read,
+%    but it is a better way to maintain things.
+%
+% \section{Using the Class}
+%
+%    The only option added to the article class is `draft', which causes
+%    more verbose footers, specifically including the file name and
+%    the date of processing, which may be different than the |\date|
+%    command parameter.  The regular article options are still in
+%    force.  These are the important ones for DODS documents.
+%
+%    \begin{description}
+%      \item[10pt,11pt,12pt] Size of default text.
+%      \item[a4paper,a5paper,b5paper,letterpaper,legalpaper,executivepaper]%
+%      Paper sizes. 
+%      \item[landscape] Print your document sideways.  This is not
+%      currently supported.
+%      \item[twocolumn] Print document in two columns.  This will
+%      change the paragraph styles.  One-column gets you no indent,
+%      ragged right, space between paragraphs.  Two columns gets you
+%      indented paragraphs, justified text, and no space between
+%      paragraphs. 
+%      \item[titlepage] A separate title page, suitable for removal.
+%      If you don't want a title page, and don't want the title
+%      printed, just leave out the |\maketitle| macro.
+%    \end{description}
+%
+%
+%\catcode`\<=14
+%<+cls>\typeout{DODS Dods-Paper Class -- Tom Sgouros - 2002}
+%<+cls>\NeedsTeXFormat{LaTeX2e}
+%    \begin{macrocode}
+%<*cls>
+\newif\if@paperdraft\@paperdraftfalse
+\DeclareOption{draft}
+%   {\message{Using `draft' format}\input pwd.tex\@paperdrafttrue}
+   {\message{Using `draft' format}\@paperdrafttrue}
+\newif\if@paperjustify\@paperjustifyfalse
+\DeclareOption{justify}
+   {\message{Using justified style}\@paperjustifytrue}
+%</cls>
+%    \end{macrocode}
+%<+cls>\DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
+%<+cls>\ProcessOptions\relax
+%<+cls>\LoadClass{article}
+%% Nathan used "tmargin=0.6in,hmargin=1in,bmargin=0.6in" but this breaks for
+%% me. 05/11/04 jhrg
+%<+cls>\RequirePackage[includeheadfoot,letterpaper,dvips,tmargin=1in,hmargin=1.2in,bmargin=1in]{geometry}
+%<+cls>\RequirePackage{hyperlatex}
+%<+cls>\RequirePackage{psfig}
+%<+cls>\RequirePackage{makeidx}
+%<+cls>\RequirePackage{xspace}
+%<+cls>\RequirePackage{fancyhdr}
+%<+cls>\RequirePackage{vcode}
+%<+cls>\RequirePackage{pifont}
+%<+hlx>\usepackage{article}
+%<+hlx>\usepackage{makeidx}
+%<+hlx>\usepackage{sequential}
+%<+hlx>\usepackage{emulate}
+%<+hlx>\usepackage{vcode}
+%\catcode`\<=12
+%
+% \section{Functional Font Changes}
+%
+%    These font change commands are used to denote the logical
+%    function of the terms or phrases they encircle.  Some of these
+%    (like |\emph{}|) are defined by \latex\ and some of them are
+%    defined in |hyperlatex.sty|, which is part of this document
+%    class. \index{font!functional descriptions}\index{default font}
+%
+%    \begin{description}
+%    \item[{\tt \bck new}] \DescribeMacro{\new} Marks the first
+%      occurrence of a term (where it 
+%      should be defined.)  An index token will automatically point
+%      here, with the index entry in italics.  The term itself is
+%      formatted with the |\dfn| macro (whose default
+%      definition--italics--is in hyperlatex.sty). 
+%    \item[{\tt \bck var}] \DescribeMacro{\var}  Use this for
+%      variables.  These will
+%      appear in examples, but in places where the user must
+%      substitute appropriate text. The default definition is in
+%      hyperlatex.sty. 
+%    \item[{\tt \bck class}] Use this for class names.
+%      \DescribeMacro{\class}
+%    \item[{\tt \bck lit}] \DescribeMacro{\lit} This command is for 
+%      literal text.
+%      Note that it is not a small verbatim environment, because you
+%      can't use |\verb| in a macro argument.  That is, underscore and
+%      dollar-sign characters still need to be protected.
+%    \item[{\tt \bck inp}] \DescribeMacro{\inp} Indicates user typed
+%      information. (hyperlatex.sty uses |\kbd|.)
+%    \item[{\tt \bck but}] Use this for button names.
+%      \DescribeMacro{\but}
+%    \item[{\tt \bck pdmenu}] \DescribeMacro{\pdmenu}  Use this 
+%      for menu titles (``\textit{p}ull-\textit{d}own
+%      \textit{menu}'').  Note
+%      that menu titles and buttons often need to be abbreviated.  That
+%      is, a selection may be a button in a sub-menu of a menu.  If you
+%      have a button for ``background'' in the ``color'' submenu of the
+%      ``options'' menu, abbreviate it with
+%      |\but{options,color,background}|.  
+%    \item[{\tt \bck cit}] Titles of books.
+%      \DescribeMacro{\cit}
+%    \item[{\tt \bck tblhd}] Use this macro to format the
+%      headers of table columns.
+%      \DescribeMacro{\tblhd}
+%    \end{description}
+%
+%    \DescribeEnv{vcode}\DescribeEnv{verbatim}\DescribeEnv{example}
+%    For example text, use the |vcode| environment if the examples are
+%    typed by the computer, and |example| if they are to be typed by a
+%    user.  Use |verbatim| only for long examples, since |vcode| can't
+%    handle page breaks very well.
+%
+%    See also the |\listconventions| macro in the |layout.tex| file.
+%    That macro makes a table of typographic conventions, which should
+%    be part of any book preface.
+%
+%    \subsection{\latex\ Versions}
+%
+%    This is how these macros are defined for \latex .
+%
+%    \begin{macrocode}
+%<*cls>
+\newcommand{\new}[1]{\dfn{#1}\indc{#1|emph}}
+\newcommand{\class}[1]{{\em #1}}
+\newcommand{\lit}[1]{{\tt #1}}
+\newcommand{\inp}[1]{\texttt{\textit{#1}}}
+\newcommand{\but}[1]{\texorhtml{\fbox{\textbf{\footnotesize\textsf{#1}}}}%
+                          {\textbf{\textsc{#1}}}}
+\newcommand{\pdmenu}[1]{\texorhtml{\textsf{#1}}
+                                {\textsc{#1}}}
+\newcommand{\tblhd}[1]{\bf #1}
+%</cls>
+%    \end{macrocode}
+%
+% \subsection{\hlx\ Versions}
+%
+%    The functional font default definitions are as follows for \hlx .
+%
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\lit}[1]{\html{CODE class="literal"}{#1}\html{/CODE}}
+\newcommand{\inp}[1]{\html{CODE class="input"}{#1}\html{/CODE}}
+\newcommand{\new}[1]{\html{I}{#1}\html{/I}\index{#1}}
+\newcommand{\class}[1]{\html{I}{#1}\html{/I}}
+\newcommand{\but}[1]{\html{U}{#1}\html{/U}}
+\newcommand{\pdmenu}[1]{\html{U}\html{B}{#1}\html{/B}\html{/U}}
+\newcommand{\tblhd}[1]{\html{B}{#1}\html{/B}}
+%</hlx>
+%    \end{macrocode}
+%
+%
+% \section{Overall Layout}
+%
+%    This section contains the font change and page layout commands.
+%    
+%    The fonts I like are Times Roman for the main text, Helvetica for
+%    headlines and miscellaneous emphasis, and Computer Modern
+%    Monospace for the typed output. (The PS Courier is too light when
+%    rendered on the screen in xdvi.)
+%
+%    There's also a |\HUGE| command.
+%    \DescribeMacro{\HUGE}\index{default fonts}\index{font choices}
+%
+%    \begin{macrocode}
+%<*cls>
+\renewcommand{\rmdefault}{ptm}
+\renewcommand{\sfdefault}{phv}
+\renewcommand{\ttdefault}{cmtt}
+\newcommand{\HUGE}{\@setfontsize\HUGE{100}{105}}
+%</cls>
+%    \end{macrocode}
+%
+%    The following rearranges the default paragraph look to have no
+%    indent and to have an extra bit of empty space between paragraphs.
+%    I didn't like this as much for two column printing, so switch it
+%    off for that.
+%
+%    \begin{macrocode}
+%<*cls>
+\if@twocolumn\relax\else%
+\setlength{\parindent}{0pt}%
+\setlength{\parskip}{\medskipamount}\fi
+%</cls>
+%    \end{macrocode}
+%
+%    This sets a default indentation for verbatim examples in
+%    the text, for example code samples.  The preferred style is:
+%    \begin{verbatim}
+%    \begin{vcode}{ib}
+%     ... stuff ...
+%    \end{vcode}
+%    \end{verbatim}%
+%    It is ok to use the numbering or the smaller text sizes for
+%    |vcode|. 
+%
+%    The |vcode| (and occasionally |verbatim|) environments are for
+%    example code, for file contents, and for example output.  If it's
+%    something that a user types, use the |example| environment.
+%    \DescribeEnv{vcode}\DescribeEnv{verbatim}\DescribeEnv{example}
+%
+%    The |example| environment was originally part of hyperlatex.  It
+%    still is, I suppose, but it had the |\exampleindent| feature
+%    removed in version 2.5.  So it is now included herein.  The html
+%    version of the |example| environment is still ok.
+%
+%    \begin{macrocode}
+%<*cls>
+\setlength{\vcodeindent}{20pt}
+\newlength{\exampleindent}
+\setlength{\exampleindent}{20pt}
+
+\renewenvironment{example}{
+  \list{}{\leftmargin\exampleindent
+    \itemindent\z@ \rightmargin\z@ \parsep \z@ plus\p@}\item[]\tt
+  \turnon@spaces\turnon@lines \let\do\@makeother \Hlx@example
+}{\endlist}
+%</cls>
+%    \end{macrocode}
+%
+%    Marginpars are used in a few of the draft mode macros, and
+%    |\draftmarginpar| is used to put them in
+%    place. \DescribeMacro{\draftmarginpar} 
+%    Unfortunately, these do not work when you're in a parbox.  So the
+%    following contains a kind of a workaround to disable the macros when
+%    they can't be used.  The flag is to be set whenever you're in a
+%    parbox, and |\@arrayparboxrestore| is apparently called whenever
+%    a parbox is opened.  There probably shouldn't be index entries in
+%    parboxes very often, but it occasionally happens.
+%
+%    \begin{macrocode}
+%<*cls>
+\newif\if@notinparbox \@notinparboxtrue
+\expandafter\def\expandafter\@arrayparboxrestore
+ \expandafter{\@arrayparboxrestore \@notinparboxfalse}
+%\newcommand\draftmarginpar[2]{\if@paperdraft\if@notinparbox
+%  \marginpar{\scriptsize{#1}: #2}
+%  \else\typeout{dropped marginpar-->#1:#2}\fi\fi}
+\newcommand\draftmarginpar[2]{}
+%</cls>
+%    \end{macrocode}
+%
+%    Here are some of the macros whose use changes under the `draft'
+%    option. \DescribeMacro{\tbd}  The |\tbd| format is the most
+%    useful.  In `draft' mode, it prints a message in the margin, but
+%    in final mode, it gobbles the argument.  \DescribeMacro{\labl}
+%    The |\labl| macro can be used to debug label errors, and
+%    \DescribeMacro{\citel} |\citel| is also useful for debugging
+%    citations. 
+%
+%    \begin{macrocode}
+%<*cls>
+\newcommand{\tbd}[1]{\if@paperdraft\note[TBD]{#1}\fi}
+\newcommand{\labl}[1]{\label{#1} 
+ \draftmarginpar{\ensuremath{\cal\ L}}{#1}}
+\newcommand{\citel}[1]{\cite{#1}
+  \draftmarginpar{\ensuremath{\cal\ C}}{#1}}
+%</cls>
+%    \end{macrocode}
+%
+%
+%    The `draft' mode isn't really useful in \hlx .  Presumably, by
+%    the time you get to converting to html, all this stuff is
+%    debugged. 
+%
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\tbd}[1]{\if@paperdraft\note[TBD]{#1}\fi}
+\newcommand{\labl}[1]{\label{#1}}
+\newcommand{\citel}[1]{\cite{#1}}
+%</hlx>
+%    \end{macrocode}
+%
+%    The page lengths can vary slightly, and I don't justify
+%    the paragraphs.  
+%
+%    \begin{macrocode}
+%<*cls>
+\raggedbottom
+\if@twocolumn\relax\else\if@paperjustify\relax\else\raggedright\fi\fi
+%</cls>
+%    \end{macrocode}
+%
+%  \subsection{Page Headings and Footings}
+%    The paper template uses the |fancyhdr| package to define its
+%    page style.
+%
+%    \begin{macrocode}
+%<*cls>
+\pagestyle{fancy}
+\setlength\headheight{12pt}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\fancyhf{}
+\fancyfoot[C]{\sectfont\thepage}
+%\fancyhead[RO]{\sectfont\bfseries\thepage}
+%\fancyhead[LO]{\sectfont\bfseries\rightmark}
+%\fancyhead[RE]{\sectfont\bfseries\leftmark}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}
+%</cls>
+%    \end{macrocode}
+%
+%  In draft mode, the footer will have the time and date on it.  It
+%  will also have the name of the file on the right hand side.  In
+%  order for this to work, there must be a file called mktextex in the
+%  \$PATH (apparently ~/bin doesn't work for AucTeX) with the following
+%  contents: 
+%
+%<*mktex>
+echo "\def\dirname{`pwd`}" >$1
+echo $1
+%</mktex>
+%
+%  This will create a file called pwd.tex in the directory, whose
+%  contents are the \$PWD.  This is not a perfect solution, since it
+%  leaves little pwd.tex files all over the place, but so it goes.
+%
+%    \begin{macrocode}
+%<*cls>
+%\if@paperdraft\fancyfoot[L]{\sectfont\today:\showtime}\fi
+\if@paperdraft
+\fancyfoot[L]{\sectfont\today}
+%\fancyfoot[R]{\sectfont\dirname/\jobname}
+\fancyfoot[R]{\sectfont\jobname}
+\fi
+%</cls>
+%    \end{macrocode}
+%
+%  \subsection{Lists}
+%
+%    This is strictly to make lists a little more fun.  This uses
+%    dingbat characters in lists.  The itemize list gets little arrows
+%    (252), and the enumerate lists get little numbers in black
+%    circles. 
+%
+%    A downside of this is that the 
+%    enumerate list now only deals with up to ten items.  It will, I
+%    think, go to more than that, but it may look pretty funny.
+%    \DescribeEnv{itemize}\DescribeEnv{enumerate}
+%    \index{pifont package}
+%
+%    \begin{macrocode}
+%<*cls>
+%\renewenvironment{itemize}{\begin{dinglist}{252}}{\end{dinglist}}
+%\renewenvironment{enumerate}{\begin{dingautolist}{182}}{\end{dingautolist}}
+%</cls>
+%    \end{macrocode}
+%
+% \section{HTML Layout}
+%
+%    HTML details.
+%
+% \subsection{Document Look}
+%
+%    Set the background color of all the pages, and make all the
+%    tables have no borders.
+%
+%    \begin{macrocode}
+%<*hlx>
+\xmlattributes{table}{border="0"}
+%</hlx>
+%    \end{macrocode}
+%
+%
+%
+% \subsection{Navigation Panel}
+%
+%    Each html page starts with a \DescribeMacro{\HlxTopPanel}
+%    |\HlxTopPanel|, and ends with \DescribeMacro{\HlxBottomPanel}
+%    \DescribeMacro{\HlxBottomMatter} the |\HlxBottomMatter|, usually the
+%    name of the author (or converter), and the date of generation,
+%    followed by |\HlxBottomPanel| a slightly abbreviated navigation
+%    panel. 
+%
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\HlxTopPanel}{\EmptyP{\HlxBackUrl\HlxUpUrl\HlxForwUrl}{
+    \EmptyP{\HlxBackUrl}
+    {\xlink{\htmlimage[ALT="Prev" BORDER="0"]
+        {\HlxIcons{}ts-prev.gif}}{\HlxBackUrl}}
+    {\htmlimage[ALT="" BORDER="0"]{\HlxIcons{}ts-prev-gr.gif}}
+    \EmptyP{\HlxUpUrl}
+    {\xlink{\htmlimage[ALT="Up" BORDER="0"]
+        {\HlxIcons{}ts-up.gif}}{\HlxUpUrl}}
+    {\htmlimage[ALT="" BORDER="0"]{\HlxIcons{}ts-up-gr.gif}}
+    \EmptyP{\HlxForwUrl}
+    {\xlink{\htmlimage[ALT="Next" BORDER="0"]
+        {\HlxIcons{}ts-next.gif}}{\HlxForwUrl}}
+    {\htmlimage[ALT="" BORDER="0"]{\HlxIcons{}ts-next-gr.gif}}
+    \EmptyP{\HlxIndexUrl}
+    {\xlink{\htmlimage[Alt="Index" BORDER="0"]
+      {\HlxIcons{}ts-index.gif}}{\HlxIndexUrl}}
+    {} \\
+    \EmptyP{\HlxBackUrl}
+    {\textbf{\HlxGoBackName} \xlink{\HlxBackTitle}{\HlxBackUrl}\\}{}
+    \EmptyP{\HlxUpUrl}
+    {\textbf{\HlxGoUpName} \xlink{\HlxUpTitle}{\HlxUpUrl}\\}{}
+    \EmptyP{\HlxForwUrl}
+    {\textbf{\HlxGoForwardName} \xlink{\HlxForwTitle}{\HlxForwUrl}\\}{}
+     \htmlrule{}}{}}
+%</hlx>
+%    \end{macrocode}
+%
+%    The |\HlxBottomMatter| is usually a name and a date.  Use the
+%    |\htmladdress| macro\DescribeMacro{\htmladdress} to set the text
+%    to use in the bottom matter.
+%
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\HlxBottomMatter}{%
+  \HlxBlk\htmlrule\EmptyP{\HlxAddress}
+  {\html{ADDRESS}\HlxAddress\HlxBlk\html{/ADDRESS}\\}{}}
+%</hlx>
+%    \end{macrocode}
+%
+%    The bottom panel is just a top panel without the section and
+%    chapter titles.
+%
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\HlxBottomPanel}{\EmptyP{\HlxBackUrl\HlxUpUrl\HlxForwUrl}{
+    \EmptyP{\HlxBackUrl}
+    {\xlink{\htmlimage[ALT="Prev" BORDER="0"]
+        {\HlxIcons{}ts-prev.gif}}{\HlxBackUrl}}
+    {\htmlimage[ALT="" BORDER="0"]
+      {\HlxIcons{}ts-prev-gr.gif}}
+    \EmptyP{\HlxUpUrl}
+    {\xlink{\htmlimage[ALT="Up" BORDER="0"]
+        {\HlxIcons{}ts-up.gif}}{\HlxUpUrl}}
+    {\htmlimage[ALT=""]{\HlxIcons{}ts-up-gr.gif}}
+    \EmptyP{\HlxForwUrl}
+    {\xlink{\htmlimage[ALT="Next" BORDER="0"]
+        {\HlxIcons{}ts-next.gif}}{\HlxForwUrl}}
+    {\htmlimage[ALT=""]{\HlxIcons{}ts-next-gr.gif}}}{}}
+%</hlx>
+%    \end{macrocode}
+%
+% \subsubsection{Icon Server}
+%
+%    \begin{macro}{\HlxIcons}
+%    The navigation panel icons come from a central place.  Define
+%    that place with this command, unless the following will suffice.
+%
+%    \begin{macrocode}
+%<*hlx>
+\renewcommand{\HlxIcons}{/icons/}
+%</hlx>
+%    \end{macrocode}
+%    \end{macro}
+%
+% \subsubsection{Javascript}
+%
+%    \DescribeEnv{javascript} There is a way to include Javascript in
+%    your pages.  The |javascript| environment formats its contents
+%    with |<script>| tags.  \DescribeMacro{\HlxJS} The |\HlxJS| macro
+%    is expanded in the header of each page.  So if you want some
+%    javascript to go into each page, do this:
+%    \begin{verbatim}
+%    \renewcommand{\HlxJS}{\begin{javascript}
+%     ... stuff ...
+%    \end{javascript}}
+%    \end{verbatim}%
+%    
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\HlxJS}{}
+\renewcommand{\HlxMetaFields}[1]{\HlxJS\HlxMeta\HlxMetaCss\HlxMetaCharset}
+%</hlx>
+%    \end{macrocode}
+%
+%    The |javascript| environment expands LaTeX macros it contains.
+%    Ideally, it should work so that each invocation of the
+%    environment adds some javascript code to the pile that is
+%    contained in each new page.  There should also be a starred
+%    version |\begin{javascript}*| which only inserts its javascript
+%    into the next page output.  This would work by storing the
+%    |javascript| environment contents in a separate buffer or stack,
+%    and dumping its contents each time the |\HlxJS| macro is invoked.
+%    However, right now, the only way to approximate the effect is the
+%    method outlined above.
+%
+%    \begin{macrocode}
+%<*hlx>
+\HlxEval{
+(put 'javascript    'hyperlatex 'hyperlatex-format-javascript)
+(put 'endjavascript 'hyperlatex 'hyperlatex-format-endjavascript)
+(defvar hyperlatex-begin-javascript (point-min))
+  
+(defun hyperlatex-format-javascript ()
+  (if (hyperlatex-starred-p) (insert "*********"))
+  (hyperlatex-blk)
+  (setq hyperlatex-begin-javascript (point))
+  (hyperlatex-gen "script language=\"javascript\"")
+  (let ((hyperlatex-special-chars-regexp
+         (concat "[\\\\" hyperlatex-meta-| "]"))
+        (hyperlatex-example-depth hyperlatex-recursion-depth)
+        (hyperlatex-active-space nil))
+    ;; recursive call returns shortly after processing \end{javascript}
+    (hyperlatex-format-region (point) (point-max))))
+
+(defun hyperlatex-format-endjavascript ()
+  (hyperlatex-gen "/script")
+  (insert "\n"))
+}
+%</hlx>
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+%<*cls>
+\newenvironment{javascript}{\comment}{\endcomment}
+%</cls>
+%    \end{macrocode}
+%
+%
+%
+% \subsubsection{The Index}
+%
+%    \DescribeMacro{\HlxIndexUrl} The following \hlx\ extension finds
+%    the URL of the index node so that the navigation panels can
+%    include it.  In a document, you can refer to it as |\HlxIndexUrl|.  
+%
+%    \begin{macrocode}
+%<*hlx>
+\HlxEval{
+
+(put 'HlxIndexUrl    'hyperlatex 'hyperlatex-ts-hlxindexurl)
+
+(defvar hyperlatex-ts-index-url nil)
+
+(defun hyperlatex-ts-hlxindexurl ()
+  "Provides the index url. ts."
+  (if hyperlatex-final-pass
+    (progn
+      (if (null hyperlatex-ts-index-url)
+        (let ((sp hyperlatex-sections))
+          (while (and sp
+                      (not (string= 
+                             (hyperlatex-sect-head (car sp)) 
+                             "Index")))
+            (setq sp (cdr sp)))
+            ;; sp points to section -- or is nil
+          (if sp 
+            (setq hyperlatex-ts-index-url
+              (hyperlatex-gen-url
+                (hyperlatex-sect-node (car sp))
+                (hyperlatex-sect-label (car sp))))
+            (setq hyperlatex-ts-index-url "")) ))
+      (insert hyperlatex-ts-index-url))))
+
+}
+%</hlx>
+%    \end{macrocode}
+%
+%
+% \section{Sectioning Commands}
+%
+%    These are modest redefinitions of some of the sectioning
+%    commands.  Some of it is to add macros and default values to the
+%    |\maketitle| macros, and some of it is about reformatting the
+%    section look. 
+%
+%  \subsection{Title Page}
+%
+%    \begin{macrocode}
+%<*cls>
+\gdef\@subtitle{}
+\def\subtitle#1{\gdef\@subtitle{#1}}
+\def\title#1{\gdef\@title{\sectfont\bfseries\LARGE#1\iffull\@subtitle\\%
+     \mdseries\Large\@subtitle\fi}}
+\def\author#1{\gdef\@author{\sectfont#1}}
+\gdef\@author{\sectfont Tom Sgouros}
+\def\and{%                  % \begin{tabular}
+  \end{tabular}%
+  \hskip 1em \@plus.17fil%
+  \begin{tabular}[t]{c}\sectfont}%   % \end{tabular}
+\def\date#1{\gdef\@date{\sectfont#1}}
+\renewcommand{\abstractname}{\textsf{Abstract}}
+\gdef\@date{\sectfont\today}
+%</cls>
+%<*hlx>
+\newcommand{\HlxSubTitle}{}
+\newcommand{\HlxSubTitleP}{}
+\newcommand{\subtitle}[1]{\renewcommand{\HlxSubTitleP}{1}%
+  \renewcommand{\HlxSubTitle}{#1}}
+\renewcommand{\maketitle}{\EmptyP{\HlxTitleP}{
+    \HlxBlk\xml{h1 align="center"}\HlxTitle\xml{/h1}
+    \EmptyP{\HlxSubTitleP}{\xml{h2 align="center"}\HlxSubTitle\xml{/h2}}{}
+    \EmptyP{\HlxAuthorP}{\xml{h2 align="center"}\HlxAuthor\xml{/h2}}{}
+    \EmptyP{\HlxDate}{\xml{h2 align="center"}\xml{font size="-1"}%
+       \HlxDate\xml{/font}\xml{/h2}}{}
+    }{}}
+%</hlx>
+%    \end{macrocode}
+%
+%  \subsection{Sections}
+%  
+%    Here are the section redefinitions.  These aren't quite right,
+%    either, but the alternative is rewriting many |\def|'s.  So I
+%    think they're ok for now.
+% 
+%    Use |\sectfont| to control the font of the section heads.  It 
+%    also works on page numbers and headers and other things.
+%
+%    \begin{macrocode}
+%<*cls>
+\newcommand\sectfont{\sffamily}
+\renewcommand\section{\@startsection {section}{1}
+    {\z@}%
+    {7.5ex \@plus -1ex \@minus -.2ex}%
+    {2.3ex \@plus.2ex}%
+    {\raggedright\penalty-100\sectfont\Large\bfseries\penalty10000}}
+\renewcommand\subsection{\@startsection{subsection}{2}
+    {\z@}%
+    {3.25ex\@plus -1ex \@minus -.2ex}%
+    {1.5ex \@plus .2ex}%
+    {\raggedright\sectfont\large\bfseries}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}
+    {\z@}%
+    {-3.25ex\@plus -1ex \@minus -.2ex}%
+    {1.5ex \@plus .2ex}%
+    {\raggedright\sectfont\normalsize\bfseries}}
+%</cls>
+%    \end{macrocode}
+%
+%    The |\@ssect| command was redefined to adjust the vertical
+%    spacing.  I don't know if this is the right place to do so, but so
+%    I did.
+%
+%    \begin{macrocode}
+%<*cls>
+\renewcommand\@ssect[5]{%
+  \vspace{-0.5\@tempskipa}%
+  \@tempskipa #3\relax%
+  \ifdim \@tempskipa>\z@%
+    \begingroup%
+      #4{\penalty-500\vskip3pt\penalty10000%
+        \@hangfrom{\hskip #1}%
+          \interlinepenalty \@M #5\@@par}%
+    \endgroup%
+  \else%
+    \def\@svsechd{#4{\hskip #1\relax #5}}%
+  \fi%
+  \@xsect{#3}}%
+%</cls>
+%    \end{macrocode}
+%
+%    Use the stylesheet to adjust the \hlx\ section head look.  We
+%    also add some macros and some processing to make use of META
+%    tags. Use |\metadescription| to add something in a description
+%    tag, and |\metakeywords| to add a keyword list.  If the
+%    description tag is added, you'll also get a title, date, and
+%    author tag.  These only appear on the root node of the output
+%    html files. 
+%
+%    \begin{macrocode}
+%<*hlx>
+\htmlcss{/resources/dods-paper.css}
+\newcommand{\HlxDescP}{}
+\newcommand{\HlxKeywordsP}{}
+\newcommand{\HlxDesc}{}
+\newcommand{\HlxKeywords}{}
+\newcommand{\metadescription}[1]{\renewcommand{\HlxDescP}{1}%
+  \renewcommand{\HlxDesc}{#1}}
+\newcommand{\metakeywords}[1]{\renewcommand{\HlxKeywordsP}{1}%
+  \renewcommand{\HlxKeywords}{#1}}
+\newcommand{\title}[1]{\renewcommand{\HlxTitleP}{1}%
+  \renewcommand{\HlxTitle}{#1}\htmltitle{#1}}
+\renewcommand{\HlxMeta}{\EmptyP{\HlxDescP}{\HlxMetaTitle}{}%
+                        \EmptyP{\HlxDescP}{\HlxMetaAuthor}{}%
+                        \EmptyP{\HlxDescP}{\HlxMetaDate}{}%
+                        \EmptyP{\HlxDescP}{\HlxMetaDesc}{}%
+                        \EmptyP{\HlxKeywordsP}{\HlxMetaKeywords}{}}
+\newcommand{\HlxMetaTitle}{\HlxMetaTag{title}{\HlxTitle}}
+\newcommand{\HlxMetaAuthor}{\HlxMetaTag{author}{\HlxAuthor}}
+\newcommand{\HlxMetaDate}{\HlxMetaTag{date}{\HlxDate}}
+\newcommand{\HlxMetaDesc}{\HlxMetaTag{description}{\HlxDesc}}
+\newcommand{\HlxMetaKeywords}{\HlxMetaTag{keywords}{\HlxKeywords}}
+\HlxEval{
+(put 'HlxMetaTag        'hyperlatex 'hyperlatex-ts-metatag)
+
+(defun hyperlatex-ts-metatag ()
+  "Inserts a meta tag of the indicated type. ts."
+  (let ((name (hyperlatex-parse-required-argument))
+        (content (hyperlatex-parse-required-argument))
+        (start (point)))
+    (if (= 0 hyperlatex-node-number)
+        (progn
+          (hyperlatex-gen (format "meta name=\"%s\" content=\"%s\"" 
+                                   name content) "\n")
+          (hyperlatex-format-region start (point))))))
+}
+%</hlx>
+%<*cls>
+\newcommand{\metadescription}[1]{}
+\newcommand{\metakeywords}[1]{}
+%</cls>
+%    \end{macrocode}
+%
+% \subsection{Numbering}
+% 
+%    The default is no numbering.  Reset the |secnumdepth| counter to
+%    change this.  You can do that with a command just like the following:
+%
+%    \begin{macrocode}
+%<*hlx|cls>
+\setcounter{secnumdepth}{3}
+%</hlx|cls>
+%    \end{macrocode}
+%
+%    A |secnumdepth| of 1 means that only the section heads are
+%    numbered, 2 means sections and subsections.  0 means no numbers.
+%    The default is to number sections, subsections, and
+%    subsubsections. 
+%
+%
+% \subsection{\hlx\ Version}
+%
+%    There are a couple of different aspects to \hlx\ sectioning.  The
+%    first is choosing the level of organization where the components are
+%    separated into different files.  Numbering is another aspect.    
+%
+%
+% \subsubsection{Sectioning}
+%
+%    Most of the books don't have parts.  This means that the base
+%    level of division is the chapter level (for \hlx , this is level
+%    0). The |HlxSecNumBase| counter is to be set to one less than the
+%    base level.  So if a book has parts, this counter must be reset to
+%    -2.  Similarly, if there are no chapters, only sections, you can
+%    set it to 0.
+%
+%    \begin{macrocode}
+%<*hlx>
+\setcounter{HlxSecNumBase}{0}
+%</hlx>
+%    \end{macrocode}
+%
+%
+%    The |htmldepth| counter determines how many different files will
+%    be created.  A value of four means, for example, that
+%    subsubsections each merit their own file, containing paragraphs
+%    and sub-paragraphs.  Change it to three to make separate
+%    subsection files, each containing lots of subsubsections.  Two makes
+%    separate section files, one makes separate chapter files.  
+%
+%    The default \hlx\ behavior is to put all the files in the current
+%    directory.  The |\htmldirectory| command changes this to make the
+%    default behavior to make a directory called by the un-suffixed
+%    filename of the source (i.e. `paper' for a file `paper.tex'), and
+%    put everything in there.  Note that the root file will be called
+%    something like `paper.html,' and that it is often convenient to
+%    rename this file (or copy it) to `index.html.'
+%
+%    \begin{macrocode}
+%<*hlx>
+\setcounter{htmldepth}{2}
+\HlxEval{(setq hyperlatex-html-directory hyperlatex-basename)}
+%</hlx>
+%    \end{macrocode}
+%
+% \subsubsection{Numbering}
+%
+%    Numbering must be specified in \hlx .  Here is that specification.
+%
+%    \begin{macrocode}
+%<*hlx>
+\renewcommand{\thesection}{\arabic{section}}
+\newcounter{subsection}[section]
+\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+\newcounter{subsubsection}[subsection]
+\renewcommand{\thesubsubsection}{\thesubsection.\arabic{subsubsection}}
+\newcounter{paragraph}
+\newcounter{subparagraph}[paragraph]
+\renewcommand{\thesubparagraph}{\theparagraph.\arabic{subparagraph}}
+%</hlx>
+%    \end{macrocode}
+%
+%
+% \subsubsection{Appendix Numbering}
+%
+%    \DescribeMacro{\appendix} The following macro recreates the
+%    |\appendix| command for \hlx , causing  all sections after the
+%    command to be rendered in letters instead of numbers.
+%
+%    \begin{macrocode}
+%<*hlx>
+\HlxEval{
+(put 'appendix       'hyperlatex 'hyperlatex-ts-format-appendix)
+
+(defun hyperlatex-ts-format-appendix ()
+  (progn
+    (hyperlatex-setcounter "section" 0)
+    (hyperlatex-define-macro "thesection" 0
+      (concat "\\Alph{section}") "")))
+}
+%</hlx>
+%    \end{macrocode}
+%
+%
+% \subsection{Table of Contents}
+%   
+%    There has been a little mucking around with the table of
+%    contents-making commands.  The goals were these: 
+%
+%    \begin{itemize}
+%    \item To keep excessive space from leaking into the TOC (a risk
+%      when the paragraph style is redefined to scrap the indentation
+%      and put extra line space between paragraphs); and
+%    \item To make the table of figures and table of tables into
+%      sub-parts of the TOC rather than separate pages of their own.
+%    \end{itemize}
+%
+%    The following macro is lifted right out of |book.cls|, enclosed in
+%    a group, and had its |\parskip| redefined.
+%
+%    \begin{macro}{\tableofcontents}
+%    \begin{macrocode}
+%<*cls>
+\renewcommand\tableofcontents{
+  \bgroup\setlength{\parskip}{0pt}
+  \section*{\contentsname
+    \@mkboth{
+      \contentsname}{\contentsname}}
+  \@starttoc{toc}
+  \if@restonecol\twocolumn\fi\egroup
+  }
+%</cls>
+%    \end{macrocode}
+%    \end{macro}
+%
+%    Here are the LOF and LOT definitions.  Besides the same
+%    modifications as |\tableofcontents|, all they've had done is a 
+%    substitution of |\section*| for |\chapter*| in the respective
+%    definitions.
+%
+%    \begin{macrocode}
+%<*cls>
+\renewcommand\listoffigures{
+  \bgroup\setlength{\parskip}{0pt}
+  \section*{\listfigurename
+    \@mkboth{Contents}{Contents}}
+  \@starttoc{lof}
+  \if@restonecol\twocolumn\fi\egroup
+  }
+\renewcommand\listoftables{
+  \bgroup\setlength{\parskip}{0pt}
+  \section*{\listtablename
+    \@mkboth{Contents}{Contents}}
+  \@starttoc{lot}
+  \if@restonecol\twocolumn\fi\egroup
+  }
+%</cls>
+%    \end{macrocode}
+%
+%    The TOC entries were also adjusted to all appear in the sanserif
+%    font. Getting the entries to do this is easy:
+%
+%    \begin{macrocode}
+%<*cls>
+\addtocontents{toc}{\sectfont}
+\addtocontents{lof}{\sectfont}
+\addtocontents{lot}{\sectfont}
+%</cls>
+%    \end{macrocode}
+%
+%    Getting the numbers to be in sanserif font was more challenging.
+%    I guess a better way to do this would have been to redefine the
+%    normal font.  TBD: This would probably make the whole thing a
+%    little more robust.
+%
+%    \begin{macrocode}
+%<*cls>
+\renewcommand\l@section[2]{%
+  \ifnum \c@tocdepth >\z@
+    \addpenalty\@secpenalty
+    \addvspace{1.0em \@plus\p@}%
+    \setlength\@tempdima{1.5em}%
+    \begingroup
+      \parindent \z@ \rightskip \@pnumwidth
+      \parfillskip -\@pnumwidth
+      \leavevmode \bfseries
+      \advance\leftskip\@tempdima
+      \hskip -\leftskip
+      #1\nobreak
+     \leaders\hbox{$\m@th
+        \mkern \@dotsep mu\hbox{.}\mkern \@dotsep
+        mu$}\hfill
+      \nobreak\hb@xt@\@pnumwidth{\hss #2}\par
+    \endgroup
+  \fi}
+%\renewcommand\l@section{\@dottedtocline{1}{0em}{1.5em}}
+\renewcommand\@dottedtocline[5]{%
+  \ifnum #1>\c@tocdepth \else
+    \vskip \z@ \@plus.2\p@
+    {\leftskip #2\relax \rightskip \@tocrmarg \parfillskip -\rightskip
+     \parindent #2\relax\@afterindenttrue
+     \interlinepenalty\@M
+     \leavevmode
+     \@tempdima #3\relax
+     \advance\leftskip \@tempdima \null\nobreak\hskip -\leftskip
+     {#4}\nobreak
+     \leaders\hbox{$\m@th
+        \mkern \@dotsep mu\hbox{.}\mkern \@dotsep
+        mu$}\hfill
+     \nobreak
+     \hb@xt@\@pnumwidth{\hfil\sectfont \normalcolor #5}%
+     \par}%
+  \fi}
+%</cls>
+%    \end{macrocode}
+%
+%
+%
+%
+% \subsubsection{HTML Contents}
+%
+%    Because of the usual structure of web pages, the html tables of
+%    contents are a completely different animal from the \latex\
+%    version.  Therefore, I've begun by defanging the \latex\ contents
+%    commands.  Note that this all implies a new structure to the
+%    document preface, which must be rearranged to make the TOC look
+%    right. 
+%
+%    The preface should look like this, with a short abstract appearing
+%    between the |\T\chapter| and the |\W\chapter|. 
+%
+%    \begin{verbatim}
+%    \T\chapter*{Preface}
+%    \T\addcontentsline{toc}{chapter}{Preface}
+%    
+%    This document describes...
+%    
+%    What's in it is...
+%    
+%    It's for whom...
+%    \W\htmlmenu{4}
+%    \W\chapter*{Preface}
+%    
+%    Rest of preface text...
+%    
+%    \end{verbatim}
+%
+%    For examples, you can refer to the DODS User Guide.
+%
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\tableofcontents}{}
+\newcommand{\listoffigures}{}
+\newcommand{\listoftables}{}
+%</hlx>
+%    \end{macrocode}
+%
+%    All the automatic menus in each file are to refer to the next two
+%    deeper levels.  So, for example, the menu in a chapter head will
+%    contain references to sections and subsections, but not
+%    subsubsections. Use this counter to adjust that.
+%
+%    \begin{macrocode}
+%<*hlx>
+\setcounter{htmlautomenu}{2}
+%</hlx>
+%    \end{macrocode}
+%
+%
+% \subsection{References and Labels}
+%
+%    You can make external HTML references \emph{into} a DODS book by
+%    using the \hlx\ |\xname| macro.  Put this macro immediately
+%    before a |\chapter|, |\section|, or |\subsection| declaration.
+%    The argument to the |\xname| macro will become the filename of
+%    that section (with |.html| appended).  This name will survive
+%    reformatting and so on.
+%
+%    To use external references well, label delimiter should be
+%    periods or commas.  Don't use colons.\index{:}\index{.}\index{,}
+%    \index{external references}\index{references, external}
+%
+% \section{Figures and Figure Placement}
+%
+% \subsection{The Basic}
+%
+%    \begin{macro}{\figureplace}
+%    Figures should be included in a dods document with the
+%    |\figureplace| macro.  This macro elides a couple of difficulties
+%    in converting \latex\ to HTML.  For one, the |\label| command
+%    needs to be before the figure in HTML and after the figure for
+%    \latex .  For another, postscript figures are the norm for \latex\
+%    while gifs and jpegs are the norm for html.
+%
+%    Containing figures in the macro also allows me to adjust the
+%    figure right-to-left so that it fits well onto the page, and to
+%    accommodate the eventual text-wrapping around narrow
+%    figures. (TBD) 
+%
+%    Use the macro like this:
+%    \begin{verbatim}
+%    \figureplace[a0]{a}{b}{c}{d.ps}{d.gif}{e.html}
+%    \end{verbatim}
+%    Where:
+%
+%    \begin{description}
+%    \item[\tt a] The figure caption.  Note that footnotes may not work
+%      from here.  {\tt a0} is the optional argument to the |\caption|
+%      command.  This argument will appear in the list of figures, in
+%      case the actual figure caption is quite long.  Note that the
+%      html has no table of figures, so this argument is ignored.
+%    \item[\tt b] Is the figure placement argument, consisting of the
+%      letters |h|, |t|, |b|, |p|, in whatever order you like.
+%    \item[\tt c] The figure's cross-reference label,
+%      e.g. |fig,DDS,diagram| and so on.  (Note DODS doc tools style:
+%      don't use colons, use commas or periods to delineate label
+%      hierarchies.) 
+%    \item[\tt d.ps] The filename of the postscript version of the figure.
+%      This is ignored in the html output.  
+%    \item[\tt d.gif] A gif or jpeg version of the figure.  This is ignored
+%      in the postscript output.  After the file is processed, you must
+%      make sure that the figure is in the appropriate place.  (This is
+%      because what is created is a reference to the figure rather than
+%      an entire figure.)  So if the argument here is |screen.gif|, you
+%      must make sure that the file |screen.gif| is in the same
+%      directory as the output html pages.
+%    \item[\tt e.html] A URL to link the image with.  If it's blank, no
+%      hyperlink will be created on the image.
+%    \end{description}
+%
+%    \DescribeMacro{\figpath}You can indicate the location of the
+%    figure files with the |\figpath| macro in the preamble.  This
+%    works for both \latex\ and \hlx .  
+%    
+%    The \latex\ |\figureplace| macro checks to see if the page is even
+%    or odd, and shifts the figure to one side or the other depending.
+%    This is done by checking the |\pageref| for the figure
+%    cross-reference tag.  The problem with this is that the first time
+%    through, the tag is undefined and |\pageref| returns a |??|
+%    instead of a number, causing all sorts of havoc.  So, the
+%    |\@ifundefined| business in the following macro is there to check
+%    if the reference is defined before using it to check whether the
+%    page is odd or even.  This is a bit of a hack into \latex\ 
+%    internals, but I can see no clear way around it.
+%
+%    The optional argument to |\figureplace| is the optional argument
+%    to the |\caption| command.
+%
+%    \begin{macrocode}
+%<*cls>
+\newcommand{\figpath}[1]{\psfigurepath{#1}} \newlength{\figadjust}
+\newcommand{\figureplace}[7][\relax]{
+\begin{figure}[#3]
+  \setbox0=\hbox{\psfig{figure=#5}}
+  \ifnum\wd0<\linewidth
+    \centerline{\unhbox0}
+  \else
+  \@ifundefined{r@#4}
+    \relax
+    {\ifodd\pageref{#4}
+        \begin{flushleft}\unhbox0\end{flushleft}
+     \else
+        \setlength{\figadjust}{-\wd0}
+        \addtolength{\figadjust}{\linewidth}
+        \hskip\figadjust\unhbox0
+     \fi}
+  \fi
+  \ifx #1\relax\caption{#2}\else\caption[#1]{#2}\fi
+  \label{#4}
+\end{figure}}
+%</cls>
+%    \end{macrocode}
+%    \end{macro}
+%
+%
+% \subsubsection{\hlx\ Version}
+%
+%    \DescribeMacro{\figuremove} The |\figuremove| macro moves the
+%    html-ready figures from the source directory (specified with
+%    the |\figpath| macro \DescribeMacro{\figpath} to the result
+%    directory (specified with the |\htmldirectory| macro.
+%
+%    \begin{macrocode}
+%<*hlx>
+\HlxEval{ 
+(put 'figpath        'hyperlatex 'hyperlatex-ts-set-figurepath)
+(put 'figuremove     'hyperlatex 'hyperlatex-ts-figuremove)
+
+(defvar hyperlatex-ts-figurepath)
+
+(defun hyperlatex-ts-set-figurepath ()
+  (setq hyperlatex-ts-figurepath (hyperlatex-parse-required-argument))) 
+
+(defun hyperlatex-ts-figuremove ()
+  (if hyperlatex-final-pass 
+    (let ((file (hyperlatex-parse-required-argument)))
+      (let ((infile  (concat hyperlatex-ts-figurepath "/" file))
+            (outfile (concat hyperlatex-html-directory "/" file)))
+        (message "Copying %s to %s" infile outfile)
+        (copy-file infile outfile t)))))
+}
+\newcommand{\figureplace}[7][\relax]{
+\begin{figure}[#3]
+  \label{#4}
+  \begin{center}\xmlattributes{img}{border="0"}
+    \EmptyP{#7}{\xlink{\htmlimage{#6}}{#7}}{\htmlimage{#6}}
+    \caption{#2}
+  \end{center}
+\end{figure}
+\figuremove{#6}}
+%</hlx>
+%    \end{macrocode}
+%
+% \section{Boxed Stuff}
+%
+% \subsection{The Basic}
+%
+%    \begin{macro}{\emphbox}
+%    The |\emphbox| macro creates a box of |#2| size rules, the width
+%    of the column or page. The text is set inside the box, at |#1|
+%    distance from the sides of the box.  The text for the box is in
+%    |#3|.  You should rarely, if ever, use this macro directly.
+%    Rather you should use the |\note| and |\proto| macros, and their
+%    kin. 
+%
+%    \begin{macrocode}
+%<*cls>
+\newlength{\emphBoxWidth}
+\newlength{\emphBoxHeight}
+\newlength{\emphBoxRef}
+
+\newlength{\rulewidth}
+\newlength{\ruledist}
+\newcommand{\emphbox}[3][7pt] {
+\bgroup\small
+\setlength{\rulewidth}{#2}
+\setlength{\ruledist}{#1}
+\def\text{#3}
+
+\setlength{\emphBoxWidth}{\linewidth}
+\setbox2\hbox{\rule{\emphBoxWidth}{\rulewidth}}
+\setbox1\hbox{\rule{\emphBoxWidth}{\rulewidth}}
+
+\addtolength{\emphBoxWidth}{-2.0\ruledist}
+\addtolength{\emphBoxWidth}{-2.0\rulewidth}
+\setbox0\hbox{\begin{minipage}[b]{\emphBoxWidth}
+\raggedright\strut\text\strut\end{minipage}}
+
+\setlength{\emphBoxHeight}{\ht0}
+\addtolength{\emphBoxHeight}{2.0\rulewidth}
+\addtolength{\emphBoxHeight}{2.0\ruledist}
+\setlength{\emphBoxRef}{-\ruledist}
+\addtolength{\emphBoxRef}{-\rulewidth}
+\addtolength{\emphBoxRef}{-\fboxsep}
+\setbox3\hbox{\hbox to
+    0pt{\hss\rule[\emphBoxRef]{\rulewidth}{\emphBoxHeight}}} 
+\setbox4\hbox{\hbox to
+    0pt{\rule[\emphBoxRef]{\rulewidth}{\emphBoxHeight}\hss}} 
+\par\noindent
+\vbox to \ht3{
+\hbox{\unhbox1}
+\penalty10000\vskip-\ht2
+\hbox to
+    \wd2{\hskip\rulewidth\unhbox3\hss\unhbox0\hss\unhbox4\hskip\rulewidth} 
+\penalty10000\vskip-\ht2
+\hbox{\unhbox2}
+}
+\vskip\ruledist\vskip\rulewidth\vskip1.0ex
+\egroup}
+%</cls>
+%    \end{macrocode}
+%    \end{macro}
+%
+%  \subsubsection{\hlx\ Version}
+%
+%    Rather than use html tables, we just indent the text with
+%    |blockquote|.  The |\note| macro uses tables to get the right
+%    indentation, but that wouldn't really work for |\proto|.
+%
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\emphbox}[3]{
+  \html{blockquote}#3\html{/blockquote}}
+%</hlx>
+%    \end{macrocode}
+%
+%
+% \subsection{Notes and Cautions}
+%
+%    \begin{macro}{\note}
+%    Use this macro to set aside special notes to the reader.  To
+%    assert a little stylistic note, the optional argument to this
+%    macro probably should always be one of: ``note'', ``caution'', or
+%    ``warning''. 
+%
+%    \begin{macrocode}
+%<*cls>
+\newcommand{\note}[2][NOTE]{
+  \vspace{1.0ex}
+  \setbox5\hbox{\strut\sectfont\bfseries\MakeUppercase{#1}:\ }
+  \emphbox{2pt}{\hangindent=\wd5\hangafter=1\unhbox5\normalsize#2}}
+%</cls>
+%    \end{macrocode}
+%    \end{macro}
+%    \begin{macro}{\notebreak}
+%
+%    Rarely, you may want more than one paragraph in a |\note|.  The
+%    usual paragraph-breaking commands don't work properly in this
+%    context, so simply use |\notebreak| to separate paragraphs.  Be
+%    careful that a |\emphbox| is not allowed to span pages, it will not
+%    do so gracefully.
+%
+%    \begin{macrocode}
+%<*cls>
+\newcommand{\notebreak}{\hfil\vadjust{\vskip\medskipamount}\break\indent}
+%</cls>
+%    \end{macrocode}
+%    \end{macro}
+%
+% \subsubsection{\hlx\ Version}
+%
+%    The \hlx\ version of the note uses a paragraph class.  Note that this
+%    must be reflected in the style sheet.
+%
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\note}[2][NOTE]{
+  \xml{p class="note"}\textbf{#1: }#2\xml{/p}}
+\newcommand{\notebreak}{\html{BR}\html{BR}}
+%</hlx>
+%    \end{macrocode}
+%
+% \subsection{Parboxes}
+%
+%    Here's a \hlx\ version of |\parbox|\DescribeMacro{\parbox}.
+%
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\parbox}[3][t]{#3}
+%</hlx>
+%    \end{macrocode}
+%
+% \section{Index}
+%
+% \subsection{Indexing Macros}
+%
+%    \DescribeMacro{\ind} The |\ind| command puts an index token in the 
+%    line and a margin note, and prints the argument where it lies. It
+%    is meant to save the retyping, as in:
+%    \begin{verbatim}
+%    complicated concept\index{complicated concept}
+%    \end{verbatim}
+%    TBD: It is also designed to allow permuting of index entries, but that
+%    is not yet implemented. When implemented, the optional argument to
+%    |\ind| will be used to control the index token type, and to
+%    indicate the concept should be
+%    permuted. \DescribeMacro{\indn}Until it is, use |\indn|, which is
+%    the same thing without the permuter argument. 
+%    \DescribeMacro{\indc} The |\indc| command does not print the
+%    argument in the line. 
+%
+%    When in draft mode, these macros print the index entry in the
+%    margin in a |\marginpar|.
+%
+%    \begin{macrocode}
+%<*cls>
+  \newcommand{\ind}[2][0]{#2\index{#2}%
+    \draftmarginpar{\ensuremath{\cal\ I}}{#2}}%
+  \newcommand{\indn}[1]{#1\index{#1}%
+    \draftmarginpar{\ensuremath{\cal\ I}}{#1}}%
+  \newcommand{\indc}[1]{\index{#1}%
+    \draftmarginpar{\ensuremath{\cal\ I}}{#1}}%
+%</cls>
+%    \end{macrocode}
+%
+%
+%
+% \subsubsection{\hlx\ Version}
+%
+%    The marginalia are no use in \hlx , since the document has
+%    presumably already been debugged and indexed before conversion to
+%    html.  In other words, use the paper for proofreading.
+%
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\ind}[2][0]{#2\index{#2}}
+\newcommand{\indn}[1]{#1\index{#1}}
+\newcommand{\indc}[1]{\index{#1}}
+\newcommand{\printindex}{\chapter*{\indexname}
+  \htmlprintindex}
+%</hlx>
+%    \end{macrocode}
+%
+% \subsection{Index Style}
+%    
+%    The index style is described below.  The |headings_flag|
+%    indicates that we want letter headings above each section, and the
+%    prefix and suffix arrange that we get a |\Huge| bold sanserif
+%    letter in that place.
+%
+%    \begin{macrocode}
+%<*ist>
+heading_prefix "{\\Huge\\bfseries\\sectfont\\hskip-2pt "
+heading_suffix "}\\nopagebreak\\vskip 3pt\\hrule height2pt
+                 \\nopagebreak\\vskip 4pt"
+headings_flag 1
+%</ist>
+%    \end{macrocode}
+%
+%
+% \section{CVS Information}
+%
+%    Here are a bunch of RCS-ID-parsing macros, pinched from the
+%    rcsinfo.sty package, written by Dr. Juergen Vollmer,
+%    Viktoriastrasse 15, D-76133 Karlsruhe, Germany (email:
+%    Juergen.Vollmer@acm.org).  I have included these here instead of
+%    simply including the package because the package is both more and
+%    less than what we need.  More: it includes footer formatting that
+%    interferes with the format of the paper pages.  Less: it does
+%    not support Hyperlatex.
+%
+%    \begin{macro}{\rcsInfo}
+%    Use this package like this:
+%
+%    \begin{verbatim}
+%    \rcsInfo $id: dods-paper.dtx,v 1.5 1999/08/30 14:05:43 tom Exp $
+%    \end{verbatim}
+%    \end{macro}
+%
+%    The |\rcsInfo| macro defines several other macros, from pieces of
+%    the CVS ID string.  After the above macro has been invoked, you
+%    can use any of these to format version numbers, draft footers,
+%    and whatever.
+%
+%    \begin{description}
+%    \item[{\tt \bck rcsInfoFile}]\DescribeMacro{\rcsInfoFile} The
+%      source file mentioned in the RCS string.  |dods-paper.dtx| in
+%      the example above. 
+%    \item[{\tt \bck rcsInfoDate}]\DescribeMacro{\rcsInfoDate} The
+%      date string from the RCS ID string. |1999/08/30| in the
+%      example. 
+%    \item[{\tt \bck rcsInfoTime}]\DescribeMacro{\rcsInfoTime} The
+%      time string from the RCS ID string.  |14:05:43| in the
+%      example. 
+%    \item[{\tt \bck rcsInfoRevision}]\DescribeMacro{\rcsInfoRevision}
+%      The revision number from the RCS ID string.  |1.5| in the
+%      example. 
+%    \item[{\tt \bck rcsInfoOwner}]\DescribeMacro{\rcsInfoOwner} The
+%      owner mentioned in the RCS string. |tom| in the example. 
+%    \item[{\tt \bck rcsInfoStatus}]\DescribeMacro{\rcsInfoStatus} The
+%      file status from the RCS string.  |Exp| in the example.
+%    \item[{\tt \bck rcsInfoLocker}]\DescribeMacro{\rcsInfoLocker} If
+%      any, the identity of the locker from the RCS ID string.  Not
+%      present in the example.
+%    \end{description}
+%
+%    The code follows.  Again, this has been pinched nearly verbatim
+%    from the |rcsinfo.sty| package.
+%
+%    \begin{macrocode}
+%<*cls>
+\newif\if@rcsInfoColonIsActive@ \def\rcsInfo { \ifnum\catcode`\:=13
+  \@rcsInfoColonIsActive@true \catcode`:=12 \else
+  \@rcsInfoColonIsActive@false \fi \@rcsInfoReadArgs }
+
+\def\@rcsInfoReadArgs $Id#1 {
+  \@rcsInfoDefaults
+  \if $#1 \let \@rcsInfoNext = \@rcsInfoEat
+  \else   \let \@rcsInfoNext = \@rcsInfoEatColon
+  \fi
+  \if@rcsInfoColonIsActive@
+     \catcode`:=13
+  \fi
+  \@rcsInfoNext $Id#1
+}
+
+\def\@rcsInfoEat #1 {}
+
+\def\@rcsInfoEatColon  $Id:#1 {
+  \if $#1 \let \@rcsInfoNext = \@rcsInfoEat
+  \else   \let \@rcsInfoNext = \@rcsInfoCrackAndEat
+  \fi
+  \@rcsInfoNext #1
+}
+\def\@rcsInfoCrackAndEat #1 #2 #3 #4 #5 #6 #7 {
+  \@rcsInfoCrackString #1 #2 #3 #4 #5 #6 #7
+  \@rcsInfoNext
+}
+
+\def\@rcsInfoCrackString #1 #2 #3 #4 #5 #6 #7 {
+  \def\rcsInfoFile{#2}
+  \def\rcsInfoRevision{#3}
+  \def\rcsInfoDate{#4}
+  \def\rcsInfoTime{#5}
+  \def\rcsInfoOwner{#6}
+  \def\rcsInfoStatus{exp}
+  \if $#7
+    \def\rcsInfoLocker{--not-locked--}
+    \let \@rcsInfoNext = \relax
+  \else
+    \def\rcsInfoLocker{#7}
+    \let \@rcsInfoNext = \@rcsInfoEat
+  \fi
+}
+
+\def\@rcsInfoDefaults {
+  \def\rcsInfoFile{--sourcefile--}
+  \def\rcsInfoDate{--date--}
+  \def\rcsInfoTime{--time--}
+  \def\rcsInfoRevision{--revision--}
+  \def\rcsInfoOwner{--owner--}
+  \def\rcsInfoStatus{--status--}
+  \def\rcsInfoLocker{--locker--}
+}
+%</cls>
+%    \end{macrocode}
+%
+%    \subsection{\hlx\ Version}
+%
+%    The following is a hyperlatex implementation of the same macros
+%    above.  They are to be used in precisely the same manner.
+%
+%    \begin{macrocode}
+%<*hlx>
+\HlxEval{
+
+(put 'rcsInfo        'hyperlatex 'hyperlatex-ts-rcsinfo)
+(put 'rcsInfoFile    'hyperlatex 'hyperlatex-ts-rcsinfo-file)
+(put 'rcsInfoDate    'hyperlatex 'hyperlatex-ts-rcsinfo-date)
+(put 'rcsInfoTime    'hyperlatex 'hyperlatex-ts-rcsinfo-time)
+(put 'rcsInfoRevision 'hyperlatex 'hyperlatex-ts-rcsinfo-vsn)
+(put 'rcsInfoOwner   'hyperlatex 'hyperlatex-ts-rcsinfo-own)
+(put 'rcsInfoStatus  'hyperlatex 'hyperlatex-ts-rcsinfo-status)
+(put 'rcsInfoLocker  'hyperlatex 'hyperlatex-ts-rcsinfo-lock)
+
+(defvar hyperlatex-ts-rcs-file "--sourcefile--")
+(defvar hyperlatex-ts-rcs-date "--date--")
+(defvar hyperlatex-ts-rcs-time "--time--")
+(defvar hyperlatex-ts-rcs-vsn "--revision--")
+(defvar hyperlatex-ts-rcs-own "--owner--")
+(defvar hyperlatex-ts-rcs-status "--status--")
+(defvar hyperlatex-ts-rcs-lock "--not-locked--")
+
+(defun hyperlatex-ts-rcsinfo-file ()
+  (insert hyperlatex-ts-rcs-file))
+
+(defun hyperlatex-ts-rcsinfo-date ()
+  (insert hyperlatex-ts-rcs-date))
+
+(defun hyperlatex-ts-rcsinfo-time ()
+  (insert hyperlatex-ts-rcs-time))
+
+(defun hyperlatex-ts-rcsinfo-vsn ()
+  (insert hyperlatex-ts-rcs-vsn))
+
+(defun hyperlatex-ts-rcsinfo-own ()
+  (insert hyperlatex-ts-rcs-own))
+
+(defun hyperlatex-ts-rcsinfo-status ()
+  (insert hyperlatex-ts-rcs-status))
+
+(defun hyperlatex-ts-rcsinfo-lock ()
+  (insert hyperlatex-ts-rcs-lock))
+
+(defun hyperlatex-ts-rcsinfo ()
+  "Parses an RCS ID string into several pieces.  The ID string is
+   surrounded by two dollar signs, and begins with Id.  It may have
+   six, seven, or no fields. Hacked for Subversion by jhrg 10/13/05."
+  (let ((start-id (search-forward "$Id"))
+        (end-id   (save-excursion (search-forward "$"))))
+    (if (> end-id (+ start-id 10))
+        (progn
+          (search-forward " " end-id)
+          (setq hyperlatex-ts-rcs-file 
+                (buffer-substring (point) 
+                                  (1- (search-forward " " end-id))))
+          (setq hyperlatex-ts-rcs-vsn
+                (buffer-substring (point)
+                                  (1- (search-forward " " end-id))))
+          (setq hyperlatex-ts-rcs-date
+                (buffer-substring (point)
+                                  (1- (search-forward " " end-id))))
+          (setq hyperlatex-ts-rcs-time
+                (buffer-substring (point)
+                                  (1- (search-forward " " end-id))))
+          (setq hyperlatex-ts-rcs-own
+                (buffer-substring (point)
+                                  (1- (search-forward " " end-id))))
+          (setq hyperlatex-ts-rcs-status "exp")
+          (if (< (point) (1- end-id))
+              (setq hyperlatex-ts-rcs-lock
+                    (buffer-substring (point)
+                                      (- (search-forward "$" end-id) 2)))
+            (search-forward "$" end-id)) ))))
+}
+%</hlx>
+%    \end{macrocode}
+%
+%    The last search was added to eat the remaining dollar sign.
+%    Without this, \hlx\ interprets the dollar sign, goes into math
+%    mode, and stays there. 
+%
+%
+% \section{Miscellaneous Convenience Commands}
+%
+%    The following are miscellaneous convenience commands with no
+%    better place to be listed.
+%
+%    \begin{macrocode}
+%<*cls>
+\newcommand{\clearemptydoublepage}
+   {\newpage{\pagestyle{empty}\cleardoublepage}}
+\newcommand{\degree}{$^\circ$}
+\newcommand{\circflex}{$^\wedge$}
+\newcommand{\showtime}{\the\time}
+\newcommand{\pause}{\vspace{0.2in}%
+  \hfill\ding{166}\hfill\ding{166}\hfill\ding{166}\hfill%
+  \vspace{0.2in}}
+\def\iffull#1{\if#1\relax\else}
+\def\ifempty#1{\if#1\relax}
+\newcommand{\pdflink}[2][]{}
+%</cls>
+%    \end{macrocode}
+%
+% \subsection{\hlx\ Convenience Commands}
+%
+%    These commands appear to help various parts of the documents
+%    adjust. 
+%
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\pdflink}[2][]{\xml{center}You may prefer reading
+  \xlink{#2}{#2}, a  pdf version of this article\EmptyP{#1}%
+  { or \xlink{#1}{#1}, a PostScript version}.\xml{/center}{}}
+\newcommand{\clearemptydoublepage}{}
+\newcommand{\pagenumbering}[1]{}
+\newcommand{\psfigurepath}[1]{}
+\newcommand{\degree}{\htmlsym{##176}}
+\newcommand{\circflex}{\htmlsym{##94}}
+\newcommand{\showtime}{\the\time}
+\newcommand{\pause}{\xml{br}\xml{br}}
+\newcommand{\backslash}{\htmlsym{##92}}
+\newcommand{\|}{\htmlsym{##124}}
+\newcommand{\left}[1]{}
+\newcommand{\right}[1]{}
+\newcommand{\strut}{}
+\newcommand{\vdots}{.}
+\newcommand{\ddots}{.}
+\newcommand{\cdots}{.}
+\newcommand{\goodbreak}{}
+\newcommand{\hbox}[1]{#1}
+\newcommand{\smallbreak}{}
+\newcommand{\medbreak}{}
+\newcommand{\bigbreak}{}
+\newcommand{\penalty}[1]{}
+%</hlx>
+%    \end{macrocode}
+%    
+%    There is a problem with using \hlx\ and docstrip, and that's the
+%    |\endinput| that goes at the end of the file...
+%
+%    \begin{macrocode}
+%<*hlx>
+\newcommand{\endinput}{}
+%</hlx>
+%    \end{macrocode}
+%
+%
+%    \section{A Style Sheet}
+%
+%    Here's a style sheet to use.  Don't forget to edit out the stuff
+%    that docstrip adds before installing it in a css directory.  See
+%    above for the |\htmlcss| command.
+%
+%    \begin{macrocode}
+%<*css>
+BODY {
+  background: white;
+  color:      rgb(15,20,160);
+  background-repeat: repeat-x;
+  background-attachment: fixed;
+  font-family: Times, serif
+}
+
+P, BLOCKQUOTE, UL, OL, DL, DIR, MENU, DIV, H4, H5, H6 {
+  margin-left: 2%;
+  font-family: Times, serif
+}
+
+P.note {
+  color: rgb(5,10,210);
+  margin-left:9%;
+  text-indent:-3%
+}
+
+IMG.subj {
+  padding:0cm;
+  margin-right: 0cm
+}
+
+A.URL {
+  text-decoration: none
+}
+
+PRE {
+  color: rgb(12,127,16);
+  margin-left: 4%;
+  font-family: courier,"lucida sans typewriter",monospace
+}
+
+MENU MENU, OL OL, UL UL {
+  margin-left: 0cm
+}
+
+UL LI {
+  list-style: disc;
+  margin-top: 6px
+}
+
+MENU LI {
+  list-style: none
+}
+
+CODE {
+  color: rgb(12,127,16);
+  font-family: courier, "lucida sans typewriter",monospace
+}
+
+CODE.input {
+  color: black;
+  font-weight:bold
+}
+
+TABLE, TBODY, TR, TD   {
+  color: rgb(15,20,204);
+  font-size: small;
+  font-family: Times, serif;
+}
+
+ADDRESS {
+  color:rgb(10,204,10);
+  font-size:small;
+  font-family: Times, serif
+}
+
+H1 {
+  color: rgb(127,127,127);
+  font-size:x-large ;
+  font-weight:bolder;
+  font-family: "lucida sans", helvetica, Geneva, Arial, sans-serif
+}
+
+H2 {
+  color: black;
+  font-size:large ;
+  font-weight:bold;
+  font-family: "lucida sans", helvetica, Geneva, Arial, sans-serif
+}
+
+H3 {
+  color: black;
+  font-size:large ;
+  font-weight:bold;
+  text-indent:2%;
+  font-family: "lucida sans", helvetica, Geneva, Arial, sans-serif
+}
+
+H4,H5 {
+  font-size: medium;
+  font-weight:bold
+}
+
+.title {
+  text-indent:0cm;
+  text-align:center
+}
+
+DIV.quote {
+  margin-top: 7px;
+  margin-left: 9%;
+  margin-right: 9%;
+  text-align:justify;
+  font-size:small
+}
+
+DIV.navigation {
+  color: rgb(127,25,127);
+  margin-left: 0cm
+}
+%</css>
+%    \end{macrocode}
+%
+%
+%    \section{An Example}
+%
+%    Here's an example of a dods-paper document.
+%
+%    \begin{macrocode}
+%<*example>
+\documentclass[12pt]{dods-paper}
+\usepackage{acronym}
+
+\htmldirectory{dods-ex}
+
+\title{An Example DODS-Paper Document}
+\subtitle{What one might look like}
+\author{Tom Sgouros}
+
+\begin{document}
+\maketitle
+% Use \documentclass[12pt,titlepage]{dods-paper} to make a separate title page.
+
+\pdflink[dods-ex.ps.gz]{dods-ex.pdf}
+
+\tableofcontents
+\texorhtml{\section*{Executive Summary}}{\htmlmenu{2}}
+
+This is an overview of the material contained in this document.  In
+the HTML version, this will appear on the first page.  In the \LaTeX
+version, it will appear in a section called ``Executive Summary.''
+
+\section{The first section}
+
+The \ac{DAP}-bone's connected to the \ac{OPeNDAP}-bone.  The
+\ac{OPeNDAP}-bone's connected to the \ac{DDS}-bone.  The
+\ac{DDS}-bone's connected to the \ac{DAS}-bone.  The \ac{DODS}-bone's
+connected to the \ac{NVODS}-bone.  The \ac{NVODS} bone's connected
+here and there and who knows where else.
+
+\subsection{The first subsection}
+
+A possible aid to typing the above would be a raft of definitions like
+the following (inserted here to show off the \verb|vcode| environment):
+
+\begin{vcode}{ib}
+\newcommand{\nvods}{\ac{NVODS}}
+\newcommmand{\dods}{\ac{DODS}}
+\end{vcode}
+
+It would take less typing to put these into the text of whatever I was
+writing.  This is important to me because I'm lazy.
+
+\subsection{The second subsection}
+
+The whole point of using \LaTeX\ is to stick as closely as possible to
+functional markup.  That is, as much of the markup as possible should
+refer to the function of the marked text, rather than its format. Very
+roughly speaking, this is the division between \LaTeX\ and \TeX .
+Sticking to the formats defined in the dods-paper class will make the
+documents translate seamlessly into html, as well as into PDF.
+
+Run \LaTeX\ on the \lit{dods-paper.dtx} to get the documentation for
+the package.
+
+Where you need to descend to the level of format, it helps the
+translation to html if you stay away from \TeX-isms like
+\verb|\vskip|.  If you have to use something like that (and it's even
+better if you can avoid them entirely), use the comparable
+\LaTeX-isms, like \verb|\vspace|.  The \verb|\pagebreak| and
+\verb|\nopagebreak| should work ok, too.
+
+\section{The second section}
+
+Whatever comes next goes here.  For the sake of filling the page,
+here's a cool extract from the standard DODS Makefile for
+\LaTeX-land.  Use this and GNU make, and never have to worry again
+about re-running \LaTeX .  Consult the Makefiles for more fun and
+games. 
+
+\begin{vcode}{ib}
+%.aux: %.tex
+        latex $<
+        @while ( grep "Rerun to get cross-references" \
+                        $(subst .tex,.log,$<) >/dev/null ); do \
+              echo '** Re-running LaTeX **'; \
+              latex $<; \
+        done
+\end{vcode}
+      
+\appendix
+
+\section{Acronyms}
+
+\begin{acronym}
+ \acro{DAP}{Data Access Protocol}.
+ \acro{DDS}{Data Descriptor Structure}.
+ \acro{DAS}{Data Attribute Structure}.
+ \acro{DIF}{Directory Interchange Format}.
+ \acro{DODS}{Distributed Oceanographic Data System}.
+ \acro{DRDS}{DODS Relational Database Server}.
+ \acro{NVODS}{National Virtual Ocean Data System}.
+ \acro{OPeNDAP}{Open Source Project for a Network Data Access Protocol}.
+ \acro{URI}{University of Rhode Island}.
+ \acro{URL}{Universal Resource Locator}.
+\end{acronym}
+
+
+\end{document}
+%</example>
+%    \end{macrocode}
+%
+% \Finale \PrintIndex
+% \iffalse
+%
+%  $Log: dods-paper.dtx,v $
+%  Revision 1.13  2004/07/02 16:56:13  jimg
+%  I removed the navigation panel stuff since hyperlatex has a default panel
+%  that, with some hacking (see opendap_bluepanels.hlx), fits the bill. The
+%  panels here were not working anyway (they needed to be updated to the newer
+%  hyperlatex syntax). I also removed the 4% indent on the Table, TBody, et c.,
+%  in the CSS because it was indenting the nav panel and I thought that looked
+%  sloppy.
+%
+%  Revision 1.12  2004/06/29 17:13:24  jimg
+%  Moved CSS to /resources/.
+%
+%  Revision 1.11  2004/05/13 22:45:29  jimg
+%  I made the bottom margin 1 inch.
+%
+%  Revision 1.10  2003/12/28 21:12:16  tom
+%  added xspace package to requirements
+%
+%  Revision 1.9  2003/12/27 05:18:29  ndp
+%  *** empty log message ***
+%
+%  Revision 1.8  2003/12/08 16:04:12  tom
+%  added \and macro to title page modifications
+%
+%  Revision 1.7  2003/11/24 00:11:13  tom
+%  fixed error in \indc
+%
+%  Revision 1.6  2003/09/04 17:21:40  tom
+%  mistake in previous check-in
+%
+%  Revision 1.5  2003/09/04 17:08:05  tom
+%  disabled some draft stuff that doesn't work reliably.  Also,
+%  margins are skinnier with dods-paper than with dods-book, so
+%  we shouldn't use marginpars.
+%
+%  Revision 1.4  2003/02/24 14:33:59  tom
+%  added 'justify' option
+%
+%  Revision 1.3  2002/07/15 17:49:31  tom
+%  removed \DODSDoc from these files.  Don't know what it was doing there
+%  in the first place.  Moved it to boiler/dods-def.tex
+%
+%  Revision 1.2  2002/05/10 19:06:10  tom
+%  removed authordate1-4.sty
+%
+%  Revision 1.1  2002/03/11 14:49:26  tom
+%  Added to archive for using with dods documents.
+%
+%
+% \fi

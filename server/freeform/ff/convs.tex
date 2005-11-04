@@ -1,0 +1,456 @@
+%CHAPTER 5      
+%
+% $Id$
+%
+
+\chapter{FreeForm ND Conventions}
+\label{ff,convs}
+
+\indc{FreeForm conventions}
+File name conventions have been defined for FreeForm ND. If you follow
+these conventions, FreeForm ND can locate format files through a
+default search sequence. Using the file name conventions also lets you
+reduce the number of arguments on the command line. In addition to
+standard file names, FreeForm ND programs recognize various standard
+command line arguments.
+
+\section{File Name Conventions}
+\label{ff,convs,filename}
+
+\indc{file name!conventions}\indc{conventions!file name}
+Naming conventions have been established for files accessed by
+FreeForm ND. Although you are not required to follow these
+conventions, using them lets you enter abbreviated commands when you
+are using FreeForm ND-based programs. FreeForm ND can then
+automatically execute several operations:
+
+\begin{itemize}
+\item   Determination of input and output formats when they are not
+  explicitly identified in the relevant format descriptions in format
+  files
+  
+\item   Location of format files when they are not specified on the
+  command line
+\end{itemize}
+
+\section{File Name Extensions}
+\label{ff,convs,extension}
+
+\indc{file name!extensions}\indc{extensions!file name}
+\indc{dat@\lit{.dat}!file name extension}
+\indc{dab@\lit{.dab}!file name extension}
+\indc{bin@\lit{.bin}!file name extension}
+The expected extensions for data files are as follows: 
+
+\begin{description}
+
+\item[\lit{.dat}]  For ASCII, e.g., \lit{latlon.dat}
+
+\item[\lit{.dab}] For dBASE, e.g., \lit{latlon.dab}
+
+\item[\lit{.bin}] binary or anything that is not \lit{.dat} or \lit{.dab}, e.g., \lit{latlon.bin} 
+\end{description}
+
+\indc{fmt@\lit{.fmt}!file name extension}
+The expected extension for format description files is \lit{.fmt}, e.g.,
+\lit{latlon.fmt}. You should not use mixed case extensions for format
+description files if you want to take advantage of FreeForm ND's
+default search capabilities. If you explicitly specify the names of
+format description files on the command line, you can use mixed case
+extensions.
+
+\indc{afm@\lit{.afm}!obsolete file name extension}
+\indc{bfm@\lit{.bfm}!obsolete file name extension}
+\indc{dfm@\lit{.dfm}!obsolete file name extension}
+\indc{file name!extensions!obsolete}
+\indc{extensions!file name!obsolete}
+\indc{obsolete!file name extensions}
+\note{Previous versions of FreeForm ND used variable description files
+  (formerly called format specification files) each of which contained
+  variable descriptions for one file. Expected extensions for these
+  files were \lit{.afm} (ASCII), \lit{.bfm} (binary), and \lit{.dfm}
+  (dBASE). Variable descriptions for one or more files can now be
+  incorporated into a single format description file. It is
+  recommended that you convert and combine (as appropriate) existing
+  variable description files into format description files.  }
+
+\section{File Name Relationships}
+\label{ff,convs,relation}
+
+
+FreeForm ND-based programs expect certain relationships between data
+file and format description file names as outlined below.
+
+\begin{itemize}
+\item   The data file is named datafile.ext where datafile is the file
+  name of your choosing and ext is the extension.
+  
+  Example: \lit{latlon.dat}
+  
+\item   The corresponding format description file should be named
+  datafile.fmt.
+  
+  Example: \lit{latlon.fmt}
+  
+\item   If one format description file is used for multiple data
+  files, all with the same extension, the format description file
+  should be named ext.fmt.
+  
+  Example: \lit{ll.fmt} is the format description file for \lit{lldat1.ll},
+  \lit{lldat2.ll}, and \lit{lldat3.ll}.
+\end{itemize}
+
+Again, although not required, it is to your advantage to use these
+conventions.
+
+\section{Determining Input and Output Formats}
+\label{ff,convs,determine}
+
+\indc{input format!determining}\indc{determining!input format}
+\indc{output format!determining}\indc{determining!output format}
+You can optionally include the read/write type (``\lit{input}'' or
+``\lit{output}'') in format descriptors, e.g.,
+\lit{ASCII\_input\_data}. You may not want to specify the read/write
+type in some circumstances. For example, you may need to translate
+from native ASCII to binary, then back to ASCII. ASCII is the input
+format in the first translation and the output format in the second
+translation, vice versa for binary. You would need to edit the format
+description file before executing the second translation if you
+included read/write type in the format descriptors.
+
+\note{If you use the -ft option, you do not need to edit the format
+  description file. See \sectionref{ff,convs,specifying} later
+  in this chapter.}
+ 
+If you do not specify read/write type, FreeForm ND can nevertheless
+determine which format in a format description file is input and which
+is output as long as you have adhered to FreeForm ND filenaming
+conventions.
+
+\begin{itemize}
+\item   If the input format is not specified, and 
+  \begin{itemize}
+    
+  \item the input data filename extension is \lit{.bin}, assume binary
+    input.
+  \item the input data filename extension is \lit{.dab}, assume
+    dBASE input.
+  \item the input data filename extension is \lit{.dat}, assume ASCII input.
+  \item the input data filename extension is anything else, assume
+    binary input.
+\end{itemize}
+
+\item   If the output format is not specified, and 
+  \begin{itemize}
+  \item the input format is binary, the output is ASCII or dBASE,
+    whichever is found first.
+  \item the input format is dBASE, the output is ASCII or binary,
+    whichever is found first.
+  \item the input format is ASCII, the output is binary or dBASE,
+    whichever is found first.  
+\end{itemize}
+\end{itemize}
+
+\note{The appropriate format descriptions must be in the format
+  description file(s) used by FreeForm ND for a translation. If, for
+  example, FreeForm ND determines the input format is binary and the
+  output format is ASCII, there must be a format description for each
+  type.  }
+
+The checkvar program needs only an input format. 
+
+\section{Locating Format Files}
+\label{ff,convs,locating}
+
+\indc{format files!locating}\indc{locating!format files}
+\indc{format files!search path}\indc{search path!format files}
+FreeForm ND programs use the following search sequence to find a
+format file (format or variable description file) for the data file
+datafile.ext when the format file name is not explicitly specified on
+the command line. In summary, FreeForm ND searches the directory
+specified by the GeoVu keyword \lit{format_dir} (defined in a equivalence
+table or in the environment), the current or working directory, and
+the data file's home directory. The rules are applied in the order
+given below until a format file is found or all rules have been
+exhausted. If the relevant format file does not follow FreeForm ND
+conventions for name or location, it should be explicitly specified on
+the command line.
+
+\note{GeoVu is a FreeForm ND-based application for data access and
+  visualization. FreeForm ND applications other than GeoVu use GeoVu
+  keywords.  }
+
+For information about equivalence tables, see the GeoVu Tools
+Reference Guide, available from the NGDC.
+
+\subsection{Search Sequence}
+
+\begin{enumerate}
+\item Search the directory given by the GeoVu keyword \lit{format_dir} for a
+  format description file named datafile.fmt.
+  
+\item Search the directory given by the GeoVu keyword \lit{format_dir} for
+  variable description files named \lit{datafile.afm}, \lit{datafile.bfm}, and
+  \lit{datafile.dfm}.
+  
+  \note{Step 2 is included to accommodate variable description files
+    that were created using previous versions of FreeForm ND. It is
+    recommended that you convert existing variable description files
+    to format description files.  }
+  
+\item Search the directory given by the GeoVu keyword \lit{format_dir} for a
+  format description file named ext.fmt.
+  
+  If the GeoVu keyword \lit{format_dir} is not found, FreeForm ND continues
+  the search for a format file as follows.
+  
+\item Search the current (default) directory for a format description
+  file named datafile.fmt.
+  
+\item Search the current directory for variable description files
+  named \lit{datafile.afm}, \lit{datafile.bfm}, and \lit{datafile.dfm}. Use the criteria
+  in step 2 for determining input and output format files.
+  
+\item Search the current directory for a format description file named
+  \lit{ext.fmt}.
+  
+  If the data file's home directory is not the same as the current
+  directory, FreeForm ND continues the search for a format file with
+  steps 7-9. The data file's home directory is given by the directory
+  path component of the data file name. If the data file name has no
+  directory path component, the home directory search is not done.
+  
+\item Search the data file's home directory for a format description
+  file named \lit{datafile.fmt}.
+  
+\item Search the data file's home directory for variable description
+  files named \lit{datafile.afm}, \lit{datafile.bfm}, and \lit{datafile.dfm}. Use the
+  criteria in step 2 for determining input and output format files.
+  
+\item Search the data file's home directory for a format description
+  file named \lit{ext.fmt}.
+\end{enumerate}
+
+
+\subsection{Case Sensitivity}
+\label{ff,convs,case}
+
+\indc{case sensitivity!locating format files}
+\indc{format files!locating!case sensivity}
+\indc{locating!format files!case sensivity}
+\indc{format files!search path}
+\indc{search path!format files!case sensivity}
+\indc{file name!case sensivity}\indc{case sensivity!file name}
+FreeForm ND adheres to the following rules for case sensitivity (in
+applicable operating systems) when it searches for a format file for
+the data file datafile.ext.
+
+\begin{itemize}
+\item FreeForm ND preserves the case of datafile, for example, the
+  default format file for the data file \lit{LATLON.BIN} is \lit{LATLON.fmt} (or
+  \lit{LATLON.bfm}).
+  
+\item FreeForm ND searches for a format file with a lower case
+  extension. That is, the format file must have its extension in lower
+  case no matter what the case of datafile. For example, the default
+  format file for the data file \lit{LatLon.dat} is \lit{LatLon.fmt} (or
+  \lit{LatLon.afm}), and \lit{TIMEDATE.fmt} (or \lit{TIMEDATE.bfm}) is the default
+  format file for \lit{TIMEDATE.bin}.
+  
+\item In searching for a format description file of type \lit{ext.fmt},
+  FreeForm ND preserves the case of ext. For example, for data files
+  named \lit{lldat1.LL}, \lit{lldat2.LL}, and \lit{latlon3.LL}, the default format
+  description file is \lit{LL.fmt}.
+\end{itemize}
+
+\section{Command Line Arguments}
+\label{ff,convs,argument}
+
+\indc{command line arguments}\indc{arguments!command line}
+FreeForm ND programs can take various command line arguments. The most
+widely used or standard arguments are discussed in this section. They
+are used for several different purposes: identifying input and output
+files, identifying format files and titles, changing run-time
+operation parameters, and defining data filters.
+
+The only required argument for any FreeForm ND program is the name of
+the input file or file to be processed. All other arguments are
+optional and can be in any order following the input file name. The
+command line of a FreeForm ND program with the standard arguments has
+the following form:
+
+\newcommand{\dashf}{\hbox{\lit{-f} \var{format\_file}}}
+\newcommand{\dashif}{\hbox{\lit{-if} \var{input\_format\_file}}}
+\newcommand{\dashof}{\hbox{\lit{-of} \var{output\_format\_file}}}
+\newcommand{\dashft}{\hbox{\lit{-ft "}\var{title}\lit{"}}}
+\newcommand{\dashift}{\hbox{\lit{-ift "}\var{title}\lit{"}}}
+\newcommand{\dashoft}{\hbox{\lit{-oft "}\var{title}\lit{"}}}
+\newcommand{\dashb}{\hbox{\lit{-b} \var{local\_buffer\_size}}}
+\newcommand{\dashc}{\hbox{\lit{-c} \var{count}}}
+\newcommand{\dashvv}{\hbox{\lit{-v} \var{var\_file}}}
+\newcommand{\dashq}{\hbox{\lit{-q} \var{query\_file}}}
+\newcommand{\dasho}{\hbox{\lit{-o} \var{output\_file}}}
+
+\proto{application\_name \var{input\_file} [\dashf] 
+[\dashif] [\dashof] [\dashft] 
+[\dashift] [\dashoft] [\dashb] [\dashc] 
+[\dashvv] [\dashq] [\dasho]}
+
+\note{To see a summary of command line usage for a FreeForm ND
+  program, enter the program's name on the command line without any
+  arguments.  }
+
+\subsection{Specifying Input and Output Files}
+
+\indc{arguments!input file}\indc{input file!specifying}
+\indc{specifying!input file}
+\indc{arguments!output file}\indc{output file!specifying}
+\indc{specifying!output file} 
+\begin{description}
+
+\item[\var{input\_file}]
+  
+  Name of the file to be processed. Following FreeForm ND naming
+  conventions, the standard extensions for data files are \lit{.dat} for
+  ASCII format, \lit{.bin} for binary, and \lit{.dab} for dBASE.
+
+\item[\dasho]\indc{o@\lit{-o}}
+  
+  Option flag followed by the name of the output file. The standard
+  extensions are the same as for input files.
+\end{description}
+
+\subsection{Specifying Format Description Source}
+\label{ff,convs,specifying}
+
+\indc{arguments!input format file}
+\indc{input format file!specifying}\indc{specifying!input format file}
+\indc{arguments!output format file}
+\indc{output format file!specifying}\indc{specifying!output format file}
+\indc{format file!specifying}
+FreeForm ND offers a number of command line options for specifying the
+source of the format descriptions that a program must find in order to
+process data. The proper option or combination of options to use
+depends on how you have constructed your format files.
+
+\begin{description}
+
+\item[\dashf]\indc{f@\lit{}}
+  
+  Option flag followed by the name of the format description file
+  describing both input and output data.
+
+\item[\dashif]\indc{if@\lit{-if}}
+  
+  Option flag followed by the name of the format description file
+  describing the input data. Also use this option for an input
+  variable description file written using earlier versions of FreeForm
+  ND.
+
+\item[\dashof]\indc{of@\lit{-of}}
+  
+  Option flag followed by the name of the format description file
+  describing the output data. Also use this option for an output
+  variable description file written using earlier versions of FreeForm
+  ND.
+
+\item[\dashft]\indc{ft@\lit{-ft}}
+  
+\indc{arguments!input format title}
+\indc{input format title!specifying}\indc{specifying!input format title}
+\indc{arguments!output format title}
+\indc{output format title!specifying}\indc{specifying!output format title}
+\indc{format title!specifying}\indc{arguments!format title}
+\indc{title!format description}
+  Option flag followed by the title (enclosed in quotes) of the format
+  to be used for both input and output data, in which case there is no
+  reformatting. The title follows format type on the first line of a
+  format description in a format description file.
+
+\item[\dashift]\indc{ift@\lit{-ift}}
+  
+  Option flag followed by the title (enclosed in quotes) of the
+  desired input format.
+
+\item[\dashoft]\indc{oft@\lit{-oft}}
+  
+  Option flag followed by the title (enclosed in quotes) of the
+  desired output format.
+\end{description}
+
+\note{Previous versions of FreeForm ND used variable description files
+  (\lit{.afm}, \lit{.bfm}, \lit{.dfm}). It is recommended that you
+  convert and combine (as appropriate) existing variable description
+  files into format description files.  }
+
+The various options available for specifying the source of a format
+description offer you a great deal of flexibility-in naming files,
+setting up format description files, and on the command line. In using
+these options, you need to consider the content of your format
+description files and how FreeForm ND will interpret the arguments on
+the command line.
+
+\subsection{Changing Run-time Parameters}
+
+\indc{arguments!run-time parameters}
+\indc{run-time parameters!arguments}
+FreeForm ND includes three arguments that let you change run-time
+parameters according to your needs. One argument lets you specify
+local buffer size, another indicates the number of records to process,
+and the third indicates which variables to process.
+
+\begin{description}
+
+\item[\dashb]\indc{b@\lit{-b}}
+  
+\indc{buffer size}\indc{memory buffer}\indc{allocated memory}
+  Option flag followed by the size of the memory buffer used to
+  process the data and format files.
+  
+  Default buffer size is 32,768. You many want to decrease the buffer
+  size if you are running with low memory. Keep in mind that too small
+  a buffer may result in unexpected behavior.
+
+\item[\dashc]\indc{c@\lit{-c}}
+
+  \indc{records!how many to process}
+  Option flag followed by a number that specifies how many data
+  records at the head or tail of the file to process.
+  
+  If $count > 0$, \var{count} records at the beginning of the file are
+  processed.
+  
+  If $count < 0$, \var{count} records at the tail or end of the file
+  are processed.
+
+\item[\dashvv]\indc{v@\lit{-v}}
+  
+  \indc{arguments!variable file}\indc{specifying!variables}
+  \indc{variables!specifying}
+  Option flag followed by the name of a variable file. The file
+  contains names of the variables in the input data file to be
+  processed by the FreeForm ND program. Variable names in var_file can
+  be separated by one or more spaces or each name can be on a separate
+  line.
+\end{description}
+
+\subsection{Defining Filters}
+
+\indc{arguments!filters}\indc{filters!arguments}
+The query option lets you define data filters via a query file so you
+can precisely specify which data to process. The FreeForm ND program
+will process only those records meeting the query criteria.
+
+\begin{description}
+
+\item[\dashq]\indc{q@\lit{-q}}
+  
+  Option flag followed by the name of the file containing query
+  criteria. See \chapterref{ff,query} for a complete description of
+  the query syntax.
+\end{description}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

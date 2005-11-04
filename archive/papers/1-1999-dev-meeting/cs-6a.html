@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+        "http://www.w3.org/TR/REC-html40/loose.dtd">
+
+<html>
+
+<head>
+<!-- $Id$ -->
+<title>
+Catalog Services Overview
+</title>
+</head>
+
+<body>
+
+<h1>Standard variables and query interfaces</h1>
+<h3>
+<ul>
+<li>Implemented functions for standard variables:<br>
+<pre>DODS_Date(<em>container</em>)
+DODS_Time(<em>container</em>)
+DODS_Date_Time(<em>container</em>)</pre>
+<p>
+<li>Implemented functions for queries:<br>
+<pre>date(<em>date string 1</em>[, <em>date string 2</em>])
+time(<em>time string 1</em>[, <em>time string 2</em>])
+date_time(<em>date/time string 1</em>[, <em>date/time string 2</em>])</pre>
+<p>
+<li>Examples:<pre>
+DDS:                         DAS:
+Dataset {                    Attributes {
+    Sequence {                   DODS_Global {
+        String DODS_URL;             String DODS_Interfaces date, time;
+	Int32 year;            	     Int32 DODS_Standards 1;
+	Int32 year_day;          }
+	Int32 h;                 DODS_Time {
+	Int32 m;                     ...
+	Float64 s;               }
+    } URI_Avhrr;                 DODS_Date {
+} URI_Avhrr;                         String year_variable year;
+	                             String year_day_variable year_day;
+	                             Int32 year_base 1900;
+                                 }
+                                 ...
+                             }
+
+http://...?DODS_URL,DODS_Date(URI_Avhrr)&date("1998/1/12")
+http://...?DODS_URL,DODS_Time(URI_Avhrr)&time("13:06:23.7")
+http://...?DODS_URL,DODS_DateTime(URI_Avhrr)&time("13:00","15:00")
+</pre><p>
+</ul>
+</h3>
+
+<hr height=5>
+DODS Developer's Meeting; Catalog Services Overview: 
+<a href="cs-6.html">back</a> <a href="cs-7.html">next</a>
+</body>
+</html>

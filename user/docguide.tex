@@ -1,0 +1,102 @@
+%  A brief guide to the published DODS documents.
+%
+%  This document is to contain a description of all the documents a
+%  new user might have to care about.  With descriptions.  It also
+%  contains a place where stuff can be 
+%
+\documentclass{dods-paper}
+\usepackage{acronym}
+
+\rcsInfo $Id$
+\newcommand{\DOCversion}{Version \rcsInfoRevision}
+
+\include{../boiler/layout}
+\include{../boiler/dods-def}
+
+\htmldirectory{docguide-html}
+\htmlname{docguide}
+\htmltitle{\opendap Documentation Guide}
+\htmladdress{Tom Sgouros, \today}
+
+\figpath{docguide}
+
+% \makeindex
+
+\begin{document}
+%------------------------------------front matter
+\title{\opendap Documentation Guide\\\DOCversion}
+\author{Tom Sgouros}
+\maketitle
+
+% \copyrightmatter
+
+\W\pslink{ftp://ftp.unidata.ucar.edu/pub/dods/ps-docs/docguide}
+
+\tableofcontents
+% \listoffigures
+% \listoftables
+
+\section{Where to look for...}
+
+
+
+\section{User Documentation}
+
+\begin{description}
+
+\item[\OPDquick]  A quick introduction to the \opendap system.  Use
+  this book to get started using \opendap to find and use remote
+  data.  It also serves as an overview of the system for people who
+  are planning to use \opendap to serve their data.
+
+\item[\OPDuser] More depth about the
+
+\item[\OPDinstall]
+  
+\item[\OPDmgui]
+
+\item[\OPDagg]
+
+\item[\OPDapi]
+
+\item[\OPDapiref]
+
+\item[\OPDwclient]
+
+\item[\OPDwserver]
+
+\item[\OPDffbook]
+
+\item[\OPDregex] A brief explanation of regular expressions.  This
+  book really has little to do with \opendap, but \opendap constraint
+  expressions can use regular expressions, and there is surprisingly
+  little good material online about them.
+
+\end{description}
+
+\section{Technical Documentation}
+
+\begin{description}
+\item[DAP Specification] 
+\end{description}
+
+\iffalse
+
+\section{The Documentation To-Do List}
+
+\begin{description}
+\item[AIS] 
+\item[\opendap Data Connector] 
+\item[\opendap (Meta)Data Standards Guide] 
+\end{description}
+
+
+\fi
+% \printindex
+
+\end{document}
+
+% $Log: docguide.tex,v $
+% Revision 1.1  2003/12/28 21:34:18  tom
+% started
+%

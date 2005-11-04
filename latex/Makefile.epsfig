@@ -1,0 +1,28 @@
+# USER CONFIG -- edit the following to suit your system
+#
+BINDIR=${HOME}/bin
+STYDIR=${HOME}/lib/tex
+INSTALL=/usr/local/bin/install -g tex
+#
+# END USER CONFIG.
+
+BINS=epsfig epsbb
+STYS=epsfig.sty
+
+
+install: ${STYDIR}/epsfig.sty ${BINDIR}/epsfig ${BINDIR}/epsbb
+
+${STYDIR}/epsfig.sty : epsfig.sty
+	$(INSTALL) -m 0644 epsfig.sty ${STYDIR}
+
+${BINDIR}/epsfig : epsfig
+	$(INSTALL) -m 0755 epsfig ${BINDIR}
+
+${BINDIR}/epsbb : epsbb
+	$(INSTALL) -m 0755 epsbb ${BINDIR}
+
+
+shar: epsfig.shar
+
+epsfig.shar: Makefile README ${BINS} ${STYS}
+	shar Makefile README ${BINS} ${STYS} > epsfig.shar

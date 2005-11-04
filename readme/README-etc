@@ -1,0 +1,50 @@
+$Id$
+
+This directory contains software used by DODS during the build process and at
+runtime. Software that may be useful to developers working on new
+client-libraries or data servers is also kept here. Lastly, information about
+the project that fits nowhere else, such as the copyright statement for the
+core and sample software is here.
+
+Scripts used during the build:
+
+install-sh: The GNU replacement for `install'. Presence of this script
+guarantees that configure will be able to find a compatible installation
+utility when it is creating the Makefiles.
+
+depend.sh: This is a script which replaces makedepend. It requires gcc, but
+so does the rest of DODS (at least in principle), so that should not matter. 
+
+config.{sub, guess}: Guess the host vendor, hardware and operating system
+combination. Used by configure when building the Makefiles.
+
+aclocal.m4: Used by autoconf when building the configure scripts from the
+configure.in files. Users should never have to mess with this, but people
+writing configure.in files will find it handy.
+
+Graphical User Interface files:
+
+dods_gui.tcl: Load file for the DODS GUI. This file is sources by the GUI
+software at startup. Failure to load this is not fatal and can be suppressed
+by setting the environment variable DODS_USE_GUI to "no".
+
+progress.tcl: The progress indicator GUI.
+
+error.tcl: The error dialogs and error correction software. This provides a
+way for DODS to present information about network errors that is completely
+separate from the user program and its associated API (which nominally know
+nothing about network errors and are thus not terribly good at recovering
+from them).
+
+Also in this directory:
+
+COPYRIGH: The copyright under which the DODS software from URI/MIT is
+distributed. 
+
+localize.sh: This script can be used to create `local' versions of an API
+given the names of all the external symbols in an implementation of that
+API. The script renames all the external symbols so that the `localized'
+library can be linked with a DODS library which contains the APIs original
+external symbols. This is a pretty primitive way to do things -- if you know
+of a better way, please tell us!
+

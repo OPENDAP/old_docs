@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>DODS--Uniform Resource Locators</TITLE>
+<META NAME="description" CONTENT="DODS--Uniform Resource Locators">
+<META NAME="keywords" CONTENT="urls">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="urls.css">
+
+<LINK REL="next" HREF="node1.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html33"
+  HREF="node1.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up_g.png"> 
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev_g.png"> 
+<A NAME="tex2html31"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html34"
+  HREF="node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html32"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<P>
+
+ 
+<P>
+<H1 ALIGN="CENTER">DODS--Uniform Resource Locators</H1>
+<DIV>
+
+<P ALIGN="CENTER"><STRONG>23 August 1996</STRONG></P>
+</DIV>
+
+<P>
+
+<H3>Abstract:</H3>
+<DIV>
+
+<P>
+This document describes the syntax used by the Distributed Oceanographic
+  Data System (DODS) to reference objects on the Internet. The syntax is
+  based on the Uniform Resource Locator syntax used by the World Wide Web
+  system designed at <A NAME="tex2html1"
+  HREF="http://www.cern.ch/">European Laboratory for Particle Physics</A>. In addition to the syntax description, an
+
+overview of the use of resource locators by the main components of the
+  system is given.
+
+<P>
+</DIV>
+<P>
+
+<P>
+
+<P>
+
+<P>
+<DIV ALIGN="CENTER"><FONT SIZE="-1"><B>Note</B></FONT></DIV>
+<FONT SIZE="-1"> 
+</FONT>
+<P>
+
+<BLOCKQUOTE></BLOCKQUOTE>
+<P>
+<BLOCKQUOTE><FONT SIZE="-1">This is a working document made available to solicit comments. To receive
+  e-mail notice of new or significantly changed documents, send e-mail
+  to <A NAME="tex2html2"
+  HREF="mailto:majordomo@unidata.ucar.edu">majordomo@unidata.ucar.edu</A>
+with 'subscribe dods' in the
+  body of the message.
+</FONT></BLOCKQUOTE>
+<P>
+
+<P>
+
+<P>
+
+<BLOCKQUOTE><FONT SIZE="-1">This document is written for people interested in implementing software
+  that will be part of, or work in parallel with, the Distributed
+  Oceanographic Data System. 
+</FONT></BLOCKQUOTE>
+<P>
+
+<BLOCKQUOTE><FONT SIZE="-1">A <A NAME="tex2html3"
+  HREF="ftp://ftp.unidata.ucar.edu/pub/dods/ps-docs/urls.ps">postscript</A>
+version of this document is
+  available.  You may also use <A NAME="tex2html4"
+  HREF="ftp://ftp.unidata.ucar.edu/pub/dods/ps-docs/">anonymous
+  ftp</A>
+to access postscript files
+  of all of the DODS documentation.
+</FONT></BLOCKQUOTE>
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"></A>
+
+<UL>
+<LI><A NAME="tex2html35"
+  HREF="node1.html">Contents</A>
+<LI><A NAME="tex2html36"
+  HREF="node2.html">Introduction</A>
+<LI><A NAME="tex2html37"
+  HREF="node3.html">Structure and Interpretation of URLs</A>
+<UL>
+<LI><A NAME="tex2html38"
+  HREF="node4.html">Syntax of the DODS URL</A>
+<LI><A NAME="tex2html39"
+  HREF="node5.html">Characteristics of DODS and WWW URLs</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html40"
+  HREF="node6.html">Uses of URLs by DODS</A>
+<UL>
+<LI><A NAME="tex2html41"
+  HREF="node7.html">URLs and the Data Locator</A>
+<LI><A NAME="tex2html42"
+  HREF="node8.html">Data Delivery and URLs</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html43"
+  HREF="node9.html">Deficiencies of URLs</A>
+<LI><A NAME="tex2html44"
+  HREF="node10.html">Conclusion</A>
+<LI><A NAME="tex2html45"
+  HREF="node11.html">About this document ...</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html33"
+  HREF="node1.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up_g.png"> 
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev_g.png"> 
+<A NAME="tex2html31"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html34"
+  HREF="node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html32"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

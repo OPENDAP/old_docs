@@ -1,0 +1,42 @@
+-*-Mode: Outline-*-
+
+$Id$
+
+Time line for the Distributed oceanographic data system (DODS).
+
+* Requirements: 12 Oct --> 8 Nov (20 days)
+
+* Design 9 Nov --> ~18 Feb (~3.5 months)
+
+** Design Activities (I): (48 days) (9 Nov --> 28 Jan)
+Develop basic designs for the major parts of the system.
+
+Basic activities: Architecture and  Data format designs
+
+*** Draw block diagrams of the clients and servers (10 days) (23 Nov)
+
+*** Design client application programmer interface (API) (4 days) (29 Nov)
+
+*** Design client command line interface (CLI) (4 dyas) (3 Dec)
+
+*** Design self describing data format (SDDF) (6 days) (13 Dec)
+
+*** Adapt JGOFS design to the DODS client, server and SDDF designs (10 days)
+(27 Dec)
+
+*** Design server for standard SDDFs (e.g., netCDF) (4 days) (31 Dec)
+
+*** Design server for data centers (10 days) (14 Jan)
+
+*** Additional 10 days due to vacation, ... during Dec. (28 Jan)
+
+** Design Activities (II): (20 days)
+Refine designs from part I
+
+*** Prototype implementations of CLI and API (client) (10 days) (11 Feb)
+
+*** Prototype implementations of DODS-SDDF server (10 days) (25 Feb)
+
+* Code: ~28 Feb --> ~ 6 May (~2.5 months)
+
+* Test: ~9 May --> ~ 1 July (~2 months)

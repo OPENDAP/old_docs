@@ -1,0 +1,86 @@
+Breakout Leader: Dan Holloway (took notes also)
+
+\subsubsection{Summary:}
+ 
+  A consensus was reached that web search engines, such as Google, 
+are becoming a standard capability that users expect will be able 
+to assist them in discovering data resources.  Given this expectation,
+the group discussed different strategies and requirements to 
+facilitate web search engines in providing a search capability for 
+OPeNDAP-accessible data.
+
+\subsubsection{Discussion:}
+
+\begin{description}
+\item[Duplication of Effort:]  The group acknowledged that there are several 
+  data discovery efforts underway involving the GCMD, THREDDS, and 
+  OPeNDAP Dataset List and was concerned with potential duplication of 
+  effort or insufficent communication between the various efforts.  Also, 
+  how to link client applications to the discovery services these groups 
+  have developed.
+
+\item[Web Search Engines:]  The group generally agreed that web search engines,
+  such as Google, are becoming an accepted capability for locating data
+  resources available on the internet.  The group discussed what web
+  search engines could and could not provide as part of the data 
+  discovery process.  Search engines are good at providing keyword based
+  searches of persistant HTML pages but could not readily address the
+  typical Geospatial/Temporal search requirements to identify specific
+  data granules.  Additionally, the concept of `trusted data' was raised
+  and whether data resources located using standard web search engines 
+  might meet this criteria.  
+
+\item[Service Framework:]  The discussion of exploiting web search engines 
+  to facilitate data discovery concluded that discovery services should
+  provide persistant HTML representations that standard web search 
+  engines could harvest.  One approach might be to develop a set of 
+  discovery services, layered from simple services such as DODS-DIR, 
+  to more complete data discovery search services such as THREDDS catalogs
+  or the GCMD query interface, thus constituting a discovery service 
+  framework.  And that each service in the framework should present a 
+  persistant HTML representation identifying itself so that a web search 
+  engine like Google could harvest those pages.
+
+\item[Best Practices Document:]  The group acknowledged the importance of 
+  facilitating Data Providers in making their OPeNDAP-accessible data
+  readily locatable thru web search engines.  Several topics were
+  discussed.  First, that OPeNDAP-accessible data servers will provide
+  differing levels of discovery services, ranging at the lowest-level
+  of a simple URI identifying an OPeNDAP server instance, to filesystem
+  traversal services, and potentially onto more geophysically-aware 
+  search interfaces identifying specific granules within large data 
+  collections, such as THREDDS catalogs, and that there will be best 
+  practices which will facilitate each of these discovery services.  
+  To facilitate the Data Provider, whenever possible, the services 
+  should link to existing resources within the Provider's facility.  
+  Additionally, the required information to facilitate data location 
+  through web search engines should be kept to a minimal set.  There 
+  was a discussion of the applicability of existing metadata conventions, 
+  such as the Dublin Core Lite or GCMD DIF Lite, but a consensus was 
+  not reached on the applicability to web search engine use. The 
+  requirement to support existing metadata conventions employed by 
+  various Data Providers, such as GCMD DIF or FGDC CSDGM, was 
+  acknowledged to minimize the cost of participation.
+
+  Several group participants suggested the development of tools, and/or
+  user interfaces to assist Data Providers in describing their data
+  to facilitate discovery through various discovery services.  In 
+  particular, groups such as the GCMD and FGDC which have experience
+  in this area should be collaborated with.
+\end{description}
+
+% $Id$
+%
+% $Log: discoverysummary.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

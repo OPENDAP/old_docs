@@ -1,0 +1,967 @@
+
+
+% This file contains information on the DAP. It contains the rationale,
+% requirements, and design for the API. The translating servers and
+% translator processes are described in the DDA and DDD documents.
+%
+% $Id$
+
+%\documentstyle[code,12pt,html,psfig,margins]{article}
+\documentstyle[code,html,psfig]{article}
+
+\psfigurepath{api-figs}
+
+\input{../../boiler/html-refs}
+
+\begin{document}
+
+\title{DODS---Data Access Protocol}
+\author{}
+\date{23 August 1996} %{\today}
+
+\maketitle
+
+\begin{abstract}
+
+  This document describes a stateless data transmission protocol which can be
+  used to access a wide variety of earth sciences data. The protocol is
+  referred to as the Data Access Protocol in much of this document and it is
+  intended to be used in the construction of system software, particularly
+  for the Distributed Oceanographic Data System. This protocol for data
+  access is flexible enough to access all the data sets which will be part of
+  the system. However, it does not offer the rich features found in
+  interfaces intended for user-program construction.  In addition to
+  presenting the requirements and a design for the interface, the rationale
+  for choosing this type of interface is also given.
+
+\end{abstract}
+
+\input{../../boiler/warning}
+\input{../../boiler/developers}
+\begin{htmlonly}
+\pslink{ftp://ftp.unidata.ucar.edu/pub/dods/ps-docs/api.ps}
+\end{htmlonly}
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\section{Introduction}
+\label{introduction}
+
+The \DODS\ (DODS) Data Access Protocol (DAP) is a {\em lingua franca\/} for
+reading earth science data sets. It is used as an intermediate representation
+for data which are nominally accessed using an established third-party
+Application Programmer Interface (API) (e.g., netCDF). Because, in addition
+to a method for data access, the DAP defines the content of ancillary
+information about data sets, it provides the means to access data sets
+through a single protocol using any of the DODS supported APIs. Because the
+\dap\ serves as an intermediate representation for several different APIs, it
+can be used to translate between any two of those APIs.
+
+In \DDA, an architecture is described that uses third party APIs to access
+data stored on remote computers. In that document, it is assumed that users
+of those data write programs in which those data are accessed using an API\@.
+For DODS, this assumption is advantageous because it limits the class of
+programs which DODS must address to those which use a formally defined
+interface for data access. For the user, it is advantageous to use an API
+because the storage format of the data is both hidden from the user and
+separated from the user program source code, resulting in programs which take
+less time to write and modify and which are more likely to be correct.
+
+Most data access APIs do not provide direct access to distributed
+data\footnote{The phrase {\em distributed data\/} refers to data sets that
+reside on different computers which are linked by a network such as
+Internet. The computers may or may not be physically remote from each other.
+The main point is that the computers manage their data resources
+independently. In this paper the terms {\em remote\/} and {\em distributed\/}
+are used to imply independently managed resources.}. The DODS data delivery
+architecture describes how such a capability can be added to an API\@.
+Reimplementing an API using the DODS software \toolkit\ provides the
+necessary bridge between the API's function calls and the network
+communication infrastructure necessary to allow the API to access distributed
+data sets.
+
+Once users have the power to access remotely stored data they realize that
+not all data are available using the API that they use. In fact, many data
+sets' storage formats are incompatible with third party APIs altogether
+because they are stored using conventions independently developed at the site
+where the data were first analyzed, collected, or archived. While those in
+charge of the data at a remote site may be very willing to provide remote
+access, they will probably not be willing to reformat their data for most
+off-site users.  How do users access remote data when it is not stored in a
+format or data model their programs understand?
+
+The DODS Data Access Protocol provides a means to access data sets using any
+one of a set of supported APIs by defining an intermediate representation for
+data sets, and components of data sets, that is API and format independent.
+Using the DODS DAP as an intermediate representation, software components can
+be built which translate a user program's API calls into DAP calls. Data
+servers can be built which accept DAP calls and, either by translating
+into a third-party API or using data set-local access methods, read the data.
+Thus software which uses any one of a set of APIs can be used to read data so
+long as a DODS server for that data exists---even if the data is stored in an
+API different from the one used by the display or analysis software.
+
+\begin{center}
+{\bf Note}
+\begin{quote}
+In a previous design, the DODS data delivery system contained
+reimplementations of the supported APIs which used the API entry points as
+the remote access interface definition; the set of calls to which a remote
+data server responds. However, this design did not facilitate multi API
+access (i.e., API translation) to data sets.
+\end{quote}
+\end{center}
+
+\section{Rationale}
+
+Most data access APIs are targeted at application writers---they provide
+powerful tools to read, write, and process one specific type of scientific
+data and are typically specialized so that software in one application domain
+is easy to write. In order to fulfill this function, APIs are typically
+`feature rich' (i.e., they provide many ways to perform similar tasks). This
+characteristic causes APIs that maintain this level of flexibility over a
+wide range of data types to become very complex. Because simplicity and
+ease-of-use are two characteristics that make APIs attractive to application
+programmers, most API designers try to limit the scope of an API so that it
+can provide the features application programmers want, at the level of detail
+they want, without becoming excessively large and thus burdensome to use.
+The netCDF and JGOFS APIs are good examples of APIs designed for a specific
+type of application.  Each is used to access earth-science data sets, but
+netCDF is most suited to gridded model data, and JGOFS has direct support
+only for relational data.
+
+However, the netCDF API cannot be directly used to access data sets produced
+by the JGOFS API and vice versa. An application using either one of these
+APIs would need to be modified if a user wanted to integrate both netCDF and
+JGOFS compliant data sets. Modifying a program so that the data access API it
+uses matches with the API used to write a data set is an expensive process
+and one which is exacerbated by the fact that more and more users do not
+write their own software. Modifying someone else's software can be very
+complex and costly at best; at worst it is not possible at all.  Moreover,
+when the data sets are remote it may be impossible to convince their
+maintainers to replicate them for another API since this, too, is very
+costly.
+
+One alternative to rewriting application software or replicating data is to
+define an intermediate representation which can be used to access data stored
+in any one of a number of APIs.  If the intermediate representation is based
+on a data model that encompasses the abstractions of a certain set of APIs,
+then the intermediate representation can be used to translate between those
+APIs. The implementation of an intermediate representation interface need not
+be an application interface itself; instead it can be a set of tools used to
+build application-level components. These components can then be combined at
+link-time and/or runtime with user-programs to access data.
+
+An interface which is to be used as a translation mechanism cannot afford to
+present the rich set of access functions that the individual APIs, which it
+subsumes, present. It must control the size and complexity of its interface by
+removing features while still providing the capability to transparently
+interoperate between several data models.  The DODS DAP is such an interface.
+It is designed to be used in the construction of system components which are
+configured at runtime by users, maintainers or other software components.
+Thus, the DODS DAP is not a separate addition to the set of interfaces formed
+by JGOFS, netCDF, and others.  Instead it is an intermediate representation
+which can be used to translate between those different APIs.
+
+\section{Requirements}
+
+This section presents the requirements that must be met for an intermediary
+representation for any of the DODS supported APIs. Currently, two APIs are
+supported by DODS: netCDF and JGOFS\@. As additional APIs are incorporated
+into the system (e.g., HDF), the DAP may add support for the data types those
+handle.
+
+\begin{enumerate}
+
+\item The DODS \dap (DAP) can be used to map data stored using one API to
+  calls in a second API so long as both APIs are supported by DODS\@.
+
+\item It must be possible to add new data types and operators to the DAP
+  without changing the external interface it presents.
+
+\item The DAP does not characterize the data set based on its native
+  implementation. The DAP supports access to data sets that consist of a
+  single file, several files, a relational database, a set of relational
+  databases, or any other reasonable representation.
+
+\item The DAP makes all data sets appear cohesive---they always appear as a
+  single store of data regardless of their actual implementation. Not yet
+  satisfied (23 August 1996). %\today).
+
+\item The DAP supports data sets which consist of one or more variables.
+
+\item When a data set contains two or more variables, the DAP makes their
+  relationship explicit. The relations are precisely described using a syntax
+  which other computer systems can analyze.
+
+\item The DAP describes each variable in a data set by its:
+
+\begin{enumerate}
+\item Name
+\item Type
+\item Shape
+\item Units. Not yet satisfied (23 August 1996) %\today)
+\item Type-dependent characteristics
+\item \ldots zero or more attribute-value pairs
+\end{enumerate}
+
+\item The characteristics of the different variable types are given by the
+  \dm.
+
+\item The DAP can perform the following operations on a data set:
+
+\begin{enumerate}
+\item Get data set structure description
+\item Get data set attribute list
+\item Send arguments to a data set
+\item Get values from the data set
+\end{enumerate}
+
+\end{enumerate}
+
+\section{Design}
+\label{design}
+
+The DODS DAP design contains three important parts: A data model which
+describes data types that can be supported by the protocol and how they are
+handled, the data set description and data set attribute structures which
+describes the structure of data sets and the data they contain, and a small
+set of messages that are used to access data. Each of these components are
+described in the following subsections along with a summary of the runtime
+process configuration needed for DODS to translate from a data set API to a
+user program API\@. The discussion of the runtime process configuration
+frames each of the three design components and is used to explain why they
+are needed.
+
+\subsection{Process and Module Configuration}
+\label{process}
+
+The set of processes and modules needed to access a data set is shown in
+Figure~\ref{fig:structure}. In the figure two processes are shown. Process 1
+contains the user program, a surrogate library implementation of the data
+access API used by that program, and translator component which uses the DODS
+DAP to request data used to satisfy calls from the user-program API calls.
+This process, called the {\em user process\/} communicates with the second
+process, the {\em translating server\/} process.  The translating server
+contains two modules---one to recast the incoming DODS DAP calls into calls
+in the the data set's API and a second module that implements that API\@. In
+the figure all data is transmitted over the network using the DODS DAP
+regardless of the API used by the user program or used to store the data,
+even if the APIs are the same.
+
+\begin{figure}
+\centerline{\psfig{figure=structure.ps}}
+\caption{Two processes are used to translate API Y calls from the user
+  program to API X calls for the data set. These same two processes are the
+  client and server in a distributed data system. Note that DODS does not
+  supply either the complete client or the complete server---rather DODS
+  software consists of modules that can be combined with existing software
+  (user programs, third party libraries) to build distributed systems. In
+  this figure, {\em Module\/} refers to a conceptual unit (e.g., a library),
+  not just a compile-time unit.}
+\label{fig:structure}
+\end{figure}
+
+The DODS DAP's main function is to facilitate translation between two
+different data access APIs. In order to read data stored in API X as in
+Figure~\ref{fig:structure} a server which provides access using the DAP can
+use the native implementation of API X to read information from the data set.
+
+In addition to the data accessible via the native API, each data set will
+contain ancillary data. These data will be directly accessed by some of the
+DAP calls. It will be used by both the local implementation of the DAP to aid
+in translating the DAP calls into the data set's native API calls and by
+the remote translation process.
+
+In order to effectively translate the user program API calls into DODS DAP
+calls, the translator module must have some knowledge of the source data set's
+structure. This structural information will comprise part of the ancillary
+data that is accessed directly by the DODS DAP\@. Based on this information,
+which can be accessed using DAP calls, the translator can choose how to best
+translate the user programs data-access calls. In effect, the translator must
+map one data access API onto a data model to which it may not be well suited
+(either because the implementors of the user program or the data set have
+chosen an inappropriate interface).
+
+Finally, in order to be useful by many user programs, particularly those
+written by a third party development team for a group of users, the
+translator must have some additional information about the representation of
+certain data objects expected by the user program. This information, called
+{\em Usage Data\/} in Figure~\ref{fig:structure}, will allow the user to
+specify the format of dates and similar information which has many different
+common forms but no universally accepted format. It is stored in a file
+created by the user or developers of the {\em user program}. This
+information is defined by DODS outside of the definition of API Y and will be
+used by the translator module when data requests are made by the user program
+or when data is returned to the user program in response to one of those
+requests.
+
+\subsection{The Data Model}
+
+Data models provide a way to organize scientific data sets so that useful
+relationships between individual datum are evident. Many data models have
+been specifically designed to make using the data in a computer program
+simpler. Examples of computationally oriented data models for scientific data
+are hierarchical, sequential, and gridded data models. 
+
+Data models are abstract, however, and to be used by a computer program they
+must first be implemented by a programmer. Often this implementation takes
+the form of an API---a library of functions which can read and write data
+using a data model or models as guidance. Thus every data access API can be
+viewed as implementing some data model, or in some cases several data models.
+
+Because DODS needs to support several very different data models, it is
+important to design it around a core set of concepts that can be applied
+equally well to each of those data models. If that can be done, then
+translation between data represented in those different models may be
+possible.
+
+Currently DODS supports two very different data access APIs: netCDF and
+JGOFS\@. The netCDF API is designed for access to gridded data, but has some
+limited capabilities to access sequence data (although not with all of its
+supported programming language interfaces). The JGOFS API provides access to
+relational or sequence data\footnote{In the remainder of this document, the
+  phrase {\em sequence data}, or just {\em sequence}, will mean an ordered
+  set of elements each of which contains one or more sub elements where all
+  of the sub-elements of an element are explicitly related to each other.}.
+Both APIs support access in several programming languages (at least C and
+Fortran) and both provide extensive support for limiting the amount of data
+retrieved.  For example a program accessing a gridded data set using netCDF
+can extract a subsampled portion or {\em hyperslab\/} of that data.  Likewise,
+the JGOFS API provides a powerful set of operators which can be used to
+specify which type of sequence elements to extract (e.g., only those
+corresponding to data captured between 12:01am and 11:59am) as well as
+masking certain parameters from the returned elements so that only those
+parameters needed by the program are returned.
+
+The DODS DAP uses the concepts of variables and operators as the base for the
+data model. Within the data model, a data set consists of one or more
+variables where each variable is described formally by a number of
+attributes.  Variables associate names with each component of a data set, and
+those names are used to refer to the components of the data set. In addition
+to their different attributes, it is possible to operate on individual
+variables or named collections of variables. The principal operation is {\em
+  access}, although this can be modified in a number ways.
+
+\subsubsection{Base-Type Variables}
+\label{base-type-variables}
+
+Variables in the DODS DAP have two forms. They are either base types or type
+constructors. Base type variables are similar to predefined variables in
+procedural programming languages like C or Fortran (e.g., {\tt int} or {\tt
+  integer*4}).  While these certainly have an internal structure, it is not
+possible to access parts of that structure using the DAP\@. Base type
+variables in the DAP have three predefined attributes (or characteristics):
+Name, Type, and Unit.  They are defined as follows:
+
+\begin{description}
+
+\item [Name] A unique identifier that can be used to reference the part of
+  the data set associated with the variable.
+
+\item [Type] The data type contained by the variable. This can be one of {\tt
+    byte}, {\tt int32}, {\tt float64}, {\tt string}, and {\tt URL}\@.
+  Where:
+
+\begin{description}
+\item [byte] is the same as unsigned char in ANSI C\@.
+\item [int32] is a 32 bit integer---it is synonymous with long in
+  ANSI C when that type is implemented as 32 bits.
+\item [float64] is the IEEE 64 bit floating point data type.
+\item [string] is a sequence of bytes terminated by a null character.
+\item [URL] is a string as defined in \URL\@.
+\end{description}
+
+\item [Unit] This contains the name of the units of the value contained in
+  the variable.  Examples of typical units are degrees Celsius, degrees
+  Kelvin, \ldots If a variable is unit less, then this is null.
+
+\end{description}  
+
+\subsubsection{Type Constructor Variables} 
+
+Type constructor variables describe the grouping of one or more variables
+within a data set. These classes are used to describe different types of
+relations between the variables that comprise the data set. This information
+can be useful to people who would like to understand more about the data set
+than can be conveyed with implicit relations. It is also designed to be
+useful to other programs/processes in the data access chain.  There are six
+classes of type constructor variables defined by the DAP: lists, arrays,
+structures, sequences, functions, and grids. The type constructor classes
+besides structure provide information that is used in the translation of
+subsetting operations (hyperslabbing or selections and projections in netCDF
+or JGOFS parlance, respectively). The types are defined as:
+
+\begin{description}
+
+\item [List] The {\bf List} type constructor is used to hold lists of 0 or
+  more items of one type. Lists of {\tt int32}, \ldots, {\tt grid} are
+  specified using the keyword {\tt list} before the variable's class. Access
+  to an element of a list is possible using one of the five operators given
+  in Table~\ref{api:tab:class-ops}.
+
+\item [Array] An {\bf Array} is a one dimensional indexed data structure as
+  defined by ANSI C\@. Multidimensional arrays are defined as arrays of arrays.
+  In addition to element access using subscripts enclosed in brackets ({\tt
+    []}), an array may be accessed using only its name to return the entire
+  array or using a hyperslab operator to return a rectangular section of the
+  array. In the later case, the hyperslab is defined for each dimension by a
+  starting index, and ending index, and a stride value.  Specifying a stride
+  $>$ 1 will cause the dimension to be subsampled by the stride value.
+  Table~\ref{api:tab:class-ops} shows the syntax for array accesses including
+  hyperslabs.
+
+  In addition to its magnitude, every dimension of an array may also have a
+  name. It is possible to find the name for any given dimension (e.g., the
+  $i^{th}$ dimension) and thus write software which access the $3^{rd}$
+  element of the dimension {\em cast\/} (See \TOOLKIT).
+
+\item [Structures] A structure is a class that conveys no relational
+  information and may contain several variables of different classes. It is
+  used to supply information to other parts of the data access and
+  translation system that may be useful in optimizing the access or
+  translation operations. The structure type can also be used to group a set
+  of unrelated variables together into a single data set.
+
+\item [Sequences] A sequence is an ordered set of $N$ variables which has
+  several instantiations (or values). Variables in a sequence may be of
+  differing classes.  Each instance of a sequence is one instantiation of the
+  variables. Thus a sequence can be represented as:
+
+\begin{displaymath}
+\begin{array}{ccc}
+  s_{0 0} & \cdots & s_{0 n} \\
+  \vdots & \ddots & \vdots \\
+  s_{i 0} & \cdots & s_{i n}
+\end{array}
+\end{displaymath}
+
+\noindent Every instance of sequence $S$ has the same number, order, and
+class of variables. A sequence implies that each of the variables is
+related to each other in some logical way. A sequence is different from a
+structure because its constituent variables have several instances while a
+structure's variables have only one instance (or value). Because a sequence has
+several values for each of its variables it has an implied {\em state}, in
+addition to those values.
+
+\item [Functions] Functions are a subclass of Sequences and are used to
+  indicate that one set of variables has a functional relation to a second
+  set of variables. Variables in a function may be of differing classes. The
+  mathematical description of this functional relation is not
+  specified. Instead the function type is used to indicate that one of the
+  two sets constitute the independent variables and the other the dependent
+  variables.  Typically, the variables defined by a function have more than
+  one instance---functions are similar to sequences but have additional
+  information about the functional dependency of variables.
+
+\item [Grid] A grid is an association of an $N$ dimensional array with $N$
+  named vectors, each of which has the same number of elements as the
+  corresponding dimension of the array. Each vector is used to map indices of
+  one of the array's dimensions to a set of values which are normally
+  non-integral (e.g., floating point values). The $N$ (map) vectors may be
+  members of different classes. Grids are similar to arrays of base type
+  variables, but add named dimensions and maps for each of those dimensions.
+  \label{page:grids} 
+
+\end{description}
+
+\subsubsection{Operators}
+\label{api:operators}
+
+The principal operation performed on any variable is to access that variable
+and retrieve its value or values.  For a base type variable, access is the
+implied operation and is achieved by passing the name of the variable to a
+data server using the access protocol (see Section~\ref{entry}). For an
+instance of a type constructor class, the variable name will access the
+entire object and return it in an array (or C struct)\footnote{If a variable
+  contains elements of different types then an instance of it {\em must\/} be
+  returned in a {\tt struct} and not an array.  This implies that the
+  receiving program must dynamically allocate storage for the variable and
+  then correctly access the fields.  This implies sophisticated programming
+  (beyond the `user' level) or an interpreter---or both.}. Fields of type
+constructors may also be accessed using the dot ({\tt.}) operator or the
+virtual file system syntax. If a structure {\tt s} has two fields {\tt time}
+and {\tt temperature}, then those fields may be accessed using {\tt s.time}
+and {\tt s.temperature} or as {\tt s/time} and {\tt s/temperature}.
+
+All of the classes listed in section~\ref{base-type-variables} are local to
+the data set except the {\tt URL} type. When an object of type URL is
+accessed, the server must open the data set referenced by that URL and read
+its values such that the structure of that referenced data set replaces the
+URL in the current data set. In practice this is most useful in a constraint
+expression when the value of a variable is compared witht he value of another
+variable in a different data set. If the URL cannot be referenced, then the
+type of the URL degrades to {\em string\/} and an access to that element of
+the data set returns that string.
+
+Access to variables can be modified using selection operators. Each type of
+variable has its own set of selection and projection operators which can be
+used to modify the result of accessing a variable of that type.
+Table~\ref{api:tab:class-ops} summarizes the types and the operators applicable
+to them. In the table, operators have the meaning defined by ANSI C except as
+follows: the array hyperslab operators are as defined by netCDF\cite{netcdf}
+(where {\tt a} is the start index, {\tt b} is the stride, and {\tt c} is the
+end index), the string operators are as defined by AWK\cite{kern:upe}, and
+the list operators are as defined by Common Lisp\cite{steele:clisp}.
+
+\begin{table}
+\caption{Classes and operators in the DAP\@.}
+\label{api:tab:class-ops}
+\begin{center}
+\begin{tabular}{|| l | l ||} \hline
+\multicolumn{1}{|| c}{\sc Class} & \multicolumn{1}{c ||}{\sc Operations} \\
+\hline \hline
+\multicolumn{2}{|| l ||}{\em Base Type} \\ \hline
+{\tt byte}, {\tt int32}, {\tt float64} & {\tt < > = != <= >=} \\ \hline
+{\tt string} & {\tt = != } $=\sim$ \\ \hline
+{\tt URL} & {\tt *} \\ \hline
+\multicolumn{2}{|| l ||}{\em Constructor\/} \\ \hline
+{\tt array} & {\tt [start:stop] [start:stride:stop]} \\ \hline
+{\tt list} & {\tt length, car, cdr, nth, member} \\ \hline
+{\tt structure} & {\tt.} \\ \hline
+{\tt sequence} & {\tt.} \\ \hline
+{\tt function} & {\tt.} \\ \hline
+{\tt grid} & {\tt .} \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+The hierarchy of the type constructor classes in the DAP is shown in
+Figure~\ref{fig:class}. 
+
+\begin{figure}
+\centerline{\psfig{figure=class-hier.ps}}
+\caption{The hierarchy of classes in the DAP\@.}
+\label{fig:class}
+\end{figure}
+
+\subsection{The External Representation of Variables}
+\label{api:external-rep}
+
+Each of the base-type and type constructor variables has an external
+representation defined by the \dap. This representation is used when an
+object of the given type is transferred from one computer to another.
+Defining a single external representation simplifies the translation of
+variables from one computer to another when those computers use different
+internal representations for those variable types\cite{xdr}. 
+
+Constraint expressions, which are an importat part of the \dap, do not affect
+{\em how\/} a base-type variable is transmitted. Constraint expressions only
+determine if, given a particular value for a variable, that variable should
+be transmitted. However, for constructor type variables contraint expressions
+may be used to exclude portions of the variable. In these cases, the
+constraint expressions can be used to change the way a particular variable is
+transmitted. For example, if a constraint expression is used to select the
+first three of six fields in a structure, the last three fields of that
+structure are {\em not\/} transmitted by the server.
+
+The \dap uses Sun Microsystems' XDR protocol\cite{xdr} for the external
+representation of all of the base type variables. Table~\ref{tab:base-xdr}
+shows the XDR types used to represent the various base type
+variables.
+
+\begin{table}
+\caption{The XDR data types used by the \dap as the external representations
+  of base-type variables}
+\label{tab:base-xdr}
+\begin{center}
+\begin{tabular}{|| l | l ||} \hline
+\multicolumn{1}{|| c}{\sc Base Type} & \multicolumn{1}{c ||}{\sc XDR Type} \\
+\hline \hline
+{\tt byte} & {\tt xdr byte} \\ \hline
+{\tt int32} & {\tt xdr long} \\ \hline
+{\tt float64} & {\tt xdr double} \\ \hline
+{\tt string} & {\tt xdr string} \\ \hline
+{\tt URL} & {\tt xdr string} \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+In order to transmit constructor type variables, the \dap defines how the
+various base type variables, which comprise the constructor type variable,
+are transmitted. Any constructor type variable may be subject to a constraint
+expression which changes the amount of data transmitted for the variable (see
+Section~\ref{api:constraints}). For each of the six constructor types these
+definitions are:
+
+\begin{description}
+
+\item [Array] An array is sent using the {\tt xdr\_array} function. This means
+  that an array of 100 {\tt Int32}s is sent as a single block of 100 {\tt
+    xdr long}s, not 100 separate {\tt xdr long}s. 
+
+\item [List] A list is sent as if it were an array.
+
+\item [Structure] A structure is sent by encoding each field in the order
+  those fields are declared in the DDS and transmitting the resulting block
+  of bytes.
+
+\item [Sequence] A Sequence is transmitted by encoding each instance as for a
+  structure and sending one after the other, in the order of their occurrence
+  in the data set. The entire sequence is sent, subject to the constraint
+  expression. In other words, if no constraint expression is supplied then
+  the entire sequence is sent. However, if a constraint expression is given
+  all the records in the sequence that satisfy the expression are
+  sent\footnote{The client process can limit the information received by
+    either using a constraint expression or prematurely closing the I/O
+    stream. In the later case the server will exit without sending the entire
+    sequence.}.
+
+\item [Function] A function is encoded as if it is a Sequence (one component
+  after the other, in the order of their declaration).
+
+\item [Grid] A grid is encoded as if it is a Structure (one component
+  after the other, in the order of their declaration).
+
+\end{description}
+
+\subsection{Dataset Descriptor Structure}
+\label{api:dds}
+
+In order to translate from the user program's API to the data set's API, the
+translator process must have some knowledge about the types of the variables,
+and their semantics, that comprise the data set. It must also know something
+about the relations of those variables---even those relations which are only
+implicit in the data set's own API\@. This knowledge about the data set's
+structure is contained in a text description of the data set called the {\em
+  Dataset Description Structure}.
+
+The data set description structure (DDS) does not describe how the information
+in the data set is physically stored, nor does it describe how the data set's
+API is used to access that data. Those pieces of information are contained in
+the data set's API and in the translating server, respectively.  The
+translating server uses the DDS to describe the structure of a particular
+data set to a translator---the DDS contains knowledge about the data set
+variables and the interrelations of those variables.  In addition, the DDS
+can be used to satisfy some of the DODS supported APIs data set description
+calls. For example, netCDF has a function which returns the names of all the
+variables in a netCDF data file. The DDS can be used to get that information.
+
+The DDS is a textual description of the variables and their classes that
+comprise the entire data set. The data set descriptor syntax is based on the
+variable declaration/definition syntax of C and C++. A variable that is a
+member of one of the base type classes is declared by by writing the class
+name followed by the variable name. The type constructor classes are declared
+using C's brace notation. A grammar for the syntax is given in
+Table~\ref{tab:DDS}. Each of the keywords for the type constructor and base
+type classes have already been described in
+section~\ref{base-type-variables}. The {\tt data set} keyword has the same
+syntactic function as {\tt structure} but is used for the specific job of
+enclosing the entire data set even when it does not technically need an
+enclosing element (because at the outermost level it is a single element such
+as a structure or sequence).
+
+\begin{table}
+\caption{Dataset Descriptor Structure Syntax}
+\label{tab:DDS}
+\small
+\begin{center}
+\begin{tabular}{ll} \hline
+%
+% This syntax comes straight from the bison source code
+% (src/api.dds.y). Let's try *not* to change it, since reformatting is a
+% royal pain. jhrg 11/9/94
+%
+{\em data sets\/} & {\em data set\/} \\
+                 & {\em data sets} {\em data set\/} \\
+
+{\em data set\/}  & {\tt dataset} {\tt \{} {\em declarations\/} {\tt \}} 
+                   {\em  name\/} {\tt ;} \\
+
+{\em declarations\/} & {\em declaration\/} \\
+                 & {\em declarations} {\em  declaration\/} \\
+                 &  $\delta$ \\
+
+{\em declaration\/} &   {\em list} {\em declaration\/}  \\
+                 & {\em base-type} {\em var\/} {\tt ;} \\
+                 & {\em structure\/}  {\tt \{} {\em declarations\/} {\tt \}} 
+                  {\em var\/} {\tt ;} \\
+                 & {\em sequence\/} {\tt \{} {\em declarations\/} {\tt \}} 
+                  {\em var\/} {\tt ;} \\
+                 & {\em function\/} {\tt \{} {\tt independent} {\tt :}
+                  {\em declarations} {\em dependent\/} {\tt :} 
+                  {\em declarations\/} {\tt \}} 
+                  {\em var\/} {\tt ;} \\
+                 & {\em grid\/} {\tt \{} {\tt array} {\tt :} 
+                  {\em declaration\/} {\tt maps} {\tt :} 
+                  {\em declarations\/} {\tt \}} 
+                  {\em var\/} {\tt ;} \\
+
+{\em list\/}    & {\tt list} \\
+
+{\em structure\/} & {\tt structure} \\
+
+{\em sequence\/} & {\tt sequence} \\
+
+{\em function\/} & {\tt function} \\
+
+{\em grid\/}    & {\tt grid} \\
+
+{\em base-type\/} & {\tt byte} \\ 
+                  & {\tt int32} \\
+                  & {\tt float64} \\
+                  & {\tt string} \\
+                  & {\tt url} \\
+
+{\em var\/}     & {\tt id} \\
+                & {\em var} {\em array-decl\/} \\
+
+{\em array-decl\/} & {\tt $[$} {\tt integer} {\tt $]$} \\
+                   & {\tt $[$} {\tt id} {\tt =} {\tt integer} {\tt $]$} \\
+
+{\em name\/}    & {\tt id} \\
+\end{tabular}
+\end{center}
+\normalsize
+\end{table}
+
+An example DDS entry is shown in Figure~\ref{fig:dds}. Suppose that three
+experimenters have each performed temperature measurements at different
+locations and at different times. This information could be held in a data set
+consisting of a sequence of the experimenter's name, the time and location of
+each measurement and the list of measurements themselves, and indicates that
+there is a relation between the experimenter, location, time and temperature
+called temp\_measurement.
+
+\begin{figure}
+\begin{code}{cb}
+              data set {
+                  int catalog_number;
+                  function {
+                    independent:
+                      string experimenter;
+                      int time;
+                      structure {
+                          float latitude;
+                          float longitude;
+                      } location;
+                    dependent:
+                      sequence {
+                          float depth;
+                          float temperature;
+                      } temperature;
+                  } temp_measurement;
+              } data;
+\end{code}
+\caption{Example Dataset Descriptor Entry.}
+\label{fig:dds}
+\end{figure}
+
+\subsection{Dataset Attribute Structure}
+\label{api:das}
+
+The Dataset Attribute Structure (DAS) is used to store attributes for
+variables in the data set. An attribute is any piece of information about a
+variabale that the creator wants to bind with that variable {\em excluding\/}
+the characteristics type, shape, and units. The characteristics type, shape
+and units are always defined for every variable; they are data type
+information about the variable. Attributes, on the other hand, are intended
+to store extra information about the data such as a paragraph describing how
+it was collected or processed\footnote{To define attributes for the entire
+  data set, create an entry for a variable with the same name as the data
+  set.}. In principle attributes are not processed by software other than to
+be displayed. However, many systems rely on attributes to store extra
+information that is necessary to perform certain manipulations on data. In
+effect, attributes are used to store information that is used `by convention'
+rather than `by design'. DODS can effectively support these conventions by
+passing the attributes from data set to user program via the DAS\@. Of course,
+DODS cannot enforce conventions in data sets where they were not followed in
+the first place.
+
+The syntax for attributes is given in Table~\ref{tab:DAS}. Every attribute of
+a variable is a triple: attribute name, type and value. Note that the
+attributes specified using the DAS are different from the information
+contained in the DDS\@. Each attribute is completely distinct from the name,
+type and value of its associated variable. The name of an attribute is an
+identifier, following the normal rules for an identifier in a programming
+language with the addition that the `/' character may be used. The type of an
+attribute may be one of: Byte, Int32, Float64, String or Url. An attribute
+may be scalar or vector. In the later case the values of the vector are
+separated by commas (,) in the textual representation of the DAS\@. 
+
+When the \dap\ is used to read the attributes of a variable and that variable
+contains other variables, only the attributes of the named variable are
+returned. In other words, while the DDS is a hierarchical structure, the DAS
+is {\em not\/}; it is similar to a flat-file database.
+
+\begin{table}
+\caption{Dataset Attribute Structure Syntax}
+\label{tab:DAS}
+\small
+\begin{center}
+\begin{tabular}{ll} \hline
+{\em attributes\/} & {\em attribute\/} \\
+                 & {\em attributes} {\em attribute\/} \\
+
+{\em attribute\/} & {\tt attribute} {\tt \{} {\em var-attr-list\/} {\tt \}} \\
+
+{\em var-attr-list\/} & {\em var-attr\/} \\
+                 & {\em var-attr-list} {\em var-attr\/} \\
+                 & $\delta$ \\
+
+{\em var-attr\/} & {\em var-name} 
+                {\tt \{} {\em attr-list\/} {\tt \}} \\
+
+{\em attr-list\/} & {\em attr-pair\/} \\
+                &  {\em attr-list} {\em attr-pair\/} \\
+                & $\delta$ \\
+
+{\em attr-pair\/} & {\em attr-type} {\em attr-name} {\em attr-val\/} 
+                {\tt ;} \\
+
+{\em var-name\/} & {\tt identifier} \\
+
+{\em attr-name\/} & {\tt identifier} \\
+
+{\em attr-val-vec\/} & {\em attr-val\/} \\
+                     & {\em attr-val-vec\/} {\tt ,} {\em attr-val\/} \\
+
+{\em attr-val\/} & {\tt value} \\
+                 & {\tt identifier} \\
+                 & {\tt string} \\
+
+{\em attr-type\/} & {\tt Byte} \\
+                  & {\tt Int32} \\
+                  & {\tt Float64} \\
+                  & {\tt String} \\
+                  & {\tt Url} \\
+
+\end{tabular}
+\end{center}
+\normalsize
+\end{table}
+
+\subsection{Data Access Protocol Entry Points}
+\label{entry}
+
+The DAP is a stateless protocol. Each of the DAP's entry points (i.e., the
+messages a data server will respond to) does a single isolated job and they
+can be issued in any order (although in many applications it will not make
+sense to get the values for a variable before finding out the name of the
+variable \ldots). The stateless nature of the DAP fits well within the
+context of the data delivery system described in \DDA\@.  In that paper a
+client-server architecture for remote access is described which relies on the
+HTTPD/CGI mechanism to build a data server. One implementation of that
+architecture is described in \DDD\ uses three CGI modules, one of each of the
+three DAP entry points.
+
+In this paper we talk about messages to the data server as if it is a
+stateful server like {\tt ftpd}. However, that is merely a convient way to
+phrase the discussion of the DAP---in fact the data server is a stateless
+machine accessed by getting the value of a URL\@. 
+
+Each DODS data server must respond to three URLs; one for each of the objects
+(DAS, DDS and variable) which the server returns. These URLs are formed by
+appending a suffix to the base URL which references the data set. In
+addition, individual variables may be accessed using the constraint
+expression mechanism described here. The paper \URL\ conatins more
+information on this scheme.
+
+Two messages are provided to access the data set descriptor structure (DDS)
+and the data set attribute structure (DAS)\@. The response to these messages
+is text formated using the respective grammars in
+Tables~\ref{tab:DAS}~and~\ref{tab:DDS}. This text can then be parsed by the
+caller to determine the structure of the data set, types and sizes of each of
+its components and their attributes. These structures are derived both from
+information contained in the data set and for ancillary information supplied
+by the data set maintainers in separate text files (in the \ddd\ the origin
+of these structures is described in detail). They provide information that is
+often referred to as `metadata' and may be cached by the client system.
+Future accesses to the same data set can then skip the retrieval of these
+structures.
+
+All variables are read from a data set individually using a single `read'
+message. The message must include the name of the variable to read, and
+optionally, may include an expression that describes the range of values
+desired. No other information need be sent to the server. In response to this
+message the value(s) of the variable(s) is/are then sent back to the client.
+Base type variables return only a single value when accessed, but other types
+may return more values. For example, a {\tt structure} with three {\tt int32}
+and two {\tt float64} members will return five values (unless an expression
+constrains the access).
+
+One important capability of the DODS API, which it inherits from JGOFS, is
+the ability to set constraints on variables (JGOFS calls this `using
+selection and projection' operators).  Constraints are used to control the
+values and/or members of constructor types that are returned when a variable
+is accessed. For some data sets and some variables, constraints make little
+or no difference in how the variables are accessed.  However, for certain
+types of data, constraining access can vastly reduce the amount of data the
+application needs to process and, in DODS case, transmit over the network.
+
+\label{api:constraints}
+Constraint expressions provide more flexibility in the way data is accessed.
+In a data set with many interrelated variables, or with very large variables,
+these expressions are a way for the user program to move some of the complex
+logic needed to search data, in order to find those data with some desired
+set of properties, away from the user program and into the data supply
+system.  Different types of constraint expressions make sense for different
+types of data. The grammar for constraint expressions is given in
+Table~\ref{api:tab:expr}.  In the table {\em Operator\/} is one of the
+variable-class dependent operators listed in Table~\ref{api:tab:class-ops},
+{\tt !} is boolean {\em not\/} and {\tt \&} is boolean {\em and}.
+
+\begin{table}
+\caption{Constraint Expression Syntax}
+\label{api:tab:expr}
+\begin{center}
+\begin{tabular}{ll} \hline
+
+{\em expression\/} & {\em projection} {\em selection \/} \\
+
+{\em projection\/} & {\em variable\/} \\
+                   & {\em variable} {\tt ,} {\em projection\/} \\
+                   & $\delta$ \\
+
+{\em selection\/}  & {\em variable} {\em operator} {\em value\/} \\
+                   & {\em variable} {\em operator} {\em variable\/} \\
+                   & $\delta$ \\
+
+{\em compound-sel\/} & {\em selction} {\em boolean-op} {\em compound-sel\/} \\ 
+                     & {\tt !} {\em selection} {\em compound-sel\/} \\
+                     & {\em selection\/} \\
+
+{\em boolean-op\/} & {\tt \&} \\
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Conclusion}
+
+The Data Access Protocol is used to access data sets within the DODS data
+delivery system. It is not intended to be limited to DODS, but it is
+specialized for the system. Among those specializations are the stateless
+nature of the protocol. While the DAP could be used in many different
+contexts, it is principally designed to be the transmission protocol used by
+the data servers in the DODS data delivery system.
+
+DODS supports access to data sets stored in a number of established, third
+party APIs. In addition, it supports cross-access to those data sets. Thus
+data in any one of the supported APIs is accessible using any one of the
+supported APIs (at least in principle---some {\em possible\/} accesses may
+wind up returning meaningless, or null, data). The DAP facilitates this cross
+connections of user programs and data sets by providing a common
+access protocol for each API\@. Each data server will provide access to data
+using the DAP and each surrogate library (See \DDA\ and \DDD) will satisfy
+the supported API's function calls with information obtained via the DAP\@.
+
+To support its stateless interface, the DAP consists of two structures which
+contain attribute and type information about the variables in the data set
+and a single, programmable, mechanism for reading a variable. The attribute
+and type information structures can be used to build powerful translators
+which read variables in one type and transform them, on-the-fly, to types
+suitable for the surrogate API\@. 
+
+\clearpage
+
+\addcontentsline{toc}{section}{Bibliography}
+\bibliographystyle{plain}
+\bibliography{../../boiler/dods}
+
+\end{document}
+
+

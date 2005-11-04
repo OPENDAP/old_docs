@@ -1,0 +1,91 @@
+%%% Tex customizations and command definitions for DODS user
+%%% guides, 2 October 1997 - tomfool
+%%%
+%%% $Id$
+
+%%% $Log: layout.tex,v $
+%%% Revision 1.5  1999/05/25 20:49:34  tom
+%%% changed version numbers to 3.0
+%%%
+%%% Revision 1.4  1999/02/04 17:39:02  tom
+%%% modified for use with dods-book.cls
+%%%
+%%% Revision 1.3  1998/03/13 20:43:26  tom
+%%% writing of API manual.
+%%%
+%%% Revision 1.2  1998/02/12 15:47:25  tom
+%%% updated for GUI doc
+%%%
+%%% Revision 1.1  1997/10/02 17:18:14  tom
+%%% moved from user guide to boiler, made slightly more general,
+%%% for use with other guides.
+%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% This file is for TeX macros that are equally appropriate for the
+%%% hard-copy (LaTeX) and html (hyperlatex) versions of the dods
+%%% books.  If it's not appropriate for both, then it probably belongs
+%%% in dods-book.cls or dods-book.hlx.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NotSpecial{\do\_}% This removes the special meaning of `_', so for
+                  % subscripts, there must be an `tex' environment
+                  % around any diagram using subscripts, and an entire
+                  % alternate html figure using <sub> tags.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Different kinds of cross references.
+%\newcommand{\chapterref}[1]{Chapter~\refl{#1} on page~\pagerefl{#1}}
+\newcommand{\chapterref}[1]{\link{Chapter~\ref{#1}}{#1}}
+\newcommand{\appref}[1]{\link{Appendix~\ref{#1}}%
+  [~on page~\pageref{#1}]{#1}}
+\newcommand{\sectionref}[1]{\link{Section~\ref{#1}}%
+  [~on page~\pageref{#1}]{#1}} 
+\newcommand{\pagexref}[1]{\link*{here}[page~\pageref{#1}]{#1}}
+\newcommand{\tableref}[1]{\link{table~\ref{#1}}{#1}}
+\newcommand{\Tableref}[1]{\link{Table~\ref{#1}}{#1}}
+\newcommand{\figureref}[1]{\link{figure~\ref{#1}}{#1}}
+\newcommand{\Figureref}[1]{\link{Figure~\ref{#1}}{#1}}
+
+%%% A Prefatory list of the font conventions:
+\newcommand{\listconventions} {
+\section{Conventions}
+\label{pref,conventions}
+
+The \indn{typographic conventions} shown in
+Table~\ref{typo-conventions} are followed in this guide and all the
+other DODS documentation.
+
+\begin{table}[htbp]
+  \begin{center}
+  \caption{Typographic Conventions}
+  \label{typo-conventions}
+  \begin{tabular}{|c|p{3in}|} \hline
+    \lit{Literal text}  &  
+         Typed by the computer, or in a code listing.\\ \hline
+    \inp{User input}    &  
+         Type this precisely as written.\\ \hline
+    \var{Variables}     &   
+         Used as a place holder for a user-specified or variable
+         value. Choose an appropriate value and use that in place.\\
+         \hline 
+    \but{Button Text}\texonly{\rule{0pt}{2.5ex}}   
+        &  Used to indicate text on a GUI button.\\ 
+         \hline 
+    \pdmenu{Menu Name}    &  This is the name of a GUI menu.\\ \hline 
+  \end{tabular}
+  \end{center}
+\end{table}
+
+When referring to a button in a menu, we will often use the notation:
+\but{Menu,Button}. For example, \but{Options,Colors,Foreground} would
+indicate the \but{Foreground} button in the \pdmenu{Colors} menu,
+selected under the \pdmenu{Options} menu.
+ }
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

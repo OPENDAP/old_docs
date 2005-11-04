@@ -1,0 +1,1143 @@
+\renewcommand{\chaptertitle}{Technical Interchange Meeting with %
+Environmental Systems Research Institute}
+\chapter{\texorhtml{}{Appendix E }\chaptertitle}
+\label{app,esri}
+
+%% $Id$
+
+\begin{center}
+November 7 \& 8, 2000\\
+Environmental Systems Research Institute\\
+New York Street\\
+Redlands CA
+\end{center}
+
+
+\section{Meeting Summary}
+
+
+\subsubsection{To facilitate data exchange technology between GIS users and scientific users} 
+
+DODS has been a supporting technology to scientists for several years. It has provided an 
+extensible and reliable architecture to share oceanographic and atmospheric data sets of spatial 
+and temporal types, using Internet connectivity, and desktop applications common to research 
+scientists. DODS users recognize that a significant volume of relevant spatial data exists among 
+the GIS community. Understanding how common GIS store, document, read, and distribute data 
+is essential to expanding DODS functionality and providing research scientist effective and 
+timely tools. DODS users also recognize that non-scientists among the GIS community could 
+greatly benefit from, access to the existing and future DODS technology, data and understanding 
+of ocean scientists' needs.
+
+
+\subsection{Main Points}
+
+ \subsubsection{To identify and understand the commonalities in the technical design and development of 
+ESRI products and DODS software/infrastructure}
+
+The DODS community and ESRI have both designed and developed information architecture for 
+distributing and accessing data from multiple hosts. Technical overviews and demonstrations of 
+both approaches were given. Both systems share many similarities in their overall goal of 
+distributed data publishing and access. However, these systems differ considerably in their 
+technical implementation. Discussion also centered on supported data types and how to handle 
+the advanced types that DODS partners need using ESRI tools. The common use of XML by 
+both architectures may become a very important overlap as both designs mature. Developing 
+tools to enhance data transfer across between both architectures 
+
+\subsubsection{To assist ESRI in understanding ocean scientist user requirements}
+
+ESRI has a long term business interest in continuing to expand its marine sector. Through 
+periodic meetings of this type, ESRI hopes to better support their marine/scientist clients with 
+expanded data models, distribution systems, and desktop tools. ESRI is also interested in 
+providing meeting-planning support to their marine/scientist clients during the annual ESRI user 
+conference. DODS partners gave detailed presentations and demonstrations of existing DODS 
+projects, their requirements, and the main technical hurdles that DODS developers encounter. 
+ESRI developers were especially interested in how ocean scientists used and modeled volume 
+data types.
+
+
+
+\subsubsection{To assist DODS designers and developers in understanding current GIS technology}
+
+Senior software developers from ESRI's ArcIMS, SDE and Metadata groups provided detailed 
+technical overviews and answered questions from DODS developers. Demonstrations of all of 
+ESRI's major tools were provided. New ESRI software that is still in development was also 
+discussed. Topic areas that frequently came up included storage of grid and volume data types, 
+ESRI client needs when conducting data discovery, and the mechanics of extending ArcIMS 
+with a DODS ``connector''. DODS developers specially note that more technical documentation 
+is needed to describe the basic file-metadata requirements that an ESRI client needs to access a 
+DODS data stream in order to provide those metadata from DODS Servers.
+
+
+\subsubsection{To lay the groundwork for year 2 and 3 of the project}
+
+This meeting was the first for the beginning of a three-year effort. Specific technical tasks were 
+selected and discussed for development in year one. There was general discussion on how this 
+meeting corresponds to other regional NOPP/DODS meetings and the national NOPP/DODS 
+meeting. The outcome of these meetings as well as the results of year one development will 
+likely direct year two and three plans. Project activity in year two and three will be increased.
+
+In year one, DODS partners will build a DODS-ArcIMS connector that will provide DODS 
+clients access to GIS data from an ArcIMS configuration. This will provide the background for 
+DODS developers to build a mechanism that ESRI clients can use to access the DODS 
+architecture in the future. DODS partners will begin working with the ArcIMS SDK to develop a 
+connectivity mechanism for GIS clients to DODS servers.
+
+
+\subsection{General Observations}
+
+ESRI decided not to support the Z39.50 protocol for metadata. Metadata will be stored in an 
+XML format within an RDBMS/SDE and will be accessible through full text searches submitted 
+using ArcCatalog and published with ArcIMS.
+
+The Geo-statistical Analyst has great potential for scientific use. When it can point to a data 
+source located on a RDBMS/SDE its utility will be even more significant.
+
+
+ESRI has a custom utility for loading grids into an RDBMS/SDE, however there are some 
+combinations of RDBMS/SDE and ArcIMS that currently do not work together.
+
+ArcIMS has some basic data access problems with heterogeneous network environments. These 
+may be solved if the industry problems with the UFS are resolved. 
+
+ESRI does not have a data type for volume or time-series data, however they are interested in 
+building a capability to work with these data types.
+
+XML is a fundamental part to data communication for ESRI web applications and may be part of 
+the next major change in the design of DODS.
+
+ArcIMS is extensible using standard languages such as C++ and JAVA. JAVA Beans will be 
+provided that will be able to wrap COM based extensions.
+
+Informix and DB2 have a more object oriented design to their spatial component compared to 
+SDE on those RDBM's, and has therefore a thinner layer.
+
+
+
+
+
+\subsection{November 7}
+
+
+Introduction by Richard Lawrence
+
+Meeting goals
+\begin{itemize}
+\item   Forum for DODS
+\item   Discuss and form vision
+\item   Technical overview
+\item   Discuss commonalities
+\end{itemize}
+
+Meeting introductions
+\begin{center}
+\begin{tabular}{llp{2.5in}} \\ 
+Richard Lawrence &      ESRI &          Professional Services \\
+Jeanne Rebstock &       ESRI &          Environmental Solutions Manager \\
+Simon Evans &           ESRI &          Professional Services, Marine Industry \\
+Neil Millett &          ESRI &          Professional Services \\
+Art Hadad &             ESRI &          Development Manager (ArcIMS) \\
+Steve Copp &            ESRI &          Software Development (SDE) \\
+Gene Vaatveit &         ESRI &          Software Development (Metadata) \\
+Kim Burns &             ESRI &          Geography Network representative \\
+Ted Habermann &         NOAA &          Principle Investigator  \\
+Dan Holloway &          URI &           Data site population, user interface and server \\
+Dale Kiefer &           USC & \\
+Nathan Potter &         ORST &          DODS developer, JAVA, SQL Server \\
+Frank Obrien & & \\
+Chris Finch &           JPL &           Data provider, HDF Server and PC port of DODS \\
+Len McWilliams &        Informix &      Geospatial solutions to Informix and Internet applications \\
+Mark Ohrenschall &      NOAA &          Programming Freeform and DODS servers, SDE  applications and simple data type support. \\
+Steve Hankin &          NOAA &        PMEL Ocean scientist requirements, early in DODS, original LAS  \\
+John Cartwright &       NOAA &          ARCIMS and JAVA servlett \\
+Frank O'Brien &         USC &           wants to extract data, serve to DODS, has proposal to NRL \\
+Daniel Martin &         CSC/TPMC &      Meeting minutes \\
+\end{tabular}
+\end{center}
+
+Jeane Rebstock comments
+\begin{itemize}
+\item Provides high level support to the ocean industries.
+\item ESRI wants to grow ocean industry business.
+\item ESRI wants to understand user needs.
+\item Mentioned that NRL is interested in DODS/NOPP.
+\end{itemize}
+
+
+DODS Overview and Ocean Science User Requirements with Dan 
+Holloway 
+
+(for complete presentation see \Url{http://www.unidata.ucar.edu/packages/dods/} )
+ 
+\begin{itemize}
+\item NOPP Virtual Ocean Data Hub Project
+\item 50 participants
+\item 4 regional coordinators:
+Texas A\&M
+NOAA CSC
+State of Maine
+Oregon State University
+\end{itemize}
+
+\begin{itemize}
+\item DODS is an architecture to subset, acquire and ingest data.
+\item To enhance sharing.
+\item To use client tools to facilitate - Directory, Inventory and Data components.
+\item High functionality for data access.
+\item Primary DODS development is on data and not on directory support.
+\item DODS constraints:
+\begin{itemize}
+\item No reformatting of data.
+\item Function with minimum metadata.
+\item Easy to interface with existing systems.
+\item Must contain essential metadata to function.
+\end{itemize}
+\end{itemize}
+
+\begin{itemize}
+\item Explanation of a typical URL - can be difficult to write, this may be a barrier.
+\item DODS has several interfaces (command line, URL builder and GUI).
+\item Describe a matrix of interfaces and client applications and their status and pros/cons.
+\item 1 Terabyte of data, 300 data sets, 15 sites globally.
+\item IDL, Excel and Web browser are the primary clients.
+\item Now porting to JAVA, the JDBC based SQL server is now available for downloading.
+\item Specialized servers have been written for different data sets.
+\item DOS Data Model and constraints.
+\item DODS Data Objects (DDS, DAS, Data).
+\item Brief open discussion to reintroduce DODS at a high level.
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+RDBMS Talk with Len McWilliams
+
+\begin{itemize}
+\item Brief discussion on the benefits of using a relational database.
+\item Informix has incorporated SDE functionality and especially projection capabilities into 
+the core Informix spatial components.
+\item DataBlade is customizable and written in C.
+\item New extensions can be written.
+\item TEDS project is involved with grid data.
+\item There are geodetic extensions.
+\item ESRI and Informix have a joint effort underway.
+\item The blobs that contain spatial information in the RDBMS are in a ESRI format.
+\end{itemize}
+        OGC Comments
+
+\begin{itemize}
+\item All functions are OGC compliant.
+\item OGC has a standard request format.
+\item ESRI has an OGC listener/connector that monitors a specific port.
+\item The listener converts OGC to an AXL request to forward.
+\item OGC specifications and ESRI/Informix collaboration.
+\item ESRI connections use XML/HTTP to web applications and Socket type to Databases.
+\item OGC Web Mapping Testbed 2 is still working and in specification mode.
+\item David Beddoe was the ESRI contact for the technical subcommittee.
+\item Conducting testing of WMTB2 with ArcIMS.
+\item FGDC funded a broad partnership between NGDC and NOAA's Climate Diagnostic 
+Center to test WMTB2. NOPP is involved in testing those standards through NGDC. 
+\item WMTB2 is important to NOPP.
+\end{itemize}
+
+        NOPP Meeting
+
+\begin{itemize}
+\item NOPP user meetings are crucial to understand user needs.
+\item These meeting minutes will be incorporated into the regional meeting summary.
+\item Are existing NOPP/DODS tools available to current users in need?
+\item Overview of the 4 regional meetings underway.
+\item NRL is considering a catalog engine using MEL in the development of DEI system.
+\item Steve Hankin on board of national meeting, this will occur around March-May, no 
+location yet.
+\item ESRI is interested in attending and is on the invite list.
+\item The regional meetings are primarily for data providers.
+\item General discussion on the fate of FGDC if all federal executive orders were rescinded.
+\end{itemize}
+
+
+
+
+
+User Requirements and Live Access Server with Steve Hankin
+
+(for full text see \Url{http://shark.pmel.noaa.gov/\~{}hankin/ESRI/})
+
+\begin{itemize}
+\item TMAP, Thermal Model Analysis Program.
+\item Lots of software development.
+\item Modelers rarely collaborate/connect with others and generate large volumes of data.
+\item Focus on current efforts is to build a collaborative system.
+\item Bulk of new/needed data access methods are for research purposes.
+\item In situ, Satellite, Models, Moorings, Cruises, Drifters, Coastal.
+\item Data management is not fully developed for drifters.
+\item Plans are to have 3000 active in 6-7 years between surface and 2000m.
+\item Other data types include multibeam sonar and ROV based video, samples and still 
+imagery.
+\item Jeanne mentioned that the spottiness of oceanographic data is a major problem, and that a 
+new ESRI tool called the Geo-statistical Analyst Extension may be of interest.
+\item Steve - 3D renditions/models of data, especially over time is essential to chemical 
+oceanography applications.
+\item Present ESRI strategy for grid data seems to be image based.
+\item An ESRI staff person will talk later about using grid data with SDE, this is important.
+\item Some researchers prefer grid data to limit the volume issue.
+\item Level 2 data is along track data stream.
+\item Level 3 data is gridded, calibrated and cleaned data.
+\item Do users need access to original, full raw data\item Or is a level 3 scientific output optimal?
+\item The types of users vary, there are instrument developers, modelers, educators.
+\item Many prefer the grid product because of convenient size.
+\end{itemize}
+
+        Open Discussion
+
+\begin{itemize}
+\item There are many data management issues in visualizing time series data.
+\item The TYROS satellites have vertical sounders that provide a rich data stream.
+\item Radiosome observations are a rich data source with a long history.
+\item Atmospheric and oceanographic research are closely tied.
+\item Len - Navy has a similar project - TEDS in Monterey, CA and is related the MEL (master 
+environmental library).
+\begin{itemize}
+\item Data collection.
+\item Query
+\item Integration
+\item Access
+\end{itemize}
+\item The Environmental Scenario Generator Project is using mySQL with the NCEP re-
+analysis grids and taking over much of the TEDS work.
+\item TEDS/ESG are investigating Informix as a spatial solution.
+\item Should we be investigating expanded partnerships?
+\item The multi dimension aspect is crucial.
+\item ESRI's goal to merge the computer gaming graphics advances with data driven needs.
+\item Many of the animated graphics are not data driven.
+\item Mark Abbot at Oregon State is a contact for DODS.
+\item Dawn Wright at Oregon is using ArcIMS with Tiffany Vance at PME.
+\item ESRI has worked with users collecting multibeam sonar data.
+\item Discussion on how we work in true 3D, many move data to IDL.
+\item What about commercial efforts?
+\item SAIC (Science International Corporation) is a commercial NOPP partner and are also 
+involved in the Environmental Scenario Generator Project.
+\item Gulf of Mexico has large data sets in the Deepstar Program, maybe propriety but are 
+working with DODS as a data provider.
+\item Oil and gas industry has heavy data applications in the ROV business/annual inspection.
+\end{itemize}
+
+
+Live Access Server Demonstration
+
+\begin{itemize}
+\item A web GUI for data sets in formats supported by DODS.
+\item Java map based with server side graphics.
+\item Multiple back-end DODS applications doing the work.
+\item Easy to set up.
+\item Streamed data as text or bitmap image capability.
+\item Several different views including X,Y,Z and time were rendered to a browser
+        pan/zoom functions.
+\item There are a variety of output types such as comma delimited, NetCDF.
+\item DODS has a requirement to provide data to GIS users.
+\item DODS doesn't want to require the user to have a license.
+\item Wants to support typical GIS layer types.
+\item Ended up choosing the (SVF) Single Variable Format - ArcView grid.
+\item Unfortunately, there is no metadata associated with this format.
+\end{itemize}
+
+        Open Discussion
+
+\begin{itemize}
+\item Lack of float type support in the ESRI data model is a real issue with scientific grid data.
+\item Float types require a pallette object for display.
+\item Perhaps a modified WRLD file could help give ArcView access to NetCDF and to other 
+science formats.
+\item Can an extension to ArcView be written for NetCDF?
+\item How do we get NetCDF data into 3D Analyst/Spatial Analyst?
+\item Maybe the world file could direct a skip operation to the right location in NetCDF.
+\item The large audience of ArcView users and tools warrants a work around for NetCDF.
+\item HDF allows redirection/linking of header file to a data file, like the WRLD file config.
+\item Maybe this could be wrapped in XML.
+\item NCSA folks recast their data from float to integer.
+\item People do not want intermediate file formats.
+\item Maybe a quick solution could be built even if it is not the end all in design.
+\item There are a lot of float data archives out there.
+\item New ESRI products will have float capability for grids.
+\end{itemize}
+
+        Return to LAS Demonstration
+
+\begin{itemize}
+\item No temporary files are written.
+\item Will performance become an issue?
+\item It is designed for the extraction of modest slices of data.
+\item DODS compresses the data stream.
+\item DODS is an open distributed system for moving data, mirroring can be used.
+\item Load balancing can be configured.
+\item Choking of data requests can be delt with incrementally, it is not an issue now.
+\item Use standard HTML over HTTP, so firewalls are not a problem.
+\item JSP is used to render as a servlett.
+\item Using JSP the performance hit is on startup/compile of the servlett.
+\item After servlett startup it is in process server.
+\item Connection to the core is with a Bean.
+\item A NY site has it own data format and customized server, the data can be accessed using 
+DODS.
+\item A database of base URLs are stored on the LAS.
+\item How does an application connect to DODS?
+\item The request and response process is described in detail.
+\end{itemize}
+
+        Open Discussion
+
+\begin{itemize}
+\item The architecture is similar to the ESRI model and to a data blade.
+\item IDL and MatLab do not have client libraries.
+\item There is a JAVA API for NetCDF.
+\item A remote RDBMS could also be connected.
+\item Can we identify a group of commonalities?
+\item AXL to DAD.
+\item The binary data stream may be hard to work with.
+\item Maybe integration is best done as two separate components.
+\item Need to divide the problem into the binary blobs and the metadata.
+\item In regards to metadata, if the AXL has the functionality for DODS communications we 
+can avoid building a connector.
+\item DODS does not need metadata, what metadata does ESRI clients need?
+\item The GML and AXL is published.
+\item AXL contain reference to the data stream.
+\item Connections are made to ArcIMS with HTTP and by Sockets to RDBMS.
+\item Perhaps XML can be used with DODS, is it adequate for client needs?
+\item XML is used with and without data in ESRI products.
+\end{itemize}
+
+
+
+
+        Continuation of LAS Demonstration
+
+\begin{itemize}
+\item Multiple ways to access data from servers.
+\item NCEP Re-Analysis, CDC as 2.5-degree square by 6 hour samples.
+\item This data set is in the terabyte range.
+\item Project level data management is impractical.
+\end{itemize}
+
+        Open Discussion
+
+\begin{itemize}
+\item CDC is the partner for the wester water assessment, now has SDE for coverages.
+\item UNEP is building their version of a distributed server configuration with ArcIMS.
+\item The UNEP site likely to be very large, and needs DODS-like data and resources.
+\item UNEP is typically poorly funded, however Ted Turner is a major supporter of this.
+\item Hands on demo of LAS with Pacific cruise data, slices, graphics etc.
+\item DODS has a self-describing data design.
+\item Prototype demo for the NOPP system described.
+\item Sister server concept allows all to share in a collaborative setting.
+\item Display can show model and observation data in the same session.
+\item Non grid data example showing cruise based carbon measurements.
+\item Great care was taken to render the data as simply as possible without corruption.
+\end{itemize}
+
+
+General Discussion
+        
+        Topics or question summary from the morning session
+
+\begin{itemize}
+\item What protocol is used with ArcIMS, HTTP or SOCKETS?
+\item Are OGC Web Mapping Testbed Standards a spec yet?
+\item Does ArcIMS employ an OGC listener?
+\item To request a Geo-statistical Analyst demonstration for grid generation.
+\item What grid types does ArcIMS and ArcMap support and how do we avoid conversion?
+\item Can we point a WRLD file at a blob?
+\item Discuss the DODS application server diagram with Art Hadad.
+\item AXL specification should be given to all participants.
+\end{itemize}
+
+        What are the priority questions for the DODS - ESRI integration?
+        
+\begin{itemize}
+\item How do we provide DODS data access to GIS users?
+\item How do we provide GIS data access to DODS users?
+\item Identify common issues tomorrow.
+\item What is minimum metadata requirement for sharing data between DODS and ESRI 
+users?
+\item No minimum metadata requirements for DODS users.
+\item Metadata can be encapsulated in many different ways.
+\item DODS has error handling that covers basic QA/QC.
+\item What is the basic metadata for an ESRI client?
+\item Is the Marine XML standard something that should be investigated?
+\item Marine XML has been under construction for several years.
+\item Do we build a DODS connector or server application?
+\item Do we need the ArcIMS SDK to build a DODS connector?
+\item ESRI has a ArcIMS SDK that is in Beta and can be made available to Beta members.
+\item Maybe a DODS connector would be a good first step.
+\item See ArcIMS architecture design.
+\item Discussion of the request and response process and role of a DODS connector.
+\item ArcIMS SDK will not be released as a product in ArcIMS 3.1.
+\item Does ArcIMS provide direct SQL access to the RDBMS?
+\item Which side should we focus on, the connector or a spatial server?
+\item Brief talk about the JIVA, Joint Intelligence Visualization Application.
+\item JIVA began as a NIMA project with MOIMS, users wanted a vector map.
+\item JIVA was basically a catalog of footprints and status maps.
+\item JIVA was built with SDE for coverages.
+\item With Informix envelopes or extents are stored within the RDBMS.
+\item Brief talk on the USGS Geoengine.
+\item The differences between the Oracle and Informix database model for spatial capabilities.
+\end{itemize}
+
+
+ArcIMS Demonstration with Hugh Kegan
+
+\begin{itemize}
+\item Map services can be built on the fly.
+\item Geography Network overview.
+\begin{itemize}
+\item Maps, data, and geo-services.
+\item This is a catalog of catalogs.
+\end{itemize}
+\item A map service can hit multiple data sources.
+\item Overview of a customized JAVA site.
+\item Menu expansion can be programmed.
+\item Extraction of data can be implemented.
+\item Netscape 6 should work, it has not been tested.
+\end{itemize}
+
+
+ArcMAP Demonstration
+
+\begin{itemize}
+\item Showed linking to web-based data sources at multiple sites.
+\item Feature service data can be saved in ArcMAP.
+\item Re-projection can be handled on the fly through XML.
+\end{itemize}
+
+
+
+
+
+ArcCatalog Demostration
+
+\begin{itemize}
+\item Goal is to be OGC compliant.
+\item Allows query and selection on metadata.
+\item Metadata is stored in either a geodatabase or in file, if shapefiles exist.
+\item Searches through metadata on multiple database connections can be done.
+\end{itemize}
+
+
+Map on Demand Demonstration
+
+\begin{itemize}
+\item ArcIMS forwards a coodinate to ArcMAP.
+\item ArcMap renders and image and forwards to ArcIMS.
+\item General discussion on VPF to SDE and grid input to SDE.
+\item Grids can be loaded into certain versions of SDE with a special ESRI provided tool.
+\end{itemize}
+
+ArcScene Demonstration
+
+\begin{itemize}
+\item To replace the 3D Analyst extension.
+\item To be released as an extension to ArcView, ArcInfo desktop in first quarter 2001.
+\item ArcObjects can be used to extend ArcScene.
+\item Flybys, visibility domes, and vertical digitizing where shown.
+\item Wireframe and draped surface renders.
+\item DXF can be read as an input type.
+\end{itemize}
+
+
+Spatial Analyst Demonstration
+
+\begin{itemize}
+\item Does not render volumes.
+\item Examples shown include cost surface, visibility, and mobility.
+\item Multiple surfaces (criteria) were used to determine least effort path.
+\item Paths can be restricted to a vector network, such as a road.
+\end{itemize}
+
+
+ArcPad Demonstration
+
+\begin{itemize}
+\item Pocket PC and WAP phone updates to an SDE/RDBMS in real-time.
+\end{itemize}
+
+SDE and GRID Discussion with Steve Copp 
+
+\begin{itemize}
+\item SDE will support floating point grids on 3.1 release.
+\item The term grid to ESRI means specifically the ESRI GRID format.
+\item The goal in Arc 8.x is to develop grid functionality regardless of grid/image format.
+\item Any raster format supported by ESRI can go into SDE.
+\item Aux files are used to store statistics on the grid data, if the native format cannot handle it.
+\item See ESRI object model diagram for raster data objects.
+\item The RDO (raster data object) uses some of the ERDAS library.
+\item This mechanism allows extension by building a DLL and registering it to access non-
+supported image formats.
+\item The aux file can contain an attribute table, LUT, palettes, histograms projection 
+information etc.
+\item The aux file is automatically built and maintained.
+\item ArcView and ArcInfo share the same grid compatibility in 8.1.
+\item RDBMS can be used to manage the raster data.
+\item Very large raster data sets work well in SDE/RDBMS.
+\item Pyramids are generated and tiles are typically 1/4 of the image size.
+\item Usually only a small blob is requested and can usually be passed on quickly.
+\item The goal is to reduce trips to database and reduce number of tiles that are returned.
+\item Pyramids are made only with Nearest Neighbor.
+\item The underlying table construction is the same across RDBMS.
+\item Nearest Neighbor, Bilinear and Bicubic available in Arc 8.x.
+\item LZ77 (PNG,ZIP) is used to compress image data.
+\item There is a JAVA and C API to SDE.
+\item All pyramids must be completely in or outside of the RDBMS.
+\item There is no data type for true volumes or time dependant data.
+\item ESRI would like to investigate multi-dimensional data types.
+\item ESRI would like to adopt a voxel/volumetric capability.
+\item For display and analysis performance ESRI envisions using true discrete frame 
+techniques as a starting point.
+\item Each frame could be made into a pyramid.
+\item Discussion on the possibly of making a cube/blob as a tile.
+\item Informix Data Blade allows the indexed extraction from a blob.
+\item Discussion on performance and blob/cube requests and sub-setting.
+\item The TEDS program is trying to use tiles.
+\item ESRI true 3D development is just beginning.
+\item ArcIMS has specific file formats that are supported, same as ArcView 3 and MO.
+\item WRLD file data is handled in AXL.
+\item ArcIMS is needed unless access is available across TCP - LAN.
+\item We can't expect a DODS provider to run ArcIMS.
+\item DODS delivers data right to the local application.
+\item Users can run functions on the server side.
+\item DODS doesn't yet have a multi-user access problem.
+\item ArcIMS 3.1 supports re-projection of images.
+\item All pyramids are kept in a single table.
+\item Tile size and levels are tunable, but probably will not yield a huge increase in 
+performance.
+\item ESRI has plans to make a HDF reader.
+\item COM tools for data loading and display is on Windows only.
+\item Unix clients are for access only.
+\item Flat binary and LZ77 are the blob formats currently supported.
+\item Compression is tracked through a visible flag.
+\item Compression really helps on machines with a fast CPU and slow disks.
+\item SID is lossy and must be decompressed to enter a DB.
+\item This combination makes little sense and is not used.
+\item JPEG 2000 maybe supported in SDE 8.2.
+\item ArcObjects gives full access to data in memory.
+\end{itemize}
+
+
+\subsection{November 8}
+
+Why Use a Relational Database Management System
+ 
+\begin{itemize}
+\item Not all data need reside in the database, external data can be linked.
+\item An RDBMS is not always the optimum solution.
+\item Index capabilities are a strength.
+\item Rtree index method is scalable and self-balancing.
+\item Integration of many advanced data types.
+\item Relationships can be modeled.
+\item Performance can be enhanced through parallel architectures in scalable configurations.
+\item Ease of management for large data sets.
+\item Projection of the data can be done on the fly.
+\item Access to SQL queries.
+\item Backup, recovery, rollback, replication, transactions, multi-user, and other routine 
+RDBMS functionality.
+\item The Informix and IBM/DB2 approach is more object based then Oracle.
+\end{itemize}
+
+        General Discussion
+
+\begin{itemize}
+\item How does a client make a request, and conduct discovery of a data source?
+\item Answer - SQL, JDBC, ODBC, ArcSDE.
+\item In the GEODE project (USGS) a GUI interface was developed with pre-compiled SQL 
+queries.
+\item Queries can also be constructed on the fly through an application.
+\item In ArcIMS queries are made via HTTP.
+\item In the JAVA world the discovery mechanism is missing.
+\item The science data types vary and effect what is available on request.
+\item A published schema may be hard for a client application to process.
+\item GEODE had a server resource index like the ArcIMS directory list.
+\item DODS general overview.
+\end{itemize}
+
+        What are the interoperable issues to provide access to GIS clients.
+
+\begin{itemize}
+\item See S.Hankin web page for full text: 
+
+\Url{http://shark.pmel.noaa.gov/\~{}hankin/OCMIP/DODS/DODS.htm}.
+\item Steve Hankin describes the mechanism to enable a DODS client using a diagram.
+\item A server is needed for each format of data provided.
+\item Format and location of data is abstracted.
+\item Scientist must write the read method if they are not using a supported format such as 
+NetCDF, HDF or FreeForm.
+\item Writing a server, using FreeForm maybe a barrier for some scientist to publish data.
+\item Freeform data description method can help decipher many formats.
+\item Most scientific data is generic.
+\item Need to reduce the barrier to adoption of DODS, scientist, have little time to write 
+servers.
+\item Scientists do not want to reformat data.
+\item A registry of servers is available.
+\item A web crawler is also under construction.
+\item Goal is....GIS client and science data.
+\item Goal is....GIS data and science client.
+\end{itemize}
+
+
+ArcIMS Discussion with Art Hadad
+
+\begin{itemize}
+\item We need a bi-directional mechanism for the integration of scientific and GIS data.
+\item We need to provide GIS users access to the Terra bytes of scientific data.
+\item MODIS is a new and huge data stream of hyperspectral data in the 10-100m spatial 
+resolution, destined for GIS clients.
+\item MODIS data is in the EOSHDF.
+\item LIDAR is another major data source for measurement of elevation, vegetation and tree 
+counts.
+\item How do we get a DODS server into the ArcIMS drop down list, how much metadata is 
+needed for a GIS connection?
+\item General introduction to the ArcIMS architecture:
+\begin{itemize}
+\item Presentation
+\item Business Logic
+\item Storage
+\end{itemize}
+\end{itemize}
+
+
+ArcIMS Architecture Diagram
+
+\begin{itemize}
+\item Any client that can read XML can access data from ArcIMS.
+\item Discussed ArcIMS clients, HTML, JAVA, AEJ, ArcView, ArcMAP etc.
+\item The web server has several connectors, ASP, WMS 1.0, Cold Fusion etc.
+\item In 3.1 there is a set of JAVA Server Beans forming the applink used to write your own 
+connector.
+\item AXL is sent to app server.
+\item The POST mechanism is the preferred mechanism.
+\item The appserver forwards AXL to the spatial server and off to storage to retrieve data.
+\item The manager is built with JAVA applets.
+\item The spatial servers are written in C++,  this is the only part left to port to Unix.
+\item General discussion on major ArcIMs components
+\item ArcIMS is being ported to Linux, SGI, AIX
+\item Spatial servers do the major work.
+\item More physical servers can be added and managed through virtual servers.
+\item AXL is the glue that binds the configuration to the request and response.
+\item The spatial server is a container.
+\item 5 extensions out of the box include, image, feature, query, geocode, and extract.
+\item Custom services can be extended.
+\item Multiple workspaces exist for SDE, raster....
+\end{itemize}
+
+Spatial Server Diagram
+
+ 
+
+
+\begin{itemize}
+\item Extensions to ArcIMS are very open.
+\item With an Image Service and simple clients, the request will return a URL of the location 
+of an image.
+\item With an Image Service and smarter clients, the response includes the XML encoded 
+binary data (GIF, JPEG, PNG).
+\item With an Image Service a get feature request will respond with text encoded within an 
+inflated XML file.
+\item An Image Service is server side rendering.
+\item With a Feature Service the response is an inflated AXL file with embedded proprietary 
+binary stream.
+\item Clients render in feature streamed configurations.
+\item The servers render in Image Server configurations.
+\item What do we need to know to build a DODS connector.
+\item It appears that a DODS connector must handle communications in both directions, from 
+DODS URL to AXL and from an AXL stream output from the app server to a DODS 
+stream.
+\end{itemize}
+
+        
+Here are the options
+
+\begin{itemize}
+\item Extend the connectors.
+\item Add a new data source.
+\item Modify on the client. 
+\end{itemize}
+
+
+
+
+Central Cloud Diagram
+
+ 
+
+
+\begin{itemize}
+\item ESRI uses the Xercese tool to parse XML into standard usable objects.
+\item Thick client construction is challenging within DODS design.
+\item XML is the basic solution to a variety of changing problems that ESRI faces.
+\item What is needed to make a new data source - unpublished technology the ArcIMS SDK?
+\item The ArcIMS SDK will be a product no sooner then 6 months but maybe later.
+\item ArcIMS SDK will not have admin components for security reasons.
+\item ArcIMS spatial server is C++.
+\item ESRI has a prototype that is essentially a JAVA proxy server extension to the spatial 
+servers.
+\item ESRI also has a prototype that allows the registration of a COM object.
+\item Design work for connectors will remain stable, not so on the server side - possibly.
+\item Getting a DOD client to talk with a ArcIMS server is recommended as a first, easiest 
+step.
+\item The technology of the ArcIMs SDK is in flux and would effect development within the 
+business logic section to ArcIMS.
+\item ESRI recommends development of a connector for DODS client to GIS data.
+\item A metadata server extension will be available on ArcIMS after ArcIMS 3.1.
+\item JDBC and ODBC connections to the server will be available in the future.
+\item Distributed GIS is the goal.
+\item The NOPP project has a 3-year plan. Higher funding levels are slated for year 2 and 3.
+\item A DODS connector.
+\item General agreement that in year 1 we will develop a DODS connector.
+\item This will also allow developers to better understand ArcIMS development and allow the 
+ArcIMS SDK to stabilize.
+\item From the web server back the configuration works on SOCKETS.
+\item Discussion on the emap link.
+\item Discussion on the appserver link functionality for communication.
+\item A set of JAVA Beans will be provided for wrapping AXL to read/write Map, Layer, 
+Coordinate System, and other operations
+\item This set of BEANS handles the SOCKET communications.
+\item James Gallagher is the principal developer behind DODS.
+\item HTTP and XML has been in the plans for the past year.
+\item TomCat will be fully supported in 3.1, now in Beta 2.
+\item The application server link is a wrapper class (JAVA Bean) to simplify development.
+\item More comments about COM implementation.
+\end{itemize}
+
+        First Year Goal
+
+\begin{itemize}
+\item DODS team evaluates the appserver link.
+\item Writing a DODS connector.
+\item We can probably create the connector with the non-ESRI funds and later use the ESRI 
+funds to address the appserver work.
+\item Showing the new functionality of the connector will be important.
+\item Connectors do not communicate among one another.
+\item To be registered with the Geography Network, a map service or ARCIMS is not required.
+\item Can the GN handle legacy systems.
+\item Some general discussion.
+\item ESRI clarifies that the JAVA BEANS do not decode the feature stream class (at this 
+point), only ESRI clients can decode the feature-streamed class.
+\item The ArcIMS SDK is available now only to Beta users.
+\item Query Server is necessary to get back and XML open stream.
+\item Beans will be in the SDK to parse feature streams.
+\item Discussion on the performance burdens of a query server, especially between the spatial 
+server and the connector.
+\item Maybe a Bean could deliver a binary out to the DODS client and skip the connector.
+\item Discussion on the pros and cons of a feature service.
+\item Using scale dependency can help resolve performance problems, maybe an Image Server 
+at a broad scale and Feature Server at a fine scale.
+\item ESRI recommends server side processing with HTTP in general.
+\item A query service can request against either an Image or feature service.
+\item Layer contents can be dynamic.
+\item Projections can be done on the fly, including images.
+\item How do we map to a DODS client?
+\item DODS requests are basically an SQL-like form.
+\item Discussion on how does the DODS client receives data to render as polygons or lines?
+\item The regional groups are to define some of the limitations of the DODS data model.
+\item NFS systems can be a problem, a mixed file system (windows/linux) can be a problem 
+for multiple ArcIMS Spatial Servers, this is especially problematic with dynamic map 
+services.
+\item Sun and Microsoft may be able to resolve their differences on the UFS.
+\item The GN uses 20 Map Servers, 3 web servers, and 1 Oracle/SDE with maximum virtual 
+servers, over a million maps per day.
+\item All services and data are hosted at ESRI.
+\end{itemize}
+
+
+NOAA NNDC Server and SDE with Ted Habermann
+
+\begin{itemize}
+\item Overview of NOAA Server and SDE.
+\item SQL functionality and potential.
+\item A database is built to store:
+\begin{itemize}
+\item Data Info.
+\item Data Source.
+\item Display Look.
+\item Search Look.
+\item Query Look.
+\end{itemize}
+\item A browser interface is used to manage the catalog that is housed in a RDBMS MySQL.
+\item Nathan wraps the JDBC request into a DODS URL.
+\item PERL is used within the data manager tools.
+\item Demonstration of the SDE license manager monitor page.
+\item Most of the data management difficulties are social and not technical.
+\item Not a lot of blob data, except satellite sources, in scientific data.
+\item Informix allows SQL access of RDBMS.
+\item Demonstration of the SPIDR2 database.
+\item Sara Graves is authoring the Earth Science XML schema, maybe solution for 
+commonality.
+\item Metadata will be crucial here also.
+\item Search mechanisms are still unclear at this point.
+\item It is easy to forward and DODS URL to a SQL.
+\item Once data is in the NNDC it is DODS/ArcIMS accessible.
+\end{itemize}
+
+
+Geo-statistical Analyst Demonstration
+
+\begin{itemize}
+\item Variety of grid options including CoKrigging.
+\item Will be released in the 1st quarter.
+\item Chi sq. will come later, in a follow on release.
+\item The core utility is the visualization of the analysis and integration with spatial data 
+sources.
+\item Processing done in existing map units.
+\item Examples included semi-variagram, error mapping, and clipping visual display to a 
+polygon.
+\item Approximately 100,000 data set processed in 20 minutes.
+\item General discussion on the grid resolution output.
+\item DODS staff saw great opportunity for scientific use.
+\item Data sources include personal geodatabases. SDE sources in later releases.
+\item Open discussion on multiple topics.
+\item Multiple data types, contours, and grids can be incorporated.
+\item New shape files/geo-databases can be output.
+\item Ted discussed ArcIMS and SDE license changes.
+\item The database approach is expanding.
+\item The SDE component to Informix enhanced performances through load balancing.
+\item SDE is similar to a driver.
+\end{itemize}
+
+
+Geography Network Presentation
+
+\begin{itemize}
+\item Includes publishers - government and non-profits who do not charge for data.
+\item Partners - commercial units typically selling a service or data.
+\item A collaborative to publish and share data and services, especially live data.
+\item A type of marketplace.
+\item Search capabilities of catalogs.
+\item The all publisher list represents the ArcIMS sites.
+\item Contains 4 geoservices, such as a geocoder.
+\item 187 clearinghouses
+\item Also contains ``solutions'' which are interactive ArcIMS sites.
+\item Description of the registration process.
+\item Some discussion about whether a non-ArcIMS site can provide a data stream.
+\item ESRI will adopt the new international metadata standard.
+\item ESRI developing a new tool to extract necessary metadata from a registrant site.
+\item Exposure is a benefit to providers.
+\item It is unclear if a non-ESRI map service could actively participate delivering data.
+\item The GN has a fixed user interface.
+\item ESRI is looking for 24X7 participants with data sources or services of national interest.
+\item This is an ArcIMS site currently using a single SDE/RDBMS sources hosted by ESRI.
+\item There is no specific QA/QC element or review of the sources or services.
+\item Map services include Web Map Server (WMS) and AXL designed sites.
+\item ESRI clients cannot access WMS services.
+\item Guided tour of several GN pages.
+\item There are redundant system components.
+\item The GN hub submits an AXL request to the remote provider.
+\item Password protection is an option.
+\item Gateway sites like Texas exist, private GN's are a possibility also.
+\item Custom provider applications can be hosted.
+\item ESRI recommends an ArcIMS or WMS as the best mechanism to participate in the GN.
+\item NOAA ``Lights at Night'' maybe a good map service to publish.
+\item Published services access TIFF, JPEG, MrSID and standard ArcIMS readable formats.
+\item MrSID performance isn't optimum.
+\item ESRI has resampled and made pyramid data sets with scale dependencies to increase 
+performance.
+\end{itemize}
+
+
+Metadata Discussion with Gene Vaatveit
+
+\begin{itemize}
+\item ESRI does not currently support a search using the Z39.50 protocol.
+\item Metadata searches are to query local or ArcIMS sources.
+\item ArcIMS metadata server should be released in 3.2 and runs with XML.
+\item This sits on top of SDE/RDBMS.
+\item ESRI has discussed development with BlueAngle, doesn't look likely.
+\item Currently metadata is either stored on disk or in an RDBMS.
+\item ArcIMS will contain a metadata extension that queries an SDE/RDBMS configuration.
+\item ESRI has developed its own database design for metadata storage.
+\item The ESRI design is more text-based, somewhat like Yahoo or generic document system.
+\item Metadata can be stored separate from the data, and is not mandatory.
+\item Searches can be full text or field based.
+\item There is no enforcement of mandatory tags.
+\item ESRI has made a prototype that works with Blue Angle.
+\item Z39.50 sites work poorly in firewall configurations, they do not cross on port 80.
+\item BlueAngle would be very expensive to re-package within the standard ESRI catalog.
+\item There has been talk about wrapping a Z39.50 request in XML.
+\item The OGC catalog service is a wrapper on Z39.50.
+\item Isite is the server search component.
+\item XML has some distinctive advantages, flexibility, open.
+\item Full text searches of a RDBMS can be problematic, ESRI does not yet utilize the specific 
+tools that each RDBMS vendor has to enhance this function.
+\item ESRI is seeking a common solution not tied to a particular RDBMS.
+\item Perhaps a new release of SDE will have more advanced text search capabilities.
+\item Public classes exist for read/write of shapefiles.
+\item Shapefile weakness is that it is defined with dbf and field names are restricted to 8 
+characters.
+\item How do we make the scientific data available to the GIS users?
+\item Mark Ohrenschall is writing a translator for shapefiles.
+\end{itemize}
+
+
+        
+Open Discussion and Recap of Issues
+
+\begin{itemize}
+\item A WMS will not show as a ArcIMS service or layer to an ESRI client.
+\item The Geo-statistical Analyst will not read data from SDE in release 1.
+\item The Geo-statistical Analyst looks very interesting for research purposes.
+\item First step is to build a DODS connector, probably with existing resources.
+\item 15K is available for consulting.
+\item March/April is the national meeting.
+\item Lets get the beta 3.1 ArcIMS to start investigating.
+\item General discussion on experienced DODS participants.
+\item Peter Cornillon is the primary scientist behind this.
+\item James Gallagher is the chief architect of DODS.
+\item OSU is the source of the newer SQL activities.
+\item The MATLAB and IDL component are mostly out of the Northeast.
+\item NOPP and DODS relationship discussion.
+\item Ted is leading the policy/coordinating effort.
+\item Scientific data to GIS clients is Peter's priority.
+\item DODS reflects a broad selection of the ocean community.
+\item Lets get the AXL specifications out to the mailing list.
+\item Do we have any design specifications for the DODS connector?
+\item The development path design will be ad hoc.
+\item We'd like to work on the integration of the DODS SQL server and SDE.
+\item Informix may be the preferred platform for working with the scientific spatial data.
+\item How do we get grids into the Geo-statistical Layer?
+\item There is no volumetric data type within the ESRI domain.
+\item The new 3D Analyst Extension is a 2.5 D application.
+\item How can we continue dialog with the marine user representation with ESRI?
+\item Simon and Richard are the lead ESRI contacts.
+\item ESRI would like to develop formal user requirement profiles for marine users.
+\item ESRI will have a marine track at the user conference.
+\item Ted will be submitting a NOPP paper to the ESRI user meeting.
+\item Simon may be able to help coordinate a 10-15 person meeting that overlaps with the user 
+conference.
+\item DODS and NOPP interests may be broader then usual ESRI centric to be hosted within 
+the user conference.
+\item The group would probably be smaller then this workgroup.
+\item Will need the ArcIMS SDK to work with the feature streaming capability.
+\item How do we transition from the connector that supports DODS clients to GIS data?
+\item It is still unclear how the connector can or can't support development of GIS client 
+connection to DODS data sources/servers.
+\item Continue talks with Informix.
+\item Document user profile access to ESRI dev.
+\item User conference may be a good opportunity to show a new capability of DODS.
+\item Coordinate IMS SDK.
+\item Organize a list of data.
+\item If ESRI supported WMS, DODS could publish to GN.
+\item There is a capability of publishing WMT from DODS, the (WMT-DODS gateway) with 
+grid data only.
+\item This is a prototype on WMT1.0.
+\item A WMT2 is under construction but unavailable.
+\item We should take a look at the technical specification of the Monterey grid work (TEDS).
+\end{itemize}
+
+\section{Attendees}
+
+\subsubsection{ESRI}
+
+\begin{center}
+\begin{tabular}{lll} \\ 
+Richard Lawrence &      rlawrence@esri.com &            909-793-2853 x 1700 \\
+Jeanne Rebstock &       jrebstock@esri.com &            909-793-2853 x 1160 \\
+Simon Evans &           sevans@esri.com &               909-793-2853 x 2380 \\
+Neil Millett &          nmillet@esri.com &              909-793-2853 x 2709 \\
+Art Hadad &             ahadad@esri.com &               909-793-2853 x 1055 \\
+Steve Copp &            scoop@esri.com &                909-793-2853 x 1480 \\
+Gene Vaatveit &         gvaatveit@esri.com &            909-793-2853 x 2335 \\
+Kim Burns &             kburns@esri.com &               909-793-2853 x 2712 \\
+\end{tabular}
+\end{center}
+
+\subsubsection{DODS}
+
+
+\begin{center}
+\begin{tabular}{lll} \\ 
+Ted Habermann &         Ted.Habermann@noaa.gov &        303-497-6472 \\
+Dan Holloway &  d.holloway@gso.uri.edu &        401-874-6831 \\
+Steve Hankin &          hankin@pmel.noaa.gov &  206-526-6080 \\
+John Cartwright &       jcc@ngdc.noaa.gov &             303-497-6284 \\
+Nathan Potter &         ndp@oce.orst.edu        &       541-737-2293 \\
+Mark Ohrenschall &      mao@ngdc.noaa.gov &             303-497-6507 \\
+Dale Kiefer &           kiefer@usc.edu  &       213-740-5814 \\
+Frank Obrien &          fjobrien@home.com       &       714-730-6858 \\
+Chris Finch &           chris.finch@jpl.nas.gov & 818-354-2390 \\
+\end{tabular}
+\end{center}
+
+
+\subsubsection{Other}
+                                                                                
+\begin{center}
+\begin{tabular}{lll} \\ 
+Len McWilliams &        len.mcwilliams@informix.com &   703-847-3359 \\
+Daniel Martin &                 dmartin@tpmc.com        &       781-544-3803 \\
+\end{tabular}
+\end{center}
+
+\section{Select HTTP References}
+
+\begin{description}
+\item[NOPP]     \Url{http://core.cast.msstate.edu/NOPPpg1.html}
+\item[DODS Home]        \Url{http://www.unidata.ucar.edu/packages/dods/}
+\item[LAS presentation] \Url{http://shark.pmel.noaa.gov/\~{}hankin/ESRI/}
+\item[NOPP Proposal]    \Url{http://www.unidata.ucar.edu/packages/dods/archive/proposals/nopp-html/nopp.html}
+\item[ESRI User Conference]     \Url{http://www.esri.com/events/uc/index.html}
+\item[Open GIS Consortium]      \Url{http://www.opengis.org/}
+\item[NVDS]     \Url{http://nndc.noaa.gov/?home.shtml}
+\item[NNDC]     \Url{http://nndc.noaa.gov/?http://ols.nndc.noaa.gov/plolstore/plsql/olstore.main?look=1}
+\item[PMEL]     \Url{http://www.pmel.noaa.gov/}
+\item[SDE License status]       \xlink{http://dev.ngdc.nndc.noaa.gov/cgi-bin/wt/nndcp/\-ShowDatasets?\-query=\&dataset=400029\-\&search\_look=1\-\&group\_id=14\-\&display\_look=1}{http://dev.ngdc.nndc.noaa.gov/cgi-bin/wt/nndcp/ShowDatasets?query=\&dataset=400029\&search_look=1\&group_id=14\&display_look=1}
+\item[Newport Surf Report]      \Url{http://nwprtsrf.oce.orst.edu:8080/nwprtsrf/surf.html}
+\item[NNDC Developer]   \xlink{http://dev.ngdc.nndc.noaa.gov/cgi-bin/wt/nndcp/Devel\_Site\_Map}{http://dev.ngdc.nndc.noaa.gov/cgi-bin/wt/nndcp/Devel_Site_Map}
+\end{description}
+
+
+\section{Table of Acronyms}
+
+\begin{description}
+\item[API]              Application Programming Interface
+\item[ArcIMS]           Arc Internet Map Server
+\item[AXL]              Arc eXtensible Markup Language
+\item[CDC]              Climate Data Center
+\item[COM]              Common Object Model
+\item[DODS]             Distributed Oceanographic Data System
+\item[ESRI]             Environmental System Research Institute
+\item[FGDC]             Federal Geographic Data Committee
+\item[GML]              Geography Markup Language
+\item[GN]               Geography Network
+\item[GUI]              Graphic User Interface
+\item[HDF]              Hierarchical Data Format
+\item[IDL]              Interactive Data Language
+\item[JDBC]             JAVA Database Connection
+\item[JSP]              JAVA Server Pages
+\item[LAS]              Live Access Server
+\item[MEL]              Master Environmental Library
+\item[MrSID]            Multi Resolution Seamless Image Database
+\item[NCEP]             National Center for Environmental Prediction
+\item[NNDC]             NOAA National Data Centers
+\item[NOPP]             National Oceanographic Partnership Program
+\item[ODBC]             Open Database Connectivity
+\item[OGC]              Open GIS Consortium
+\item[PMEL]             Pacific Marine Environmental Laboratories
+\item[SDE]              Spatial Database Engine
+\item[SDK]              Software Development Kit
+\item[SVF]              Single Variable Format
+\item[TEDS]             Tactical Environmental Decision Support System
+\item[UNEP]             Unite Nations Environmental Program
+\item[UFS]              Universal File System
+\item[VPF]              Vector Product Format
+\item[WAP]              Wireless Access Protocol
+\item[WMS]              Web Map Server(OGC interface specification)
+\item[WMT]              Web Mapping Testbed
+\item[XML]              eXtensible Markup Language
+\end{description}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
+

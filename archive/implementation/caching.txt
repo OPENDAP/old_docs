@@ -1,0 +1,75 @@
+
+	$Id$
+
+Caching.
+
+Caching is implemented in Connect.cc,h. This code uses the libwww 5.2.9 cache
+system which is an HTTP 1.1 compliant cache. The cache is controlled by
+complied-in defaults (Connect.cc) and a .dodsrc file.
+
+The .dodsrc file: A rc (runtime configure) file has been added to DODS. This
+file may either be in the users home directory (the directory named in the
+environment variable HOME) or it may be the file named in the environment
+variable DODS_CACHE_INIT. The dodsrc file currently contains the following
+fields:
+
+    USE_CACHE		0: Disabled, 1: Enabled
+    CACHE_MAX		Maximum cache size in Mbytes
+    CACHED_OBJ		Maximum cache entry size in Mbytes
+    IGN_EXPIRES		0: Honor expiration information from serves, 1:
+			Ignore them 
+    NEVER_DEFLATE	0: Accept compressed data, 1: Don't accept compressed
+			data 
+    CACHE_ROOT		The pathname of the directory which holds the cache
+
+Here's an example dodsrc file.
+
+    USE_CACHE=1
+    MAX_CACHE_SIZE=20
+    MAX_CACHED_OBJ=5
+    IGNORE_EXPIRES=0
+    NEVER_DEFLATE=0
+    CACHE_ROOT=/export/jimg/.dods_cache
+
+If you don't have a dodsrc file, one will be created for you when you run a
+client. 
+
+Some caveats about caching: Caching data is tricky for several reasons.
+First, there is a bug in the libwww cache software that prevents us from
+caching compressed data responses (responses are the things stored in the
+cache - the .index file maps requests to responses, see How Caching works
+below for informationabout the index file). This means that you have to
+choose between caching data responses and getting those responses compressed
+before the server sends them. User the NEVER_DEFLATE flag to do this. Set the
+flag to true (1) to tell servers NOT to send compressed data responses so
+that they WILL be cached. Setting NEVER_DEFLATE to false (0) lets servers
+compress their responses and any response that is compressed will NOT be
+cached.
+
+Caching data responses is also complicated because each different DODS
+constraint expression makes a URL unique. To the HTTP 1.1 cache software they
+are all completely unique requests and responses. Thus, if a client asked for
+u[0:99] (the first 100 elements of `u') and then asked for u[25:50], the
+second request would NOT be read from the cache. A more sophisticated caching
+system would be able to process the cached response to the u[0:99] request
+and extract the information for the second request.
+
+If you think that the cache system is causing problems, used the USE_CACHE
+field in the dodsrc file to disable the system. If you want to clear out the
+cache, go to the CACHE_ROOT and run `rm -rf * .index'. Make sure to remove not
+only the numbered hash directories but also the invisible .index file.
+
+How caching works: Caching in HTTP 1.1 combines time based expiration along
+with validation. Once a response is received, unless the server explicitly
+disallows caching, the client saves a copy. An entry for the request and
+response is written in an index file called `.index' stored in the CACHE_ROOT
+directory. The actual response information is stored in a subdirectory of
+CACHE_ROOT using a hashing scheme. 
+
+Information is not blindly read from the cache. HTTP 1.1 provides for both
+time-based expiration and server-based validation of cache entries.
+Currently, DODS servers support only the former but will support full HTTP
+1.1 cache validation in the future.
+
+To read a more complete description of HTTP 1.1 caching, see the HTTP 1.1
+Specification, Chapter 13.

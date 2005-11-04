@@ -1,0 +1,24 @@
+
+	$Id$
+
+Currently DODS is not very structured as a group and this has suited us well.
+However, I think some structure is emerging and formally recognizing that
+will make it simpler for us to do our work.
+
+I see four groups forming:
+
+  Software development: 
+	Myself, Dan, Reza*, Deirdre*, Rob*, Nathan*, Brent*, Chris* 
+
+  Data/Population:
+	Paul, Kwok Lin
+
+  Support/Documentation:
+	Tom, Ethan
+  
+  Liaison:
+	Lynn Halpern (GCMD)
+	Steve Hankin (Ferret/PMEL)
+	Elaine Dobinson (JPL)
+	Peter Fox (UCAR)
+

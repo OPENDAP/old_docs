@@ -1,0 +1,129 @@
+\indexentry{DODS!URL}{1}
+\indexentry{data!accessed by URL}{1}
+\indexentry{URL!data accessed by}{1}
+\indexentry{Reynolds}{1}
+\indexentry{Climate Modeling!NOAA}{1}
+\indexentry{NOAA!Climate Modeling}{1}
+\indexentry{Dataset Descriptor Structure|emph}{2}
+\indexentry{DDS}{2}
+\indexentry{dataset!shape}{2}
+\indexentry{shape of dataset}{2}
+\indexentry{Grid|emph}{3}
+\indexentry{map vectors|emph}{3}
+\indexentry{array!irregular|see{Grid}}{3}
+\indexentry{array!map vector}{3}
+\indexentry{vector!map}{3}
+\indexentry{Structures|emph}{3}
+\indexentry{Lists|emph}{3}
+\indexentry{DAS}{3}
+\indexentry{Data Attribute Structure|emph}{3}
+\indexentry{metadata|emph}{3}
+\indexentry{COARDS}{3}
+\indexentry{HDF-EOS}{3}
+\indexentry{EPIC}{3}
+\indexentry{FGDC}{3}
+\indexentry{constraint expression|emph}{4}
+\indexentry{expression!constraint|see{constraint expression}}{4}
+\indexentry{Julian calendar}{4}
+\indexentry{calendar!Julian}{4}
+\indexentry{service!help}{4}
+\indexentry{help service}{4}
+\indexentry{service!info}{4}
+\indexentry{info service|emph}{4}
+\indexentry{subscripts}{5}
+\indexentry{Grid!sampling}{5}
+\indexentry{sampling!Grid}{5}
+\indexentry{array!subscripts}{5}
+\indexentry{array!sampling}{5}
+\indexentry{sampling!array}{5}
+\indexentry{Grid!subscripts}{5}
+\indexentry{peeking at data}{5}
+\indexentry{data!peeking at}{5}
+\indexentry{units!scaling}{6}
+\indexentry{scale_factor}{6}
+\indexentry{Sequence|emph}{6}
+\indexentry{relational data table}{6}
+\indexentry{temperature profile}{6}
+\indexentry{data!relational table}{7}
+\indexentry{RDBMS}{7}
+\indexentry{profile!temperature}{7}
+\indexentry{CTD data}{7}
+\indexentry{hydrographic data}{7}
+\indexentry{data!hydrographic}{7}
+\indexentry{station data}{7}
+\indexentry{data!station}{7}
+\indexentry{data!time series}{7}
+\indexentry{time series data}{7}
+\indexentry{metadata!among the data}{7}
+\indexentry{data!metadata mixed in}{7}
+\indexentry{selection clause|emph}{7}
+\indexentry{constraint expression!selection clause}{7}
+\indexentry{projection clause|emph}{8}
+\indexentry{constraint expression!projection clause}{8}
+\indexentry{constraint expression!query form}{8}
+\indexentry{constraint expression!building aids}{8}
+\indexentry{query form}{8}
+\indexentry{form!query}{8}
+\indexentry{web interface}{8}
+\indexentry{ifh}{8}
+\indexentry{html interface}{8}
+\indexentry{Data Access Form}{8}
+\indexentry{vade mecum|emph}{10}
+\indexentry{array!stride}{10}
+\indexentry{stride}{10}
+\indexentry{Grid!sampling}{10}
+\indexentry{sampling!Grid}{10}
+\indexentry{array!subscripts}{10}
+\indexentry{array!sampling}{10}
+\indexentry{sampling!array}{10}
+\indexentry{Grid!stride}{10}
+\indexentry{Grid!subscripts}{10}
+\indexentry{constraint expression!query form}{10}
+\indexentry{constraint expression!building aids}{10}
+\indexentry{query form!Sequence data}{10}
+\indexentry{form!query}{10}
+\indexentry{web interface!Sequence data}{10}
+\indexentry{html interface!Sequence data}{10}
+\indexentry{Data Access Form!Sequence Data}{10}
+\indexentry{minimum server configuration}{11}
+\indexentry{server!minimum configuration}{11}
+\indexentry{GCMD}{13}
+\indexentry{Global Change Master Directory}{13}
+\indexentry{NASA!Global Change Master Directory}{13}
+\indexentry{URL!catalogued at GCMD}{13}
+\indexentry{dataset!list, DODS}{13}
+\indexentry{list!DODS datasets}{13}
+\indexentry{ifh}{14}
+\indexentry{html interface!finding more data}{14}
+\indexentry{web interface!finding more data}{14}
+\indexentry{Data Access Form!using to find data}{14}
+\indexentry{query form!file server}{15}
+\indexentry{form!query}{15}
+\indexentry{web interface!file server}{15}
+\indexentry{file server}{15}
+\indexentry{server!file}{15}
+\indexentry{Data Access Form!file server}{15}
+\indexentry{sampling!file server}{15}
+\indexentry{Sequence!file server}{15}
+\indexentry{dataset!of datasets}{15}
+\indexentry{geturl!DODS utility web client}{17}
+\indexentry{wget!web client}{17}
+\indexentry{lynx!web browser}{17}
+\indexentry{Netscape}{17}
+\indexentry{Internet Explorer}{17}
+\indexentry{loaddods!Matlab or IDL client}{17}
+\indexentry{Matlab!loaddods client}{17}
+\indexentry{IDL!loaddods client}{17}
+\indexentry{Ferret}{17}
+\indexentry{GrADS}{17}
+\indexentry{Matlab!GUI DODS browser}{17}
+\indexentry{DODS!linking to your software}{17}
+\indexentry{linking!DODS to your programs}{17}
+\indexentry{DODS!libraries}{17}
+\indexentry{libraries!DODS}{17}
+\indexentry{toolkit!DODS}{18}
+\indexentry{DODS!toolkit}{18}
+\indexentry{JGOFS!data access API}{18}
+\indexentry{data access API!JGOFS}{18}
+\indexentry{netCDF!data access API}{18}
+\indexentry{data access API!netCDF}{18}

@@ -1,0 +1,253 @@
+
+% $Id$
+%
+% Written by Glenn Flierl in early 1994. jhrg
+
+% Hi James - you said you were studying TeX - this is the header which
+% I generally include (usually with \input ms.def) with my files.
+% regards, grf
+%
+% PS - if you're running TeX, I recommend my version of xdvi, which
+% displays the final document. It has a ``ReTeX'' button which allows
+% you to edit in an emacs window, save, and by ReTeXing, see the
+% revisions in the display window.  regards, grf
+%
+
+\magnification=\magstep1
+\raggedbottom
+\def\title#1{\bigskip\goodbreak\centerline{\bf #1}\medskip}
+\def\section#1{\medskip\goodbreak\noindent{\bf #1}\medskip}
+\def\subsection#1{\medskip\goodbreak\noindent{\sl #1}\medskip}
+\def\references{\narrower\parindent=-20pt}
+\def\jour#1#2{{\sl #1}, {\bf #2}}
+\def\ni{\noindent}
+
+\title{Virtual File Systems/ Databases}
+
+Files systems are a particular form of data system, with some
+strengths and some weaknesses. Since we've begun talking seriously
+about a virtual files system/ virtual datasystem, we should assess
+carefully what it gains us and how to get around its disadvantages.
+
+\section{File Systems}
+
+A simple file system (e.g. MSDOS) allows organizing information in a
+tree structure with the leaves (files) being opaque objects. This is
+often a good way to structure a data set; e.g., if we consider a
+GLOBEC cruise, it might be organized
+
+{\obeylines
+cruise1
+~~ctd
+~~~~ctd001
+~~~~ctd002
+~~~~ctd003
+~~~~...
+~~nettows
+~~~~mocness01
+~~~~mocness02
+~~~~modness03
+~~~~...
+cruise2
+...
+}
+
+\ni Navigating through this structure is pretty intuitive and users would
+find a particular piece of information quickly. But complex queries -
+find the ctd's and associated nettow's at 40N, 70W -- would be difficult
+indeed (that's why a file system is not a database). With NFS, the
+different directories could be located on different machines, but must
+be explicitly cross--mounted.
+
+\subsection{Virtual File System}
+
+As I understand Neumann's work, a virtual file system allows the users
+to define their own directory organization for the files. So another
+user might see the same files as in a structure
+
+
+{\obeylines
+ctd
+~~cruise1
+~~~~ctd001
+~~~~ctd002
+~~~~ctd003
+~~~~...
+~~cruise2
+~~...
+nettows
+~~cruise1
+~~~~mocness01
+~~~~mocness02
+~~~~modness03
+~~~~...
+~~cruise2
+~~...
+}
+
+\ni or
+
+{\obeylines
+ctd
+~~ctd001
+~~ctd002
+~~ctd003
+~~...
+nettows
+~~mocness01
+~~mocness02
+~~modness03
+~~...
+...
+}
+
+\ni In UNIX, one could conceive of doing this by building a new
+directory structure with the leaves being links to the real files.
+Prospero, in addition to making this kind of restructuring relatively
+painless, adds a couple of features: (1) simpler linking to other
+machines with no need for mounting the remote filesystem, (2)
+association of attributes with directories (and perhaps files?) which
+can also be used for automatic grouping. For example, if the files in
+the above example had the PI's name as one of their attributes, one
+could then construct a view of the data based on PI as the topmost
+level in the tree. I'm not sure, but is seems as though this feature
+could be of considerable use -- perhaps with some extension.
+
+\subsection{What does a virtual file system gain us?}
+
+\item{1} A file system gives a familiar structure to a data system,
+one which everyone will be comfortable navigating around. Adding extra
+information (attributes, descriptors, ... up to hypertext) will make
+it easier.
+\item{2} Reading data from a file, either with {\tt more} or a program
+is a common well--understood operation. This is certainly an important
+aspect. But allowing this to occur smoothly will become a crucial
+element differentiating DODS from previous systems.
+\item{3} Allowing the users to make their own views and structure for
+the data as their research evolves should be of help for all.
+
+\section{Towards a Data System}
+
+What elements are missing from a virtual system? Our requirements
+include 
+\item{1} Locating data --- the virtual file system can be a great aid
+in this, though it does not fully satisfy the requirements. We need
+also a search mechanism that would build a virtual directory of data
+sets satifying some specified conditions.
+\item{2} Selecting data --- although the virtual file system allows
+selecting at the level of a file, we clearly need to able to get
+either less or more than that: in some cases, we may want only part of
+what is contained in a file, and in other cases we want information
+collected from many files.
+\item{3} Retrieving data --- here the file system is not nearly as
+functional as we require. A file is basically opaque - the user cannot
+have any {\sl a priori} knowledge about its structure. In contrast we
+would ideally like a MATLAB user, for example, to be able to behave as
+though the entire system were an extended set of MATLAB files tailored
+by the specific selections/projections made.
+
+\ni How can we integrate these elements smoothly with a virtual file
+system? Let's consider each element, though not necessarily in order.
+
+\subsection{Retrieving data}
+
+I think an extension of the Mosaic URL notion probably would do the
+job here: a resource is specified by a prefix indicating the protocol.
+Thus a dataset could be read by a netcdf program by calling it
+
+{\tt
+netcdf:stuff
+}
+
+\ni whereas it could be typed directly using
+
+{\tt
+dods:stuff
+}
+
+\ni or put into Mosaic with
+
+{\tt
+html:stuff
+}
+
+\ni Note: this usage is somewhat different from Mosaic's. They
+interpret the protocol: within Mosaic and cause different kinds of
+communication to occur, based on some set they've chosen to implement.
+The translation to htmp is done within the client. What I'm proposing
+is that this translation occur within the ``translator'' module, {\tt
+html} or {\tt netcdf}. In the first case, it may understand various
+protocols such as gopher, WWW, and the anonymous ftp protocol. The
+client now only has to read html format; if it runs into something
+else, it could span a suitable viewer.
+
+The translators (and the telephone operators) are responsible for
+negotiating the protocols between the server and the translator to
+find the most efficient transmission method. Figure 1 shows the idea.
+
+\subsection{Locating data/ Subselecting data}
+
+In our data model, we had the idea of variable names and values for
+those variables. The fundamental database operations worked to select/
+project/ merge based on those names. At first sight, the directory
+tree structure doesn't seem to fit within that model. But with a bit
+of associated information (attached as are the Prospero attributes)
+one could map back and forth between a directory structure and a
+tree--organized database.
+
+{\obeylines
+cruise=1
+~~instrument=ctd
+~~~~station=001
+~~~~station=002
+~~~~station=003
+~~~~...
+~~instrument=nettows
+~~~~tow=01
+~~~~tow=02
+~~~~tow=03
+~~~~...
+cruise=2
+...
+}
+
+\ni This correspondence suggests that we can think of specifying a
+filename by its path can be considered a particular form of database
+operation --- $v1=x1~\&~v2=x2~\&~v3=x3...$
+
+But we also need to express more complex selections. While the URL
+syntax allows postfixing a selection (signalled by a '?'), this is not
+a very robust in that you may not be able to group multiple
+selections. My own preference is for a function notation
+
+{\tt
+stuff(cruise=1\&station>=2\&station<=5)
+}
+
+\section{Virtual Database}
+
+I think we should aim for a system which melds the virtual file system
+with a data system, giving us the advantages of familiar structuring
+and retrieval with the capability for more complex selections. A
+syntax such as
+
+{\tt
+trans:virtual\_path(arguments)
+}
+
+\ni can be used. For example consider how a request
+
+{\tt
+more ascii://plankton.whoi.edu/globec/cruise1/ctd(station=5|station=7)
+}
+
+\ni might be resolved. The ``open'' call from {\tt more} to the DODS
+library/ file system causes the ``ascii'' translator to be loaded and
+connects to the operator on ``plankton.'' That walks through the
+directory structure until it finds the appropriate ``file'' and loads
+its server and passes the arguments to it. The server negotiates with
+the translator to find the preferred interchange protocol and then
+begins transmitting data in response to ``read'' requests.
+
+\end
+

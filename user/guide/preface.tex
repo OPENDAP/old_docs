@@ -1,0 +1,193 @@
+% Preface to the OPeNDAP User Guide
+%
+% $Id$
+%
+
+\T\chapter*{Preface}
+\T\addcontentsline{toc}{chapter}{Preface}
+
+This document describes version \OPDversion\ of the \OPD\ (\opendap), a
+data system intended to allow researchers transparent access to
+oceanographic data---stored in any of several different file
+formats---across the Internet. Using \opendap function libraries, many
+existing data analysis programs can be easily modified to accommodate
+access of distant datasets in a manner identical to the access of
+local datasets. \opendap includes a protocol for the transmission of data
+across the Internet, and supports selection of data using constraint
+expressions, and translation of data from one format to another.
+
+An overview of the system's use is presented, and specific tasks
+illustrated, for data providers as well as for users.
+
+\W\htmlmenu{4}
+\W\chapter*{Preface}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Tasks Illustrated in this Guide}
+\label{pref,tasks}
+
+For a quick start to getting, installing, and using \opendap software, see the
+list below of tasks described in this document.
+
+\begin{itemize}
+
+\item Getting the \opendap software. (\pagexref{install})
+
+\item Installing the \opendap software. (\pagexref{install})
+
+\item Using an \opendap client. (\pagexref{opd-client,using-example})
+
+\item Re-linking a data analysis or display application to become a
+  \opendap client. (\pagexref{opd-client,link-example})
+
+  \tbd{Add information about the locator here.}
+%\item Using the OPeNDAP data locator to find data. 
+%(\pagexref{locator,locator})
+
+\item Creating and installing an \opendap server.
+
+  \begin{itemize}
+    
+  \item Installing the \opendap server and CGI filters.
+    (\pagexref{opd-server,cgi-install})
+
+  \item Starting and configuring the httpd server. Due to the variety
+    of available servers, this task is beyond the scope of the manual.
+    Please refer to the documentation for the particular server in question
+    for more information.
+
+  \item Implementing a new DODS-compliant API. (\OPDapi)
+
+  \end{itemize}
+
+\item Writing an \opendap CGI program. (\OPDapi )
+
+\item Writing the CGI service programs. (\OPDapi )
+
+\item A list of all supported APIs. (\pagexref{opd-client,supported-APIs})
+
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Who is this Guide for?}
+\label{pref,who}
+
+The user documentation for \opendap covers two groups of users: those who
+want to provide access to data vian \opendap and those who want to use
+data. In many cases the people will be one and the same since most
+providers will also be data users.
+
+This documentation assumes that the readers are familiar with
+computers, but are not necessarily programmers. 
+
+This guide also contains technical information that will be of
+assistance to programmers who plan to write new DODS-compliant APIs
+for as yet unsupported data models. Data providers and data consumers
+may find some general questions answered by this material, but it is
+not necessary to know any of it in order to use the system.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Organization of this Document}
+
+This book is organized into separate sections for data providers, data
+consumers, and technical reference material for programmers.
+
+\begin{description}
+
+\item{\bf Part I} is for everybody who wants to use \opendap.
+
+  \begin{description}
+    
+  \item{\bf\chapterref{intro,opd}} provides a high-level overview of
+    the entire system.
+
+  \end{description}
+  
+\item{\bf Part II} is for data consumers, that is, the people who want
+  to look at data using the \opendap system.
+
+  \begin{description}
+    
+  \item{\bf\chapterref{opd-client}} shows how to look at data using
+    \opendap.  It includes a section about the theoretical and practical
+    problems of data model translation.  It also explains how to build
+    an \opendap client, which is the program used to look at \opendap data.
+    
+\tbd{Put stuff about using the CS here.}
+%  \item{\bf\chapterref{locator}} introduces and explains the data
+%    locator and the other facilities provided with OPeNDAP to hunt for
+%    data.  It includes information about the server catalog and the
+%    boolean services.
+
+  \end{description}
+  
+\item{\bf Part III} is for data providers, or people who want to make
+  their data available through \opendap servers.
+
+  \begin{description}
+    
+  \item{\bf\chapterref{opd-server}} shows how to use \opendap to
+    make your data available to others.  It explains how to set up a
+    \opendap server to provide \opendap data to \opendap clients, and also
+    contains information about modifying or writing an \opendap server.
+
+\tbd{Put stuff about setting up a CS here.  Also participating in the
+  grand CS.}
+%  \item{\bf\chapterref{register}} explains how to advertise one's data.
+%    It shows how to enter the location of a data set into the data locator
+%    database, how to assemble the data catalog, and discusses the role of the
+%    data provider.
+
+  \end{description}
+  
+\item{\bf Part IV} contains technical information about how \opendap
+  works. This information is provided to people who want to write new
+  libraries to use \opendap through a currently unsupported API.
+
+  \begin{description}
+    
+  \item{\bf\chapterref{data}} contains general information about
+    Data and Data Models.  This is important information to have for
+    people intending to use \opendap to provide data to others.  It covers
+    the \opendap data attribute and data descriptor structures.  The
+    chapter also contains a section outlining the problems associated
+    with Data Model translation.
+
+  \end{description}
+
+\item{\bf Appendices}
+
+  \begin{description}
+    
+  \item{\bf\appref{install}} contains the instructions for installing
+    the \opendap libraries, and software that requires these libraries.
+
+  \item{\bf Glossary} A small but useful collection of terms.
+
+  \end{description}
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\listconventions
+
+\tbd{Are there any other conventions that need illustration?}
+
+% $Log: preface.tex,v $
+% Revision 1.6  2003/09/04 19:42:06  tom
+% DODS->OPeNDAP
+%
+% Revision 1.5  1999/08/30 14:19:28  tom
+% updates prior to DODS release 3.0
+%
+% Revision 1.4  1999/02/04 17:42:13  tom
+% modified to use dods-book.cls and Hyperlatex
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

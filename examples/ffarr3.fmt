@@ -1,0 +1,13 @@
+dBASE_input_data "one"
+headers 1 4 ARRAY["line" 1 to 5 sb 39] OF text 0
+data 5 10 ARRAY["y" 1 to 5 sb 7]["x" 1 to 6] OF float 1
+trailers 41 42 ARRAY["line" 1 to 5 sb 41] OF text 0
+newline 43 43 ARRAY["line" 1 to 5 sb 42] OF text 0
+
+ASCII_output_data "two"
+data 1 4 ARRAY["x" 1 to 6 sb 2]["y" 1 to 5] OF float 0
+/headers 1 6 ARRAY["line" 1 to 5] OF text 0
+/trailers 1 4 ARRAY["line" 1 to 5] OF text 0
+/newline 1 4 ARRAY["line" 1 to 5] OF text 0
+
+

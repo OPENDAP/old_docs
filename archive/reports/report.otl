@@ -1,0 +1,400 @@
+-*-Mode: Outline-*-
+
+$Id$
+
+* Introduction
+
+The Oceanography Society, with funding from NASA and NOAA, organized a
+workshop to explore the issue of developing a distributed data management
+system for oceanographic researchers.  The conference took place at the
+W. Alton Jones Campus of the University of Rhode Island on 29, 30 October and
+1 September 1993. The workshop is to be the first in a series which will
+promote the development of a Distributed Oceanographic Data System
+(DODS). The long term goal of this series of workshops is to develop a system
+which will provide direct access to oceanographic research data over the
+Internet. The first workshop focused on the specification of the system
+requirements as the initial step in the development of the DODS.
+
+Data providers, systems developers and research scientists from government
+agencies, academic institutions and private corporations attended the
+workshop. They provided a comprehensive perspective on the current state of
+oceanographic data management systems as well as the expertise for productive
+discussions. The format of the workshop included both small focus groups,
+tasked to address specific issues in detail, and plenary sessions which
+provided a forum for the general discussion of topics and review of
+presentations made by the focus groups.
+
+This report on the first DODS workshop summarizes the discussions that took
+place at the meeting and the recommended system requirements derived from
+those discussions. The report is organized into 5 sections: Workshop
+Organization, Workshop Goals, Motivation, Vision and Requirements.  An
+overview of these sections follows.
+
+*** Workshop Organization
+
+The first section, `Workshop Organization', details how the workshop was
+structured. The format used was intended to generate both focused in depth
+discussion within small groups and general discussions in which all attendees
+participated.
+
+*** Workshop Goals
+
+In the `Workshop Goals' section we describe the aims of the workshop. These are
+the specific objectives which relate to the long term vision of a distributed
+oceanographic data management capability and the near term actions necessary
+to achieve such a system. At the workshop, addressing these objectives
+involved determining what the system would do functionally.
+
+*** Motivation
+
+In the section `Motivation' we address the question, What is the motivation
+for addressing these goals now? At the workshop, understanding the specific
+challenges relevant to the use of oceanographic research data provided a
+context for clarifying what factors limit or prevent researchers from
+acquiring data. This section identifies the associated issues related to
+these factors which are viewed as impediments to researchers. The desire to
+overcome these impediments was the motivating factor at the workshop.
+
+*** Vision
+
+In the section `Vision' we use a research oceanographer's point of view to
+describe the system capabilities required to deal with data management and
+access. This section describes the broad functional requirements of a system
+which would provide these capabilities. Many of this section's proposed
+functions are in counterpoint to the issues raised in the Motivation Section.
+This section also compares the envisioned systems functions with those
+currently being supported by other systems.
+
+*** Requirements
+
+The last section, `Requirements', is both a summarization and an expansion of
+the requirements developed during the course of the workshop. They are
+presented in a context which emphasizes the oceanographer's needs for
+managing and acquiring distributed data resources for research. These
+requirements will be used as the basis for generation of a system design
+document for the DODS.
+
+* Workshop Organization
+
+The workshop was two and a half days long. The first two days were devoted to
+the discussion of oceanographic data systems and their functions. The half
+day session at the end of the meeting was spent summarizing the previous days
+discussion and synthesizing them into requirements for the development of a
+distributed oceanographic data system. On each of the first two days a single
+topic was used to focus the discussion. The topic for day one was system
+architecture, and for day two it was data objects and communications
+protocol.
+
+Workshop discussions took place both in plenary sessions and focus
+groups. The plenary sessions were used to introduce or summarize one aspect
+of the DODS. Each of main topics for the first and second day of the workshop
+was initially introduced by a plenary session. These introductions framed the
+topic in the perspective of a research oceanographer. Following the morning
+plenary sessions, the workshop participants broke up into focus groups to
+examine the topic from a different and more narrowly focused perspective.
+Afternoon or evening plenary sessions were used to summarize the results of
+each of the focus groups to the workshop as a whole.
+
+There were three focus groups which met on both of the first two days of the
+workshop; data providers, system developers and data users. Each of these
+groups corresponded loosely to the different roles of participants at the
+workshop. A fourth focus group met on the first day of the workshop to
+discuss data objects and protocols in use by existing distributed data
+systems. Each focus group had a group leader who stimulated discussion and
+summarized groups debates for the plenary sessions.
+
+* Workshop Goals
+
+The workshop addressed three specific goals: 1) develop a vision of a
+distributed oceanographic data system (DODS) 2) specify the requirements for
+that system, and 3) define a system architecture that can accommodate the
+requirements. The vision expresses the overall objective of the workshop
+series. It also provides a model that can be decomposed into its separate
+parts for the purposes of planning a development strategy. Specifying the
+system requirements and system architecture are tangible, short term goals
+that are viewed as the necessary first steps in the development of the DODS.
+
+** System Vision
+
+Developing a vision of the DODS at the workshop was important for a number of
+reasons:
+
+ # To define the problem
+
+ # To clarify the solution 
+
+ # To abstract different functions
+
+ # To show the synergism of components
+
+ # To become the foundation of the workshop discussions
+
+The first two points were critical to establishing a common level of
+understanding regarding the purpose of the meeting as a whole. This was a
+hard task considering the diverse perspectives and backgrounds of the
+attendees. For example the term `distributed system' has very different
+meaning to a systems engineer then to person who is principally a data
+provider. Systems engineers who work with computer networks generally think
+of a distributed system as a system where ``... the existence of multiple
+autonomous computers is transparent to the user''[Tanenbaum:89]. Many data
+providers use a much broader definition which includes multiple data systems
+residing on different computers that may be connected via a computer network.
+The vision helped to clarify the meaning of words and concepts through an
+explicit example.
+
+The system vision continuously evolved throughout the course of the workshop,
+as expected. However, considerable emphasis was placed on maintaining a
+research oceanographer's perspective as the focus during the vision's
+development. There was a simple reason for this; The purpose of the workshop
+was to develop a system that will be used! Intentionally focusing on
+researcher's problems helped ensure that the requirements produced by the
+workshop would solve those problems. This problem oriented approach to
+system development leads to tools that solve the identified research problem
+and are immediately useful for that purpose.
+
+Feedback from system developers and data center managers, within the
+framework of the research oceanographer's perspective, was used to constrain
+the system vision. Because the system vision was presented at the beginning of
+the workshop, these discussions were not debates of system applications in
+the abstract. By participating in the development of the vision, meeting
+attendees were induced into exploring new and innovative solutions to
+scientific data management problems. Defining these solutions lead to
+descriptions of the requirements necessary to develop a system.
+
+** System Requirements
+
+The second goal of the workshop was the specification of requirements for
+a system based on the vision. Software requirements describe the external
+behavior of a system. The requirements for the DODS are derived from the
+discussions that took place at the workshop. Most were formulated within the
+focus groups and then presented in the plenary sessions for general
+discussion and review. This process was very dynamic since there were
+significant interdependencies between how one focus group's requirement would
+modify the issues another focus group was addressing. Therefore, the plenary
+sessions served as a forum to debate discrepancies between different focus
+group approaches. Appendix I gives the raw requirements as extracted from the
+meeting. The raw requirements were used to develop a formal set of
+ requirements which are presented below. These requirements are the basis for
+the development of the DODS design plan, which is to be generated in the near
+future.
+
+** System Architecture
+
+The final goal of the workshop was to specify a system architecture which
+would support the DODS vision and satisfy the requirements. The task of
+recommending an architecture was left to the system developers focus group.
+Defining the system architecture, (really a design issue since it prescribes
+how the system works), did provide another tangible dimension for the
+workshop's development of the system vision and requirements. The system
+architecture must be compatible with current systems that would participate
+in DODS and be capable of accommodating future systems (large and small) as
+based on the system vision. developing a system architecture increased the
+likelihood that the DODS will work well with existing systems. This is an
+important consideration if DODS is to be successful.
+
+The system architecture also helped to define the boundaries of different
+components of the system. This made it possible to resolve where in the
+system specific functions might take place. In some instances this provided
+relevant feedback to the requirements specification process. For example,
+whether data manipulation functions, such as file decompression, takes place
+at the remote or local CPU and the trade off in each instance.  Appendix II
+contains the system architecture model that was generated at the workshop.
+
+NB: I think we should be VERY careful about including this in the report. It
+was just a tool to motivate discussion. What we design may look very
+different. jhrg
+
+* Motivation
+
+** Characteristics of research oceanography
+
+In order to understand the motivation for the workshop it is necessary to 
+understand some of the general characteristics of research oceanography as
+well as how scientists in the field do their research. 
+
+Most research oceanographers are, on balance, data generators. They collect
+their own data, calibrate, process and analyze it. They are intimately
+familiar with all aspects of their data, its strengths and weaknesses. In
+addressing their research problems they are motivated to create the highest
+quality data sets in order to extract the maximum amount of relevant
+information from them. As a result, they are constantly trying to look at
+their data in different and innovative ways. Because of their hands-on
+experience, most researchers are aware of the investment necessary to do high
+quality research and the value placed on high quality data.
+
+Research oceanography is a dynamic and rapidly evolving field.  The
+complexity of oceanographic processes and the inherent difficulty in
+monitoring these processes comprehensively, have inspired oceanographers to
+continually pursue advances in instrumentation, computational technologies
+and visualization methods. The result has been significantly larger volumes
+of data, higher quality data and new types of data. Each of these new data
+sets provides a view of some physical structure or process. However, learning
+about and then successfully managing and analyzing these new data are an
+increasing burden on the scientist. The current advances in computer
+technology help the researcher handle the increased load of data
+processing. It is rare, however, for a single researcher to have both the
+expertise and the resources necessary to collect, process and analyze many
+data sets. 
+
+Therefore, researchers often rely on others to help them when experimenting
+with multiple data sets. This type of collaborative arrangement is
+particularly important to the programs that are looking at the coupling of
+large scale and long term oceanographic and atmospheric processes (WOCE,
+TOGA/COARE, TOGA/TAO, JGOFS). In all of these programs a coordinated and
+collaborative effort is required from the participating scientists for their
+individual and collective success. Outside of these large programs mutually
+beneficial exchanges of data resources are common within the oceanographic
+research community. Oceanographers prefer to deal with data sets that are
+acquired from colleague they know and whose knowledge about the quality of
+the data they trust when needing to work with data that they themselves have
+not collected and processed.
+
+Current scientific trends have augmented oceanography's use of large
+multi-disciplinary data sets. Government agencies, particularly NOAA and NSF,
+have placed significant emphasis on understanding the global environment.
+Recent research initiatives from these agencies focusing on climate and
+global change include WOCE, TOGA and JGOFS. The global scale and long term
+scope of these complex research problems requires a collaborative approach to
+the management of large quantities of data. In light of these factors,
+oceanographic researchers both need access to data collected by other
+scientists and they need to work closely with those scientists in the
+analysis and integration of data.
+
+Given the above perspective of research oceanographers what issues effect
+productivity? Researchers want ready access to high quality data. While it is
+recognized that individual scientists are the best source of high quality
+data and that many important and useful oceanographic data are held by them,
+most efforts at providing data to the research community only recognize large
+centralized data centers as data providers. These efforts ignore the
+collaborative nature of oceanographic research. In the majority of cases data
+centers do not provide their data on-line but rather distribute it either on
+tape or CD-ROM through the mail. However, the Internet provides the pathway
+for researchers to instantaneously access resources all over the world from
+their own systems. Oceanographic data should be accessible over the Internet.
+
+Researchers often spend a significant part of their resources transforming,
+preprocessing and performing quality registration of data before any of that
+data can be used in their work. This is particularly onerous if one considers
+that the similar kinds of tasks must be done by each researcher who wishes to
+use the data. Current systems attempt to solve this problem by providing data
+on many forms of media -- CD ROM, magnetic tape, etc. However, this does not
+address the fundamental problem; it is a mass market solution which is
+inherently unsuited to these types of data.
+
+Scientific data sets are each unique. It is best if data are kept close to
+the researcher who first produced them. As that researcher continues to work
+with the data its value as a research tool increases many times over. Data
+distribution schemes which sever the connection between the researcher and
+the data reduce the potential value of data. But, how does one design a
+system that maintains the researcher-data connection and yet still provide
+access to the data for many other scientists?
+
+Advances in hardware, software and networking technologies can now provide
+the basis for a truly distributed data management system. Workstations with
+large capacity hard drives are very affordable and sit on many researcher's
+desks. These provide the horsepower and storage capacity necessary to handle
+large data sets. The advent of the Internet has provided the researcher's
+workstation with a link to a phenomenal resource base - all of the other
+workstations connected to the world wide Internet. Anonymous ftp and network
+information resource tools such as Gopher, WAIS and World-Wide Web, make it
+possible acquire, locate or get information about all kinds of resources at
+your desk. The openness of the Internet has significantly shifted how
+resources can be acquired as well as who provides resources. Small systems
+and individuals are making available, free of charge, resources that are of
+value to the research community as a whole. For example, data sets that are
+relevant to oceanographic research are being made available from the
+SANDDUNES system at the University of Colorado, the University of Hawaii and
+the XBROWSE system at the University of Rhode Island. However, these system
+are either too general in their scope (e.g., gopher) or too narrowly focused
+(xbrowse) to be used for scientific data.
+
+The DODS system is intended to address what are viewed as critical
+limitations of the current capabilities of oceanographic data management
+systems. In light of the research funding emphasis on global change,
+there is an even greater need to address these limitations now. A vision of
+what DODS might be is presented in the next section.
+
+* Vision
+
+A researcher, from the workstation on his desk, constructs and submits a
+query to the DODS.  He is interested in locating and acquiring a subset of a
+particular oceanographic data set (oxygen data acquired from bottle data or
+oxygen probes attached to CTD instruments) and specifies a region (North
+Atlantic Ocean north of 45N) and time of interest (1975 to present) in his
+query.  The DODS locates versions of the data set on two different systems.
+One is a large national archive center which holds all of the historical data
+but is known to be missing most recently collected data.  The other system is
+scientist's workstation at an oceanographic academic institution.  The
+scientist has been involved with an ongoing multi-national study of the
+region and has on his system oxygen data that he collected and processed as
+well as data collected by the foreign oceanographers collaborating with him
+in the study.  The DODS accesses both systems and retrieves those data from
+the systems that satisfy the researcher's query.  The DODS automatically
+removes any redundant data from the two systems data retrievals and returns a
+single unified data set to the researcher's local system.  The researcher has
+previously specified to the DODS that results from his query are to be
+combined with his own XBT data and directed into his analysis and plotting
+application which generate monthly mean maps for the study of ventilation
+events in the North Atlantic and the creation of 18 degree mode water
+masses.
+
+The above science scenario depicts a system which supports the location and
+acquisition of on-line oceanographic data sets held at both large centralized
+archives and by individual scientists. The researcher uses the system to
+directly import data from both local and remote sources to his own processing
+and analysis applications. From the user's view the system's data are
+available in a well defined and consistent structure which is easily
+transformed or sub-sampled to accommodate the user's research. In addition,
+the system supports a user application library making it flexible and
+extensible. Finally, the system is easy to use and designed to make it easy
+and advantageous for the researcher to install the system for accessing and
+managing his own data.
+
+The above vision of a Distributed Oceanographic Data System which emerged
+from the workshop proposes a fundamentally different approach to how
+researchers manage and access data resources.  Below we contrast this
+approach to the current state of scientific data managements systems and
+their capabilities.
+
+Very few systems currently support direct access to data. Most systems
+provide a data location function coupled with a data ordering function. In
+these systems the data is stored off-line and once ordered is sent to the
+user through the mail. DODS will provide an integrated locate and access
+functionality within a single application interface. When the user submits a
+query the DODS locates and acquires the data as a single procedure from the
+perspective of the user.  The returned data can be directed to a user's
+application or dumped to a file on the user's system.  No additional steps
+are required to get the data. 
+
+The large data management systems that are being developed for the earth
+science community have recognized only the large centralized data archives as
+data providers. However, scientists are a prime source of high quality data
+sets. The DODS will emphasize the role of scientists as data providers and
+be developed to support equal access to their data as well as data held in
+centralized archives. In addition, the DODS provides a view of data resources
+that are independent of their location.  Both local and remote data sources
+are accessed using the same commands.  This perspective of integrated local
+and remote data resources is another unique attribute of the DODS.  
+
+Researcher's process and analyze data using many different kinds of
+applications. Currently, the tasks of data acquisition and data processing
+are distinct and independent processes. The DODS will integrate these two
+tasks so that details of accessing resources are hidden from the
+researcher. DODS will include an application program interface (API) library
+that can be customized to import data resources into a user's own
+application. The API will manage data resources using a structure which
+indicates what to request and how to request it and returns the requested
+resources, regardless of source, in a consistent form to the user's
+application. Thus while the DODS transforms how a researcher acquires data it
+is, at the same time, integrated with the tools and applications that the
+researcher is familiar with for doing his research.
+
+The DODS will be the sum of its parts. After its initial development and
+distribution, further development will under user community management. It
+is intended that the system's components will be designed so that it will be 
+easy for researchers to modify them to their own unique requirements. This
+will permit the system to be used in new ways and will encourage innovations. 
+
+The challenge which the workshop participants were asked to address was, 
+`Given the above vision of the Distributed Oceanographic Data System, what
+are the requirements necessary to make this vision a reality?'

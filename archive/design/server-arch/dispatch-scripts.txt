@@ -1,0 +1,26 @@
+
+	$Id$
+
+This documents the CGI dispatch mechanism. Some of the information in this
+document is old (most, in fact) but is scattered throughout source code; I am
+writing this so that all documentation on the CGI mechanism can use one file
+for a reference. The CGI dispatch scripts and filter programs should match
+the spec laid out in this file.
+
+The dispatch scripts should recognize 5 extensions: das, dds, dods, info and
+ver. Each are separated from the filename part of a URL by a dot. The
+extensions cause the server to return the DAS, DDS, Data, Info and Version
+objects respectively. NB: The Info `object' is an HTML document and the
+Version object is plain text. In addition, each dispatch script should
+recognize the pseudo-filename `version' as a request for the Version object.
+
+Version information will be return using the -v option of the data filter
+mated with the particular dispatch script (e.g., for nph-nc that would be
+nc_dods). When requesting version information using the pseudo-filename
+`version', the program will return the version of the server (both the number
+of the dispatch script and the core software used to build the filter
+programs). When using the extension `.ver' the version returned will include
+the version of the dataset as well. This means that the extension must be
+used in conjunction with a valid dataset `filename'.
+
+jhrg

@@ -1,0 +1,443 @@
+\begin{theindex}
+{\Huge\bfseries\sffamily\hskip-2pt Symbols}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item $[]$, 38
+  \item *, 75
+  \item ., 38
+  \item \#, 80, 83
+  \item \&, 37
+  \item {\tt  *}, 38, 39
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt A}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item access control, 17
+  \item alias, \emph{84}
+  \item ancillary data, 69, \emph{79}, 80, 81
+  \item API, 25, 66, 69
+    \subitem data output functions, 31
+    \subitem list of OPeNDAP\xspace  supported, 27
+    \subitem native, 32
+  \item Application Program Interface, \see{API}{25}, 66
+  \item architecture, 3
+    \subitem server, 48
+  \item array, 72
+    \subitem constraint expression, 37
+    \subitem data type, 72
+    \subitem hyperslab, 72
+    \subitem selection, 37
+    \subitem stride, 72
+  \item {\tt  .asc}, 18
+  \item ASCII data service, 18
+  \item attribute
+    \subitem alias, 84
+    \subitem global, 84
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt B}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item boolean functions, 37
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt C}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item caching
+    \subitem client, 93
+  \item catalog service, \emph{11}
+  \item CGI, 16
+  \item character
+    \subitem special, \see{regular expression}{42}
+  \item character strings
+    \subitem matching, 41
+  \item client, 3
+    \subitem caching, 93
+    \subitem initialization, 93
+    \subitem OPeNDAP\xspace  , 25
+    \subitem troubleshooting, 22
+    \subitem using, 22
+  \item client initialization, 93
+  \item Common Gateway Interface, \see{CGI}{16}
+  \item compression
+    \subitem of data, 78
+  \item configuration
+    \subitem proxy server, 94
+    \subitem server, 54
+    \subitem system, 22
+    \subitem user programs(relinking), 29
+  \item constraint expression, 8, \emph{34}
+    \subitem arrays, 37
+    \subitem boolean functions, 37
+    \subitem combining clauses, 37
+    \subitem examples, 36
+    \subitem function, 39
+    \subitem hyperslab, 37
+    \subitem optimization, 42
+    \subitem parse order, 42
+    \subitem projection, 34
+    \subitem selection, 34
+    \subitem stride value, 37
+    \subitem syntax, 34
+    \subitem URL, 39
+  \item constraint expressions
+    \subitem functions, 39
+  \item constructor types, 71
+  \item converting to OPeNDAP\xspace  , 29
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt D}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item DAP, \see{Data Access Protocol}{69}
+  \item DAS, 80
+    \subitem comments, 83
+  \item {\tt  .das}, 18
+  \item data
+    \subitem ancillary, 79
+    \subitem compression, 78
+    \subitem descriptor, 79
+    \subitem documenting, 54
+    \subitem intermediate representation, 69
+    \subitem irregular spacing, 74
+    \subitem model, 64
+    \subitem output functions, 31
+  \item Data Access Protocol, 32, 69
+  \item data attribute service, 18
+  \item Data Attribute Structure, \emph{69}
+  \item Data Description Structure, \emph{69}
+  \item data descriptor service, 18
+  \item Data Descriptor Structure
+    \subitem example, 36
+  \item data dictionary
+    \subitem JGOFS, 49
+  \item data format
+    \subitem incompatible, 44
+  \item data model, \emph{64}
+  \item data requests
+    \subitem caching, 93
+  \item data search
+    \subitem optimization, 42
+  \item data security, 17
+  \item data service, 18
+  \item data translation, \see{translation}{44}
+  \item data type
+    \subitem array, 72
+    \subitem grid, 74
+    \subitem list, 72
+    \subitem sequence, 73
+    \subitem structure, 73
+  \item Dataset, 79
+  \item dataset, 73
+  \item Dataset Attribute Structure, \emph{80}
+  \item Dataset Description Structure, \emph{79}
+  \item Dataset Descriptor Structure, 66
+  \item date
+    \subitem expiration, 94
+  \item DDS, \see{Dataset Descriptor Structure}{79}
+    \subitem comments, 80
+  \item {\tt  .dds}, 18
+  \item dereference, 39
+  \item disk space
+    \subitem recovering, 23
+  \item distributed data, 5
+  \item distribution directory, \see{{\tt  DODS\_ROOT}}{30}
+  \item documenting data, 54
+  \item DODS
+    \subitem configuring, 29
+    \subitem conversion, 29
+    \subitem writing new programs, 32
+  \item {\tt  .dods}, 18
+  \item DODS\_GUI, 23
+  \item DODS\_GUI\_INIT, 23
+  \item DODS\_ROOT, 91
+  \item DODS\_USE\_GUI, 23
+  \item {\tt  .dodsrc} file, 93
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt E}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Emacs, 42
+  \item entry points, \emph{48}
+  \item environment variable
+    \subitem DODS\_ROOT, 30
+  \item environment variables, 22
+    \subitem DODS\_GUI, 23
+    \subitem DODS\_GUI\_INIT, 23
+    \subitem DODS\_ROOT, 23
+    \subitem DODS\_USE\_GUI, 23
+  \item error system, 23, 58
+  \item evaluation
+    \subitem lazy, 42
+  \item example
+    \subitem DDS, 36
+  \item expect
+    \subitem library, 29
+  \item expiration date, 94
+  \item external representation, 76
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt F}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item file name
+    \subitem part of URL, 16
+    \subitem use URL instead, 26
+  \item files
+    \subitem temporary, 23
+  \item format
+    \subitem data, 44
+  \item ftp, 5, 90
+  \item function
+    \subitem {\tt  info} service, 39
+    \subitem usage, 39
+  \item functions, 39
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt G}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item gcc, 30
+  \item geturl, 55
+  \item global attribute, \emph{84}
+  \item GNU, 22
+  \item graphic user interface, 57
+    \subitem architecture, 57
+    \subitem error system, 23, 58
+  \item Grid, 74
+  \item grid
+    \subitem data type, 74
+  \item GUI, \see{graphic user interface}{57}
+  \item GUI manager, 22, \emph{23}, \emph{57}
+    \subitem initialization, 23
+    \subitem turning off, 23
+  \item gzip, 22, 78
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt H}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item help service, 19
+  \item host name, 16
+  \item {\tt  .html}, 18, 19
+  \item httpd, 16
+  \item hyperslab, \emph{37}, \emph{66}, \emph{72}
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt I}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item info
+    \subitem service, 54
+  \item {\tt  .info}, 19
+  \item info service, 19
+  \item {\tt  info} service, 39
+  \item initialization
+    \subitem client, 93
+    \subitem GUI manager, 23
+  \item initialization file, 93
+  \item installation
+    \subitem server, 54
+  \item installing
+    \subitem server, 53
+  \item intermediate data representation, 69
+  \item Internet connection
+    \subitem required for OPeNDAP\xspace  , 22
+  \item Internet protocol, 16
+  \item irregular data, 74
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt J}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item JGOFS
+    \subitem data dictionary, 49
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt L}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item lazy evaluation, 42
+  \item libraries
+    \subitem necessary for OPeNDAP\xspace  , 29
+  \item libstdc++, 29, 99
+  \item limiting access to data, 17
+  \item linking
+    \subitem problems, 30
+  \item linking\nobreakspace  {}client programs with OPeNDAP\xspace  , 
+		29
+  \item List
+    \subitem data type, 72
+  \item list, 72
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt M}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item manager
+    \subitem GUI, 23, 57
+  \item master directory, \see{{\tt  DODS\_ROOT}}{30}
+  \item matching character strings, 41
+  \item member(), 39
+  \item message
+    \subitem error, 23, 58
+  \item metadata, \emph{79}
+  \item model
+    \subitem data, 64
+  \item Mosaic, 25
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt N}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item native API, 32
+  \item necessary software, 22
+  \item Netscape Navigator, 25
+  \item new programs
+    \subitem writing, 32
+  \item nth(), 39
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt O}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item OPeNDAP\xspace  client, 25
+  \item OPeNDAP\xspace  server
+    \subitem {\tt  info}, 39
+    \subitem functions, 39
+    \subitem usage, 39
+  \item OPeNDAP\xspace  services, 49
+  \item operators, 75
+  \item optimization, 42
+  \item OR, 37
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt P}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item parse order
+    \subitem constraint expression, 42
+  \item password
+    \subitem in URL, 17
+  \item PATH, 22
+  \item precedence, 42
+  \item problems
+    \subitem linking, 30
+    \subitem size, 31
+  \item progress indicator, 57
+  \item projection, 34, \emph{34}
+  \item Protocol
+    \subitem Data Access, 69
+  \item protocol
+    \subitem data access, 32
+    \subitem Internet, 16
+  \item proxy server, 94
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt Q}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item query optimization, 42
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt R}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item re-link, \see{linking}{29}
+  \item regex, see regular expression, 41
+  \item regular expression, 41
+    \subitem syntax, 41
+  \item remote data, 5
+  \item required software, 22
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt S}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item search optimization, 42
+  \item security
+    \subitem server, 17
+  \item selection, \emph{34}
+    \subitem arrays, 37
+    \subitem hyperslab, 37
+    \subitem stride value, 37
+  \item sequence
+    \subitem data type, 73
+    \subitem state, 73
+  \item server, 3
+    \subitem architecture, 48
+    \subitem configuration, 54
+    \subitem installing, 53
+    \subitem proxy, 94
+    \subitem security, 17
+    \subitem services, 49
+    \subitem testing, 55
+  \item Service
+    \subitem Usage, 39
+  \item service, 49
+    \subitem info, 54
+    \subitem WWW Interface, 18, 19
+  \item services, 18
+    \subitem helper programs, 49
+  \item shark
+    \subitem sighting, 41
+  \item sighting
+    \subitem shark, 41
+  \item size
+    \subitem of OPeNDAP\xspace  programs, 31
+  \item software
+    \subitem required, 22
+  \item special character, \see{regular expression}{42}
+  \item startup file, 93
+  \item state, \emph{73}
+  \item stdc++, 29, 99
+  \item stride, \emph{37}, \emph{72}
+  \item structure
+    \subitem data type, 73
+  \item syntax
+    \subitem constraint expression, 34
+    \subitem regular expression, 41
+  \item system configuration, 22
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt T}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Tcl, 22
+    \subitem interpreter subprocess, 57
+    \subitem library, 29
+  \item temporary files, 23
+  \item testing an OPeNDAP\xspace  server, 55
+  \item Tk, 22
+  \item {\tt  /tmp}, 23
+  \item {\tt  tmpnam()}, 23
+  \item translation
+    \subitem introduction, 44
+  \item transmission format, 70
+  \item transport, \see{Data Access Protocol}{69}
+  \item troubleshooting, 22
+    \subitem linking, 30
+    \subitem size of executable, 31
+  \item type constructors, 66
+  \item typographic conventions, vii
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt U}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Uniform Resource Locator, \see{URL}{16}, \see{URL}{25}
+  \item URL, 16, 25
+    \subitem embedding username in, 17
+    \subitem in constraint expression, 39
+    \subitem instead of file name, 26
+    \subitem optimization, 43
+    \subitem password, 17
+    \subitem suffix, 17
+  \item usage service, 39
+  \item user programs
+    \subitem configuring, 29
+  \item username
+    \subitem embedding in URL, 17
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt V}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item variable
+    \subitem environment, 23, 30
+  \item {\tt  .ver}, 19
+  \item version service, 19
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt W}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item web browser, 25
+  \item {\tt  wish} interpreter subprocess, 57
+  \item World Wide Web
+    \subitem library, 29
+  \item writing new programs, 32
+  \item WWW Interface, 56
+  \item WWW Interface\ service, 18, 19
+
+\end{theindex}

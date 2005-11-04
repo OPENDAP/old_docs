@@ -1,0 +1,841 @@
+
+% A SRS for the Ancillary Information/Metadata Services.
+% 10/15/2001 jhrg
+%
+% $Id$
+
+\documentclass{article}
+\usepackage{psfig}
+\usepackage{changebar}
+\usepackage{acronym}
+\usepackage{gloss}
+\usepackage{vcode}
+
+% Note: to get the glossary to work, run bibtex on the *.gls.aux file,
+% then latex, then bibtex *.gls, then latex. Also, make sure to set
+% your BST and BIBINPUTS environment variables so that the BST and BIB files
+% will be found.
+\makegloss
+
+% Change paragraph typesetting; eliminate indenting and add more space between
+% paragraphs.
+\setlength{\parindent}{0em}     % Amount of indentation
+\addtolength{\parskip}{1ex}     % Vertical separation
+\setcounter{secnumdepth}{4}     % Put \paragraph in TOC
+\setcounter{tocdepth}{4}
+
+
+\begin{document}
+
+\title{DODS Ancillary Information Service SRS, Draft}
+\author{James Gallagher\thanks{The University of Rhode Island,
+    jgallagher@gso.uri.edu}}
+\date{$Revision$ \\ Printed \today}
+
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+This is the \acl{SRS} for the \acl{DODS} \acl{AIS}. 
+
+This document conforms to the IEEE~830-1998 \ac{SRS} recommended practice.
+Since the recommended practice covers a wide range of possible projects, some
+of the information in it is not appropriate for this part of \acs{DODS}.
+Where that is the case, that section has been marked N/A.
+
+\textbf{Bold face} type is used to indicate a word or phrase which can be
+found in the glossary.
+
+\emph{Emphasized} text contained in square brackets ([]) is used to indicate
+an editorial comment, especially about the information that should be
+provided in a part of the \ac{SRS}.
+
+\subsection{Purpose}
+This \ac{SRS} describes the requirements for the \ac{AIS} and changes in the
+requirements for other pieces of already existing software.
+
+The intended audience is the entire developer community of the \acl{DODS}.
+
+\subsection{Scope}
+\label{sec:scope}
+
+The software to be developed is the \ac{AIS} for \acs{DODS}. Some existing
+software will need modification.
+
+The overriding goal of development of the \ac{AIS} is to achieve level 3
+interoperability at the data level in the DODS environment. That is, the
+\ac{AIS} will provide semantically meaningful machine-to-machine
+interoperability for the use of data (as opposed to the discovery of
+datasets) with distributed, heterogeneous data sets accessed via the DODS DAP
+
+To achieve the goal, the \ac{AIS} will provide ways for users to add and
+change the Attributes of a dataset. It will also make it possible for users
+to add new Variables to a dataset. Finally, the \ac{AIS} will be designed so
+that users may add this information dirrectly in a URL which references a
+dataset or by creating a new virtual dataset using an \emph{\ac{AIS} server}.
+
+The motivation for the \ac{AIS} stems from two observations made
+regarding \ac{DODS}:
+\begin{enumerate}
+\item Complete and consistent syntactic and semantic use 
+   metadata are required to achieve Level 3 interoperability.
+
+\item We will not be able to achieve complete and consistent
+   semantic use metadata by adding information at only data server locations.
+\end{enumerate}
+
+\subsection{Overview}
+
+The remainder of this document is organized as follows:
+\begin{enumerate}
+\item Section~\ref{sec:overall} provides background for the specific
+  requirements and relates those requirements to the rest of DODS.
+\item Section~\ref{sec:specific} lists the specific requirements for the
+  \ac{AIS}.
+\item Following Section~\ref{sec:specific} are a list of acronyms and
+  abbreviations, a change log, a glossary and references.
+\end{enumerate}
+
+% Section 2 ---------------------------------------------------------------
+
+\section{Overall Description}
+\label{sec:overall}
+
+\emph{[This section of the SRS should describe the general factors that
+  affect the product and its requirements. This section should not state
+  specific requirements. Instead, it provides a background for those
+  requirements, which should be defined in Section~\ref{sec:specific}.]}
+
+\cbstart
+\subsection{Product functions}
+The \ac{AIS}:
+\begin{enumerate}
+\item MUST provide a way to change for consistency or to add
+   for completeness Attributes (translational use metadata)
+   of or to existing datasets.
+
+\item MUST provide a way to add for completeness (independent)
+   Variables to existing datasets. 
+
+\item MUST support making these changes on the computer serving
+   the data, on the client computer or on any other computer 
+   on the network.
+
+\begin{enumerate}
+\item SHOULD support users making those changes without running 
+   a network server.
+\end{enumerate}
+
+\item Access to an augmented dataset MUST not be logically different 
+   from a plain dataset. Clients should be able to use URLs which 
+   reference both types of datasets interchangeably.
+
+\item The user MUST be allowed to make use of any combination of 
+   AIS DDSs and/or DASs to modify the DDS and/or DAS of a 
+   requested data set.
+
+\item There MUST be a way to associate public sites providing 
+   additions/changes to a given dataset. 
+
+\item Legacy clients MUST work with AIS URLs, with the possible exception of
+  those URLs which refer to local AIS resources.
+
+\item URLs which contain AIS reosurces SHOULD NOT break legacy servers if at
+  all possible.
+
+\end{enumerate}
+\cbend
+
+\subsection{Product perspective}
+
+\cbstart
+The \acl{AIS} will meet the goals of Section~\ref{sec:scope} by providing a
+way to augment the content of the \ac{DAS}, \ac{DDS} and \ac{DataDDS} objects
+returned by \ac{DAP} servers. Together these objects model a data source as a
+collection of variables, each of which has a name, a datatype, one or more
+values and a collection of attributes.\footnote{See the DAP
+  Specification~\cite{gallagher:dap-spec} for a more detailed description of
+  these objects and the other possible requests that can be made to a DAP
+  data source.} The \ac{AIS} provides a way for users to add information to
+these responses to tailor their content to a particular use.
+\cbend
+
+The following sections describe how the software operates within
+the constraints imposed by the existing \ac{DODS}/\ac{DAP} software.
+
+\subsubsection{System interfaces}
+\paragraph{Textual representation of the \ac{DAS} and \ac{DDS} objects}
+The text representation of the \ac{DAS} and \ac{DDS} objects are described in
+(Section~\ref{sec:ui:text-das-dds}), under the category of \emph{User
+  Interfaces}. However, since these will be used by the software which builds
+these objects, they are also system interfaces.
+
+\paragraph{The \ac{DODS} \ac{URL}}
+The \ac{DODS} \ac{URL} (see Section~\ref{sec:ui:url}), like the textual
+\ac{DAS} and \ac{DDS} objects, plays a dual role as both system and user
+interface. \cbstart This is true because the \ac{DODS} software itself uses
+\ac{URL}s and because users at varioues levels ``write URLs.''\footnote{I'm
+  using \emph{users} in a broad sense; it includes people who set up \ac{AIS}
+    servers as well as people who cut and paste URLs using a web browser.}
+  \cbend
+
+\paragraph{Augmenting the \ac{DDS} object}
+\label{sec:augment-dds}
+The \ac{DDS} grammar will need modification in order to add virtual
+variables. These variables will get their values either from other variables
+or attributes already in the dataset or from external files. The grammar for
+the \ac{DDS} object's external representation will need modification. See
+Section~\ref{sec:DDS}.
+
+\subsubsection{User interfaces}
+\label{sec:ui}
+
+\paragraph{The \ac{DODS} \ac{URL}}
+\label{sec:ui:url}
+Clients of \ac{DODS} must be able to specify, in the \ac{URL} that references
+a data source, which \ac{AIS} resource(s) should be used with that data
+source . This is the most direct way to support all possible interfaces to
+DODS. This is listed under \emph{User Interfaces} because it is possible that
+users will type these into a web browser, script file, \emph{et~cetera}.
+
+\cbstart
+\paragraph{The AIS Server}
+\label{sec:ais-server}
+The \emph{AIS Server} is a DODS server that provides access to a virtual
+dataset which includes \ac{AIS} resources. This server provides a way for
+people to use the \ac{AIS} without having to explicitly embed \ac{AIS}
+resource references in  URLs. The \ac{AIS} Server URL is a regular DODS URL;
+the AIS Server hides the additional complexity of explicit AIS resource
+references. \cbend
+
+\paragraph{The text representation of the \ac{DAS} and \ac{DDS}}
+\label{sec:ui:text-das-dds}
+Information will be provided to the \ac{AIS} using text \cbstart documents.
+These documents may be files or they may be the result of dereferncing a URL.
+\cbend The \ac{DAP} uses a textual representation for the external form of
+the \ac{DAS} and \ac{DDS} objects. This representation will be used to supply
+the extra information about specific instances of these objects that
+constitute the information accessed through the \ac{AIS}.
+
+\paragraph{Graphical User Interfaces}
+Various graphical user interfaces which have been developed for \ac{DODS} or
+have been modified to take advantage of \ac{DODS} \cbstart may need
+modification to take full advantage of the \ac{AIS}. This will depend on the
+particular GUI in question, describing how each should be enhanced is beyond
+the scope of this \ac{SRS}.\cbend
+
+\subsubsection{Software interfaces}
+\paragraph{DAP~2.0} 
+The \ac{DAP} protocol defines the \ac{DAS}, \ac{DDS} and \ac{DataDDS} objects.
+\paragraph{HTTP~1.0} 
+\ac{DODS} clients and servers use \ac{HTTP} for all their network I/O.
+
+\subsubsection{Operations}
+\paragraph{User defined \ac{AIS} files} 
+Users may write their own \ac{AIS} resources. This will require resources from
+\emph{User Support}.
+
+\paragraph{Collections of \ac{AIS} resources should be listed}
+Data users (people principally interested in accessing data using the
+\ac{DAP}) will need to be able to locate \ac{AIS} resources or \ac{AIS}
+servers. It seems likely that various groups or individuals will create
+\ac{AIS} resources for the groups of data sources in which they are
+interested. \acl{AIS} resource collections should be listed, if their
+authors agree to it, so that other users may find them.
+
+\subsubsection{Site adaptation requirements}
+Users will need to upgrade their clients \cbstart to use local \ac{AIS}
+resources. \cbend
+
+Providers may need to upgrade their servers.
+
+\subsection{User characteristics}
+There is a range of possible users of the \ac{AIS}. One group of user will be
+involved in writing the \ac{AIS} resources. They will be looking at data
+sources, seeing what information they contain and thinking about the types of
+additional information that would make the data source more broadly useful.
+In many cases these users will be people using the \ac{DAP} to get data. They
+will have a good idea of the type of information that needs to be added to
+the data source to make its contents more useful to them. 
+
+Some \ac{AIS} users will be involved in adding functions to servers so that
+derived variables can be accessed. These users are essentially an extension
+of the programmers who will implement this SRS and will be the most technical
+group of users.
+
+Another type of user will be solely interested in accessing data and will
+never create their own \ac{AIS} resources. Some of these users will be aware
+of the \ac{AIS} because they are writing URLs that appear in scripts or in
+configuration files for analysis programs. Others may access data through web
+systems that hide the use of the \ac{AIS}.\footnote{Note that even though
+  some users might not know they are using the \ac{AIS}, its use can be
+  traced by going back to client programs and looking at the URLs, which will
+  contain the references to any \ac{AIS} resources used \cbstart or by
+  getting information from an \ac{AIS} Server about the \ac{AIS} resources it
+  uses\cbend.}
+
+Most users of \ac{DODS} will not want to write \ac{AIS} resources. Writing
+this type of information so that various standards and conventions are
+satisfied is tedious.
+
+\subsection{Constraints}
+\emph{[This section lists any other items that may limit the developer's
+  options.]}
+
+Performance should be comparable to plain access. Response time 
+increase should be minimal. 
+
+Changes to the current URL syntax should be limited. \cbstart Access to a
+\ac{DAS} object currently does not use a \ac{CE}, however, the \ac{AIS} may
+add this. The `function call' syntax already present in the DODS URL's syntax
+should be used; another syntax should not be added. It's OK if the \ac{AIS}
+adds a special function which both clients and servers can look for.\cbend
+
+The AIS should use as much of the WWW/HTTP infrastructure as possible,
+building its own infrastructure only when necessary. This will lead to a
+system that is first and foremost `document based,' which will make
+deployment and testing simpler.
+
+\subsection{Assumptions and dependencies}
+\label{sec:assumptions}
+The system designers can assume that the following are true:
+\begin{enumerate}
+  
+\item People providing \ac{AIS} resources for use by others expect to install
+  some sort of network server software (e.g., httpd) \cbstart or to upgrade
+  existing servers.\cbend
+
+\item The \ac{DAP} specification (version 2.0) will be changed to allow
+  \ac{AIS} resources to be referenced in a \ac{DODS} \ac{URL}.
+
+\cbstart
+\item A new server will be written to handle the \ac{AIS} Server operations.
+\cbend
+\end{enumerate}
+
+% Section 3 ---------------------------------------------------------------
+
+\section{Specific Requirements}
+\label{sec:specific}
+\emph{[This section of the \ac{SRS} lists all of the software requirements to
+  a level of detail sufficient to enable designers to design a system to
+  satisfy those requirements, and testers to test that the systems satisfies
+  those requirements.]}
+
+This section is organized using template A.5 of IEEE STD 830-1998,
+organization by feature.
+
+\subsection{External interfaces}
+\subsubsection{User interfaces}
+Each of the following user interfaces have been discussed
+previously in Section~\ref{sec:ui}. Note that these are also system
+interfaces. 
+\begin{enumerate}
+\item The \ac{DODS} \ac{URL}~\cite{gallagher:dap-spec}.
+\item The text representation of the \ac{DAS} and \ac{DDS}
+  objects~\cite{gallagher:dap-spec}.
+\item The \ac{AIS} resource collection configuration file for remote
+  resources. 
+\end{enumerate}
+
+\subsubsection{Software interfaces}
+\label{sec:si}
+Software to process \ac{DODS} \ac{URL}s is located on both the client- and
+server-side of the system in object-oriented class libraries. Two classes,
+one each for clients and servers, will be principally involved in processing
+\ac{AIS} references embedded in a \ac{URL}.
+\begin{enumerate}
+\item \texttt{Connect}. The \texttt{Connect} class handles the task of
+  dereferencing a \ac{DODS} \ac{URL} and processing the response,
+  creating other classes and invoking their methods as needed. The
+  implementation of this class will require modification for local \ac{AIS}
+  resource access.
+\item \texttt{DODSFilter}. The \texttt{DODSFilter} class processes the
+  request for a given object. The class uses information passed from the
+  \texttt{DODS\_Dispatch.pm} Perl module to build an object and generate the
+  response using that object. This object will require modification for
+  server-side \ac{AIS} resource access.
+\end{enumerate}
+
+In addition, the \ac{DAS} and \ac{DDS} classes contain an interface that
+provides a way for information contained in a text file to be merged with an
+existing instance.  Each class supports a \texttt{parse(\ldots)} method which
+can be invoked with either a pointer to an open file or the name of a file.
+The file's contents will be merged with the object if the contents parse as a
+valid object of the corresponding type. That is, if \texttt{dds} is an
+instance of \ac{DDS}, calling \texttt{dds.parse("myfile")} will merge into
+\texttt{dds} the information in \texttt{myfile} if its contents are a valid
+\ac{DDS} object description using the text notation described in the \ac{DAP}
+specification, version 2.0~\cite{gallagher:dap-spec}.
+
+\ac{DODS} servers interface with \ac{HTTP} daemons using
+\ac{CGI}~1.1~\cite{w3c:cgi}. The specification describes how different parts
+of a \ac{URL} are broken up and passed to \ac{CGI} programs.
+
+\subsubsection{Communications interfaces}
+\ac{DODS} client programs use HTTP~1.0 to communicate with server programs.
+
+\subsection{System features}
+
+\subsubsection{Specifying \ac{AIS} resources in the \ac{URL}}
+% *** What about values in the URL?
+\label{sec:url}
+To request that the object (\ac{DAS}, \ac{DDS} or \ac{DataDDS}) returned from
+a data source be augmented using information from a particular \ac{AIS}
+resource, that resource must be \cbstart identified \cbend in the \ac{DODS}
+\ac{URL} requesting the object.\footnote{This scheme, of passing the \ac{AIS}
+  resource using the \ac{URL}, was suggested by Steve Hankin.} To do this the
+syntax of a \ac{DODS} \ac{URL} will be modified so that the \texttt{query}
+component can contain both a \ac{CE} and a list of \ac{AIS} resources. In the
+\ac{DAP}~2.0 specification, the \texttt{query} part of the \ac{DODS} \ac{URL}
+contained only the \ac{CE}.  To accommodate one or more \ac{AIS} references
+it becomes:
+\cbstart
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+query & = & CE | AIS | CE "\&" AIS\\
+AIS & = & "ais(" AIS\_REF *("," AIS\_REF) ")"\\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+The complete grammar is:
+\medskip
+
+\begin{minipage}{5in}
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+DAP\_URL & = & "http:" "//" host [ ":" port ] [ abs\_path ] \\
+abs\_path & = & server\_path dataset\_id "." ext [ "?" query ] \\
+server\_path & = & \\
+dataset\_id &= & \\
+ext & = & "das" | "dds" | "dods" | "ver" | "html" | "info" \\
+    &   & | "asc" \\
+\\
+query & = & CE | AIS | CE "\&" AIS\\
+AIS & = & "ais(" AIS\_REF *(, AIS\_REF) ")"\\
+AIS\_REF & = & *(merge) AIS\_URL \\
+merge & = & "default" | "replace" | "fallback" \\
+AIS\_URL & = & "http:" "//" host [ ":" port ] [ ais\_path ] \\
+         &   & | "file:" "//" [ ais\_path ]\\
+ais\_path & = & "/" | 1*("/" <word>) ".ais"\footnote{See
+  Section~\ref{sec:groups} for information about AIS resource references that
+  end in a slash.}\\
+\\
+CE & = & *(projection) *(\& selection) \\
+projection & = & ids | function \\
+ids & = & id | id , ids \\
+function & = & id ( args ) \\
+args & = & arg | args arg \\
+arg & = & id | <quoted string> | <int> | <float> \\
+    &   & | [ deref ] URL \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+\end{minipage}
+\cbend
+
+This syntax will correctly parse both \ac{URL}s which reference \ac{AIS}
+resources as well as older \ac{URL}s which may have already been embedded in
+application configuration files, web sites, \emph{et cetera}.
+
+The \ac{AIS} \ac{URL} is a regular \ac{URL} as described by RFC~2396,
+``Uniform Resource Identifiers (URL): Generic Syntax''~\cite{rfc2396}.
+\cbstart In practice remote resources will only be accessed using the
+\ac{HTTP}, HTTPS or FILE protocols, but this issue should be handled by the
+underlying network I/O layer, not the \ac{DODS} or \ac{DAP} software. For
+example, \texttt{libwww} supports a variety of transport protocols. The
+`documents'\footnote{The information returned by dereferencing the AIS URL
+  may be held in a file, a database, generated by a CGI, \emph{et cetera.}}
+referenced will have the extension \texttt{.ais}. Information that augments a
+DAS and/or a DDS may appear in an \texttt{.ais} document. The textual
+representations for these will used and their current form allows both to be
+int he same file unambiguously (see the DAP 2.0 Specification). Note that the
+URL may describe a remote resource accessed via HTTP, \emph{et c.}, or a
+local resource accessed using the \texttt{file:} protocol identifier. \cbend
+
+Example 1:\\
+\begin{vcode}{it}
+http://www.dods.org/dods-3.2/nph-dods/data/fnoc1.nc.das?
+    &ais(http://unidata.ucar.edu/dods/fnoc1_fgdc.adas)
+\end{vcode}
+
+In Example 1 the DAS object for the FNOC1 data set is accessed and merged
+with the extra DAS information in the \ac{AIS} resource referenced by
+fnoc1\_fgdc.adas held at Unidata.
+
+When a user requests a DAS object, the only permissible \ac{AIS} resource is
+one that augments a DAS object. See Section~\ref{sec:DDS} for a discussion of
+DDS objects affected by attribute (DAS) information.
+
+\subsubsection{Augmenting the DAS}
+\label{sec:DAS}
+
+\paragraph{Writing \ac{AIS} resources for the \ac{DAS} object}
+An \ac{AIS} resource that augments a \ac{DAS} object is a text file that
+contains structured text using the grammar for the external representation of
+a \ac{DAS} object as described in ``DODS DAP
+2.0-Draft''~\cite{gallagher:dap-spec}. 
+
+Example 2:\\
+\begin{vcode}{it}
+Attributes {
+  u {
+    String long_name "U-component of the vector wind";
+  }
+}
+\end{vcode}
+
+\paragraph{Supporting parallel sets of attributes}
+
+\cbstart
+The \ac{AIS} will not extend the current DAS syntax to support parallel sets
+of attributes. Instead \ac{AIS} resource authors will have to write separate
+\ac{AIS} resources for each set of attributes. 
+\cbend
+
+If a \ac{URL} writer includes two or more \ac{AIS} resources, and both
+provide an attribute with the same name but a different value, the \ac{AIS}
+will behave as follows: 
+\begin{enumerate}
+\item The resource listed \cbstart first \cbend will take precedence; its
+  value will be the value of the attribute. This is the default behavior; no
+  special notation is needed.
+\item Attributes are replaced. Only the attributes from the \ac{AIS} resource
+  are used. This is called `replacement behavior;' to get it the \ac{AIS} URL
+  must be prefixed by \texttt{replace}.
+\item Attributes from the \ac{AIS} resource are used if and only if they are not defined
+  in the data source. This is called `fallback behavior;' to get it the
+  \ac{AIS} URL must be prefixed by \texttt{fallback}.
+\end{enumerate}
+
+\subsubsection{Augmenting the \ac{DDS}}
+\label{sec:DDS}
+
+The \ac{AIS} \ac{DDS} will contain the textual representation of a \ac{DDS}
+as described in the DAP 2.0 specification~\cite{gallagher:dap-spec} 
+as amended by this document.
+
+\ac{AIS} resources which augment a data source's \ac{DDS} object will
+add new variables to a data source. Client programs will be able to request
+these variables just as they can request the `real' variables. 
+
+To denote that a variable has been added to a data source by an \ac{AIS}
+resource, that variable's declaration will be prefixed by the type modifier
+\texttt{virtual}. For the sake of convenience these variables will be
+referred to as \textbf{virtual variables}\onlygloss{virtual-variables}.
+
+\paragraph{Virtual variable values}
+\label{sec:virtual-var-vals}
+\cbstart While there may be other sources of virtual variables supported in
+the future, in this version of the \ac{AIS} SRS only values read from files
+or other variables or attributes already present in the dataset will be
+allowed.
+
+When variables or attributes are used as a source of values for virtual
+variables, their names should be prefixed by, `\texttt{Dataset.}' and
+`\texttt{Attributes.}, respectively.\footnote{This extends the concept that
+  these are container objects; it seems like a syntactically natural way to
+  unambiguously denote the source of the values.}
+
+When the values for a virtual variable are read from a file, the name of the
+file is given using a function-like syntax. This syntax is used to simplify
+future expansion to other sources for values.
+
+\paragraph{Virtual variable value files}
+\label{sec:virtual-var-val-files}
+The files which hold the values for a virtual variable will use a CSV
+format. Most virtual variables will be either arrays of simple-types or
+additional columns in Sequences. The format of the virtual variable file will
+only address adding values for those datatypes. In the future this may be
+expanded. 
+\begin{enumerate}
+\item A \texttt{\#} in the file will start a comment which will run to the end
+  of the line.
+\item Values in the file will be either numbers (using the same syntax for
+  integer and floating values as is used by the DAS) or strings. Strings
+  which contain spaces must be quoted using double quotes, otherwise the
+  quotes are optional.
+\item For one and two dimensional arrays of simple-types, each row of the
+  file will hold the values for a row of the array. Rows will be delimited by
+  a carriage return ('\verb+\n+'). Values for each column position will be
+  separated by commas ('\texttt{,}').
+\item For $N$-dimensional arrays of simple-types, dimensions $3, \cdots, N$
+  will be represented by repeating the pattern for dimensions $2, \cdots, N-1$
+  separated by a blank line. (Note that the reader will know the
+  dimensionality of the data because that information is in the DDS.)
+\item For a column in a Sequence, each value will appear on a separate row.
+\end{enumerate}
+\cbend
+
+The Example below shows how the virtual variable feature can be used to
+transform a simple array (Called \texttt{SST} in the data source) into
+a Grid.\footnote{See the DAP 2.0 specification~\cite{gallagher:dap-spec}
+for an explanation of data types supported by the \ac{DODS}
+\ac{DAP}.} The Grid is called \texttt{sea\_surface\_temperature} and
+its array part is a virtual variable called \texttt{SST} which gets
+its value from the data source's \texttt{temp} variable. The two map
+vectors for the \texttt{sea\_surface\_temperature} Grid are also
+virtual variables; their values read from files.
+
+\cbstart
+Example:\\
+\begin{vcode}{it}
+Dataset {
+    virtual Grid {
+      Array:
+        virtual Byte SST[longitude = 512][latitude = 512] = Dataset.temp;
+      Maps:
+        virtual Float64 longitude[512] = file("long.dat");
+        virtual Float64 latitude[512] = file("lat.dat");
+    } sea_surface_temperature;
+}
+\end{vcode}
+
+A partial grammar, updated to include specification of values for virtual
+variables, for the DDS object's external representation is shown below. This
+grammar does not show the keyword's various literal representations and a few
+other details that are not relevant to virtual variables. For the complete
+grammar see \cite{gallagher:dap-spec}.
+
+\begin{minipage}{5in}
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+datasets & = & +(dataset) \\
+dataset  & = & dataset "\{" *(decl | v\_decl) "\}" name ";" \\
+decl & = & list decl  \\
+            & &   | base-type var ";" \\
+            & &   | structure  "\{" *(declaration) "\}" var ";" \\
+            & &   | sequence "\{" *(declaration) "\}" var ";" \\
+            & &   | grid "\{" array : *(declaration) \\
+            & &     maps : *(declaration) "\}" var ";" \\
+v\_decl & = & base-type var "=" value ";"\footnote{Even though the grammar
+  allows any base-type (both scalars and vectors) initial versions of the
+  \ac{AIS} will limit these to arrays and scalars within Sequence variables.}
+  \\
+base-type & = & byte | int16 | uint16 | int32 | uint32 \\ 
+          & &   | float32 | float64 | string | url \\
+var     & = & id | var array-decl \\
+value & = & "Dataset." name\footnote{\emph{name} is the name of a
+  variable as it would appear in a \ac{CE}.}
+          | "Attributes." name\footnote{\emph{name} is the fully-qualified
+  name of an attribute.}\\ 
+      & & | "file(" string ")"\\
+array-decl & = & "[" integer "]" | "[" id "=" integer "]" \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+\end{minipage}
+\cbend
+
+\subsubsection{\ac{AIS} Servers}
+\label{sec:ais-servers}
+
+The \ac{AIS} Server provides a way to hide the use of \ac{AIS} resources
+behind an interface that acts like a regular DODS server. 
+
+The \ac{AIS} Server provides access to one or more DODS datasets using
+regular DODS URLs. 
+
+Each dataset to which an \ac{AIS} Server provides access is really served by
+another DODS server (e.g., the DODS-HDF4 server).\footnote{Think of an AIS
+  Server as a kind of proxy server.} A configuration file provides the
+\ac{AIS} Server with the information it needs to match URLs to specific
+\ac{AIS} resources. 
+
+\subsubsection{Groups of data sources}
+\label{sec:groups}
+\emph{[Remove the idea of groups; make this about sites. Allow for RDBs to
+  maintain the list of things. That is, redefine in the guise of a service.
+  Add a note about REs when using a file.]}
+
+It will be possible to use a single \ac{AIS} resource token with a group of
+data sources. For example, a collection of FNOC data sources might have a
+matching collection of \ac{AIS} resources. As a convenience to clients, it
+will be possible to \emph{reference the collection} of \ac{AIS} resources in
+the \ac{DODS} \ac{URL} in place of a specific \ac{AIS} resource reference.
+The \ac{AIS} will choose the appropriate resource from the collection for a
+particular data source. \cbstart This will simplify using the \ac{AIS} since
+users can name the collection and let the \ac{AIS} figure out which parts of
+the collection apply to the given data source. \cbend
+
+To indicate that a particular reference is to a collection of \ac{AIS}
+resources, the reference must end in a slash (\texttt{/}). See Example 1.
+
+Example 1:\\
+\begin{vcode}{it}
+http://www.dods.org/dods-3.2/nph-dods/data/fnoc17.nc.das?
+&ais(http://unidata.ucar.edu/fnoc_fdgc/)
+\end{vcode}
+
+\acl{AIS} resource collections may be either local or remote. Note
+that a remote resource collection must refer only to resources local
+to itself due to the prohibition against chaining. \emph{[Is this
+really true?]}
+
+\paragraph{Selection of specific \ac{AIS} resources from collections}
+Whether local or remote, \ac{AIS} resource collections must contain a
+mapping of the elements of the collection to individual data
+sources. For local collections, this mapping will be held in the local
+configuration file. Remote resources will use a configuration file at
+the same location as the resources themselves. In both cases the same
+syntax will be used.
+
+\emph{[Remove this example; add grammar; add better examples.]}
+
+Example:\\
+\begin{vcode}{it}
+fnoc_fdgc {
+    http://www.dods.org/dods-3.2/nph-dods/data/fnoc1.nc.das =
+        http://unidata.ucar.edu/fnoc_fdgc/fnoc1_fgdc.ais;
+    .
+    .
+    .
+    http://www.dods.org/dods-3.2/nph-dods/data/fnoc17.nc.das =
+        http://unidata.ucar.edu/fnoc_fdgc/fnoc17_fgdc.ais;
+    .
+    .
+    .
+}
+\end{vcode}
+
+\emph{[Grammar here.]}
+
+\begin{minipage}{5in}
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+
+\end{tabular}
+\end{center}
+\end{ttfamily}
+\end{minipage}
+
+\subsubsection{AIS access logging}
+\label{sec:logging}
+
+AIS accesses at a site will be recorded. This means that accesses made using
+the `\ac{AIS} resource in the URL' and through an \ac{AIS} server will both
+be recorded. 
+
+\ac{AIS} Servers will provide access to the logfile (as an ASCII text file)
+using the special URL
+\texttt{http://$<host>$/$<cgi_bin>$/nph\_dods/ais\_log\_info}. Sites that
+host an \ac{AIS} server will be able to disable this feature.
+
+\ac{AIS} resource references embedded in a URL will be logged by the machine
+that serves those resources. It will be possible to request \ac{AIS} resource
+logging information using the same URL as for the \ac{AIS} Server. Sites will
+be able to disable this feature.
+
+In both cases accesses shown in the \texttt{ais\_log\_info} document will
+reflect only accesses to \ac{AIS} resources.
+
+\subsection{Performance requirements}
+N/A
+
+\subsection{Design constraints}
+Our use of the query string in a \ac{URL} flies in the face of
+RFC~2396~\cite{rfc2396}.  This is potentially a problem although so far no
+servers have failed because of the technically illegal characters we use. If
+we were to require strict adherence to the RFC, then many characters in the
+query string portion of the \ac{URL} would have to be escaped according to
+RFC~2396~\cite{rfc2396}. This make writing URLs by hand virtually impossible
+and greatly hinders reading them, even by programmers, as well. For these
+reasons, I decided to relax the constraints on characters describe by
+RFC~2396 for DODS constraint expressions. We'll do the same
+here.\footnote{This does not mean I think all users should be writing URLs,
+  just that I think we should spend some effort to minimize the
+  unpleasantness of that experience.}
+
+\addcontentsline{toc}{section}{References}
+\raggedright
+\bibliography{dods}
+\bibliographystyle{plain}
+
+%\addcontentsline{toc}{section}{Glossary}
+\printgloss{dods-glossary}
+
+\appendix
+
+\section{Acronyms and Abbreviations}
+\begin{acronym}
+\input{ai_acro.tex}
+\end{acronym}
+
+\section{Change log}
+
+\begin{verbatim}
+$Log: ancillary_information.tex,v $
+Revision 1.17  2004/04/24 21:37:22  jimg
+I added every directory in preparation for adding everyting. This is
+part of getting the opendap web pages going...
+
+Revision 1.16  2004/03/03 17:22:48  jimg
+Needs to be looked at... I changed the date to fix an error with CVS. This
+needs some updating.
+
+Revision 1.15  2003/10/15 15:26:29  jimg
+check point
+
+Revision 1.14  2002/01/03 14:34:35  jimg
+Most of section three is now complete.
+
+Revision 1.13  2002/01/01 03:10:55  jimg
+Sections 1 and 2 are mostly redone.
+
+Revision 1.12  2002/01/01 01:27:14  jimg
+I removed much of the old text that had been moved to comments (mostly about
+tokens).
+
+Revision 1.11  2002/01/01 01:24:29  jimg
+Added information from the ais_goals.txt document.
+
+Revision 1.10  2001/11/30 23:50:26  jimg
+This version of the paper is still incomplete WRT changes that have been
+suggested. However, a new architecture has been proposed for the AIS and it
+seems like that should be investigated before more time is spent refining the
+ideas here.
+
+Revision 1.9  2001/11/14 00:37:56  jimg
+Fixed a bunch of spelling errors.
+
+Revision 1.8  2001/11/13 07:19:27  jimg
+Spelling & Grammar fixes.
+
+Revision 1.7  2001/11/11 20:23:26  jimg
+Added information about resource collections (a way to reference an AIS
+site and have it choose the correct resource for a particular file/
+dataset). Also added more information about AIS resources for the DDS
+object. Finally, added a constraint that chaining not be allowed
+(although this is somewhat vague to me).
+
+Revision 1.6  2001/11/08 00:41:55  jimg
+Added a description of the way variables will be added to datasets based on
+the discussions on DODS-tech@unidata.ucar.edu.
+Still to go: Prohibition against chaining (?), Mappings at the AIS site(s),
+Mappings at client, Translation (NB: Per conversation with Dan, maybe this is
+a separate beast?).
+
+Revision 1.5  2001/11/03 05:26:24  jimg
+Changes from Peter and Paul. More changes to come. See the changebars.
+
+Revision 1.4  2001/10/23 05:39:45  jimg
+Fixed up section three. Added outline to DDS part.
+
+Revision 1.3  2001/10/20 00:07:28  jimg
+Added first crack at Section 3.
+Still to do: Good examples, DDS.
+
+Revision 1.2  2001/10/18 23:30:10  jimg
+Completed first go at section two.
+
+Revision 1.1  2001/10/18 21:22:02  jimg
+First crack at the introduction.
+
+\end{verbatim}
+
+\end{document}

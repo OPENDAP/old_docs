@@ -1,0 +1,1318 @@
+% Chapter six of the OPeNDAP User Guide
+%
+% $Id$
+%
+
+\chapter{Data and Data Models}
+\label{data}
+
+Basic to the operation of \opendap is the translation of data from one
+format to another. An \opendap server must read data on some disk and
+translate it into an intermediate format for transmission to the
+client. It is to the question of these formats to which we shall turn
+first.
+
+\section{Data models}
+\label{data,model}
+\indc{data!model} \indc{model!data}
+
+Any data set is made up of data and a \new{data model}. The data model
+defines the size and arrangement of data values, and may be thought of
+as an abstract representation of the relationship between one data
+value and another. Though it may seem paradoxical, it is precisely
+this relationship that defines the meaning of some number. Without the
+context provided by a data model, a number does not represent
+anything. For example, within some data set, it may be apparent that a
+number represents the value of temperature at some point in space and
+time. Without its neighboring temperature measurements, and without
+the latitude, longitude, depth, and time, the same number means
+nothing.
+
+As the model only defines an abstract set of relationships, two data
+sets containing different data may share the same data model. For
+example, the data produced by two different measurements with the same
+instrument will use the same data model, though the values of the data
+are different. Sometimes two models may be equivalent.  For example,
+an XBT measures a time series of temperature, but is usually stored as
+a series of temperature and depth measurements.  The temperature vs.
+time model of the original data is equivalent to the temperature vs.
+depth model of the stored data.
+
+In a computational sense, a data model may be considered to be the
+data type or collection of data types used to represent that data. A
+temperature measurement might occur as half an entry in a sequence of
+temperature and depth pairs. However the data model also includes the
+scalar latitude, longitude and date that identify the time and place
+where the temperature measurements were taken. Thus the data set might
+be represented in a C-like syntax like this (\figureref{fig,data,XBT-DDS}):
+
+\begin{figure}[htbp]
+\begin{vcode}{cb}
+Dataset {
+   Float64 lat;
+   Float64 lon;
+   Int32 minutes;
+   Int32 day;
+   Int32 year;
+   Sequence {
+      Float64 depth;
+      Float64 temperature;
+   } cast;
+} xbt-station;
+\end{vcode}
+\caption{Example Data Description of XBT Station}
+\label{fig,data,XBT-DDS}
+\end{figure}
+
+In the above example, a data set is described that contains all the
+data from a single XBT. The data set is called \lit{xbt-station}, and
+contains floating-point representations of the latitude and longitude
+of the station, and three integers that specify when the XBT was
+released. The \lit{xbt-station} contains a single sequence (called
+\lit{cast}) of measurements, which are here represented as values for
+depth and temperature\footnote{In the remainder of this document, the
+phrase {\em sequence data}, or just {\em sequence}, 
+will mean an
+ordered set of elements each of which contains one or more
+sub-elements where all of the sub-elements of an element are
+somehow related to each other.}.
+
+A different data model representing the same data might look like
+this (\figureref{fig,data,XBT-DDS-struct}):
+
+\begin{figure}[htbp]
+\begin{vcode}{cb}
+Dataset {
+   Structure {
+      Float64 lat;
+      Float64 lon;
+   } location;
+   Structure {
+      Int32 minutes;
+      Int32 day;
+      Int32 year;
+   } time;
+   Sequence {
+      Float64 depth;
+      Float64 temperature;
+   } cast;
+} xbt-station;
+\end{vcode}
+\caption{Example Data Description of XBT Station Using Structures}
+\label{fig,data,XBT-DDS-struct}
+\end{figure}
+
+In this example, several of the data have been grouped, implying a
+relation between them. The nature of the relationship is not defined,
+but it is clear that \lit{lat} and \lit{lon} are both components of
+\lit{location}, and that each measurement in the \lit{cast}
+sequence is made up of depth and temperature values.
+
+%Since temperature is the quantity of interest in this data set, it
+%might be better still to define the temperature as dependent on the
+%depth, in a functional relationship
+%(\figureref{fig,data,XBT-DDS-funct})\footnote{The \class{Function}}
+%  data type is not a part of the OPeNDAP DAP, but:
+%
+%\begin{figure}[htbp]
+%\begin{vcode}{cb}
+%Dataset {
+%   Structure {
+%      Float64 lat;
+%      Float64 lon;
+%   } location;
+%   Structure {
+%      Int32 minutes;
+%      Int32 day;
+%      Int32 year;
+%   } time;
+%   Function {
+%      Independent:
+%         Float64 depth;
+%      Dependent:
+%         Float64 temp_msmt;
+%   } temperature;
+%} xbt-station;
+%\end{vcode}
+%\caption{Example Data Description of 
+%XBT Station Using Functional Dependence}
+%\label{fig,data,XBT-DDS-funct}
+%\end{figure}
+%
+%Now we can see that \lit{temperature} is a function of an independent
+%variable, \lit{depth}, whose value is given by the corresponding
+%\lit{temp\_msmt} at each input depth. The data model might be further
+%refined by making the temperature function itself the value of another
+%function whose independent variables are location and time.
+
+In these two examples, meaning was added to the data set only by
+providing a more refined context for the data values. No other data
+was added, but still the second example can be said to contain more
+information than the first one.
+
+These two examples are refinements of the same basic arrangement of
+data. However, there is nothing that says that a completely different
+data model can't be just as useful or just as accurate. For example,
+the depth and temperature data, instead of being represented by a
+sequence of pairs, as in \figureref{fig,data,XBT-DDS} and
+\figureref{fig,data,XBT-DDS-struct}, could be represented by a pair of
+sequences or arrays, as in \figureref{fig,data,XBT-DDS-array}
+
+\begin{figure}[htbp]
+\begin{vcode}{cb}
+Dataset {
+   Structure {
+      Float64 lat;
+      Float64 lon;
+   } location;
+   Structure {
+      Int32 minutes;
+      Int32 day;
+      Int32 year;
+   } time;
+   Float64 depth[500];
+   Float64 temperature[500];
+} xbt-station;
+\end{vcode}
+\caption{Example Data Description of XBT Station Using Arrays}
+\label{fig,data,XBT-DDS-array}
+\end{figure}
+
+The relationship between the depth and temperature variables
+is no longer clear, but, depending on what sort of processing is
+intended, this may not be that important a loss.
+
+The choice of a computational data model to contain some data set
+depends in many cases on the whims and preferences of the user, as
+well as on the data analysis software to be used. Several different
+data models may be equally useful for a given task. Of course, some
+data models will contain more information about the data than others,
+but this information can also be carried in a scientist's head.
+
+Note that with a carefully chosen set of data \ind{type constructors},
+such as those we've used in the preceding examples, a user can
+implement an infinite number of data models.  The examples above use
+the \opendap \ind{Dataset Descriptor Structure} (DDS) format, which will
+become important in later discussions of the details of the \opendap Data
+Access Protocol. The precise details of the DDS syntax are described
+in \sectionref{data,dds}.
+
+\subsection{Data Models and APIs}
+\label{data,api}
+\indc{API}
+
+A data access \ind{Application Program Interface} (API) is a library
+of functions designed to be used by a computer program to read, write,
+and sample data. Any given data access API can be said to define
+implicitly some data model. That is, the functions that make up the
+API accept and return data using a certain collection of computational
+data types: multi-dimensional arrays might be required for some data,
+scalars for others, lists for others. This collection of data types,
+and their use constitute the data model represented by that API. (Or
+data models---there is no reason an API cannot accommodate several
+different models.)
+
+Among others, \opendap currently supports two very different data access
+APIs: netCDF and JGOFS\@. The netCDF API is designed for access to
+gridded data, but has some limited capacity to access sequence data.
+The JGOFS API provides access to relational or sequence data.  Both
+APIs support access in several programming languages (at least C and
+Fortran) and both provide extensive support for limiting the amount of
+data retrieved. For example a program accessing a gridded dataset
+using netCDF can extract a subsampled portion or \new{hyperslab} of
+that data.  Likewise, the JGOFS API provides a powerful set of
+operators which can be used to specify which sequence elements to
+extract (for example, a user could request only those values
+corresponding to data captured between 12:01am and 11:59am) as well as
+masking certain parameters from the returned elements so that only
+those parameters needed by the program are returned.
+
+
+\subsection{Translating Data Models}
+\label{data,trans}
+
+\tbd{Make this section bigger when translation works.}
+The problem of data model translation is central to the implementation
+of \opendap. With an effective data translator, an \opendap program originally
+designed to read netCDF data can have some access to data sets that
+use an incompatible data model, such as JGOFS.
+
+In general, it is not possible to define an algorithm that will
+translate data from any model to any other, without losing information
+defined by the position of data values or the relations between them.
+Some of these incompatibilities are obvious; a data model designed for
+time series data may not be able to accommodate multi-dimensional
+arrays.  Others are more subtle.  For example, a sequence looks very
+similar to a collection of lists in many respects.  However, a
+sequence is an \emph{ordered} collection of data types, whereas a list
+implies no order.  However, there are many useful translations that
+can be done, and there are many others that are still useful despite
+their inherent information loss.
+
+For example, consider a relational structure like the one in
+\figureref{fig,data,XBT-DDS-ex}. This is similar to the examples in
+\sectionref{data,model}, rearranged to accommodate an entire cruise
+worth of temperature-depth measurements.  This is the sort of data type
+that the JGOFS API is designed to use.
+
+\begin{figure}[htbp]
+\begin{vcode}{cb}
+Dataset {
+   Sequence {
+      Int32 id;
+      Float64 latitude;
+      Float64 longitude;
+      Sequence {
+         Float64 depth;
+         Float64 temperature;
+      } xbt_drop;
+   } station;
+} cruise;
+\end{vcode}
+\caption{Example Data Description of XBT Cruise}
+\label{fig,data,XBT-DDS-ex}
+\end{figure}
+
+Note that each entry in the \lit{cruise} sequence is composed of a
+tuple of data values (one of which is itself a sequence). Were we to
+arrange these data values as a table, they might look like this:
+
+\begin{vcode}{ib}
+id   lat   lon   depth  temp
+1   10.8   60.8    0     70
+                  10     46
+                  20     34
+2   11.2   61.0    0     71
+                  10     45
+                  20     34
+3   11.6   61.2    0     69
+                  10     47
+                  20     34
+\end{vcode}
+
+This can be made into an array, although that introduces redundancy.
+
+\begin{vcode}{ib}
+id   lat   lon   depth  temp
+1   10.8   60.8    0     70
+1   10.8   60.8   10     46
+1   10.8   60.8   20     34
+2   11.2   61.0    0     71
+2   11.2   61.0   10     45
+2   11.2   61.0   20     34
+3   11.6   61.2    0     69
+3   11.6   61.2   10     47
+3   11.6   61.2   20     34
+\end{vcode}
+
+The data is now in a form that may be read by an API such as
+netCDF. But consider the analysis stage. Suppose a user wants to see
+graphs of station data. It is not obvious simply from the arrangement
+of the array where a station stops and the next one begins. Analyzing
+data in this format is not a function likely to be accommodated by a
+program that uses the netCDF API.
+\tbd{This section will be finished when the form of the translation specification
+is determined.}
+
+\section{Data Access Protocol}
+\label{data,dap}
+\indc{DAP|see{Data Access Protocol}} \indc{Protocol!Data Access}
+\indc{intermediate data representation} \indc{data!intermediate representation}
+\indc{transport|see{Data Access Protocol}}
+
+The \opendap \ind{Data Access Protocol} (DAP) defines how an \opendap client
+and an \opendap server communicate with one another to pass data from the
+server to the client. The job of the functions in the \opendap client
+library is to translate data from the DAP into the form expected by
+the data access API for which the \opendap library is substituting. The
+job of an \opendap server is to translate data stored on a disk in whatever
+format they happen to be stored in to the DAP for transmission to the
+client.
+
+The DAP consists of four components:
+
+\begin{enumerate}
+  
+\item An {\em intermediate data representation} for data sets. This is
+  used to transport data from the remote source to the client. The
+  data types that make up this representation may be thought of as the
+  \opendap data model.
+  
+\item A format for the {\em{\ind{ancillary data}}} needed to translate
+  a data set into the intermediate representation, and to translate
+  the intermediate representation into the target data model. The
+  ancillary data in turn consists of two pieces:
+
+  \begin{itemize}
+  
+  \item A description of the shape and size of the various data types
+    stored in some given data set. This is called the \new{Data
+      Description Structure} (DDS).
+    
+  \item Capsule descriptions of some of the properties of the data
+    stored in some given data set.  This is the \new{Data Attribute
+      Structure} (DAS).
+
+  \end{itemize}
+  
+\item A {\em procedure} for retrieving data and ancillary data from
+  remote platforms.
+  
+\item An {\em{\ind{API}}} consisting of \opendap classes and data access
+  calls designed to implement the protocol,
+
+\end{enumerate}
+
+The intermediate data representation and the ancillary data formats
+are introduced in \sectionref{data,types} and
+\sectionref{data,ancillary}, below.  The steps of the procedure are
+outlined in \sectionref{opd-server,arch}, and the \opendap core software
+is described in the \OPDapi .
+
+\section{Data representation}
+\label{data,types}
+
+There are many popular data storage formats, and many more than that in
+use.  These formats are optimized (it they are optimized at all) for data
+storage, and are not generally suitable for data transmission.  In order to 
+transmit data over the Internet, \opendap must translate the data model used
+by a particular storage format into the data model used for transmission.
+
+If the data model for transmission is defined to be general enough to encompass
+the abstractions of several data models for storage, than this intermediate
+representation--the \ind{transmission format}--can be used to translate between one data
+model and another.
+
+The \opendap data model consists of a fairly elementary set of base types, combined
+with an advanced set of constructs and operators that allows it to
+define data types of arbitrary complexity.  This way, the \opendap data access 
+protocol can be used to transmit data from virtually any data storage format.
+
+The elements of the \opendap data access protocol are:
+
+\begin{itemize}
+
+\item {\bf Base Types} These are the simple data types, like integers, floating
+point numbers, strings, and character data.
+
+\item {\bf Constructor Types} These are the more complex data types that can be constructed
+from the simple base types.  Examples are structures, sequences, arrays, and grids.
+
+\item {\bf Operators} Access to data can be operationally defined with operators defined
+on the various data types.
+
+\item {\bf External Data Representation} In order to transmit the data across the Internet,
+there needs to be a machine-independent definition of what the various data types look
+like.  For example, the client and server need to agree on the most significant digit
+of a particular byte in the message
+
+\end{itemize}
+
+These elements are defined in greater detail in the sections that follow.
+
+\subsection{Base Types}
+\label{data,base-type}
+
+The \opendap data model uses the concepts of variables and operators. Each
+data set is defined by a set of one or more variables, and each
+variable is defined by a set of attributes. A variable's
+\emph{attributes}---such as units, name and type---must not be
+confused with the data \emph{value} (or values) that may be
+represented by that variable. A variable called \lit{time} may contain
+an integer number of minutes, but it does not contain a particular
+number of minutes until a context, such as a specific event recorded
+in a data set, is provided. Each variable may further be the object of
+an operator that defines a subset of the available data set. This is
+detailed in \sectionref{data,operators}.
+
+Variables in the \opendap DAP have two forms. They are either base types
+or type constructors. Base type variables are similar to predefined
+variables in procedural programming languages like C or Fortran (such
+as \lit{int} or \lit{integer*4}).  While these certainly have an
+internal structure, it is not possible to access parts of that
+structure using the DAP\@. Base type variables in the DAP have two
+predefined attributes (or characteristics): name, and type.\tbd{Should
+  also have ``units.''}
+They are defined as follows:
+
+\begin{description}
+
+\item [Name] A unique identifier that can be used to reference the part of
+  the dataset associated with this variable.
+
+\item [Type] The data type contained by the variable. This can be one
+of \lit{Byte}, \lit{Int32}, \lit{UInt32}, \lit{Float64},
+ \lit{String}, and
+\lit{URL}\@.  Where:
+
+\begin{description}
+
+\item [\lit{Byte}] is a single byte of data. This is the same as
+\lit{unsigned char} in ANSI C\@.
+
+\item [\lit{Int32}] is a 32 bit two's complement integer---it 
+is synonymous with long in ANSI C when that type is implemented as 32
+bits.
+
+\item [\lit{UInt32}] is a 32 bit unsigned integer.
+
+\item [\lit{Float64}] is the IEEE 64 bit floating point data type.
+
+\item [\lit{String}] is a sequence of bytes terminated by a null
+character.
+
+\item [\lit{Url}] is a string containing an \opendap URL. Please refer to
+\sectionref{opd-client,url} for more information about these
+strings. A special \lit{*} operator is defined for a URL. If the
+variable \lit{my-url} is defined as a URL data type, then 
+\lit{my-url}
+indicates the string spelling out the URL, and \lit{*my-url} indicates
+the data specified by the URL.
+
+\end{description}
+
+\tbd{There is a ``UNITS'' paragraph lurking here for when the issue is settled.}
+
+\end{description}
+
+The declaration in a DDS of a variable of any of the base types is simply the type
+of the variable, followed by its name, and a semicolon.  For example, to declare
+a \lit{month} variable to be a 32-bit integer, one would type:
+
+\begin{vcode}{ib}
+Int32 month;
+\end{vcode}
+  
+
+\subsection{Constructor Types}
+
+\indc{constructor types}
+Constructor types, such as arrays, structures, and lists, describe the
+grouping of one or more variables within a dataset. These classes are
+used to describe different types of relations between the variables
+that comprise the dataset. For example, an array might indicate that
+the variables grouped are all measurements of the same quantity with
+some spatial relation to one another, whereas a structure might
+indicate a grouping of measurements of disparate quantities that
+happened at the same place and time. 
+
+There are six classes of type constructor variables defined by the
+\opendap DAP: lists, arrays, structures, sequences, functions, and grids. 
+The types are defined as:
+
+\begin{description}
+
+\indc{data type!list} \indc{List!data type}
+\item [\class{List}] The \ind{list} type constructor is used to hold
+  lists of 0 or more items of one type. Lists are specified using the
+  keyword \lit{list} before the variable's class, for example,
+  \lit{list int32} or \lit{list grid}. Access to the elements of a
+  list is possible using one of the three operators shown in
+  \tableref{data,tab,class-ops}:
+
+  \begin{description}
+  
+  \item{{\em list}.\lit{length}} Returns the integer length of the
+    {\em list}.
+  
+  \item{{\em list}.\lit{nth({\em n})}} Returns the {\em n}th member of
+    the {\em list}.
+  
+  \item{{\em list}.\lit{member({\em value})}} Returns \lit{true} if
+    the {\em value} is a member of the {\em list}.
+
+  \end{description}
+  
+  \note{ The syntax of these operators differs between their use in a
+    C++ program and a constraint expression. The length of some list,
+    given by \lit{list.length()} in a program, would be
+    \lit{length(list)} in a constraint expression. Similarly, in a
+    constraint expression, the position of a value in a list is given
+    by \lit{nth(list, value)}, and the presence of a value is
+    indicated by \lit{member(list, value)}. See
+    \sectionref{opd-client,constraint} for more information about
+    constraint expressions.}
+  
+  A list declaration to create a list of integers would look like the
+  following:
+
+\begin{vcode}{ib}
+List Int32 months;
+\end{vcode}
+
+\item [\class{Array}] An \ind{array} is a one dimensional indexed data
+  structure as defined by ANSI C\@. Multidimensional arrays are
+  defined as arrays of arrays. An array may be subsampled using
+  subscripts or ranges of subscripts enclosed in brackets (\lit{()}).
+  For example, \lit{temp[3][4]} would indicate the value in the fourth
+  row and fifth column of the \lit{temp} array.\footnote{As in C, \opendap
+    array indices start at zero.} A chunk of an array may be specified
+  with subscript ranges; the array \lit{temp[2:10][3:4]} indicates an
+  array of nine rows and two columns whose values have been lifted
+  intact from the larger \lit{temp} array. \indc{data type!array}
+  \indc{array!data type}
+  
+  A \new{hyperslab} \indc{array!hyperslab} may be selected from an
+  array with a \new{stride}\indc{array!stride} value. The array
+  represented by \lit{temp[2:2:10][3:4]} would have only five rows;
+  the middle value in the first subscript range indicates that the
+  output array values are to be selected from alternate input array
+  rows. The array \lit{temp[2:3:10][3:4]} would select from every
+  third row, and so on. \tableref{data,tab,class-ops} shows the syntax
+  for array accesses including hyperslabs.
+  
+  To declare a $5x6$ array of floating point numbers, the declaration
+  would look like the following:
+
+\begin{vcode}{ib}
+Float64 data[5][6];
+\end{vcode}
+
+In addition to its magnitude, every dimension of an array may also
+have a name.  The previous declaration could be written:
+
+\begin{vcode}{ib}
+Float64 data[height = 5][width = 6];
+\end{vcode}
+
+\item [\class{Structure}] A Structure is a class that may contain
+  several variables of different classes. However, though it implies
+  that its member variables are related somehow, it conveys no
+  relational information about them. The structure type can also be
+  used to group a set of unrelated variables together into a single
+  dataset. The {\tt{\ind{dataset}}} class name is a synonym for {\tt
+    structure}. \indc{structure!data type} \indc{data type!structure}
+  
+  A Structure declaration containing some data and the month in which
+  the data was taken might look like this:
+
+\begin{vcode}{ib}
+   Structure {
+      Int32 month;
+      Float64 data[5][6];
+   } measurement;
+\end{vcode}
+
+Use the $.$ operator to refer to members of a \class{Structure}.  For
+example, \lit{measurement.month} would identify the integer member of
+the \class{Structure} defined in the above declaration.
+
+\item [\class{Sequence}] A \class{Sequence} is an ordered set of
+  variables each of which may have several values. The variables may
+  be of different classes. Each element of a \class{Sequence} consists
+  of a value for each member variable. Thus a \class{Sequence} can be
+  represented as: \indc{sequence!data type} \indc{data type!sequence}
+
+\begin{displaymath}
+\begin{array}{ccc}
+  s_{0 0} & \cdots & s_{0 n} \\ 
+  \vdots & \ddots & \vdots \\ 
+  s_{i 0} & \cdots & s_{i n}
+\end{array}
+\end{displaymath}
+
+\noindent Every instance of sequence $S$ has the same number, order,
+and class of member variables. A \class{Sequence} implies that each of
+the variables is related to each other in some logical way. For
+example, a sequence containing position and temperature measurements
+might imply that the temperature measurements were taken at the
+corresponding position. A sequence is different from a structure
+because its constituent variables have several instances while a
+structure's variables have only one instance (or value). Because a
+sequence has several values for each of its variables it has an
+implied \new{state}, in addition to those values. The state
+corresponds to a single element in the sequence.
+\indc{sequence!state}
+
+A \class{Sequence} declaration is similar to a \class{Structure}'s.
+For example, the following would define a \class{Sequence} that would
+contain many members like the \class{Structure} defined above:
+
+\begin{vcode}{ib}
+   Sequence {
+      Int32 month;
+      Float64 data[5][6];
+   } measurement;
+\end{vcode}
+
+\noindent Note that, unlike an \class{Array}, a \class{Sequence} has
+no index.  This means that a \class{Sequence}'s values are not
+simultaneously accessible.  Like a \class{Structure}, the variable
+\lit{measurement.month} has a single value.  The distinction is that
+this variable's value changes depending on the state of the
+\class{Sequence}.
+
+%\item [{\tt Function}] Functions are a subclass of sequences and are 
+%used to indicate that one set of variables has a functional relation
+%to a second set of variables. As in a sequence, variables in a
+%function may be of differing classes. The mathematical
+%description of this functional relation is not specified. Instead the
+%function type is used to indicate that one of the two sets constitute
+%the independent variables and the other the dependent variables.
+%\indc{function!data type} \indc{data type!function}
+%
+%A Function declaration like the preceding Sequence declaration, but
+%where the user wished to define a functional dependence between the
+%month and the data might look like the following (Of course, there can
+%be as many variables of either kind as desired.  We show only one of
+%each here for clarity's sake.):
+%
+%\begin{vcode}{ib}
+%  Function { Independent: Int32 month; Dependent: Float64 data[5][6];
+%    } measurement;
+%\end{vcode}
+
+\item [\class{Grid}] \indc{Grid} A \class{Grid} is an association of
+  an $N$ dimensional array with $N$ named vectors (one-dimensional
+  arrays), each of which has the same number of elements as the
+  corresponding dimension of the array.  Each data value in the grid
+  is associated with the data values in the vectors associated with
+  its dimensions.  \indc{grid!data type} \indc{data type!grid}
+  
+  As an example, consider an array of temperature values that is six
+  columns wide by five rows long. Suppose that this array represents
+  measurements of temperature at five different depths in six
+  different locations. The problem is the indication of the precise
+  location of each temperature measurement, relative to one
+  another.\footnote{The absolute location and orientation of the
+    entire array is specified by another set of scalar values; we are
+    here considering the relationship between data type members.}
+  
+  If the six locations are evenly spaced, and the five depths are also
+  evenly spaced, then the data set can be completely described using
+  the array and two scalar values indicating the distance between
+  adjacent vertices of the array. However, if the spacing of the
+  measurements is \emph{not} regular, as in \figureref{data,fig,grid}
+  then an array will be inadequate.  To adequately describe the
+  positions of each of the points in the grid, the precise location of
+  each volume and row must be described.
+
+\figureplace{An Irregular Grid of Data.}{htbp}
+{data,fig,grid}{grid.ps}{grid.gif}{}
+
+\indc{irregular data} \indc{data!irregular spacing} The secondary
+vectors in the \class{Grid} data type provide a solution to this
+problem. Each member of these vectors defines a value for all the data
+values in the corresponding rank of the array. The value can represent
+location or time or some other quantity, and can even be a constructor
+data type.  The following declaration would define a data type that
+could accommodate a structure like this:
+
+\begin{vcode}{ib}
+   Grid {
+      Float64 data[distance = 6][depth = 5];
+      Float64 distance[6];
+      Float64 depth[5];
+   } measurement;
+\end{vcode}
+
+In the above example, an vector called \lit{depth} would contain five
+values corresponding to the depths of each row of the array, while
+another vector called \lit{distance} might contain the scalar distance
+between the location of the corresponding column, and some reference
+point. The \lit{distance} array could also contain six (latitude,
+longitude) pairs indicating the absolute location of each column of
+the grid.
+
+\begin{vcode}{ib}
+   Grid {
+      Float64 data[distance = 6][depth = 5];
+      Float64 depth[5];
+      Array Structure {
+         Float64 latitude;
+         Float64 longitude;
+      } distance[6];
+   } measurement;
+\end{vcode}
+
+\end{description}
+
+\subsection{Operators}
+\label{data,operators} \indc{operators}
+
+Access to variables can be modified using operators. Each type of
+variable has its own set of selection and projection operators which
+can be used to modify the result of accessing a variable of that type.
+\tableref{data,tab,class-ops} lists the types and the operators
+applicable to them. In the table, operators have the meaning defined
+by ANSI C except as follows: the array hyperslab operators are as
+defined by netCDF\citel{netcdf}, the string operators are as defined
+by AWK\citel{kern:upe}, and the list operators are as defined by
+Common Lisp\citel{steele:clisp}.  
+
+\begin{table}[htbp]
+\caption{Classes and operators in the DAP\@.}
+\label{data,tab,class-ops}
+\begin{center}
+\begin{tabular}{|p{0.75in}|p{2in}|} \hline
+\tblhd{Class} & \tblhd{Operators} \\ 
+\hline \hline
+\multicolumn{2}{|c|}{\em Simple Types\/} \\  \hline
+\class{Byte}, \class{Int32}, \class{UInt32}, \class{Float64} & \lit{< > = != <= >=} \\  \hline
+\class{String} & \lit{= != } \math[\~{}=]{\sim =} \\  \hline
+\class{URL} & \lit{*} \\  \hline
+\multicolumn{2}{|c|}{\em Compound Types\/} \\  \hline
+\class{Array} & \lit{[start:stop] [start:stride:stop]} \\  \hline
+\class{List} & \lit{length({\em list}), nth({\em list,n}), member({\em list,elem})} \\  \hline
+\class{Structure} & \lit{.} \\  \hline
+\class{Sequence} & \lit{.} \\  \hline
+\class{Grid} & \lit{[start:stop] [start:stride:stop] .} \\  \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Two of the operators deserve special note. Individual fields of type
+constructors may be accessed using the dot (\lit{.}) operator or the
+virtual file system syntax. If a structure \lit{s} has two fields
+\lit{time} and \lit{temperature}, then those fields may be accessed
+using \lit{s.time} and \lit{s.temperature} or as \lit{s/time} and
+\lit{s/temperature}. Also, a special dereferencing \lit{\ind{*}}
+operator is defined for a URL. This is roughly analogous to the
+pointer-dereference operator of ANSI C. That is, if the variable
+\lit{my-url} is defined as a URL data type, then \lit{my-url}
+indicates the string spelling out the URL, and \lit{*my-url} indicates
+the actual data indicated by the URL.
+
+More information about variables and operators can be found in the
+discussion of constraint expressions in
+\sectionref{opd-client,constraint}.
+
+\subsection{External Data Representation}
+\label{data,external-rep}
+
+Each of the base-type and type constructor variables has an
+\ind{external representation} defined by the \opendap data access
+protocol.  This representation is used when an object of the given
+type is transferred from one computer to another.  Defining a single
+external representation simplifies the translation of variables from
+one computer to another when those computers use different internal
+representations for those variable types.
+
+\begin{table}[htbp]
+\caption{The XDR data types corresponding to \opendap base-type variables}
+\label{data,tab,base-xdr}
+\begin{center}
+\begin{tabular}{|l|l|} \hline
+\tblhd{Base Type} & \tblhd{XDR Type} \\ \hline 
+\class{Byte} & \lit{xdr byte} \\  \hline
+\class{Int32} & \lit{xdr long} \\  \hline
+\class{UInt32} & \lit{xdr unsigned long} \\  \hline
+\class{Float64} & \lit{xdr double} \\  \hline
+\class{String} & \lit{xdr string} \\  \hline
+\class{URL} & \lit{xdr string} \\  \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Constraint expressions do not affect \emph{how} a base-type variable
+is transmitted from a client to a server; they determine \emph{if} a
+variable is to be transmitted. For constructor type variables,
+however, constraint expressions may be used to exclude portions of the
+variable. For example, if a constraint expression is used to select
+the first three of six fields in a structure, the last three fields of
+that structure are not transmitted by the server.
+
+The data access protocol uses Sun Microsystems' XDR
+protocol\citel{xdr} for the external representation of all of the base
+type variables. \tableref{data,tab,base-xdr} shows the XDR types used
+to represent the various base type variables.
+
+In order to transmit constructor type variables, the data access
+protocol defines how the various base type variables, which comprise
+the constructor type variables, are transmitted. Any constructor type
+variable may be subject to a constraint expression which changes the
+amount of data transmitted for the variable (see
+\sectionref{opd-client,constraint} for more information about
+constraint expressions.). For each of the six constructor types these
+definitions are:
+
+\begin{description}
+  
+\item [\class{Array}] An \class{Array} is sent using the
+  \lit{xdr\_array} function. This means that an \class{Array} of 100
+  \lit{Int32}s is sent as a single block of 100 \lit{xdr long}s, not
+  100 separate {\tt xdr long}s.
+  
+\item [\class{List}] A \class{List} is sent as if it were an
+  \class{Array}.
+  
+\item [\class{Structure}] A \class{Structure} is sent by encoding each
+  field in the order those fields are declared in the DDS and
+  transmitting the resulting block of bytes.
+  
+\item [\class{Sequence}] A \class{Sequence} is transmitted by encoding
+  each item in the sequence as if it were a \class{Structure}, and
+  sending each such structure after the other, in the order of their
+  occurrence in the sequence. The entire sequence is sent, subject to
+  the constraint expression. In other words, if no constraint
+  expression is supplied then the entire sequence is sent. However, if
+  a constraint expression is given all the records in the sequence
+  that satisfy the expression are sent\footnote{The client process can
+    limit the information received by either using a constraint
+    expression or prematurely closing the I/O stream. In the latter
+    case the server will exit without sending the entire sequence.}.
+
+
+%\item [Function] A Function is encoded as if it were a Sequence (one 
+%  component after the other, in the order of their declaration). The
+%  independent variables first and the dependent variables second.
+  
+\item [\class{Grid}] A \class{Grid} is encoded as if it were a
+  \class{Structure} (one component after the other, in the order of
+  their declaration).
+
+\end{description}
+
+The external data representation used by an \opendap server and client may
+be compressed, depending on the configuration of the respective
+machines.  The compression is done using the \lit{\ind{gzip}} program.
+Only the data transmission itself will be affected by this; the
+transmission of the ancillary data is not compressed.
+\indc{compression!of data} \indc{data!compression}
+
+\section{Ancillary data}
+\label{data,ancillary}
+
+In order to use some data set, a user must have some information at
+his or her disposal that is not strictly included in the data set
+itself. This information, called \new{ancillary data}
+\indc{data!ancillary} (and sometimes called \new{metadata}\footnote{We
+  have learned to shy away from this term since we have found that
+  `metadata' to one person is `data' to another; the categorization
+  often limits the usefulness of the underlying information.}),
+describes the shape and size of the data types that make up the data
+set, and provides information about many of the data set's attributes,
+as well. \opendap uses two different structures, to supply this ancillary
+information about an \opendap data set. The Dataset Descriptor Structure
+(DDS) describes the data set's structure and the relationships between
+its variables, and the Dataset Attribute Structure (DAS) provides
+information about the variables themselves. Both structures are
+described in the following sections.
+
+\subsection{Dataset Descriptor Structure}
+\label{data,dds}
+
+In order to translate data from one data model into another, \opendap must
+have some knowledge about the types of the variables, and their
+semantics, that comprise a given data set. It must also know something
+about the relations of those variables---even those relations which
+are only implicit in the dataset's own API\@. This knowledge about the
+dataset's structure is contained in a text description of the dataset
+called the \new{Dataset Description Structure}.
+\indc{DDS|see{Dataset Descriptor Structure}} \indc{data!descriptor}
+
+The DDS does not describe how the information in the dataset is
+physically stored, nor does it describe how the data set API is used
+to access that data. Those pieces of information are contained in the
+API itself and in the \opendap server, respectively. The server uses the
+DDS to describe the structure of a particular dataset to a
+translator---the DDS contains knowledge about the dataset variables
+and the interrelations of those variables.  In addition, the DDS can
+be used to satisfy some of the DODS-supported API data set description
+calls. For example, netCDF has a function which returns the names of
+all the variables in a netCDF data file. The DDS can be used to get
+that information.
+
+The DDS is a textual description of the variables and their classes
+that make up some data set. The DDS syntax is based on the variable
+declaration and definition syntax of C and C++. A variable that is a
+member of one of the base type classes is declared by writing the
+class name followed by the variable name. The type constructor classes
+are declared using C's brace notation. A grammar for the syntax is
+given in \tableref{data,tab,DDS}. Each of the keywords for the type
+constructor and base type classes have already been described in
+\sectionref{data,types}. The \lit{\ind{Dataset}} keyword has the same
+syntactic function as \class{Structure} but is used for the specific job
+of enclosing the entire data set even when it does not technically
+need an enclosing element.
+
+\begin{table}[htbp]
+\caption{Dataset Descriptor Structure Syntax}
+\label{data,tab,DDS}
+\small
+\begin{center}
+\begin{tabular}{|l|l|} \hline
+{\em data set\/}  & \lit{Dataset} \lit{\{} {\em declarations\/} \lit{\}} 
+                   {\em  name\/} \lit{;} \\  \hline
+
+{\em declaration\/} &   \lit{List} {\em declaration\/}  \\ 
+                 & {\em base-type} {\em var\/} \lit{;} \\ 
+                 & \lit{Structure}  \lit{\{} {\em declarations\/} \lit{\}} 
+                  {\em var\/} \lit{;} \\ 
+                 & \lit{Sequence} \lit{\{} {\em declarations\/} \lit{\}} 
+                  {\em var\/} \lit{;} \\ 
+                 & \lit{Grid} \lit{\{} \lit{ARRAY} \lit{:} 
+                  {\em declaration\/} \lit{MAPS} \lit{:} 
+                  {\em declarations\/} \lit{\}} 
+                  {\em var\/} \lit{;} \\  \hline
+
+{\em base-type\/} & \lit{Byte} \\  
+                  & \lit{Int32} \\ 
+                  & \lit{UInt32} \\ 
+                  & \lit{Float64} \\ 
+                  & \lit{String} \\ 
+                  & \lit{Url} \\  \hline
+
+{\em var\/}     & {\em name} \\ 
+                & {\em name} {\em array-decl\/} \\  \hline
+
+{\em array-decl\/} & \lit{[} integer \lit{]} \\ 
+                   & \lit{[} {\em name} \lit{=} integer \lit{]} \\  \hline
+
+{\em name\/}    & User-chosen name of data set, variable, 
+                  or array dimension. \\  \hline
+\end{tabular}
+\end{center}
+\normalsize
+\end{table}
+
+Different data access APIs will store the information in the DDS in
+different places. Some APIs are self-documenting in the sense that the
+data files themselves will contain all the information about the
+structure of their data types. Other APIs need secondary files
+containing what is called \ind{ancillary data}, describing the data
+structure. For some APIs, such as netCDF, gathering the ancillary
+information from the data archive may be a time-consuming process. The
+\opendap server for these APIs may cache ancillary data files to save
+time.  An example DDS entry is shown in \figureref{data,fig,dds}. (See
+\sectionref{data,model} for an explanation of the information implied
+by the data model, and for several other DDS examples).
+
+\begin{figure}[htbp]
+\W\label{data,fig,dds}
+\begin{vcode}{cb}
+Dataset { 
+  Int32 catalog_number;
+  Sequence {
+    String experimenter;
+    Int32 time;
+    Structure {
+      Float64 latitude;
+      Float64 longitude;
+    } location;
+    Sequence {
+      Float64 depth;
+      Float64 salinity;
+      Float64 oxygen;
+      Float64 temperature;
+    } cast;
+  } station;
+} data;
+\end{vcode}
+\caption{Example Dataset Descriptor Entry.}
+\T\label{data,fig,dds}
+\end{figure}
+
+When creating a DDS to be kept in an ancillary file, you can use the
+\lit{\#} character as a comment indicator.  All characters after the
+\lit{\#} on a line are ignored.\indc{\#}\indc{DDS!comments}
+
+\subsection{Dataset Attribute Structure}
+\label{data,das}
+
+The \new{Dataset Attribute Structure}\indc{DAS} (DAS) is used to store
+attributes for variables in the dataset. An attribute is any piece of
+information about a variable that the creator wants to bind with that
+variable \emph{excluding} the type and shape\tbd{and units}, which are
+part of the DDS.  Attributes can be as simple as error measurements or
+as elaborate as text describing how the data was collected or
+processed\footnote{To define attributes for the entire dataset, create
+  an entry for a variable with the same name as the dataset.}. In
+principle, attributes are not processed by software, other than to be
+displayed. However, many systems rely on attributes to store extra
+information that is necessary to perform certain manipulations of
+data. In effect, attributes are used to store information that is used
+`by convention' rather than `by design'. \opendap can effectively support
+these conventions by passing the attributes from data set to user
+program via the DAS\@. Of course, \opendap cannot enforce conventions in
+datasets where they were not followed in the first place.
+
+Similarly to the DDS, the actual location of the DAS storage will vary
+from one API to another. Data files created with some APIs will
+contain within themselves attribute information that can be contained
+in the DAS.  For
+these APIs, the DAS will be constructed dynamically by the \opendap server
+from data within the files.  
+
+Other data access APIs must have attribute information specified in an
+\ind{ancillary data} file.  APIs that contain attribute information
+can have that information enriched by the addition of these ancillary
+attribute files.  These files are typically stored in the same
+directory as the data files, and given the same name as the data
+files, appended with \lit{.das}.
+
+The syntax for attributes in a DAS is given in
+\tableref{data,tab,DAS}. Every attribute of a variable is a triple:
+attribute name, type and value.  Note that the attributes specified
+using the DAS are different from the information contained in the
+DDS\@. Each attribute is completely distinct from the name, type,
+\tbd{units, }and value of its associated variable. The name of an
+attribute is an identifier, following the normal rules for an
+identifier in a programming language with the addition that the `/'
+character may be used. The type of an attribute may be one of:
+\class{Byte}, \class{Int32}, \class{UInt32}, \class{Float64},
+\class{String} or \class{Url}. An attribute may be scalar or vector.
+In the latter case the values of the vector are separated by commas
+(,) in the textual representation of the DAS\@.
+
+\begin{table}[htbp]
+\caption{Dataset Attribute Structure Syntax}
+\label{data,tab,DAS}
+\small
+\begin{center}
+\begin{tabular}{|l|l|} \hline
+
+{\em DAS}      & \lit{Attributes} \lit{\{} {\em var-attr-list}
+                  \lit{\}} \\  \hline
+
+{\em var-attr-list} & {\em var-attr} \\ 
+                    & {\em var-attr-list} {\em var-attr} \\ 
+                    & (empty list) \\  \hline
+
+{\em var-attr} & {\em variable} 
+                 \lit{\{} {\em attr-list} \lit{\}} \\  
+               & {\em container}  \lit{\{} {\em var-attr-list} 
+                    \lit{\}} \\ 
+               & {\em global-attr} \\
+               & {\em alias} \\ \hline
+
+{\em global-attr} & \lit{Global} {\em variable} 
+                    \lit{\{} {\em attr-list} \lit{\}} \\  \hline
+
+{\em attr-list} & {\em attr-triple} \lit{;} \\ 
+                &  {\em attr-list} {\em attr-triple} \\ 
+                & {\em (empty list)} \\  \hline
+
+{\em attr-triple} & {\em attr-type} {\em attribute} {\em attr-val-vec} 
+                \lit{;} \\  \hline
+
+{\em attr-val-vec} & {\em attr-val} \\ 
+                   & {\em attr-val-vec} \lit{,} {\em attr-val} \\  \hline
+
+{\em attr-val} & numeric value \\ 
+               & {\em variable} \\ 
+               & ``string'' \\  \hline
+
+{\em attr-type} & \lit{Byte} \\ 
+                & \lit{Int32} \\ 
+                & \lit{UInt32} \\ 
+                & \lit{Float64} \\ 
+                & \lit{String} \\ 
+                & \lit{Url} \\  \hline
+
+{\em alias}     & \lit{Alias} {\em alias-name} {\em variable} \lit{;} \\ \hline
+
+{\em variable} &  user-chosen variable name \\  \hline
+
+{\em attribute} & user-chosen attribute name \\  \hline
+
+{\em container} & user-chosen container name \\  \hline
+
+{\em alias-name}& user-chosen alias name \\ \hline
+\end{tabular}
+\end{center}
+\normalsize
+\end{table}
+
+When creating a DAS to be kept in an ancillary file, you can use the
+\lit{\#} character as a comment indicator.  All characters after the
+\lit{\#} on a line are ignored.\indc{\#}\indc{DAS!comments}
+
+\subsubsection{Containers}
+
+An attribute can contain another attribute, or set of attributes.
+This is roughly comparable to the way compound variables can contain
+other variables in the DDS.  The container defines a new lexical scope
+for the attributes it contains\footnote{Containers, aliases, and
+  global attributes were introduced into \opendap at version 2.16.  In
+  early \opendap releases, the DAS was \emph{not} a hierarchical
+  structure; it was similar to a flat-file database.  Although using
+  the new structure is strongly recommended for new code, old code
+  will still work with the old DAS.  See \OPDapiref for a description
+  of the changes made to the \class{AttrTable} class.}.
+  
+Consider the following example:
+
+\begin{figure}[h]
+\begin{vcode}{cb}
+Attributes {
+   Bill {
+      String LastName "Evans";
+      Byte Age 53;
+      String DaughterName "Matilda";
+      Matilda {
+         String LastName "Fink";
+         Byte Age 26;
+      }
+   }
+}
+\end{vcode}    
+  \caption{An Example of Attribute Containers}
+  \label{fig,das,container}
+\end{figure}
+
+\noindent
+Here, the attribute \lit{Bill.LastName} would be associated with the
+string ``Evans'', and \lit{Bill.Age} with the number 53.  However, the
+attribute \lit{Bill.Matilda.LastName} would be associated with the
+string ``Fink'' and \lit{Bill.Matilda.Age} with the number 26.  
+
+Using container attributes as above, you can construct a DAS that
+exactly mirrors the construction of a DDS that uses compound data
+types, like \class{Structure} and \class{Sequence}. Note that though
+the \lit{Bill} attribute is a container, it has attributes of its own,
+as well.  This exactly corresponds to the situation where, for
+example, a \class{Sequence} would have attributes belonging to it, as
+well as attributes for each of its member variables.  Suppose the
+sequence represented a single time series of measurements, where
+several different data types are measured at each time.  The sequence
+attributes might be the time and location of the measurements, and the
+individual variables might have attributes describing the method or
+accuracy of that measurement.
+
+\subsubsection{Aliases}
+
+Building on the previous example, it might be true that it would be
+convenient to refer to Matilda without prefixing every reference with
+\lit{Bill}.  In this case, we can define an \new{alias} attribute
+\indc{attribute!alias} as follows:
+
+\begin{figure}[h]
+\begin{vcode}{cb}
+Attributes {
+   Bill {
+      String LastName "Evans";
+      Byte Age 53;
+      String DaughterName "Matilda";
+      Matilda {
+         String LastName "Fink";
+         Byte Age 26;
+      }
+   }
+   Alias Matilda Bill.Matilda;
+}
+\end{vcode}    
+  \caption{An Example of Attribute Alias}
+  \label{fig,das,alias}
+\end{figure}
+
+\noindent
+By defining an equivalence between the alias \lit{Matilda} and the
+original attribute \lit{Bill.Matilda}, the string \lit{Matilda.Age}
+can be used with or without the prefix \lit{Bill}.  In either case,
+the attribute value will be 26.
+
+\subsubsection{Global Attributes}
+
+A \new{global attribute} \indc{attribute!global}is not bound to a
+particular identifier in a dataset; these attributes are stored in one
+or more containers with the name \lit{Global} or ending with
+\lit{\_Global}.  Global attributes are used to describe attributes of
+an entire dataset.  For example, a global attribute might contain the
+name of the satellite or ship from which the data was collected.
+Here's an example:
+
+\begin{figure}[h]
+\begin{vcode}{cb}
+Attributes {
+   Bill {
+      String LastName "Evans";
+      Byte Age 53;
+      String DaughterName "Matilda";
+      Matilda {
+         String LastName "Fink";
+         Byte Age 26;
+      }
+   }
+   Alias Matilda Bill.Matilda;
+   Global {
+      String Name "FamilyData";
+      String DateCompiled "11/17/98";
+   }
+}
+\end{vcode}    
+  \caption{An Example of Global Attributes}
+  \label{fig,das,global}
+\end{figure}
+
+Global attributes can be used to define a certain view of a dataset.
+For example, consider the following DAS: 
+
+\begin{figure}[h]
+\begin{vcode}{cb}
+Attributes {
+   CTD {
+      String Ship "Oceanus";
+      Temp {
+         String Name "Temperature";
+      }
+      Salt {
+         String Name "Salinity";
+      }
+   }
+   Global {
+      String Names "OPeNDAP";
+   }
+   FNO_Global {
+      String Names "FNO";
+      CTD {
+         Temp {
+            String FNOName "TEMPERATURE";
+         }
+         Salinity {
+            String FNOName "SALINITY";
+         }
+      }
+      Alias T CTD.Temp;
+      Alias S CTD.Salt;
+   }
+}
+\end{vcode}    
+  \caption{An Example of Global Attributes In Use}
+  \label{fig,das,global-use}
+\end{figure}
+
+Here, a dataset contains temperature and salinity measurements.  To
+aid processing of this dataset by some \opendap client, long names are
+supplied for the \lit{Temp} and \lit{Salt} variables.  However, a
+different client (FNO) spells variable names differently.  Since it is
+seldom practical to come up with general-purpose translation
+tables\footnote{``Temperature'' can be spelled ``T'', ``Temp'',
+  ``TEMPERATURE'', ``TEMP'', and so on.  Worse, ``T'' is also commonly
+  used for ``Time.''}, the dataset administrator has chosen to include
+these synonyms under the \lit{FNO\_Global} attributes, as a convenience
+to those users.
+
+Similar conveniences can be provided using the Alias feature.  In the
+example in \figureref{fig,das,global-use}, the temperature variable
+can be referred to as \lit{FNO\_Global.T} if desired.  That is, a
+global alias can provide a client with a known attribute name to query
+for some property, even if that attribute name is not an integral part
+of the dataset.
+
+Using global attributes, a dataset or catalog administrator can create
+a layer of aliases and attributes to make \opendap datasets conform to
+several different dataset naming standards.  This becomes significant
+when trying to compile an \opendap dataset database.
+
+\tbd{Insert reference to CS documentation.}
+
+% $Log: ch06.tex,v $
+% Revision 1.7  2003/09/04 19:42:06  tom
+% DODS->OPeNDAP
+%
+% Revision 1.6  2000/10/04 15:02:14  tom
+% changed \figureplace definition, misc other cleaning
+%
+% Revision 1.5  1999/08/30 14:19:28  tom
+% updates prior to DODS release 3.0
+%
+% Revision 1.4  1999/02/04 17:42:13  tom
+% modified to use dods-book.cls and Hyperlatex
+%
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

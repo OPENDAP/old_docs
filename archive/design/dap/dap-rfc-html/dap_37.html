@@ -1,0 +1,298 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:12 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- ASCII</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_38.html"><img alt="HTML" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_36.html"><img alt="Version" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>ASCII</b></td></tr></table>
+<h3>ASCII</h3>
+
+The <tt>ASCII</tt> response provides a way for a client to get data from a
+DAP server formatted as ASCII text. Server implementors may develop
+custom ASCII representations for their data as long as they meet the
+requirements given here:
+<ol><li>The formatting MUST use Comma Separated Values (CSV) with text that associates a name with
+  a value or group of values.
+<li>The response body SHOULD be easy to incorporate into commonly available
+  spreadsheet programs.
+<li>There MUST be enough structural information in the response to remove
+  any ambiguity about which variable(s) it contains.
+</ol>
+<h4><A NAME="1">Suggested ASCII representations</a></h4>
+<p>In this section variables are classified as either simple types or complex
+types. Simple types are the elemental datatypes in DODS (Byte, ..., Url).
+Complex types are Arrays, Lists and the constructor types Structure, Sequence
+and Grid. Since a dataset groups together a collection of otherwise unrelated
+variables, it will be considered a Structure in this section. That is, each
+dataset has an implicit (anonymous) Structure as its outermost variable.
+<p>Simple datatypes are represented in ASCII using common print representations
+for those those types. Integer and floating point variables can be converted
+using whatever language and/or library facilities are available to the
+server.
+<p>The ASCII representations for complex datatypes are given below. In general,
+complex datatypes each have two different representations, one when they
+contain only other simple types and another when they contain other complex
+types. 
+<ol><li>Grid
+<ol><li>A Grid with only a single dimension will be represented as a table of
+  values. The values of the sole map vector will be printed in a row,
+  separated by commas and prefixed by the map vector's name. The values of
+  the Grid's Array will be prefixed by its name and printed on the following
+  row, also as CSVs. See Example ??.
+<li>A Grid with two or more map vectors will be printed as follows. The
+  rightmost dimension/map will be printed on one line as CSVs and prefixed
+  by the map vector's name as is the case for a Grid with only a single map.
+  The Array-part's values will be printed on subsequent lines which enumerate
+  all of the indices of the other dimensions/maps so that the rightmost
+  varies fastest. Each row of values will be prefixed by the array-part's
+  name and the list of bracketed map vector values which describe the given
+  row's data. See Examples ??-??.
+</ol>
+<p>Example :
+<p><pre class="ti">
+Dataset {
+  Grid {
+    Array:
+      Byte x[5];
+    Maps:
+      Float64 lat[5];
+  } values;
+} ex14;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>values.lat, <i>values.lat[0]</i>, ..., <i>values.lat[4]</i><br>values.x, <i>values.x[0]</i>, ..., <i>values.x[4]</i>
+</tt>
+<p>Example :
+<p><pre class="it">
+Dataset {
+  Grid {
+    Array: 
+      Byte temp[lat=5][lon=5];
+    Maps:
+      Float64 lat[5];
+      Float64 lon[5];
+  } v;
+} ex15;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>v.lon, <i>v.lon[0]</i>, ..., <i>v.lon[4]</i><br>v.temp[v.lat=<i>v.lat[0]</i>], <i>v.temp[0][0]</i>, ..., <i>v.temp[0][4]</i><br><br>v.temp[v.lat=<i>v.lat[4]</i>], <i>v.temp[4][0]</i>, ..., <i>v.temp[4][4]</i>
+</tt>
+<p>Example :
+<p><pre class="it">
+Dataset {
+  Grid {
+    Array: 
+      Byte temp[t=4][lat=5][lon=5];
+    Maps:
+      Int32 t[4];
+      Float64 lat[5];
+      Float64 lon[5];
+  } v;
+} ex16;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>v.lon, <i>v.lon[0]</i>, ..., <i>v.lon[4]</i><br>v.temp[v.t=<i>v.t[0]</i>][v.lat=<i>v.lat[0]</i>], <i>temp[0][0][0]</i>, ..., <i>temp[0][0][4]</i><br><br>v.temp[v.t=<i>v.t[0]</i>][v.lat=<i>v.lat[4]</i>], <i>temp[0][4][0]</i>, ..., <i>temp[0][4][4]</i><br><br>v.temp[v.t=<i>v.t[3]</i>][v.lat=<i>v.lat[0]</i>], <i>temp[3][0][0]</i>, ..., <i>temp[3][0][4]</i><br><br>v.temp[v.t=<i>v.t[3]</i>][v.lat=<i>v.lat[4]</i>], <i>temp[3][4][0]</i>, ..., <i>temp[3][4][4]</i><br></tt>
+<li>Structure
+<ol><li>Structures that contain only simple types are printed as a table with a
+  single row. That is, a row of comma separated field names followed by a row
+  of comma separated values. See Example ??.
+<li>A Structure contains simple types and/or other structures which
+  themselves contain only simple types will be flattened and printed as if it
+  were a single structure composed of solely of simple types. See Example ??.
+<li>A Structure that contains one or more Array, Sequence or Grid variables
+  uses a vertical ordering of its fields. Each field is printed by writing
+  its print representation on successive rows, starting with the first field
+  and going in order to the last. For each row the type of variable
+  determines the specific format of the output. Example ?? shows a structure
+  which contains a String and a Grid.
+</ol>
+<p>Example :
+<p><pre class="it">
+Dataset {
+  Structure {
+    String name;
+    String date;
+    Float64 lat;
+    Float64 lon;
+  } drop;
+} ex6;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>drop.name, drop.date, drop.lat, drop.lon<br><i>drop.name</i>, <i>drop.date</i>, <i>drop.lat</i>, <i>drop.lon</i>
+</tt>
+<p>Example :
+<p><pre class="it">
+Dataset {
+  Structure {
+    String name;
+    String date;
+    Structure {
+      Float64 lat;
+      Float64 lon;
+    } point;
+  } drop;
+} ex7;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>drop.name, drop.date, drop.point.lat, drop.point.lon<br><i>drop.name</i>, <i>drop.date</i>, <i>drop.point.lat</i>, <i>drop.point.lon</i>
+</tt>
+<p>Example :
+<p><pre class="it">
+Dataset {
+  Structure {
+    String date;
+    Grid {
+      Array: 
+      Byte temp[lat=5][lon=5];
+      Maps:
+      Float64 lat[5];
+      Float64 lon[5];
+    } values;
+  } test;
+} ex8;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>test.date, <i>test.date</i><br>test.v.lon, <i>test.v.lon[0]</i>, ..., <i>temp.lon[4]</i><br>test.v.temp[<i>test.v.lat[0]</i>]: <i>test.v.temp[0][0]</i>, ..., <i>test.v.temp[0][4]</i><br><br>test.v.temp[<i>test.v.lat[4]</i>]: <i>test.v.temp[4][0]</i>, ..., <i>test.v.temp[4][4]</i>
+</tt>
+<li>Sequence
+<ol><li>Sequences containing only simple types will be represented as tables.
+  The first row of output will list the Sequence's field names separated by
+  commas. Each instance of the Sequence will be listed on subsequent rows as
+  comma separated values.
+<li>Sequences containing simple types and/or other Sequences or Structures
+  which themselves contain only simple types will be flattend and printed as
+  a table.
+<li>Sequences which contain either, directly or indirectly, Arrays or Grids
+  will be printed with each field on its own row. Successive rows of the
+  Sequence will be printed as successive blocks of rows. To print each field
+  its type-dependent print representation will be used. 
+</ol>
+<p>Example :
+<p><pre class="it">
+Dataset {
+  Sequence {
+    String name;
+    Float64 lat;
+    Float64 lon;
+  } drop;
+} ex8;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>drop.name, drop.lat, drop.lon<br><i>drop.name</i>, <i>drop.lat</i>, <i>drop.lon</i><br></tt>
+<p>Example :
+<p><pre class="it">
+Dataset {
+  Sequence {
+    String name;
+    Sequence {
+      Float64 lat;
+      Float64 lon;
+    } loc;
+  } drop;
+} ex10;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>drop.name, drop.loc.lat, drop.loc.lon<br><i>drop.name</i>, <i>drop.loc.lat</i>, <i>drop.loc.lon</i><br></tt>
+<p>Example :
+<p><pre class="it">
+Dataset {
+  Sequence {
+    String name;
+    Structure {
+      Float64 lat;
+      Float64 lon;
+    } loc;
+  } drop;
+} ex11;
+</pre>
+<p>Output:<br><tt>  
+Dataset: <i>dataset name</i><br>drop.name, drop.loc.lat, drop.loc.lon<br><i>drop.name</i>, <i>drop.loc.lat</i>, <i>drop.loc.lon</i><br></tt>
+<p>Example :
+<p><pre class="it">
+Dataset {
+  Sequence {
+    String name;
+    Array temps[5];
+  } data;
+} ex12;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>data.name, <i>data.name</i><br>data.temps, <i>data.temps[0]</i>, ..., <i>data.temps[4]</i><br></tt>
+<p>Example :
+<p><pre class="it">
+Dataset {
+  Sequence {
+    String name;
+    Array temps[5][5];
+  } data;
+}ex13;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>data.name, <i>data.name<sub>0</sub></i><sup><a HREF="dap_49.html#footnote-8">8</a></sup><br>data.temps[0], <i>data.temps[0][0]<sub>0</sub></i>, ..., <i>data.temps[0][4]<sub>0</sub></i><br><br>data.temps[4], <i>data.temps[4][0]<sub>0</sub></i>, ..., <i>data.temps[4][4]<sub>0</sub></i><br><br>data.name, <i>data.name<sub>N</sub></i><br>data.temps[0], <i>data.temps[0][0]<sub>N</sub></i>, ..., <i>data.temps[0][4]<sub>N</sub></i><br><br>data.temps[4], <i>data.temps[4][0]<sub>N</sub></i>, ..., <i>data.temps[4][4]<sub>N</sub></i><br></tt>
+<li>Array 
+<ol><li>An one-dimensional array of simple types is printed as a name and comma
+  separated list of values of the vector, all on a single line. See Example
+  ??.
+<li>A multidimensional array of simple types of rank <i>N</i> is represented by
+  writing out, for each of its <i>N-1</i> dimensions' indices, the name, the index
+  and a row of values. See Examples ??-??.
+<li>Each element of an array of complex types is printed on a group of
+  lines. For an array of complex types of rank <i>N</i>, each row will be prefixed
+  by the array name and the index for that row. 
+</ol>
+<p>Example 1:
+<p><pre class="it">
+Dataset {
+    Int32 x[10];
+} ex1;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>x, <i>x[0]</i>, ..., <i>x[9]</i>
+</tt>
+<p>Example 3:
+<p><pre class="it">
+Dataset {
+    Int32 x[20][10];
+} ex3;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>x[0], <i>x[0][0]</i>, ..., <i>x[0][9]</i><br><br>x[19], <i>x[19][0]</i>, ..., <i>x[19][9]</i><br></tt>
+<p>Example 4:
+<p><pre class="it">
+Dataset {
+    Int32 x[5][10][15];
+} ex4;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>x[0][0], <i>x[0][0][0]</i>, ..., <i>x[0][0][14]</i><br><br>x[0][9], <i>x[0][9][0]</i>, ..., <i>x[0][9][14]</i><br><br>x[4][0], <i>x[4][0][0]</i>, ..., <i>x[4][0][14]</i><br><br>x[4][9], <i>x[4][9][0]</i>, ..., <i>x[4][9][14]</i><br></tt>
+<p>Example 2:
+<p><pre class="it">
+Dataset {
+    Structure {
+        Int32 x;
+        String name;
+    } pair[10];
+} ex2;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>pair[0], <i>pair[0].x</i>, <i>pair[0].name</i><br><br>pair[9], <i>pair[9].x</i>, <i>pair[9].name</i>
+</tt>
+<p>Example 5:
+<p><pre class="it">
+Dataset {
+    Structure {
+        Int32 x;
+        String name;
+    } pair[5][10];
+} ex5;
+</pre>
+<p>Output:<br><tt>
+Dataset: <i>dataset name</i><br>pair[0][0], <i>pair[0][0].x</i>, <i>pair[0][0].name</i><br><br>pair[0][9], <i>pair[0][9].x</i>, <i>pair[0][9].name</i><br><br>pair[4][0], <i>pair[4][0].x</i>, <i>pair[4][0].name</i><br><br>pair[4][9], <i>pair[4][9].x</i>, <i>pair[4][9].name</i><br></tt>
+</ol>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_38.html"><img alt="HTML" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_36.html"><img alt="Version" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>ASCII</b></td></tr></table></body></html>

@@ -1,0 +1,243 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Dataset Attribute Structure</TITLE>
+<META NAME="description" CONTENT="Dataset Attribute Structure">
+<META NAME="keywords" CONTENT="api">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="api.css">
+
+<LINK REL="next" HREF="node14.html">
+<LINK REL="previous" HREF="node12.html">
+<LINK REL="up" HREF="node5.html">
+<LINK REL="next" HREF="node14.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html234"
+  HREF="node14.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html230"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html224"
+  HREF="node12.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html232"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html235"
+  HREF="node14.html">Data Access Protocol Entry</A>
+<B> Up:</B> <A NAME="tex2html231"
+  HREF="node5.html">Design</A>
+<B> Previous:</B> <A NAME="tex2html225"
+  HREF="node12.html">Dataset Descriptor Structure</A>
+ &nbsp; <B>  <A NAME="tex2html233"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00055000000000000000"></A>
+<A NAME="api:das"></A>
+<BR>
+Dataset Attribute Structure
+</H2>
+
+<P>
+The Dataset Attribute Structure (DAS) is used to store attributes for
+variables in the data set. An attribute is any piece of information about a
+variabale that the creator wants to bind with that variable <EM>excluding</EM>
+the characteristics type, shape, and units. The characteristics type, shape
+and units are always defined for every variable; they are data type
+information about the variable. Attributes, on the other hand, are intended
+to store extra information about the data such as a paragraph describing how
+it was collected or processed<A NAME="tex2html28"
+  HREF="footnode.html#foot738"><SUP>5</SUP></A>. In principle attributes are not processed by software other than to
+be displayed. However, many systems rely on attributes to store extra
+information that is necessary to perform certain manipulations on data. In
+effect, attributes are used to store information that is used `by convention'
+rather than `by design'. DODS can effectively support these conventions by
+passing the attributes from data set to user program via the DAS. Of course,
+DODS cannot enforce conventions in data sets where they were not followed in
+the first place.
+
+<P>
+The syntax for attributes is given in Table&nbsp;<A HREF="#tab:DAS"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>. Every attribute of
+a variable is a triple: attribute name, type and value. Note that the
+attributes specified using the DAS are different from the information
+contained in the DDS. Each attribute is completely distinct from the name,
+type and value of its associated variable. The name of an attribute is an
+identifier, following the normal rules for an identifier in a programming
+language with the addition that the `/' character may be used. The type of an
+attribute may be one of: Byte, Int32, Float64, String or Url. An attribute
+may be scalar or vector. In the later case the values of the vector are
+separated by commas (,) in the textual representation of the DAS. 
+
+<P>
+When the <A NAME="tex2html30"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A> is used to read the attributes of a variable and that variable
+contains other variables, only the attributes of the named variable are
+returned. In other words, while the DDS is a hierarchical structure, the DAS
+is <EM>not</EM>; it is similar to a flat-file database.
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER">
+
+<A NAME="tab:DAS"></A>
+<DIV ALIGN="CENTER"><A NAME="742"></A>
+<TABLE CELLPADDING=3 BORDER="1">
+<CAPTION><STRONG>Table:</STRONG>
+Dataset Attribute Structure Syntax</CAPTION>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>attributes</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>attribute</EM> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>attributes</EM> </FONT><FONT SIZE="-1"><EM>attribute</EM> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>attribute</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>attribute</TT> </FONT><FONT SIZE="-1"><TT>{</TT> </FONT><FONT SIZE="-1"><EM>var-attr-list</EM> </FONT><FONT SIZE="-1"><TT>}</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>var-attr-list</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>var-attr</EM> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>var-attr-list</EM> </FONT><FONT SIZE="-1"><EM>var-attr</EM> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> <IMG
+ WIDTH="103" HEIGHT="12" ALIGN="BOTTOM" BORDER="0"
+ SRC="img10.png"
+ ALT="$\delta$"> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>var-attr</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>var-name</EM> 
+                </FONT><FONT SIZE="-1"><TT>{</TT> </FONT><FONT SIZE="-1"><EM>attr-list</EM> </FONT><FONT SIZE="-1"><TT>}</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>attr-list</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>attr-pair</EM> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">  </FONT><FONT SIZE="-1"><EM>attr-list</EM> </FONT><FONT SIZE="-1"><EM>attr-pair</EM> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> <IMG
+ WIDTH="103" HEIGHT="12" ALIGN="BOTTOM" BORDER="0"
+ SRC="img10.png"
+ ALT="$\delta$"> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>attr-pair</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>attr-type</EM> </FONT><FONT SIZE="-1"><EM>attr-name</EM> </FONT><FONT SIZE="-1"><EM>attr-val</EM> 
+                </FONT><FONT SIZE="-1"><TT>;</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>var-name</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>identifier</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>attr-name</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>identifier</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>attr-val-vec</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>attr-val</EM> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                     </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><EM>attr-val-vec</EM> </FONT><FONT SIZE="-1"><TT>,</TT> </FONT><FONT SIZE="-1"><EM>attr-val</EM> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>attr-val</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>value</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>identifier</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>string</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><EM>attr-type</EM> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>Byte</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                  </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>Int32</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                  </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>Float64</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                  </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>String</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+                  </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>Url</TT> </FONT></TD>
+</TR>
+<TR><TD></TD>
+<TD></TD>
+</TR>
+</TABLE></DIV>
+</DIV>
+<BR>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html234"
+  HREF="node14.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html230"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html224"
+  HREF="node12.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html232"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html235"
+  HREF="node14.html">Data Access Protocol Entry</A>
+<B> Up:</B> <A NAME="tex2html231"
+  HREF="node5.html">Design</A>
+<B> Previous:</B> <A NAME="tex2html225"
+  HREF="node12.html">Dataset Descriptor Structure</A>
+ &nbsp; <B>  <A NAME="tex2html233"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

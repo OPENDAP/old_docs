@@ -1,0 +1,11 @@
+ASCII_input_data "simple array format"
+index 1 5 ARRAY["line" 1 to 10 sb 23] OF float 1
+data1 6 12 ARRAY["line" 1 to 10 sb 21] OF float 1
+data2 13 19 ARRAY["line" 1 to 10 sb 21] OF float 1
+data3 20 27 ARRAY["line" 1 to 10 sb 20] OF float 1
+
+ascii_output_data "simple array output"
+index 1 7 ARRAY["line" 1 to 10] OF float 0
+/data1 6 12 ARRAY["line" 1 to 10 sb 21] OF float 1
+/data2 13 19 ARRAY["line" 1 to 10 sb 21] OF float 4
+/data3 20 27 ARRAY["line" 1 to 10 sb 20] OF float 4

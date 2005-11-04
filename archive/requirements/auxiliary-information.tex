@@ -1,0 +1,131 @@
+\section{Introduction}
+
+At the start of the project, we refrained from using the word `metadata'
+since its meaning is often confusing. In relational database technology, the
+word means database tables which encode information about the structure of
+other tables in the database\cite{date:into}. In this paper I'll use the
+phrase \emph{ancillary information} to mean information
+about the contents of a dataset and \emph{metadata} to mean information about
+the structure of a dataset.
+
+\section{Overview}
+
+Partial solution.
+
+Ancillary information enables types of use.
+
+Different architecures favor different types of ancaillray information
+
+Relation between ancillary information and extra-server information services
+designed for specific clients.
+
+\section{Requirements}
+\subsection{Architecture}
+
+Ancillary Information (AI) at the dataset.
+A way for providers to add information to a dataset without modifying
+the actual data source. 
+
+All servers must support AI for both single and multifile data
+sets. See Section~\ref{???} for 
+
+AI at the client.
+A way for users and client builders to tailor datasets for a
+particular use or to override information presented by the datasource
+itself. 
+
+AI at other sites (collection sites).
+A way for an individual, group or other organization to augment the
+information provided by a data set. This source of AI should be able
+to support client programs that have special AI needs. It should also
+support logical groups of data sets so that catalogs of related data
+sets can be associated through a common set of AI.
+
+A data set should never merge information from an intermediate site
+(or a client). This should always be under complete control of the
+client (application or human). 
+
+The order of use should either be up to a person (i.e., the person
+knows about the sources of information and chooses whether or not to
+use them) or under program control. Within the limits set out in
+Section~\ref{???}, the precedence of AI is (from lowest to highest):
+Client
+Intermediary
+Dataset
+
+All source of AI should use the same representation.
+
+Within the limits described elsewhere, it should be possible to
+migrate AI from any one of the categories to any of the other
+categories. Specicially, it should always be possible to migrate AI
+from lower to higher precedence. It should be straightforward to
+nigrate it from higher to lower by only adding information.
+
+\subsection{Support for namespaces}
+A \textbf{namespace} is used to encapsilate a collection of ancillary
+information. Examples of namespaces are the COARDS or GMT conventions
+of the netCDF API. 
+
+The ancillary information system must support an unlimited number of
+namespaces (although in practice the utility of namespaces decrease
+with their proliferation). The AI system must support the definition
+of namespaces by both the DODS project and those outside the project.
+The AI system must provide a way for any dataset to support any or all
+of the defined namespaces without conflict, subject to the
+applicability of the namespace to the content of the dataset in
+question.
+
+A namespace will provide a way to add ancillary information to a
+dataset by adding attribute tuples to the dataset's DAS object. The
+additional information will take the form of attributes whose names,
+within each namespace, have a well-know meaning. The set of symbols
+defined by a namespace will be referred to as a \textbf{profile}.
+
+Each profile must support encoding AI about both a dataset as a
+whole and each variable in that dataset. For any profile, the set of
+information for either the dataset or any or all variables maybe null.
+
+It must be evident from the AI system which profiles are supported
+by a dataset.
+
+Users must be able to find, in one place, cogent descriptions of all
+the profiles known to the DODS project. These must be accessible from
+the DODS home page. 
+
+Web applications should be developed which simplify creating ancillary
+information. \emph{[I'm not sure where to go with this, but I'm after some
+way other than editing DAS or (worse) XML by hand. Interactive tools
+of some sort to help people use a given profile. Maybe this could be
+built with our Java toolkit?]}
+
+\emph{[Another poorly understood area: should support for profiles be
+built into the core? How so? Maybe as something in the .dodsrc file?
+For example, if a dataset supports a particular profile, extract that
+profile's attributes and promote them to the uppermost level of the
+dataset.]}
+
+A design that satisfies this document must specify exactly how to
+write a profile and that, in turn, should specify how to use the
+profile. The design will become the reference for the required content
+of a profile.\footnote{This is a meta-requirement, that the design
+provide the requirements for a profile.}
+
+\subsection{Support for datatypes}
+\emph{[I'm not sure how to support convention/standards such as COARDS
+which use not only attributes but also datatypes to store
+information.]}
+
+Support date and time through a functional interface accessible
+through the CE. \emph{[Since this is already implemented, I'm not
+going to write requirements for it.]}
+
+Support the data and time FI in the core.
+
+Add a Latitude, longitude and altitude/depth FI.
+
+Fix, evaluate and document the grid selection expression FI.
+
+Clients must be able to discover server-side FIs. Each supported FI
+will be listed in a `Interfaces' profile. This profile is described in Appendix~\ref{???}.
+
+

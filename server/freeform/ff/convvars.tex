@@ -1,0 +1,645 @@
+%CHAPTER 7       
+%
+% $Id$
+%
+
+\chapter{Conversion Variables}
+\label{ff,convvars}
+
+\indc{conversion variables!overview}
+Space and time values such as latitude and longitude, date, and time
+of day can be represented in various ways. For example, latitude and
+longitude can be given in degrees and minutes, or as floating point
+numbers (among other possibilities). FreeForm ND conversion variables
+make it possible to translate between a number of representations of
+space and time values. You tell FreeForm ND that a conversion is
+needed by including the appropriate standard conversion variable name
+in the relevant format description file. When FreeForm ND reads a
+format description file and finds a conversion variable, it
+automatically performs the indicated conversion.
+
+\section{Accessing Conversion Functions}
+
+\indc{accessing conversion functions}
+\indc{conversion functions!accessing} 
+\indc{calculated!output variable}\indc{output variable!calculated}
+\indc{variable!calculated output}
+FreeForm ND's conversion functions are invoked by using standard
+conversion variable names in the input and output format descriptions.
+FreeForm ND attempts a conversion only if the input and output names
+for a variable differ, and both names are included in FreeForm ND's
+list of standard conversion variables (see \chapterref{ff,varname}).
+If a variable name in an output format does not correspond to a name
+in the input format, FreeForm ND searches the input variables for
+standard conversion variable names.
+
+For example, assume the following variable is described in the input
+format description:
+
+\begin{vcode}{ib}
+latitude 1 10 double 6 
+\end{vcode}
+
+The output format description includes the following variable
+descriptions, but not one for latitude:
+
+\begin{vcode}{ib}
+latitude_deg 1 7 short 0
+latitude_min 13 15 short 0
+latitude_sec 21 23 short 0
+\end{vcode}
+
+FreeForm ND will transparently identify and call conversion functions
+to construct the specified output values (latitude in units of
+degrees, minutes, and seconds) using the input value given by the
+variable latitude.
+
+\section{Latitude and Longitude Conversions}
+\label{ff,conv,latlon}
+
+\indc{conversion!degrees, minutes, seconds}
+\indc{degrees, minutes, seconds!conversion}
+\indc{latitude!conversion}\indc{conversion!latitude}
+\indc{longitude!conversion}\indc{conversion!longitude}
+Space is often delineated by latitude and longitude in geophysical
+applications. Latitude and longitude values can be represented most
+directly as floating point numbers, but often are not. Data sets
+frequently give latitude and longitude in other representations such
+as degrees and minutes, or absolute value of degrees, decimal minutes,
+and N/S or E/W to designate hemisphere.
+
+FreeForm ND includes a set of functions that perform conversions
+between a number of the most common representations of latitude and
+longitude. In order to access these conversions, you must use the
+standard variable names listed in \tableref{ff,tab,geo}.
+\indc{abs@\lit{\_abs}}\indc{deg@\lit{\_deg}}
+\indc{min@\lit{\_min}}\indc{sec@\lit{\_sec}}\indc{sign@\lit{\_sign}}
+\indc{ns@\lit{\_ns}}\indc{ew@\lit{\_ew}}
+\indc{geographic variables!conversion}
+\indc{conversion!geographic variables}
+
+\begin{table}[htb]
+\caption{Geographic Variable Conversion Options}
+\label{ff,tab,geo}
+\begin{tabular}{|p{1.3in}|p{2.5in}|p{0.8in}|} \hline
+\tblhd{Name} & \tblhd{Description} & \tblhd{Example Value} \\ \hline
+\lit{latitude}
+\lit{longitude} & 
+Signed floating point number that completely describes a latitude or
+longitude coordinate value & 
+\parbox[t]{0.8in}{-47.583333
+\T\\
+-176.75} \\ \hline
+\lit{latitude\_abs}
+\lit{longitude\_abs} & 
+Absolute value of a latitude or longitude coordinate (may include
+fractions of a degree) & 
+47.583333
+176.75 \\ \hline
+\lit{latitude\_deg}
+\lit{longitude\_deg} & 
+Degrees component of a latitude or longitude coordinate value (may be
+signed) & 
+\parbox[t]{0.8in}{-47
+\T\\
+-176} \\ \hline
+\lit{latitude\_deg\_abs}
+\lit{longitude\_deg\_abs} & 
+Absolute value of the degrees component of a latitude or longitude
+coordinate & 
+\parbox[t]{0.8in}{47 
+\T\\
+176} \\ \hline
+\lit{latitude\_min}
+\lit{longitude\_min} & 
+Minutes component of a latitude or longitude coordinate value & 
+\parbox[t]{0.8in}{30.5
+\T\\
+45.0} \\ \hline
+\lit{latitude\_sec}
+\lit{longitude\_sec} & 
+Seconds component of a latitude or longitude coordinate value & 
+\parbox[t]{0.8in}{30.0
+\T\\
+0.0} \\ \hline
+\lit{latitude\_sign}
+\lit{longitude\_sign} & 
+Sign of a latitude or longitude coordinate value 
++ or - (data type is char) & 
+- \\ \hline
+\lit{latitude\_ns}
+\lit{longitude\_ew} & 
+Hemisphere: N for north, S for south, E for east, W for west (char) & 
+S \\ \hline
+\lit{geog\_quad\_code} & 
+A geographic quadrant defined by DMA (Defense Mapping Agency), 1 = NE,
+2 = NW, 3 = SE, 4 = SW (char) & 
+4 \\ \hline 
+\end{tabular}
+\end{table}
+
+
+\indc{conventions!geographic}\indc{geographic conventions}
+\indc{latitude!north positive}\indc{longitude!east positive}
+FreeForm ND uses the convention that northern latitudes and eastern
+longitudes are positive.
+
+\subsection{Degrees, Minutes, and Seconds}
+\label{ff,convvars,dms}
+
+
+\indc{conversion!degrees, minutes, seconds!example}
+\indc{degrees, minutes, seconds!conversion!example}
+\indc{latitude!conversion!example}
+\indc{conversion!latitude!example}
+\indc{longitude!conversion!example}
+\indc{conversion!longitude!example}
+In this example you will convert latitude and longitude values in
+\lit{latlon2.bin} from long integers (with implied precision) to
+latitude and longitude values given in degrees, minutes and seconds.
+The binary file \lit{latlon2.bin} was created earlier from the ASCII
+file \lit{latlon.dat} (see \chapterref{ff,quick}). The input and
+output formats are described in \lit{ll\_d\_m\_s.fmt}. Conversion
+variable names are included in the input and output formats.
+
+Here are the contents of the \lit{ll\_d\_m\_s.fmt} file:
+
+\begin{vcode}{ib}
+/ This is the format description file for the data files latlon2.bin and
+/ ll_d_m_s.dat. Each record of the input binary file latlon2.bin contains 
+/ two fields, latitude and longitude. These values are stored as integers.
+/ Each record of the output ASCII file ll_d_m_s.dat contains latitude and 
+/ longitude given in units of degrees, minutes, and seconds.
+
+binary_data "binary input format"
+latitude 1 4 long 6
+longitude 5 8 long 6
+
+ASCII_data "ASCII output format"
+latitude_deg 1 7 short 0
+latitude_min 13 15 short 0
+latitude_sec 21 23 short 0
+longitude_deg 27 31 short 0
+longitude_min 37 39 short 0
+longitude_sec 45 47 short 0 
+\end{vcode}
+
+To convert the data to the new ASCII format use the following command: 
+
+\begin{vcode}{ib}
+newform latlon2.bin -f ll_d_m_s.fmt -o ll_ d_m_s.dat 
+\end{vcode}
+
+The ASCII file \lit{ll\_d\_m\_s.dat} is created with the 20 latitude and
+longitude values given in degrees, minutes, and seconds. If a degree
+value is between 0 and -1, then either the minute or second value is
+signed. When you view \lit{ll\_d\_m\_s.dat}, you should see the following
+values:
+
+\begin{vcode}{ib}
+         1         2         3         4         5
+12345678901234567890123456789012345678901234567890
+    -47      18      13    -176       9      40
+      0     -55      41       0      46      38
+    -28      17      12      35      35      31
+     12      35      18     149      24      29
+    -83      13      25      55      19      11
+     54       7       6    -136      56      26
+     38      49       8      91      24      41
+    -34      34      37      30      10      20
+     27      19      54    -155      14       1
+                .
+                .
+                . 
+\end{vcode}
+
+You can convert the data file \lit{ll\_d\_m\_s.dat} back to its original ASCII
+format (in \lit{latlon.dat}) but the values will be somewhat different than
+those in \lit{latlon.dat}. The ASCII format for \lit{ll\_d\_m\_s.dat} uses whole
+seconds, which are not precise enough to represent decimal degrees to
+six decimal places. Fractional seconds are required to preserve the
+values of decimal degrees to six places. If ushort variables with a
+precision of 3 were specified in \lit{ll\_m\_d\_s.fmt}, fractional seconds
+could be represented.
+
+\subsection{Absolute Degrees and Minutes}
+
+In the following two examples, you will create new ASCII data files
+from \lit{latlon2.bin} that give latitude and longitude in absolute degrees
+and minutes with hemisphere indicated in the first case and geographic
+quadrant in the second case. Conversion variable names are used in the
+input and output formats in both examples.
+
+\subsubsection{With Hemisphere}
+
+You will convert the data in \lit{latlon2.bin} to latitude and longitude
+values given in absolute degrees and minutes. FreeForm ND converts the
+sign (+ or -) of the input data to N for north, S for south, E for
+east, or W for west as appropriate. Southern latitudes and western
+longitudes are negative. The input and output formats are described in
+\lit{degabsm.fmt}.
+
+Here are the contents of \lit{degabsm.fmt} :
+
+\begin{vcode}{ib}
+/ This is the format description file for the data files latlon2.bin and
+/ degabsm.dat. Each record of the input binary file latlon2.bin contains 
+/ two fields, latitude and longitude. These values are stored as integers.
+
+binary_data "binary input format"
+latitude 1 4 long 6
+longitude 5 8 long 6
+
+/ Each record of the output ASCII file degabsm.dat contains latitude and 
+/ longitude given in units of absolute degrees and minutes. The hemisphere
+/ is indicated by the variables latitude_ns and longitude_ew. The value can be
+/ the character N for north, S for south, E for east, or W for west.
+
+ASCII_data "ASCII output format"
+latitude_deg_abs 6 7 short 0
+latitude_min_abs 10 15 float 2
+latitude_ns 17 17 char 0
+longitude_deg_abs 24 26 short 0
+longitude_min_abs 28 34 float 3
+longitude_ew 36 36 char 0
+\end{vcode}
+
+To convert the data to absolute degrees and minutes with hemisphere included, use the following command:
+
+\begin{example}
+newform latlon2.bin -f degabsm.fmt -o degabsm.dat 
+\end{example}
+
+When you view \lit{degabsm.dat}, you should see the following values: 
+
+\begin{vcode}{ib}
+         1         2         3         4
+1234567890123456789012345678901234567890
+     47  18.21  S      176   9.666 W
+      0  55.68  S        0  46.636 E
+     28  17.20  N       35  35.513 E
+     12  35.29  N      149  24.487 E
+     83  13.41  S       55  19.176 E
+              .
+              .
+              . 
+\end{vcode}
+
+\subsubsection{With Quadrant}
+
+You will convert the data in \lit{latlon2.bin} to latitude and longitude
+values given in absolute degrees and minutes with the geographic
+quadrant indicated by a character code. The input and output formats
+are described in \lit{degmgeog.fmt}.
+
+Here is \lit{degmgeog.fmt}:
+
+\begin{vcode}{ib}
+/ This is the format description file for the data files latlon2.bin and
+/ degmgeog.dat. Each record of the input binary file latlon2.bin contains 
+/ two fields, latitude and longitude. These values are stored as integers.
+
+binary_data "binary input format"
+latitude 1 4 long 6
+longitude 5 8 long 6
+
+/ Each record of the output ASCII file degmgeog.dat contains latitude and 
+/ longitude given in units of absolute degrees and minutes. The
+/ geographic quadrant of the data is indicated by a numeric character code.
+/
+/ 1 = Northeast
+/ 2 = Northwest
+/ 3 = Southeast
+/ 4 = Southwest
+/
+
+ASCII_data "ASCII output format"
+latitude_deg_abs 6 7 short 0
+latitude_min_abs 10 15 float 2
+longitude_deg_abs 21 23 short 0
+longitude_min_abs 26 31 float 2
+geog_quad_code 40 40 char 0
+\end{vcode}
+
+To convert the data to absolute degrees and minutes with quadrant, use
+the following command:
+
+\begin{example}
+newform latlon2.bin -f degmgeog.fmt -o degmgeog.dat
+\end{example}
+
+When you view \lit{degmgeog.dat}, you should see the following values: 
+
+\begin{vcode}{ib}
+         1         2         3         4
+123456789012345678901234567890123456789012345
+     47   18.21     176    9.67        4
+      0   55.68       0   46.64        3
+     28   17.20      35   35.51        1
+     12   35.29     149   24.49        1
+     83   13.41      55   19.18        3
+              .
+              .
+              . 
+\end{vcode}
+
+\section{Date and Time Conversions}
+\label{ff,convvars,date}
+
+\indc{conversion!time}\indc{time!conversion}
+\indc{conversion!date}\indc{date!conversion}
+Time is a variable found in many scientific data sets and it can have
+various representations. In ASCII formats meant to be read by
+application users, time is often represented with six variables: year,
+month, day, hour, minute, second. In formats meant to be read by
+computers, it makes sense to represent time as a floating point number
+in days and decimal fractions of a day, or perhaps seconds and
+fractions of a second.
+
+FreeForm ND can perform conversions between various representations of
+dates when standard conversion variable names are included in the
+format descriptions. Several examples are given below.
+
+\subsection{Year, Month, Day}
+
+In this example you will convert a date string in the form of
+month/day/year to a date string in the form of year, month, day with
+no separators. The format description file \lit{yymmdd.fmt} describes the
+input and output formats and the input data is stored in \lit{mdy.dat}.
+Notice that this is a conversion from one ASCII data format to
+another.
+
+Here is \lit{yymmdd.fmt}:
+
+\begin{vcode}{ib}
+/ This is the format description file for the data files mdy.dat and
+/ yymmdd.dat.
+
+ASCII_input_data "ASCII input format"
+date_mm/dd/yy 1 10 char 0
+
+ASCII_output_data "ASCII output format"
+date_yymmdd 1 12 char 0
+\end{vcode}
+
+Try this on the example file \lit{mdy.dat}:
+
+\begin{vcode}{ib}
+ 1/26/20
+ 7/25/78
+11/19/99
+     .
+     .
+     . 
+\end{vcode}
+
+To convert the data in \lit{mdy.dat} from m/d/y format to yymmdd format, use
+the following command:
+
+\begin{example}
+newform mdy.dat -f yymmdd.fmt -o yymmdd.dat 
+\end{example}
+
+The resulting file \lit{yymmdd.dat} will contain the following values: 
+
+\begin{vcode}{ib}
+200126
+780725
+991119
+  .
+  .
+  . 
+\end{vcode}
+
+\subsection{Serial Dates}
+
+\indc{conversion!date!serial}\indc{serial date!conversion}
+\indc{date!conversion!serial}
+If you have time data in an ASCII format and the data will be read
+primarily by an application, you may want to convert it to a binary
+format. FreeForm ND supports a binary representation of time as a
+serial day starting at \ind{January 1, 1980}.
+
+FreeForm ND conversion functions let you convert from an ASCII
+representation to the binary serial date representation. As an
+example, you will convert the ASCII data in \lit{time.dat}, which contains
+10 random times from this century, to a binary serial date format in
+\lit{serial.bin}. The format description file \lit{serial.fmt} describes the input
+and output formats for \lit{time.dat} and \lit{serial.bin}. It also contains a
+format description for \lit{serial.dat}, which will contain the data in
+\lit{serial.bin} in an ASCII format.
+
+Here is the file \lit{serial.fmt}:
+
+\begin{vcode}{ib}
+/ This is the format description file for the data files time.dat, serial.bin, 
+/ and serial.dat. Each record of the ASCII file time.dat contains six 
+/ fields: year, month, day, hour, minute, second.
+
+ASCII_data "ASCII ymdhms date"
+year 2 5 ushort 0
+month 10 11 uchar 0
+day 19 20 uchar 0
+hour 28 29 uchar 0
+minute 37 38 uchar 0
+second 43 47 float 2
+
+/ Each record of the binary file serial.bin contains one field, 
+/ serial date, defined as a double that occupies 8 bytes and has 
+/ 8 places of precision.
+
+binary_data "binary serial date"
+serial_day_1980 1 8 double 8
+/ Each record of the ASCII file serial.dat contains one field, 
+/ serial date.
+
+ASCII_data "ASCII serial date"
+serial_day_1980 1 16 double 8
+\end{vcode}
+
+Here is an example file, \lit{time.dat}:
+
+\begin{vcode}{ib}
+1920     1       26       11       26    49.79
+1978     7       25        1       36    14.89
+1999    11       19       14        4     4.78
+                    .
+                    .
+                    . 
+\end{vcode}
+
+To convert the dates from the ASCII format in \lit{time.dat} to the binary
+serial date format, use the following command:
+
+\begin{example}
+newform time.dat -f serial.fmt -ift "ASCII ymdhms date"  -o serial.bin 
+\end{example}
+
+Then view the binary file \lit{serial.bin} with either of the following
+commands:
+
+\begin{example}
+newform serial.bin -oft "ASCII serial date" -o serial.dat 
+\end{example}
+
+or 
+
+\begin{example}
+readfile serial.bin 
+\end{example}
+
+You should see the following values: 
+
+\begin{vcode}{ib}
+-21889.52303484
+  -524.93316100
+  7262.58616644
+-20525.28111250
+  5046.80073889
+  .
+  .
+  .
+\end{vcode}
+ 
+\section{Calculated Input Variables}
+\label{ff,convvars,calcinp}
+
+\indc{input variable!calculated}\indc{variable!calculated input}
+\indc{calculated!input variable}
+Calculated input variables are very similar to calculated output
+variables; both perform arithmetic on the data being processed.
+However, calculated input variables are processed immediately after
+data is read, and calculated output variables are processed after
+input data has been converted.  Often this distinction is unimportant,
+and calculated output variables should be used whenever possible.  Yet
+there are times you must use, or would prefer to use, calculated input
+variables.  Here are two examples.
+
+\subsection{Deriving Record Count}
+
+A data file contains record headers, but the record headers contain
+the record number of the current and the next record header. FreeForm
+ND requires that the number of data records after each record header
+be defined (or derived).  This format file shows how a calculated
+input variable is used to derive the number of data records that
+follow each record header.
+
+\begin{vcode}{ib}
+binary_input_file_header "File Header"
+stuff 1 24 text 0
+
+/ equation to determine count:
+/ next-head-r# - this-head-r# - (2160 / 24) 
+/ note: 2160 / 24 is # records occupied by record header
+/ next-head-r# - this-head-r# - 90
+
+input_eqv
+begin constant
+this_header_record_number_eqn text [next_header_record_number]-[this_header_record_number]-90
+end constant
+
+begin name_equiv
+count this_header_record_number
+end name_equiv
+
+binary_input_record_header "Record Header"
+this_header_record_number_eqn 1    4 long 0
+next_header_record_number     5    8 long 0
+extra_stuff                   9 2160 text 0
+
+binary_input_data "Inventory Points"
+stuff 1 24 text 0
+
+binary_output_data "Inventory Points"
+stuff 1 24 text 0
+\end{vcode}
+
+In this example, the file header, record header, and data are read,
+but only the data is output.  When calculating the number of data
+records we subtract the number of records in the record header (the
+record header is 2160 bytes = 90 records $\times$ 24 bytes/record).
+The \lit{\_eqn} suffix on the variable named
+\lit{this\_header\_record\_number} indicates that this is a calculated
+variable (just as with calculated output variables).  The equation for
+this variable is defined in an input equivalence section. Furthermore,
+a name equivalence between count and
+\lit{this\_header\_record\_number} is required.  Alternatively, we
+could rename \lit{this\_header\_record\_number\_eqn} to
+\lit{count\_eqn}.
+
+Note that the calculated value for \lit{this\_header\_record\_number}
+overwrites (replaces) the value read from the file for
+\lit{this\_header\_record\_number}.  In this case, we are not writing
+record headers so it doesn't matter. However, if we were writing
+record headers and wanted to preserve the original meaning of this
+variable, we could ``undo'' the calculation with a calculated output
+variable.
+
+\subsection{A Year 2000 Solution}
+
+\indc{y2k!date conversion}\indc{date conversion!y2k}
+A calculated input variable can be used to make a two-digit date field
+appear as a four-digit date field (or more digits, up to about 15,
+which is the maximum allowed by a double-precision float).  Here is a
+format file from Year 2000 Compliant Data, rewritten to use calculated
+input variables:
+
+\begin{vcode}{xib}
+input_eqv
+begin constant
+year_eqn char 1900 + [year]
+end constant
+
+ASCII_input_data        "Year without Century, but seems as if it did"
+year_eqn           1  2   uint8 0
+month              3  4   uint8 0
+day                5  6   uint8 0
+hour               8  9   uint8 0
+minute            10 11   uint8 0
+second            12 17 float32 2
+latitude_deg_abs  18 20   uint8 0
+latitude_ns       21 21    text 0
+latitude_min      22 26 float32 2
+longitude_deg_abs 27 30   uint8 0
+longitude_ew      31 31    text 0
+longitude_min     32 36 float32 2
+depth             37 43 float32 2
+magnitude_local   44 50 float32 2
+spaces            51 79    text 0
+
+ASCII_output_data       "no calculated output variables here"
+year               1  4  uint16 0
+month              5  6   uint8 0
+day                7  8   uint8 0
+hour              10 11   uint8 0
+minute            12 13   uint8 0
+second            14 19 float32 2
+latitude_deg_abs  20 22   uint8 0
+latitude_ns       23 23    text 0
+latitude_min      24 28 float32 2
+longitude_deg_abs 29 32   uint8 0
+longitude_ew      33 33    text 0
+longitude_min     34 38 float32 2
+depth             39 45 float32 2
+magnitude_local   46 52 float32 2
+spaces            53 81    text 0 
+\end{vcode}
+
+Almost immediately after the data is read the year field is
+transmogrified from an uint8 into a float64 field, and each year value
+has 1900 added to it. The difference between using calculated input
+variables and calculated output variables to solve the Year 2000
+problem for data is like the difference between applications which
+read data and the data itself.  In the above example, the data is not
+Y2K compliant, but thanks to the above format file, any FreeForm ND
+application will think it is.  This avoids mass conversion of data
+(not a trivial task), but the data remains in noncompliance with
+respect to any software except FreeForm ND.
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

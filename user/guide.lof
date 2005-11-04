@@ -1,0 +1,27 @@
+\sffamily 
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces The Architecture of a Data Analysis Package.}}{9}
+\contentsline {figure}{\numberline {1.2}{\ignorespaces The Architecture of a Data Analysis Package Using OPeNDAP\xspace .}}{10}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Parts of an OPeNDAP\xspace URL (without a constraint expression)}}{16}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces WWW Interface\ - Directory Level}}{20}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces WWW Interface}}{21}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Sample Data Descriptor}}{36}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces The Architecture of an OPeNDAP\xspace Data Server.}}{50}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces The Architecture of an OPeNDAP\xspace Client GUI.}}{57}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Example Data Description of XBT Station}}{64}
+\contentsline {figure}{\numberline {6.2}{\ignorespaces Example Data Description of XBT Station Using Structures}}{65}
+\contentsline {figure}{\numberline {6.3}{\ignorespaces Example Data Description of XBT Station Using Arrays}}{66}
+\contentsline {figure}{\numberline {6.4}{\ignorespaces Example Data Description of XBT Cruise}}{67}
+\contentsline {figure}{\numberline {6.5}{\ignorespaces An Irregular Grid of Data.}}{75}
+\contentsline {figure}{\numberline {6.6}{\ignorespaces Example Dataset Descriptor Entry.}}{81}
+\contentsline {figure}{\numberline {6.7}{\ignorespaces An Example of Attribute Containers}}{83}
+\contentsline {figure}{\numberline {6.8}{\ignorespaces An Example of Attribute Alias}}{84}
+\contentsline {figure}{\numberline {6.9}{\ignorespaces An Example of Global Attributes}}{85}
+\contentsline {figure}{\numberline {6.10}{\ignorespaces An Example of Global Attributes In Use}}{86}
+\addvspace {10\p@ }
+\addvspace {10\p@ }

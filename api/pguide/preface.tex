@@ -1,0 +1,109 @@
+% Preface to the DODS Programmer's Guide.
+%
+% $Id$
+%
+% $Log: preface.tex,v $
+% Revision 1.5  2004/02/18 06:38:48  jimg
+% Various changes, mostly for the DODS --> OPD macros.
+%
+% Revision 1.4  1999/07/22 18:54:56  tom
+% fixed errors
+%
+% Revision 1.3  1999/02/04 17:46:05  tom
+% Modified for dods-book.cls and Hyperlatex
+%
+% Revision 1.2  1998/12/07 15:51:33  tom
+% updated for DODSv2.19
+%
+% Revision 1.1  1998/03/13 20:50:04  tom
+% created API manual from James's Toolkit document
+%
+%
+%
+
+\T\chapter*{Preface}
+\T\addcontentsline{toc}{chapter}{Preface}
+
+This document describes how to use the \opendap\ toolkit software to build
+\opendap\ data servers, clients and client-libraries. Using the objects and
+functions contained in the toolkit, you can create programs which serve data
+over the internet as well as programs that can request data from any
+\opendap\ server.
+
+This document covers release \DODSversion\ and later of the DODS
+software.
+
+\begin{ifhtml}
+  \htmlmenu{4}
+  \chapter*{Preface}
+\end{ifhtml}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Who is this Guide for?}
+\label{pref,who}
+
+This guide is for people who wish to use the \opendap\ software to write a
+new \opendap\ data server, a new client, or a new client library. Typically,
+this will only be those people who wish to serve data in a format that is not
+currently supported by the DODS team, or who have an existing application
+that uses an idiosyncratic or unusual API for data access. Most people will
+be able to use one of the already written servers or client libraries. See
+the \OPDuser\ for a list of these.
+
+This documentation assumes that the readers are \Cpp\ programmers, are
+familiar with networked applications, and the POSIX programming environment.
+The DODS/\opendap project also provides a native Java class library (API)
+that parallels the \Cpp\ spftware described here.\footnote{While this manual
+describes the \Cpp\ toolkit in detail, all of the concepts and much of the
+structure can be directly translated to the Java toolkit.}
+
+Also available are two tutorials, \OPDwclient\ and \OPDwserver\ , which
+descrie how to write a client or a server, respectively.
+
+Because the type of information presented in a document like this depends to
+a large extent on the needs of its readers we welcome your feedback and
+comments. In particular, if you have any questions about individual sections,
+email those questions and we'll send back an answer as well as including that
+information in the next version of this document. Send queries to:
+\DODSsupport.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Organization of this Document}
+
+This Guide is divided into five chapters. 
+
+\begin{description}
+  
+\item[\chapterref{tk,overview}] provides background information on the
+  organization of the toolkit software.
+
+\item[\chapterref{tk,manage-conns}] describes how to use the
+Network I/O classes to manage virtual connections.
+
+\item[\chapterref{tk,subclassing}] discusses how to sub-class the toolkit
+\Cpp\ classes so that they are specialized for your specific use.
+
+\item[\chapterref{tk,using}] describes in detail how to write certain
+sections of both the data server and the client-library for a new API.
+
+\item[\chapterref{tk,linking}] describes how to link user programs
+with the new client-library implementation of an API. 
+
+\texonly{\item[\chapterref{tk,classref}] contains complete
+  descriptions of all the DODS classes.}
+
+\end{description}
+
+\htmlonly{Note that this is {\em not\/} a reference volume. See
+  \OPDapiref\ for a concise listing of the member functions in each
+  of the toolkit's classes.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\listconventions
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../pguide.tex"
+%%% End: 

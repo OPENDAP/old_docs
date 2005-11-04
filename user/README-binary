@@ -1,0 +1,21 @@
+
+	$Id$
+
+Thank you for your interest in the Distributed Oceanographic Data System!
+
+ ** Installation instructions are in the `etc' directory. **
+
+Welcome to the binary distribution of DODS. This directory contains the files
+you requested from the DODS binary software distribution page. The DODS
+client programs, if requested, are located the directory named `bin' and the
+servers, again if requested are located in the `etc' directory. In addition,
+the `etc' directory contains support files used by the client programs and
+installation instructions for the software.
+
+For more information on DODS:
+The DODS home page is at: http://dods.gso.uri.edu/DODS
+The DODS user's manual can be found at the home page.
+DODS User's support: email: George Milkowski (gmilkowski@gso.uri.edu)
+
+James Gallagher
+jgallagher@gso.uri.edu

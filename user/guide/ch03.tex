@@ -1,0 +1,107 @@
+
+% $Id$
+
+\chapter{Finding Data}
+\labl{locator}
+
+The DODS data location service is currently under development. When the
+software becomes available for general use this section of the manual will be
+updated and will describe how that service can be used.
+
+%DODS provides three tools to use in finding data: the Locator, the server
+%catalog Service, and the boolean Service.  The first can help narrow a
+%search for data by identifying data servers which can provide data.  The
+%second and third tools are used to make queries about specific data within
+%a data set.
+
+%\section{The Data Locator}
+%\labl{locator:locator}
+
+%\indc{Locator Service} \indc{data!locator} \indc{finding data}
+%\indc{data!search} \indc{searching data} \indc{Service!Locator}
+%DODS does not pretend to remove all the overhead of data searches.  A user
+%will still have to keep track of the URLs of interesting data sets in the
+%same way a user must now keep track of the names of files containing
+%interesting data.  DODS provides a data locator Service in cooperation with
+%the \ind{Global Change Master Directory} ({\tt http://gcmd.gsfc.nasa.gov/}).  
+%\indc{GCMD|see{Global Change Master Directory}}
+%This is
+%simply a DODS server designed to respond with the URLs of datasets
+%satisfying the query criteria.  A user can also use some less formal avenue
+%to find URLs, such as asking a friend or consulting a bathroom wall.
+
+%The DODS Locator is a dialog web page at the Global Change Master Directory
+%database. DODS data URLs are archived at the GCMD site and the Locator
+%query system, can search the database and return to the user a list of the
+%URLs that contain data that satisfy the query request.  The user may then
+%cut this list from the web browser and paste it into her application.
+
+%The URL for the DODS data Locator at the GCMD is:
+
+%{\tt http://gcmd.gsfc.nasa.gov/query1.html}
+
+%\section{The Server Catalog Service}
+%\labl{locator:catalog}
+
+%\indc{Service!Server Catalog} \indc{Catalog Service} \indc{Service!Catalog}
+%\indc{data!Catalog} \indc{ls}
+%The Server Catalog Service (SCS) provides a listing of names and summary
+%information of all the data sets accessible from a particular DODS server. 
+%It is analogous to the UNIX {\tt ls} command which provides a simple listing of
+%files in a directory.  The SCS supports a limited set of constraint options
+%which permit a client to query DODS servers by dataset class.
+%\tbd{The Server Catalog is said to eventually support constraint expressions.
+%Right now it just returns the catalog of everything on that server.}
+
+%The Server Catalog is returned in response to a server catalog URL. This
+%URL is formed by appending {\tt catalog} after the cgi 
+%directory name in the DODS
+%URL. An example is shown in Figure~\refl{locator:fig:catalog}
+%\tbd{When the catalog server supports limited CE's uncomment the latex source right here:}
+
+%\begin{figure}[h]
+%\begin{center}
+%${}\overbrace{\tt http://dods.gso.uri.edu}^{URL}:
+%\overbrace{\tt /cgi-bin/nc/catalog}^{cgi extension}$
+%\caption{A Server Catalog Service URL}
+%\end{center}
+%\label{locator:fig:catalog}
+%\end{figure}
+
+
+%The Server Catalog for DODS Version 2.06 is a simple hypertext file, such
+%as may be read with a Web client like Netscape or Mosaic.
+
+%\section{The Boolean Service}
+%\labl{locator:boolean}
+
+%The \ind{Boolean Service} provides a simple means of determining whether or not a
+%dataset is available for access from a DODS server or whether a given
+%dataset has data for a specified set of constraints. \indc{Service!Boolean}
+
+%The Boolean server is invoked with a DODS URL. Simply using the string bool
+%in the URL, after the server name. For example, the netCDF boolean server
+%at the DODS home site is 
+
+%{\tt http://dods.gso.uri.edu/cgi-bin/nc/bool}
+
+%To make a query of the site, a user would type:
+
+%{\tt > dncdump  http://dods.gso.uri.edu/cgi-bin/nc/bool/data/fnoc1.nc?u<0}
+
+%This URL will return true if there are any wind measurements in fnoc1.nc
+%with a westward component.  Note that the return value of this URL is a
+%boolean value.  It is meant to be used by a DODS client that can interpret
+%boolean values.  This URL is suitable for use in a DODS constraint
+%expression, for example. (See Section~\refl{dods-client:CE:url}. for information about using
+%URLs in a constraint expression.) A regular web browser like Netscape will
+%not be able to interpret the reply message produced by this URL.
+
+%Note that when a constraint expression is specified to the Boolean Service
+%there is an inherent ambiguity when the service returns false.  The service
+%could return false because the data set does not exist or because the data
+%set exists but no data within the range specified by the constraint
+%expression exists.
+
+
+

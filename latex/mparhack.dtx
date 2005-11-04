@@ -1,0 +1,950 @@
+% \iffalse meta-comment
+%
+% This program is free software; you can redistribute it and/or
+% modify it under the terms of the GNU General Public License
+% as published by the Free Software Foundation; either version 2
+% of the License, or (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+% 
+%  $Id$
+%
+% \fi
+%
+% \DoNotIndex{\#,\$,\%,\&,\@,\\,\{,\},\^,\_,\~,\ }
+% \DoNotIndex{\def,\long,\edef,\xdef,\gdef,\let,\global}
+% \DoNotIndex{\if,\ifnum,\ifdim,\ifcat,\ifmmode,\ifvmode,\ifhmode,%
+%             \iftrue,\iffalse,\ifvoid,\ifx,\ifeof,\ifcase,\else,\or,\fi,\loop,\do}
+% \DoNotIndex{\box,\copy,\setbox,\unvbox,\unhbox,\hbox,%
+%             \vbox,\vtop,\vcenter}
+% \DoNotIndex{\@empty,\immediate,\write}
+% \DoNotIndex{\egroup,\bgroup,\expandafter,\begingroup,\endgroup}
+% \DoNotIndex{\divide,\advance,\multiply,\count,\dimen}
+% \DoNotIndex{\relax,\space,\string}
+% \DoNotIndex{\csname,\endcsname,\@spaces,\openin,\openout,%
+%             \closein,\closeout}
+% \DoNotIndex{\catcode,\endinput}
+% \DoNotIndex{\jobname,\message,\read,\the,\noexpand}
+% \DoNotIndex{\hsize,\vsize,\hskip,\vskip,\kern,\hfil,\hfill,\hss}
+% \DoNotIndex{\m@ne,\z@,\@m,\z@skip,\@ne,\tw@,\p@}
+% \DoNotIndex{\DeclareRobustCommand,\DeclareOption,\newcommand,\newcommand*}
+% \DoNotIndex{\newcount,\newif,\newlinechar,\newread,\newtoks,\newwrite}
+% \DoNotIndex{\dp,\wd,\ht,\vss,\unskip}
+%
+% \CheckSum{854}
+%
+% \MakeShortVerb\|
+%
+% \iffalse
+%    \begin{macrocode}
+%<*driver>
+\documentclass[draft]{ltxdoc}
+\EnableCrossrefs
+ %\DisableCrossrefs % Say \DisableCrossrefs if index is ready
+\CodelineIndex
+\RecordChanges
+\OnlyDescription
+\setlength\hfuzz{3pt}
+\hbadness=7000 
+\begin{document}
+   \DocInput{mparhack.dtx}
+   \raggedright
+\end{document}
+%</driver>
+%    \end{macrocode}
+% \fi
+% \newcommand\Com[1]{\texttt{\char`\\#1}}
+% \newcommand\Explanation[1]{\noindent
+%       \rule[.5ex]{.4\linewidth}{.6pt}\kern1em
+%       ^^A$\bullet\bullet\bullet$
+%       {\itshape\small #1}^^A
+%       }^^A\kern1em\rule[.5ex]{6em}{.6pt}}
+% \newenvironment{Addition}{\par\noindent\Explanation{begin addition}\par\noindent\ignorespaces}^^A
+%       {\Explanation{end addition}}
+% \newenvironment{Replacement}{\par\noindent\Explanation{begin replacement:}\par\noindent\ignorespaces}^^A
+%       {\Explanation{end replacement}}
+% \newcommand\ReplacedBy{\par\noindent\Explanation{by:}\par\noindent\ignorespaces}
+% \GetFileInfo{mparhack.sty}
+% \title{Fixing marginpars}
+% \author{Tom Sgouros\\ {\small\texttt{tomfool@top.gso.uri.edu}} \and
+%       Stefan Ulrich\\ {\small\texttt{ulrich@cis.uni-muenchen.de}}}
+% \date{v1.2 2000/02/29}
+% \maketitle
+%
+% \begin{abstract}
+%    This package implements a workaround for the \LaTeX\ bug that
+%    marginpars sometimes show up on the wrong margin.
+% \end{abstract}
+%
+% \changes{1.0}{99/03/02}{Created}
+% \changes{1.1}{99/09/23}{Rewrite to use only one label per page, and to implement
+%               `twocolumn' document option.}
+%
+%
+% {\parskip 0pt \tableofcontents }
+%
+% ^^A --------------------------------------------------
+% \section{Introduction}
+% ^^A --------------------------------------------------
+%
+%    A persistent problem with the |\marginpar| command is that the
+%    marginalia produced often show up on the wrong margin.  This has
+%    been noted in the \LaTeX\ bugs database.^^A
+%       \footnote{See \texttt{http://www.Uni-Mainz.DE/cgi-bin/ltxbugs2html},
+%       latex/2361, latex/2484, latex/2617}
+%
+%
+%    The problem occurs most likely when a marginpar appears near
+%    the top of a page.  Presumably it imagines itself to still be on
+%    the previous page at that point.  The problem is exacerbated when
+%    the page break penalties are adjusted so that the page look is
+%    quite ragged.  In cases like this, if there is a deal of white
+%    space on a page, the marginpars on the next page will be on the
+%    wrong side for the same length of the page.
+%
+%    The fix suggested in the bugs database is to insert |\pagebreak|
+%    commands at the places where the page breaks naturally fall;
+%    then the marginpars will appear on the correct side.  However, this is
+%    awkward and unpleasant work for a document that changes
+%    regularly, and seems to fly against the spirit of \LaTeX.
+%
+%    A different approach has been suggested by D. E. Knuth in his
+%    \emph{Macros for Jill}\footnote{Originally published in TUGboat
+%    \textbf{8}, pp.~309--314, reprinted in his \emph{Digital
+%    Typography} pp.~185--193.}: make two |.dvi| files, one with all
+%    notes in the left margin, the other one with all notes in the
+%    right margin. Then print the odd pages from one file, and the
+%    even pages from the other file; merge them by hand.
+%
+%    However, Knuth also mentions the possibility to use an auxiliar
+%    file to save the page information for each marginpar and use this
+%    information to position it correctly in a second \TeX\ run; and
+%    this is the strategy adopted in this package. It changes the
+%    |\@addmarginpar| macro of \LaTeX2e\footnote{% The original macro
+%    tests for \Com{ifodd}\Com{c@page}, but it doesn't always prevent
+%    material from being reconsidered by the output routine and
+%    eventually shifted to another page \emph{after} that test, in
+%    which case the marginpars will appear on the wrong side.}, and
+%    some of the output routine commands.  Each marginpar is assigned
+%    a unique number; the output routine writes the number of the last
+%    marginpar of each page to the |.aux| file, and this information
+%    is used in |\@addmarginpar| to position the current marginpar on
+%    the correct margin.
+%
+%    The downsides of this approach are:
+%    \begin{itemize}
+%    \item It uses one command sequence per page, and the total number
+%       of command sequences available is limited on most \TeX\ systems.
+%       Note however that most current \TeX\ implementations
+%       can allocate more than several thousand command names, and some can
+%       be configured to allocate more than the default during run-time,
+%       so generally this shouldn't be a problem.
+%    \item (More seriously) It redefines some internal commands of \LaTeX2e,
+%       so it might break whenever these commands change.
+%    \end{itemize}
+%
+% ^^A --------------------------------------------------
+%    \section{Usage}
+% ^^A --------------------------------------------------
+%    Just insert |\usepackage{mparhack}| into your document preamble.
+%    After the first run, you'll probably get the warning message
+%    \texttt{Marginpars may have changed. Rerun to get them right.}
+%    This is similar to \LaTeX's warning `\texttt{Label(s) may have
+%    changed}'; it indicates that the |.aux| file doesn't contain the
+%    information needed to position the marginpars correctly, due to
+%    some changes in the document since the last run. The warning
+%    should go away after running \LaTeX\ again (eventually several
+%    times if there's also a table of contents etc.).
+%
+%    If you think something is going wrong, the package also has a
+%    \texttt{debug} option; this will output a lot of tracing
+%    information and will add numbers to the marginpars in the |.dvi|
+%    file for reference.
+%    
+%
+% ^^A --------------------------------------------------
+%    \section{Bugs\slash Restrictions}
+% ^^A --------------------------------------------------
+%    \begin{itemize}
+%    \item
+%    This package works with the |twocolumn| document option, but not
+%    with the |multicol| package (you can't use marginpars inside
+%    the |multicols| environment).
+%    \item
+%    The package redefines commands of \LaTeX's output routine, so it might
+%    break with future \LaTeX\ versions (or vice versa). We try
+%    to detect this using |\CheckCommand|, so watch out for warnings
+%    like:
+%    \begin{verbatim}
+%    Command ... has changed.
+%    Check if current package is valid.
+%    \end{verbatim}
+%    \end{itemize}
+%
+%    Please send bug reports\slash suggestions to
+%    \texttt{ulrich@cis.uni-muenchen.de} (possibly including the
+%    |.log| file of your \LaTeX\ run with the \texttt{debug}
+%    package option turned on).
+%
+% ^^A --------------------------------------------------
+%    \section{Notes on Implementation}\label{implementation}
+% ^^A --------------------------------------------------
+%    \changes{v1.2}{2000/02/29}{%
+%         Slight documentation changes
+%    }%
+%    In a little more detail, the package works as follows:
+%    Every marginpar
+%    has a unique number $n$ and 
+%    writes to the |.aux| file a string like\par\medskip
+% ^^A
+%    \begin{tabular}{@{}l}
+%       |\def\mph@nr{|$n$|}|.
+%    \end{tabular}\par\medskip
+%
+%    The commands shipping out the columns and pages write to the
+%    |.aux| file strings like:\par\medskip
+% ^^A
+%    \begin{tabular}{@{}l}
+%       |\mph@setcol{|$x{\texttt{:}}$|\thepage}{\mph@nr}|,
+%    \end{tabular}\par\medskip\noindent
+% ^^A
+%    with $x = \mbox{i}$ for the first column and $x = \mbox{ii}$
+%    otherwise. Then when reading the |.aux|
+%    file at the begin of the \LaTeX\ run, |\mph@nr| will be substitued
+%    by the number of the last marginpar (the value of the |\mph@nr| command
+%    read before that),
+%    and |\mph@setcol| will assign that number to the command sequence |\csname|
+%    |mph@last@|$x{\texttt{:}}$|\thepage\endcsname|; so this will contain
+%    the number of the last marginpar on page |\thepage|.
+%
+%    Later on, |\@addmarginpar| will be able to check the value of
+%    |\csname| |mph@last@|$x{\texttt{:}}$\Com{thepage}\Com{end\-csname},
+%    using the current values for $x$ and |\thepage|.  Then there are two
+%    cases:
+%
+%    (a) |\csname| |mph@last@|$x{\texttt{:}}$|\thepage\endcsname| is
+%    undefined, which means that there has been no |.aux| file
+%    previously, or that there are more pages\slash marginpars than in
+%    the previous run; in this case, |\@addmarginpar| will just use
+%    the value of |\c@page| to determine the current page number, or
+%
+%    (b) |\csname| |mph@last@|$x{\texttt{:}}$|\thepage\endcsname| expands to
+%    some number $z \leq n$, with $n$: the number of the present
+%    marginpar, and $z$: the number of the last marginpar on |\thepage|.^^A
+%    \footnote{$z$ can never be greater than $n$, since this would
+%    mean that \TeX\ has shifted some material (including a marginpar)
+%    from later pages to earlier pages, which AFAIK cannot happen.}
+%    Then if $z < n$, |\c@page| will be incremented (inside a group)
+%    until $z$ (for the new |\thepage| is greater than $n$, or until
+%    we end up in case (a). The incremented value for |\c@page| then
+%    represents the actual page number where the current marginpar is located,
+%    and will be used instead of the original |\c@page| to determine the
+%    position of the marginpar.
+%   
+% ^^A --------------------------------------------------
+%    \section{Acknowledgements}
+% ^^A --------------------------------------------------
+%    Thanks to Donald Arseneau and Robin Fairbairns for providing
+%    detailed hints\footnote{in \texttt{<23AUG199920123097@erich.triumf.ca>} and
+%    \texttt{<7prb8s\$dpr\$1@pegasus.csx.cam.ac.uk>}, respectively.}
+%    on how to implement the page referencing mechanism using only one
+%    label per page (instead of one label each marginpar, as in a
+%    previous version).
+%
+% ^^A --------------------------------------------------
+% ^^A Place to stop if implementation shouldn't be printed
+% ^^A --------------------------------------------------
+%
+% \StopEventually{\relax}
+%    
+% ^^A --------------------------------------------------
+%    \section{Code}
+% ^^A --------------------------------------------------
+%    We need at least \LaTeX\ version 1994/05/20 which first had
+%    |\CheckCommand*|.
+%    \begin{macrocode}
+%<*sty>
+\NeedsTeXFormat{LaTeX2e}[1994/05/20]
+\ProvidesPackage{mparhack}
+      [2000/02/29 v1.2  (T. Sgouros and S. Ulrich)]
+\def\@pkg@name{mparhack}
+%    \end{macrocode}
+% ^^A --------------------------------------------------
+%    \subsection{Booleans, Options, etc.} 
+% ^^A --------------------------------------------------
+%    Some boolean switches which we will be using:
+%    |\if@mph@firstcol@| indicates that the current column is the
+%    first column, |\if@mph@warning@| toggles the warning message
+%    about changed marginpars, and |\if@debug@| toggles printing (lots
+%    of) debugging messages.
+%    \begin{macrocode}
+\newif\if@mph@firstcol@
+\newif\if@mph@warning@
+\newif\if@debug@
+%    \end{macrocode}
+%    \begin{macro}{\mph@debug}
+%    This command will print the debugging messages if |@debug@| is |true|:
+%    \begin{macrocode}
+\newcommand*\mph@debug[2][]{%
+    \if@debug@
+%%%       \PackageInfo{\@pkg@name}{#1}%
+       \typeout{DBG: #2}%
+    \else
+        \ifx#1\@empty\else
+            \typeout{DBG (#1): #2}%
+        \fi
+    \fi
+}
+%    \end{macrocode}
+%    \end{macro}
+%    The |debug| package option sets |@debug@| to true:
+%    \begin{macrocode}
+
+\DeclareOption{debug}{%
+  \global\@debug@true
+}%
+\ProcessOptions*
+%    \end{macrocode}
+% ^^A --------------------------------------------------
+%    \subsection{Commands} 
+% ^^A --------------------------------------------------    
+%    \begin{macro}{\mph@nr}
+%    A command sequence containing the current marginpar number (which
+%    will be written to the |.aux| file).
+%    \begin{macrocode}
+\newcommand*\mph@nr{0}
+%    \end{macrocode}
+%    \end{macro}
+%    \begin{macro}{\mph@pg@new}
+%    A command sequence for saving the newly determined value of |\thepage| for later use.
+%    \begin{macrocode}
+\newcommand*\mph@pg@new{0}
+\newcommand*\mph@lastpage{0}
+%    \end{macrocode}
+%    \end{macro}
+%    
+%    \begin{macro}{\mph@cnt}
+%    Emulate a counter with a command name to save one count
+%    register. Oh well~\dots \texttt{;-)}
+%    \begin{macrocode}
+\newcommand*\mph@cnt{0}
+%    \end{macrocode}
+%    \end{macro}
+%    \begin{macro}{\mph@step@cnt}
+%    Use this instead of |\stepcounter| to increment the `counter'
+%    passed as the argument.
+%    \begin{macrocode}
+\newcommand*\mph@step@cnt[1]{%
+    \begingroup
+    \@tempcnta#1
+    \advance\@tempcnta\@ne
+    \protected@xdef#1{\the\@tempcnta}%
+    \endgroup
+}
+
+%    \end{macrocode}
+%    \end{macro}
+%    \begin{macro}{\mph@setcol}
+%    The command sequence written to the |.aux| file that will save
+%    the column number\slash page number of the last marginpar on the
+%    column\slash page.^^A  The additional |ignore@warn#1| macro is used
+%    ^^A in the |\mph@check| macro.
+%    \begin{macrocode}
+\newcommand\mph@setcol[2]{%
+%  \@ifundefined{mph@last@#1}{%
+%        \relax
+%  }{%
+%        \expandafter\xdef\csname ignore@warn#1\endcsname{x}%
+%  }%
+  \expandafter\xdef\csname mph@last@#1\endcsname{#2}%
+}
+%    \end{macrocode}
+%    \end{macro}
+%    \begin{macro}{\mph@check}
+%    Similar to \LaTeX's |\@testdef| for labels, this will be called
+%    at the end of the \LaTeX\ run to check if the meaning of |#2| is
+%    still equal to |mph@last@#1| or if it has changed since the last
+%    run.
+%    ^^A The check is complicated by the fact that some of the
+%    ^^A |mph@last@#1| might have been redefined several times. The test
+%    ^^A would always trigger a warning in this case, which we want to
+%    ^^A suppress since it doesn't (at least should not) indicate a real
+%    ^^A problem (see footnote~\ref{fn:multiple-defns}).  We use the
+%    ^^A additional macro |ignore@warn#1| for this, which defined for
+%    ^^A those |#1| that had been defined more than once, and don't set
+%    ^^A |\@mph@warning@| in this case.
+%    \begin{macrocode}
+\providecommand\@tempa{}
+\newcommand\mph@check[2]{%
+    \protected@edef\@tempa{#2}%
+    \expandafter\ifx\csname mph@last@#1\endcsname\@tempa
+        \mph@debug{\csname mph@last@#1\endcsname\space == \@tempa}%
+    \else
+         \mph@debug{\csname mph@last@#1\endcsname\space != \@tempa!}%
+            \global\@mph@warning@true
+    \fi
+}
+\newcommand\mph@do@warn{%
+  \if@mph@warning@
+        \PackageWarningNoLine{mparhack}{Marginpars may have
+            changed.\MessageBreak Rerun to get them right%
+        }%
+    \fi
+}
+%    \end{macrocode}
+%    \end{macro}
+%    At the beginning, set ||
+%    To avoid warnings about undefined commands when someone stops using
+%    this package, we |\providecommand| the |\mph@setcol| command that
+%    we're going to write to the |.aux| file.
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \protected@write\@auxout{}{%
+      \string\providecommand\string\mph@setcol[2]{}%
+  }%
+}
+%    \end{macrocode}
+%    Add the needed checks to |\@enddocumenthook|. Again, use
+%    |\csname| ... |\endcsname| to avoid warnings about undefined
+%    commands.
+%    \changes{v1.2}{2000/02/29}{%
+%         Use \Com{csname...} when writing commands to \texttt{.aux} file
+%    }%
+%    \begin{macrocode}
+\AtEndDocument{%
+    \let\mph@setcol\mph@check
+    \clearpage
+    \immediate\write\@auxout{%
+        \string\gdef\string\mph@lastpage{\the\c@page}^^J%
+        \string\csname\space mph@do@warn\endcsname
+    }%
+}
+%    \end{macrocode}
+%    
+%    \begin{macro}{\mph@ifundef@or@smaller}
+%    A helper macro that checks if the command sequence in |#1| is
+%    undefined or if its value is smaller than |\mph@cnt| (it assumes
+%    that |#1| is never empty). If one of these conditions is true,
+%    the second argument is evaluated, else the third argument is
+%    evaluated (similar to \LaTeX's |\@ifundefined|). This macro
+%    will be used to shorten the body of the next macro definition.
+%    \changes{v1.2}{2000/02/29}{%
+%         Renamed this command, and updated the documentation
+%    }%
+%    \begin{macrocode}
+\newcommand\mph@ifundef@or@smaller[1]{%
+    \expandafter\ifx#1\relax
+        \let\@tempa\@firstoftwo
+    \else
+        \ifnum#1<\mph@cnt\relax
+            \let\@tempa\@firstoftwo
+        \else
+            \let\@tempa\@secondoftwo
+        \fi
+    \fi
+    \@tempa
+}
+
+%    \end{macrocode}
+%    \end{macro}
+%    
+%    \begin{macro}{\mph@pg@orig}
+%    \changes{v1.2}{2000/02/29}{%
+%         Added the \Com{mph@pg@orig} macro
+%    }%
+%    \begin{macrocode}
+\newcommand\mph@pg@orig{}
+%    \end{macrocode}
+%    \end{macro}
+%    
+%    \begin{macro}{\mph@get@margin}
+%    This macro does most of the work described in
+%    section~\ref{implementation}. The macro |\mph@pg@orig| is used to
+%    save the original value of |\c@page| which is used in case the |.aux|
+%    file information is not up-to date and we can't determine the
+%    correct value; this should give the same results as if \@pkg@name\
+%    hadn't been used.
+%    \changes{v1.2}{2000/02/29}{%
+%         Use \Com{c@page} instead of \Com{thepage} as value in \Com{mph@pg@new}
+%    }%
+%    \begin{macrocode}
+\newcommand\mph@get@margin{%
+    \begingroup
+    \edef\mph@pg@orig{\the\c@page}
+    \loop
+%    \end{macrocode}
+%    This loop will be controlled by |\@tempswa|; all changes to that
+%    and to |\thepage| will be local to the current group.
+%    \begin{macrocode}
+    \@tempswafalse
+    \mph@debug{--- checking marginpar \mph@cnt}%
+    \if@twocolumn
+%    \end{macrocode}
+%    When we are in twocolumn mode, first check if the current
+%    marginpar number is greater than the last marginpar in the first
+%    column. If it isn't, we're in the first column. If it is, do the
+%    check for the last marginpar of the entire page. If this returns
+%    false, we're in the second column. Else, advance the page number
+%    and try again.
+%    \begin{macrocode}
+        \mph@debug{last on page \thepage:
+                \csname mph@last@i:\thepage\endcsname(i)
+                \csname mph@last@ii:\thepage\endcsname(ii),
+        }%
+        \mph@ifundef@or@smaller{%
+            \csname mph@last@i:\thepage\endcsname
+        }{%
+            \mph@ifundef@or@smaller{%
+                \csname mph@last@ii:\thepage\endcsname
+            }{%
+                \global\@mph@firstcol@true
+                \@tempswatrue
+                \advance\c@page by 1
+                \mph@debug{\mph@cnt\space >
+                    \csname mph@last@ii:\thepage\endcsname,
+                    incrementing \thepage, set col to i
+                }%
+            }{%
+                \global\@mph@firstcol@false
+                \@tempswafalse
+                \mph@debug{\mph@cnt\space <=
+                    \csname mph@last@ii:\thepage\endcsname,
+                    exiting loop
+                }%
+            }%
+        }{%
+            \@tempswafalse               
+            \global\@mph@firstcol@true
+            \mph@debug{exiting loop}%
+        }%
+    \else
+%    \end{macrocode}
+%    Not in twocolumn mode, we need only check for |mph@last@ii|:
+%    \begin{macrocode}
+        \mph@debug{last on page \thepage\space is
+                \csname mph@last@ii:\thepage\endcsname
+        }%
+        \mph@ifundef@or@smaller{%
+            \csname mph@last@ii:\thepage\endcsname
+        }{%
+            \@tempswatrue
+            \advance\c@page by 1
+            \mph@debug{\mph@cnt\space >
+                \csname mph@last@ii:\thepage\endcsname,
+                incrementing page number
+            }%
+        }{%
+            \@tempswafalse
+            \mph@debug{\mph@cnt\space <=
+                \csname mph@last@ii:\thepage\endcsname,
+                exiting loop
+            }%
+        }%
+    \fi
+%    \end{macrocode}
+%    Now we have either found the correct page, or reached the end of the document
+%    without finding the appropriate page (e.\,g., if the |.aux| file hasn't existed
+%    before, or if the document has grown a lot since the last run).
+%    In this case we reset |\c@page| and |\if@mph@firstcol@| to their original values
+%    and jump out of the loop.
+%    \changes{v1.2}{2000/02/29}{%
+%         Use original values for page and column number by default%
+%    }%
+%    \begin{macrocode}
+    \ifnum\mph@lastpage>\c@page
+    \else
+        \@tempswafalse
+        \mph@debug{\c@page >= \mph@lastpage!}%
+        \c@page=\mph@pg@orig
+        \if@firstcolumn
+            \global\@mph@firstcol@true
+        \else
+            \global\@mph@firstcol@false
+        \fi
+        \mph@debug{using original value: \c@page for
+            \string\c@page and exiting loop.
+        }%
+    \fi
+    \if@tempswa
+        \mph@debug{iterating ...}%
+    \repeat
+%    \end{macrocode}
+%    After having finished the loop, we save the current (eventually modified)
+%    value of |\c@page| to |\mph@pg@new|:
+%    \begin{macrocode}
+    \mph@debug{=== marginpar \mph@cnt\space is on page \thepage%
+        \if@twocolumn, col \if@mph@firstcol@ 1 \else 2 \fi\fi
+        }%
+    \protected@xdef\mph@pg@new{\the\c@page}%
+    \endgroup
+}
+
+%    \end{macrocode}
+%    \end{macro}
+%    
+% ^^A --------------------------------------------------
+%    \subsection{Patching the output routine} 
+% ^^A --------------------------------------------------    
+%    We have to hook into 3 commands that are part of \LaTeX's output routine:
+%    |\@addmarginpar|, |\@outputpage| and |\@outputdblcol|.
+%    First let's ensure that we patch the correct definitions.
+%    \changes{v1.2}{2000/02/29}{%
+%         Added \Com{CheckCommand*} for \Com{@addmarginpar}, \Com{@outputpage}
+%         and \Com{@outputdblcol} 
+%    }%
+%    \begin{macrocode}
+\CheckCommand*\@addmarginpar{%
+    \@next\@marbox\@currlist{\@cons\@freelist\@marbox
+    \@cons\@freelist\@currbox}\@latexbug\@tempcnta\@ne
+    \if@twocolumn
+        \if@firstcolumn \@tempcnta\m@ne \fi
+    \else
+      \if@mparswitch
+         \ifodd\c@page \else\@tempcnta\m@ne \fi
+      \fi
+      \if@reversemargin \@tempcnta -\@tempcnta \fi
+    \fi
+    \ifnum\@tempcnta <\z@  \global\setbox\@marbox\box\@currbox \fi
+    \@tempdima\@mparbottom
+    \advance\@tempdima -\@pageht
+    \advance\@tempdima\ht\@marbox
+    \ifdim\@tempdima >\z@
+      \@latex@warning@no@line {Marginpar on page \thepage\space moved}%
+    \else
+      \@tempdima\z@
+    \fi
+    \global\@mparbottom\@pageht
+    \global\advance\@mparbottom\@tempdima
+    \global\advance\@mparbottom\dp\@marbox
+    \global\advance\@mparbottom\marginparpush
+    \advance\@tempdima -\ht\@marbox
+    \global\setbox \@marbox
+                   \vbox {\vskip \@tempdima
+                          \box \@marbox}%
+    \global \ht\@marbox \z@
+    \global \dp\@marbox \z@
+    \kern -\@pagedp
+    \nointerlineskip
+    \hb@xt@\columnwidth
+      {\ifnum \@tempcnta >\z@
+          \hskip\columnwidth \hskip\marginparsep
+       \else
+          \hskip -\marginparsep \hskip -\marginparwidth
+       \fi
+       \box\@marbox \hss}%
+    \nointerlineskip
+    \hbox{\vrule \@height\z@ \@width\z@ \@depth\@pagedp}}
+\CheckCommand*\@outputpage{%
+\begingroup           % the \endgroup is put in by \aftergroup
+  \let \protect \noexpand
+  \@resetactivechars
+  \@parboxrestore
+  \shipout \vbox{%
+    \set@typeset@protect
+    \aftergroup \endgroup
+    \aftergroup \set@typeset@protect
+                                % correct? or just restore by ending
+                                % the group?
+  \if@specialpage
+    \global\@specialpagefalse\@nameuse{ps@\@specialstyle}%
+  \fi
+  \if@twoside
+    \ifodd\count\z@ \let\@thehead\@oddhead \let\@thefoot\@oddfoot
+         \let\@themargin\oddsidemargin
+    \else \let\@thehead\@evenhead
+       \let\@thefoot\@evenfoot \let\@themargin\evensidemargin
+    \fi
+  \fi
+  \reset@font
+  \normalsize
+  \normalsfcodes
+  \let\label\@gobble
+  \let\index\@gobble
+  \let\glossary\@gobble
+  \baselineskip\z@skip \lineskip\z@skip \lineskiplimit\z@
+    \@begindvi
+    \vskip \topmargin
+    \moveright\@themargin \vbox {%
+      \setbox\@tempboxa \vbox to\headheight{%
+        \vfil
+        \color@hbox
+          \normalcolor
+          \hb@xt@\textwidth{\@thehead}%
+        \color@endbox
+        }%                        %% 22 Feb 87
+      \dp\@tempboxa \z@
+      \box\@tempboxa
+      \vskip \headsep
+      \box\@outputbox
+      \baselineskip \footskip
+      \color@hbox
+        \normalcolor
+        \hb@xt@\textwidth{\@thefoot}%
+      \color@endbox
+      }%
+    }%
+  \global \@colht \textheight
+  \stepcounter{page}%
+  \let\firstmark\botmark
+}
+\CheckCommand*\@outputdblcol{%
+  \if@firstcolumn
+    \global \@firstcolumnfalse
+    \global \setbox\@leftcolumn \box\@outputbox
+  \else
+    \global \@firstcolumntrue
+    \setbox\@outputbox \vbox {%
+                         \hb@xt@\textwidth {%
+                           \hb@xt@\columnwidth {%
+                             \box\@leftcolumn \hss}%
+                           \hfil
+                           \vrule \@width\columnseprule
+                           \hfil
+                           \hb@xt@\columnwidth {%
+                             \box\@outputbox \hss}%
+                                             }%
+                              }%
+    \@combinedblfloats
+    \@outputpage
+    \begingroup
+      \@dblfloatplacement
+      \@startdblcolumn
+      \@whilesw\if@fcolmade \fi
+        {\@outputpage
+         \@startdblcolumn}%
+    \endgroup
+  \fi
+}
+%    \end{macrocode}
+%    Now for the modifications. The changes are indicated in what
+%    follows.
+%
+%    \begin{macro}{\@addmarginpar}
+%    The command that adds the marginpar box to the current page.
+%    \begin{macrocode}
+\def\@addmarginpar{%
+%    \end{macrocode}
+%    \begin{Addition}
+%    Write the current marginpar number
+%    to the |.aux| file, and call |\mph@get@margin| to save the (hopefully correct)
+%    page number to |\mph@pg@new|:
+%    \begin{macrocode}
+    \mph@step@cnt\mph@cnt
+    \protected@write\@auxout{}%
+         {\string\def\string\mph@nr{\mph@cnt}}%
+    \mph@get@margin
+%    \end{macrocode}
+%    \end{Addition}
+%    \begin{macrocode}
+    \@next\@marbox\@currlist{\@cons\@freelist\@marbox
+    \@cons\@freelist\@currbox}\@latexbug\@tempcnta\@ne
+    \if@twocolumn
+%    \end{macrocode}
+%    \begin{Replacement}
+%    |\if@firstcolumn \@tempcnta\m@ne \fi|
+%    \ReplacedBy
+%    \begin{macrocode}
+        \if@mph@firstcol@ \@tempcnta\m@ne \fi
+%    \end{macrocode}
+%    \end{Replacement}
+%    \begin{macrocode}
+    \else
+      \if@mparswitch
+%    \end{macrocode}
+%    \begin{Replacement}
+%    |\ifodd\c@page \else\@tempcnta\m@ne \fi|
+%    \ReplacedBy
+%    \begin{macrocode}
+        \ifodd\mph@pg@new \else\@tempcnta\m@ne \fi
+%    \end{macrocode}
+%    \end{Replacement}
+%    \begin{macrocode}
+      \fi
+      \if@reversemargin \@tempcnta -\@tempcnta \fi
+    \fi
+    \ifnum\@tempcnta <\z@  \global\setbox\@marbox\box\@currbox \fi
+    \@tempdima\@mparbottom
+    \advance\@tempdima -\@pageht
+    \advance\@tempdima\ht\@marbox
+    \ifdim\@tempdima >\z@
+      \@latex@warning@no@line {Marginpar on page \thepage\space moved}%
+    \else
+      \@tempdima\z@
+    \fi
+    \global\@mparbottom\@pageht
+    \global\advance\@mparbottom\@tempdima
+    \global\advance\@mparbottom\dp\@marbox
+    \global\advance\@mparbottom\marginparpush
+    \advance\@tempdima -\ht\@marbox
+    \global\setbox \@marbox
+                   \vbox {\vskip \@tempdima
+                          \box \@marbox}%
+    \global \ht\@marbox \z@
+    \global \dp\@marbox \z@
+    \kern -\@pagedp
+    \nointerlineskip
+    \hb@xt@\columnwidth
+      {\ifnum \@tempcnta >\z@
+          \hskip\columnwidth \hskip\marginparsep
+       \else
+          \hskip -\marginparsep \hskip -\marginparwidth
+       \fi
+%    \end{macrocode}
+%    \begin{Addition}
+%    Try to insert the number of the current marginpar into the
+%    |.dvi| file when in debugging mode. (Note that these are not
+%    located inside the real marbox, but outside; we take care that
+%    they don't occupy any space so that the total spacing of the
+%    document isn't affected. This means that multiple labels might
+%    overlap, but I think this doesn't matter as long as they are
+%    legible at all.)
+%    \begin{macrocode}
+       \if@debug@
+            \smash{\llap{\tiny\mph@cnt}}%
+       \fi
+%    \end{macrocode}
+%    \end{Addition}
+%    \begin{macrocode}
+       \box\@marbox \hss}%
+    \nointerlineskip
+    \hbox{\vrule \@height\z@ \@width\z@ \@depth\@pagedp}%
+}
+
+%    \end{macrocode}
+%    \end{macro}
+%    
+%    
+%    
+%    
+%    \begin{macro}{\@outputpage}
+%    Here just one |\write| command has to be added.
+%    \begin{macrocode}
+\def\@outputpage{%
+\begingroup           % the \endgroup is put in by \aftergroup
+  \let \protect \noexpand
+  \@resetactivechars
+  \@parboxrestore
+  \shipout \vbox{%
+    \set@typeset@protect
+    \aftergroup \endgroup
+    \aftergroup \set@typeset@protect
+                                % correct? or just restore by ending
+                                % the group?
+  \if@specialpage
+    \global\@specialpagefalse\@nameuse{ps@\@specialstyle}%
+  \fi
+  \if@twoside
+    \ifodd\count\z@ \let\@thehead\@oddhead \let\@thefoot\@oddfoot
+         \let\@themargin\oddsidemargin
+    \else \let\@thehead\@evenhead
+       \let\@thefoot\@evenfoot \let\@themargin\evensidemargin
+    \fi
+  \fi
+  \reset@font
+  \normalsize
+  \normalsfcodes
+  \let\label\@gobble
+  \let\index\@gobble
+  \let\glossary\@gobble
+  \baselineskip\z@skip \lineskip\z@skip \lineskiplimit\z@
+    \@begindvi
+    \vskip \topmargin
+    \moveright\@themargin \vbox {%
+      \setbox\@tempboxa \vbox to\headheight{%
+        \vfil
+        \color@hbox
+          \normalcolor
+          \hb@xt@\textwidth{\@thehead}%
+        \color@endbox
+        }%                        %% 22 Feb 87
+      \dp\@tempboxa \z@
+      \box\@tempboxa
+      \vskip \headsep
+      \box\@outputbox
+      \baselineskip \footskip
+      \color@hbox
+        \normalcolor
+        \hb@xt@\textwidth{\@thefoot}%
+      \color@endbox
+      }%
+    }%
+  \global \@colht \textheight
+%    \end{macrocode}
+%    \begin{Addition}
+%    \begin{macrocode}
+  \immediate\write\@auxout{%
+        \string\mph@setcol{ii:\thepage}{\string\mph@nr}%
+  }%
+%    \end{macrocode}
+%    \end{Addition}
+%    \begin{macrocode}
+  \stepcounter{page}%
+  \let\firstmark\botmark
+}
+
+%    \end{macrocode}
+%    \end{macro}
+%        
+%    \begin{macro}{\@outputdblcol}
+%    Here, two |\write| commands have been added.
+%    \begin{macrocode}
+\def\@outputdblcol{%
+  \if@firstcolumn
+    \global \@firstcolumnfalse
+    \global \setbox\@leftcolumn \box\@outputbox
+  \else
+    \global \@firstcolumntrue
+    \setbox\@outputbox \vbox{%
+              \hb@xt@\textwidth {%
+                \hb@xt@\columnwidth {%
+                  \box\@leftcolumn \hss
+%    \end{macrocode}
+%    \begin{Addition}
+%    \begin{macrocode}
+                  \write\@auxout{%
+                      \string\mph@setcol{i:\thepage}{\string\mph@nr}}%
+%    \end{macrocode}
+%    \end{Addition}
+%    \begin{macrocode}
+                }%
+                \hfil
+                \vrule \@width\columnseprule
+                \hfil
+                \hb@xt@\columnwidth {%
+                  \box\@outputbox \hss
+%    \end{macrocode}
+%    \begin{Addition}
+%    \begin{macrocode}
+                  \write\@auxout{%
+                      \string\mph@setcol{ii:\thepage}{\string\mph@nr}}%
+%    \end{macrocode}
+%    \end{Addition}
+%    \begin{macrocode}
+                }%
+                }%
+              }%
+    \@combinedblfloats
+    \@outputpage
+    \begingroup
+      \@dblfloatplacement
+      \@startdblcolumn
+      \@whilesw\if@fcolmade \fi
+        {\@outputpage
+         \@startdblcolumn}%
+    \endgroup
+  \fi
+}
+%    \end{macrocode}
+%    \end{macro}
+%    
+%    \begin{macrocode}
+%</sty>
+%    \end{macrocode}
+% \Finale 

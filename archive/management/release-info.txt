@@ -1,0 +1,790 @@
+
+% Notes on the release process.
+%
+% $Id$
+
+% Add a software roadmap. What's in the various directories, what
+% it does. This should make it easy to find documentation files so that we can
+% make sure to update them when code changes. Maybe what we really need is a
+% list of documentation and a check list of stuff to go over when changes are
+% made.
+
+\documentclass{article} 
+
+% \usepackage{psfig} 
+% \usepackage{changebar}
+% \usepackage{acronym} 
+% \usepackage{gloss} 
+% \usepackage{vcode}
+
+% Note: to get the glossary to work, run bibtex on the *.gls.aux file,
+% then latex, then bibtex *.gls, then latex. Also, make sure to set
+% your BST and BIBINPUTS environment variables so that the BST and BIB files
+% will be found.
+% \makegloss
+
+% Change paragraph typesetting; eliminate indenting and add more space between
+% paragraphs.
+\setlength{\parindent}{0em}     % Amount of indentation
+\addtolength{\parskip}{1ex}     % Vertical separation
+\setcounter{secnumdepth}{4}     % Put \paragraph in TOC
+\setcounter{tocdepth}{4}
+
+
+\begin{document}
+
+\title{OPeNDAP Software Release Process, Draft}
+
+\author{James Gallagher\thanks{jgallagher@opendap.org} 
+  \and Dan Holloway\thanks{dholloway@opendap.org}
+  \and Ethan Davis\thanks{edavis@ucar.edu}}
+
+\date{$Revision$ \\ Printed: \today}
+
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+
+Deciding when to release our software is hard. It is time to release when
+ther are enough new features to interest users and/or enough fixes to satisfy
+demands. However, this must be balanced by releasing the software frequently
+enough so that the new features/fixes do not overwhelm us. Think of the new
+things as contributing to the software's 'mass.' The more features and fixes,
+the more mass. The more mass the harder it is to control the release (more
+effort needed to start the process and more care needed to make sure it stays
+under control). It is impossible provide a receipe that tells us when 'it is
+time to release.' Each set of features is different and must be analysed
+based on their own merits and complxities.
+
+\section{Releases Checklists}
+
+This section contains some check lists that we have developed over time to
+help make the process of releasing software more predictable. Collecting these
+lists in one place should help coordinate our group and also make it easier
+to fix broken parts of, or add missing parts to, the release process. 
+
+All the OPeNDAP software is held in one CVS module. Even so, each discrete
+piece of software (a server, the library of common code, et c.) is in its own
+directory. Each source directory has its own version number. With the
+exception of the server dispatch software (which is in DODS/etc) all of the
+software is held in directories under DODS/src and each of those directories
+contains a separate 'deliverable' with its own version number.
+
+In paractice, we release the OPeNDAP software mostly en masse. However, if a
+fix for a particular component really needs to be released
+quickly, we can increment just that component's version number and release it
+alone. That is, suppose the current release is version 2.1 and we add an
+important fix to asciival which is at version 2.1.6. We can bump the version
+number of asciival to 2.1.7 and put that in the 2.1 release. 
+
+When we decide to there are enough new features and/or fixes for a new
+release, the version number of the release as a whole is increased. Section
+?? has inforamtion on version numbering.
+
+\subsection{Making a new release}
+
+Making a new software release can be roughly divided into two parts. In the
+first part we start making Release Candidates (essentially beta releases). As
+problems are found in these, we fix those problem and produce a successive
+candidate. This continues until the current Release Candidate can be made a
+formal release.
+
+Here are the steps used to iterate over making release candidates toward
+making a formal release:
+
+\begin{enumerate}
+\item Release the source as ``Release candidate 1''
+
+\begin{enumerate}
+\item Prepare the code in CVS---See!\ref{cvs-prepare}
+\item Declare CVS branch frozen
+\item Tag the branch for RC1 release, e.g., "release-3-4-RC1"
+\item Merge the branch back onto trunk---See~\ref{cvs-tag-merge}
+\item Checkout RC1 release
+\item Make source tar files---See~\ref{cvs-export}
+\item Place on ftp site
+\item Make sure web site is updated
+\item Announce "Release Candidate 1"
+\end{enumerate}
+
+% [I think 2 and 3 are bogus.]
+%  2) Begin building binaries
+%  3) as binaries build, release, noting they are 'RC1'
+
+\item Fix any bugs
+\item If all of the nightly builds are sucessful and the only bugs remaining
+      require feature changes to fix, the Release Candidate is ready for
+      formal release. Obviously, this might not be true if the remaining
+      problems are severe. In that case we should scrap this release and add
+      the features that will fix the bug(s).
+\item Generate new source
+\item Goto 1 and increment the RC number.
+\end{enumerate}
+
+Note that the Release Candidate concerns the source code and binary builds
+only. Once we've decided to make a formal release, There are other things
+that must be done *before* it is ready:
+\begin{itemize}
+\item Is the documentation sufficient? Check README/INSTALL (src, etc, docs)
+\item Is the web-site current?
+\item Is support capable of answering questions on the software?
+  (install/use) and do they understand the software's limitations.
+\end{itemize}
+
+\subsection{To Prepare code in CVS so that it can become a Release Candidate}
+
+\subsubsection{Prepare the code in the CVS-controlled working directory/ies}
+\label{cvs-prepare}
+\begin{quote}
+  For the dap software, some of these steps must be done in the DODS_ROOT and
+  DODS_ROOT/etc directories in addition to DODS_ROOT/src/dap.
+\end{quote}
+\begin{enumerate}
+\item Check that the configure script is up-to-date WRT etc/aclocal.m4. Use
+  `make configure.'
+
+\item Rebuild the dependencies using `make depend.'
+
+\item Examine the directory for files that should have been removed or are
+    leftover from development/testing and remove those by hand. In some cases
+    the files will need to be removed from cvs also (cvs rm -f <files>).
+
+\item Run the tests. Do this starting from a clean set of sources. (make clean;
+    make check)
+
+\item Update release number in version.h. Use the three part version numbers.
+    Check this file in and add today's date as the log entry. This makes
+    figuring out when a particular version was made simpler (although there
+    are other ways).
+
+\item Update the ChangeLog. Scan changed log files using `cvsdate ">{date of
+    last version}".'
+
+\item Make sure that all files in the directory are checked into CVS. Use `cvs
+    ci.' Make sure to use the -l flag in DODS_ROOT.
+
+\item Examine the INSTALL and README files. Are they correct? Anything new
+    missing?
+
+\item Look at the README/INSTALL files in DODS/etc *and* DODS/docs. Are they
+    correct? The fisr set of README/INSTALL files are sent with both source
+    and binaries, the second set are bundled into the binary distributions
+    only.
+\end{enumerate}
+
+\subsubsection{Export the code to build the tar files}
+\label{cvs-export}
+\begin{quote}
+    Make sure that the top-level configure script is run.\\
+    Make sure that the top-level bin, lib and include directories exist.
+\end{quote}
+\begin{enumerate}
+
+\item Export the code from CVS using `cvs export -r rev DODS.'
+    Make *sure* to set CVSROOT!. Also check GCC, CXX, CFLAGS and CXXFLAGS
+    environment variables; make sure they are not set to wacky values. They
+    should probably be empty since configure will use whatever values you set.
+
+\item Run configure
+
+\item Run make World.
+
+\item Make the tar files (make tar).
+\end{enumerate}
+
+\subsubsection{Tag and merge the branch}
+\label{cvs-tag-merge}
+\begin{enumerate}
+\item At this point go back to the CVS directory and tag it with the same
+    numbers as is in the version.h file. Waiting until this point ensures
+    that all the files that need to be checked in are.
+
+\item Merge back into the trunk.
+
+\item In the ChangeLog file in the trunk software, record the cvs command used
+    to do the merge and the arguments to -j that should be used for the next
+    merge.
+
+\item Save and check in the changes that result from the merge.
+
+\item To test for conflicts use: 
+    alias conflict='grep -l "<<<<<<" `find ! -type d ! -name \*.cft`' and run
+    the results through the resolve_conflicts.pl script. Some files get
+    munged by this so check them out. 
+
+\item After merging each directory, add a note in ChangeLog and checkin the code
+    using `Merged with release-<rev>' as the log enty.
+
+\item Try to compile the newly merged code.
+\end{enumerate}
+\end{document}
+
+II. Targets in the Makefiles
+
+Listed here are targets in the Makefiles that are used to help make releases.
+
+    Makefile: If the Makefile.in has changed, rebuild the Makefile either by
+    running config.status or configure. In source code that has just been
+    exported from CVS, you will need to run configure to build the Makefile.
+
+    depend: (Re)build the dependencies. This target rebuilds the dependencies
+    in the Makfile.in. You should not have to use this target with code
+    that's been exported from CVS; if you do, then it is a sign that
+    something is wrong with the Makefile.in that is in CVS. You'll need to go
+    back to code that is in CVS, run make depend and then check in the
+    resulting Makefile.in. 
+
+    check-version: Check that the version number in the Makefile matches the
+    version number in the version.h file. If this returns an error, you need
+    to go back to code in CVS, re-run configure and then export the code.
+
+    update-version: Read the current version from the version.h file and
+    append it to the CWD's name (i.e., jg-dods becomes jg-dods-3.1.2). Don't
+    run this in the directories under CVS control (those that have the `CVS'
+    subdirs in them). Only run this in an exported directory.
+
+    all: Build all the main programs in the directory. 
+
+    check: Run the tests for this this software. In some cases, you have to
+    install the software (using the install target) before this does anything
+    except return an obscure error. Bummer. This should have been run by the
+    nightly build, so running it when making the source or binary tars is not
+    completely necessary...
+
+    install: Copy the binaries from this directory into the bin, lib, etc
+    and include directories.
+
+    binary-tar: Build a tarball that contains the binaries built by `all' and
+    installed by `install'. The binaries are tarred in the directories where
+    they are installed, not where they are built.
+
+    clean: Remove most generated files (i.e., executables, object files, core
+    files, emacs backup files, ...).
+
+    distclean: Remove all generated files except grammar files, the
+    Makefile and configure. 
+
+    tar: Make a source code tarball. Run distclean before using this target
+    to make the source tar balls.
+
+If all goes well, the targets should be run in the following order after
+running configure: check-version (should return OK), update-version (should
+set the directory name so that the source tar balls have the correct names),
+all (builds the code), install (installs it), binary-tar (creates the binary
+distributions for this platform), distclean (gets rid of the same before
+making the source tar balls), tar (makes the source code tar balls).
+
+
+        $Id$
+
+If you have checked out code a want to check changes in on a branch instead
+of the main trunk, do the following:
+
+1) Tag the code so that the branch has a name.
+2) Update your copy of the code so that it is associated with that branch.
+3) Check in the code.
+
+Here's an example:
+
+        cvs tag -b test-branch
+
+-b makes this tag a branch off of the main trunk. The symbolic name
+ `test-branch' can be used to refer to the branch. Without a symbolic name,
+ you'll be hosed.
+
+        cvs update -r test-branch
+
+This updates the tag of the code in the current working directory to
+`test-branch'. Since the tag is on a branch, now so is this code.
+
+        cvs ci -m "<some message>
+
+The code is now checked in on the branch.
+
+Note that there's a test CVS module that can be checked out and played with.
+You cannot do anything too terrible to this since the `code' is just a couple
+of test files. Before doing anything that might cause the DODS repository to
+get hosed, try it out there. The name of the test module is `cvs-test'.
+
+James
+
+-----------------------------------------------------
+
+
+ $Id$
+
+Contents
+
+I. Getting started
+Ib. Adding and using a branch
+II. Useful commands
+III. Version management
+IV. Successive merging from a branch
+--------------------------------------
+
+I. Getting started
+
+To start the ball rolling look in the cvs server documentation file. What it
+describes is the `cvs login' tool (which you don't get help on if you say cvs
+--help ...); in the info file look in the section on repositories:remote
+repositories:password authentication:using the client.
+
+Here is a summary of what to do: 
+
+        cvs -d :pserver:<user>@dcz.dods.org:/usr/local/cvs-repository login
+
+** Make sure not to add a trailing / to the repository name; some versions of
+   CVS gag if you do.
+
+It should mumble about a password; ask aboutfor your password. Once that's
+done you don't have to type the password anymore.
+
+        cvs -d :pserver:<user>@dcz.dods.org:/usr/local/cvs-repository \
+          checkout -l DODS
+
+This will checkout the root directory without recurring through all the
+subdirs; you will have to select the subdirs you want by hand. Unfortunately,
+there is no way to tell it to checkout everything except <foo>. Also, `co' is
+an alias for `checkout'.
+
+Once you have checked out the root directory you no longer need to feed cvs
+the `-d <big long string>' thing; it remembers where to go.
+
+As an alternative, you can define the environment variable CVSROOT to have
+the vlaue :pserver:<user>@dcz.dods.org:/usr/local/cvs-repository. Then you
+won't have to use the -d option. 
+
+Find a place to put the dods root directory and do the following:
+
+        cvs co DODS/etc
+
+        cvs co DODS/src/dap
+        cvs co DODS/src/nc-dods
+
+to get only the source directories for the dap library and Netcdf server, or
+
+        cvs co DODS/src
+
+to get all the source directories.
+
+The `-l' option in the first command tells cvs *not* to recurse when checking
+out the root directory. If you say `cvs co DODS' that will result in a huge
+pile of stuff you probably could care less about.
+
+Because it is not possible to get cvs to create the subdirs of DODS without
+checking out the subdirs contents (which would amount to the entire DODS
+module - it is very large) it is hard to know which subdirs you might want.
+Here is a list of the subdirs under DODS:
+
+        src     The source code.
+        etc     Destination for servers and also some support scripts.
+        bin     You must make this by hand.
+        lib     You must make this by hand.
+        include The include files installed by src/dap.
+
+As with all software, there are dependencies that exist between these
+directories. If you get the `src' directory, you will also need etc and
+include before you can build any of the software. In addition, you must make
+the bin and lib directories. If you get the `doc' directory, that's all you
+need.
+
+The `cvs status' command is very useful to see what is going on; use the -v
+option to see information about various tags and -l to limit `cvs status' to
+the local directory (the default is to recurse).
+
+Also, the `cvs log' command is useful when you want to see the log messages
+for all the revisions, including revisions on branches you have not checked
+out.
+
+--------------------------------------
+
+Ib. Checking code in on a new branch
+
+If you have checked out code a want to check changes in on a new branch
+instead of the main trunk, do the following:
+
+1) Tag the code so that the branch has a name.
+2) Update your copy of the code so that it is associated with that branch.
+3) Check in the code.
+
+Here's an example:
+
+        cvs tag -b test-branch
+
+-b makes this tag a branch off of the main trunk. The symbolic name
+ `test-branch' can be used to refer to the branch. Without a symbolic name,
+ you'll be hosed.
+
+        cvs update -r test-branch
+
+This updates the tag of the code in the current working directory to
+`test-branch'. Since the tag is on a branch, now so is this code.
+
+        cvs ci -m <some message>
+
+The code is now checked in on the branch.
+
+Note that there's a test CVS module that can be checked out and played with.
+You cannot do anything too terrible to this since the `code' is just a couple
+of test files. Before doing anything that might cause the DODS repository to
+get hosed, try it out there. The name of the test module is `cvs-test'.
+
+--------------------------------------
+
+II. Useful commands
+
+- Here are some (Bourne) shell macros I find useful:
+
+cvss: Show the status of any file that is not up to date in CVS. This is
+useful when you want to know which files have been changed.
+
+cvsl: This does the same thing as cvss, but for the current directory only.
+
+cvsu: Show which files in the CWD are not in cvs. This is useful when you're
+adding files and you want to make sure that something has not been left out.
+
+cvsm: Get the filename only of every file in the CWD that's changed since the
+last check in. You can use this with an editor to great advantage. 
+
+     emacs `cvsm` 
+
+Opens all the changed files. You can then use Emacs' CVS tools to look at the
+diffs, etc.
+
+cvsc: Which files in the CWD had conflicts on during the last merge
+operation? Note that this macro is also set up for use with an editor.
+
+Here they are:
+
+alias cvss='cvs status 2>&1 | grep "'"^File\|Examining"'" | grep -v Up-to-date'
+alias cvsl='cvs status -l 2>&1 | grep "'"^File\|Examining"'" | grep -v Up-to-date'
+alias cvsu='cvs status -l 2>&1 | grep Unknown'
+alias cvsm='cvsl | cut -f 2 -d " "'
+alias cvsc='cvsl | grep conflicts | cut -f 2 -d " "'
+
+
+- Looking at logs (the stuff you write into cvs commit):
+
+        cvs log -N -l -d ">1999-05-19" | more
+
+Lists all the logs changed on or after 5/19/1999 (use > for only after). -l
+suppresses recursive behavior and -N suppresses listing the symbolic tag
+names (which can be a long list for each file). When you're making a source
+release this can be an easy way to update the ChangeLog file.
+
+- Adding files:
+
+        cvs add <file>|<pattern>
+
+Adds the file or files. You must run cvs commit to actually add them to the
+repository.
+
+- Binary file:
+
+        cvs add -ko <file>|<pattern>
+
+The `-ko' flag suppresses keyword expansion; in case binary files (data
+files, GIF images, ...) contain a sequence of bytes that just happens to be
+$Id$ or any of the other keywords recognized by cvs, using the -ko flag will
+keep those bytes from being changed! If you already added a binary file you
+can use the `cvs admin' command to turn of keyword expansion:
+
+        cvs admin -ko <file>|<pattern>
+
+- Checking out everything before a certain date:
+
+        cvs checkout -D 1999-03-25 DODS/src/nc-dods
+
+checks out all the sources in DODS/src/nc-dods as they were *on or before*
+25 March 1999.
+
+- Checking out tagged sources. See the CVS manual or info pages about tags. I
+  use tags for *all* the releases, so you need to look at this:
+
+        cvs checkout -r release-2-10 DODS/src/nc-dods
+
+checks out all the sources tagged `release-2-10'. Note that CVS does not
+allow dots (.) in tag names. Note that if the tag is a branch point you now
+have a branch of the source tree to work in. Changes you make will be checked
+in on the branch, not the trunk (that's good). To move the changes over to
+the trunk, use the merge command. Read about that in the manual.
+
+- The checkout command does a complete checkout of a module or part of a
+  module. If you want new sources inside an existing project tree, use
+  `update'. If the directory does not exist, use `update -d'. In fact, it is
+  best to use update -d always unless you *know* that no new directories have
+  been added. Here's examples of the two above operations using update
+  instead of checkout:
+
+        cvs update -d -D 1999-03-25 nc-dods
+
+        cvs update -d -r release-2-10 nc-dods
+
+From within DODS/src/ will get the nc-dods sources from on or before 25 march
+1999 or tagged `release-2-10'. The difference is that these commands are run
+from within an existing tree; the checkout is run above the tree.
+
+- Using the -l option. The -l option suppresses the recursive behavior of
+  cvs.
+
+- Tagging directories:
+
+        cvs tag -b release-2-10
+
+tags all of the source files in the current directory and all subdirectories
+as `release-2-10' and makes that tag a branch point in the source tree. Use
+-l to tag only files in the current directory.
+
+- Looking at information about the revisions of a source file:
+
+        cvs status -v ChangeLog
+
+Here's the output for that file:
+
+    [dcz:/usr/local/ferret-DODS/src/nc-dods-2.19.2] cvs status -v ChangeLog
+    ===================================================================
+    File: ChangeLog         Status: Up-to-date
+
+       Working revision:    1.3.4.2 Wed Apr 14 03:33:45 1999
+       Repository revision: 1.3.4.2 /usr/local/cvs-repository/DODS/src/nc-dods/ChangeLog,v
+       Sticky Tag:          ferret (branch: 1.3.4)
+       Sticky Date:         (none)
+       Sticky Options:      (none)
+
+       Existing Tags:
+            ferret                          (branch: 1.3.4)
+            release-2-18                    (branch: 1.3.2)
+            no-gnu                          (branch: 1.2.4)
+            release-2-17                    (branch: 1.2.2)
+
+You can see that there are four tagged revisions (the tags are ferret,
+release-2-18, no-gnu and release-2-17). The `Sticky Tag' indicates that I'm
+using the revision tagged `ferret'. Note that it is a tag on a branch and
+that I've made some changes. Here's the `status' of the same file in the
+development directory (i.e., on the trunk):
+
+    [dcz:/usr/local/DODS/src/nc-dods] cvs status -v ChangeLog
+    ===================================================================
+    File: ChangeLog         Status: Up-to-date
+
+       Working revision:    1.3     Thu Jan 21 22:56:55 1999
+       Repository revision: 1.3     /usr/local/cvs-repository/DODS/src/nc-dods/ChangeLog,v
+       Sticky Tag:          (none)
+       Sticky Date:         (none)
+       Sticky Options:      (none)
+
+       Existing Tags:
+            ferret                          (branch: 1.3.4)
+            release-2-18                    (branch: 1.3.2)
+            no-gnu                          (branch: 1.2.4)
+            release-2-17                    (branch: 1.2.2)
+
+
+Note that the same tags are listed but that the Stick Tag is none and the
+revision number of the working file is 1.3, not 1.3.4.2 as in the previous
+example.
+
+Aside: Don't confuse CVS' revision numbers with our version numbers.
+
+III. Version management
+
+DODS C++ software development will be done as follows:
+
+   a) All development of new features will be done on the trunk.
+   b) All releases intended for users will be tagged branch points with a
+      name such as `release-<major num>-<minor num>'.
+   c) DODS will use the <major num>.<minor num>.<fix num> format for
+      releases.
+
+      i) Major Num indicates features that effect compatibility. A change in
+         this number means that features have been introduced which will will
+         make new servers incompatible with old clients, etc. For example, a
+         version 2 client won't necessarily be able to talk to a version 3
+         server (although specific instances might work).
+      ii) Minor Num indicates features that don't affect compatibility, at
+         least not in a drastic way. There might be some glitches, but
+         nothing Earth shattering.
+      iii) Fix Num indicates bug fixes.
+
+   d) The version.h and ChangeLog files give version numbers and changes
+      associated with each revision.
+   e) Fixes will be made on branches and then merged back into the trunk.
+
+Here are the steps to take when we want to start working on a release (using
+the release number 3.1 as an example):
+
+0) Merge the previous release branch into the trunk.
+
+0.5) 'cvs tag root-of-release-3-1'
+   Before making the branch, tag the code on the trunk. That will enable
+   you to later on get baqck the code just before the branch point.
+
+1) 'cvs tag -b release-3-1'
+   Mark the head of the trunk as a branch point.  (The '-branch' is a
+   bit confusing but something is needed because 'release-3-1' is used
+   below.)
+
+2) 'cvs co -r release-3-1'
+   Developers, testers, etc check out the code, compile, test, debug.
+
+3) 'cvs ci <filename(s)>'
+   Check in all changes.
+
+4) 'cvs update ...'
+   Update code to get all changes checked in.  Compile, test, debug.
+
+5) repeat steps 3) and 4) as necessary
+   If desired, additional tags can be made to mark various test
+   releases.  (E.g., 'cvs tag release-3-1-alpha1'  [or '-alpha2',
+   '-beta1', '-beta2', etc])
+
+   We probably don't really need these tags (we can just work
+   on the head of the branch).  However, in terms of user support, I
+   think it would be helpful to tag any version that is available to
+   users, so we can return to that point if needed.  So maybe we don't
+   tag the alpha releases but we do tag the beta releases.
+   (See Note below)
+
+6) 'cvs tag release-3-1-0'
+   Release deadline is here (or we have achieved a perfect release).
+
+7) 'cvs tag release-3-1-x'
+   Bug fixes have been made, get out to users.
+
+
+                   --------------------------------
+                  /       ^           ^           ^
+                 /        3-1-alpha   3-1-0       3-1-1
+                /
+     3-1       /
+       \      /
+        \--> /
+   -------------------------------------------------------
+                  Trunk -->
+
+Figure: The CVS trunk and several tags. The tags in the figure 
+don't include the word `release' because that made it too
+crowded. The 3-1-branch tag defines the code that forms the 
+basis for a release, 3-1-alpha is the code mid-way through steps
+3 & 4 above. the tag 3-1 is the first code sent to users, 3-1-1 is
+first set of fixes for that code.
+
+IV. Merging many times from a single branch back to the trunk.
+
+Suppose you create a branch and make several releases from it. All the
+while, other developers are adding changes to the trunk and changes/fixes to
+t he released code. As each successive release is made, the changes associated
+with that release should be merged back into the trunk software. However, if
+the entire branch is merged back onto the trunk some changes/fixes will be
+lost --- they will be un-done. Here's how to work around that. 
+
+First, tag every release point. Second only merge revisions with tags --- this
+will keep things reasonably sane. Referring to the figure above, once the
+3-1-alpha tag is created (but before any further work is done) the software
+could be diagramed as:
+
+
+                   --------
+                  /       ^
+                 /        3-1-alpha
+                /
+     3-1       /
+       \      /
+        \--> /
+   -------------------------------------------------------
+                  Trunk -->
+
+The command to merge the `3-1-alpha changes' back onto the trunk is:
+
+        cvs update -j 3-1
+
+This command is run in a directory that contains the trunk software.
+
+After a while more changes are made and the 3-1-0 tag is created. A diagram
+of the software now looks like:
+
+
+                   --------------------
+                  /       ^           ^
+                 /        3-1-alpha   3-1-0
+                /
+     3-1       /
+       \      /
+        \--> /
+   -------------------------------------------------------
+                  Trunk -->
+
+To merge the changes made between the 3-1-alpha and 3-1-0 tags, use:
+
+        cvs update -j 3-1-alpha -j 3-1
+
+this command merges the changes between the two tags without un-doing the
+changes between the start of the branch and the tag 3-1-alpha (which have
+already been merged). Note that the 3-1-0 tag is not used in this command. It
+is, however, a good idea to make it before doing the merge to make sure that
+the tag is created since subsequent merges will depend on it.
+
+
+------------------------------------------------------------
+
+
+        $Id$
+
+Version/revision numbers in DODS are formed from two or three numbers
+separated by a dot. Version numbers is DODS have the following meanings:
+
+        x.y.z
+
+where 
+
+        x: This is the major version number. Two different major versions are
+        almost certain to be incompatible. This is used to indicate a big
+        change in the way the software works.
+
+        y: This is the minor version number. Two different minor versions are
+        probably incompatible in some ways but work together in other ways.
+        This indicates an important change in the software. 
+
+        Each minor version has a corresponding tag in CVS *that is a branch*.
+        That is, you can checkout/update using `-r release-x-y' and get the
+        latest code for that major.minor release number. Fixes for the
+        release should get checked in on one of these branches.
+
+        z: This is the sub-minor version number. These are used to indicate
+        that problems with a particular version of the software have been
+        found and fixed. Different sun-minor versions should work together
+        except that a problem fixed might cause and incompatibility.
+
+        Note: the CVS information that follows only makes sense for software
+        which will be worked on by several people at the same time. If this
+        is not the case, don't do this extra work!
+
+        Each sub-minor version number corresponds to a real release of
+        software. Each has a tag that looks like `release-x-y-z'. However,
+        this tag is *not* a branch. This might seem confusing at first, but
+        it makes working with CVS simpler in the long haul. Here's an
+        example. Lets say we have made a release of version 3.1.0 and some
+        problems have been found. We can commit changes to that release until
+        we are happy with the fixes. At that time we then tag *that point* on
+        the 3-1 branch as 3-1-1 and make the source code tar files for
+        version 3.1.1. Here's a picture.
+
+
+                           --------------------------------
+                          /       ^           ^           ^
+                         /        3-1-alpha   3-1-0       3-1-1
+                        /
+           3-1-branch  /
+               \      /
+                \--> /
+           -------------------------------------------------------
+                          Trunk -->
+
+        Why make those non-branch tags? Because they make place holders for
+        merging the changes back onto the trunk. While we work on the 3.1
+        code, fixing bugs and tweaking features, other completely new
+        features are added to the trunk code. At some point there will be
+        enough changes on the trunk to merge the 3.1 software into the trunk
+        and make a 3.2 branch for the 3.2.x releases. And we do the whole
+        thing over again.

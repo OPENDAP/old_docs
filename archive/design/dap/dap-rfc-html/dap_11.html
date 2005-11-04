@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:09 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- Sequence</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_12.html"><img alt="Grid" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_7.html"><img alt="Constructor Variables" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_10.html"><img alt="Structure" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Sequence</b></td></tr></table>
+<h3>Sequence</h3>
+A sequence is an ordered set of <i>N</i> variables which has
+  several instantiations (or values). Variables in a sequence may be of
+  different types.  Each instance of a sequence is one instantiation of the
+  variables. Thus a sequence can be represented as:
+<blockquote><i>
+<table><tr><td colspan="1" align="CENTER">
+
+  s<sub>0 0</sub> </td><td colspan="1" align="CENTER"> &#183;&#183;&#183;</td><td colspan="1" align="CENTER"> s<sub>0 n</sub> </td></tr>
+<tr><td colspan="1" align="CENTER">
+</td><td colspan="1" align="CENTER"> </td><td colspan="1" align="CENTER"> </td></tr>
+<tr><td colspan="1" align="CENTER">
+s<sub>i 0</sub> </td><td colspan="1" align="CENTER"> &#183;&#183;&#183;</td><td colspan="1" align="CENTER"> s<sub>i n</sub>
+</td></tr></table>
+
+</i></blockquote>
+<p>Every instance of sequence <i>S</i> has the same number, order, and
+type of variables. Thus in a sequence which contains an array, each instance
+of the array MUST be the same size.<sup><a HREF="dap_49.html#footnote-2">2</a></sup> A
+sequence implies that each of the variables is related to each other in some
+logical way. A sequence is different from a structure because its constituent
+variables have several instances while a structure's variables have only one
+instance (or value).
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+sequence-decl </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "sequence" "&#123;" *sequence-types "&#125;" ";" </td></tr>
+<tr><td colspan="1" align="LEFT">
+sequence-types </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> simple-type | list-type | array-type </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> </td><td colspan="1" align="LEFT"> | structure-type | sequence-type | grid-type </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_12.html"><img alt="Grid" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_7.html"><img alt="Constructor Variables" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_10.html"><img alt="Structure" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Sequence</b></td></tr></table></body></html>

@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:13 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- Footnotes</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><img alt="" src="http://test.dods.org/images/blank.gif"></td><td bgcolor="#99ccff"><a HREF="dap.html"><img alt="Top" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_48.html"><img alt="Change log" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Footnotes</b></td></tr></table>
+<h1>Footnotes</h1>
+<dl>
+<dt><b><A NAME="footnote-1">&nbsp;</A>(1)</b><dd>The University of Rhode Island,
+    jgallagher@gso.uri.edu
+  
+<dt><b><A NAME="footnote-2">&nbsp;</A>(2)</b><dd>But a sequence may contain a
+  list and each instance of the list may have a different number of elements.
+  This is because arrays must have their size declared while lists do not.
+  
+<dt><b><A NAME="footnote-3">&nbsp;</A>(3)</b><dd>It would be better to use a multipart
+  document in place of the <tt>application/octet</tt>.
+  
+<dt><b><A NAME="footnote-4">&nbsp;</A>(4)</b><dd>This is a shortcoming of the
+  DAP. It should support HTTP/1.1's persistent connections. However, to
+  do requires that the responses also return Content-Length. Since none of our
+  servers do this, I've got no experience with persistent connections.
+  
+<dt><b><A NAME="footnote-5">&nbsp;</A>(5)</b><dd>The
+  version information should be changed to reflect the version of the
+  DAP.
+  
+<dt><b><A NAME="footnote-6">&nbsp;</A>(6)</b><dd>This should be multipart/binary.
+  
+<dt><b><A NAME="footnote-7">&nbsp;</A>(7)</b><dd>This is an artifact of the first implementation of
+    the DAP and XDR. The DAP software needed length information to allocate
+    memory for the array so it sent the array length. However, XDR also sends
+    the array length for its own purposes. This could be fixed but it is more
+    of an annoyance than anything else.
+  
+<dt><b><A NAME="footnote-8">&nbsp;</A>(8)</b><dd>The subscripts are here to reinforce that a
+  sequence consists of <i>N</i> values (or instances) and thus there are <i>N</i>
+  values for both <tt>name</tt> and <tt>temps</tt>.
+  
+<dt><b><A NAME="footnote-9">&nbsp;</A>(9)</b><dd>Define basename as the part of the filename before the
+  last dot (<tt>.</tt>).
+  
+</dl>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><img alt="" src="http://test.dods.org/images/blank.gif"></td><td bgcolor="#99ccff"><a HREF="dap.html"><img alt="Top" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_48.html"><img alt="Change log" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Footnotes</b></td></tr></table></body></html>

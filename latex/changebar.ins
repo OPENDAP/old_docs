@@ -1,0 +1,73 @@
+%%
+%% This file will generate fast loadable files and documentation
+%% driver files from the doc files in this package when run through
+%% LaTeX or TeX.
+%%
+%% 
+%%  This file is distributed in the hope that it will be useful,
+%%  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% Copyright (C) 1994,1999 Johannes Braams,  All rights reserved.
+%% 
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN
+%% archives in directory macros/latex/base/lppl.txt; either
+%% version 1 of the License, or any later version.
+%%
+%% --------------- start of docstrip commands ------------------
+%%
+\def\batchfile{changebar.ins}
+\input docstrip.tex
+\preamble
+
+
+This is a generated file.
+
+Copyright (C) 1994,1999 Johannes Braams,  All rights reserved.
+
+This program can be redistributed and/or modified under the terms
+of the LaTeX Project Public License Distributed from CTAN
+archives in directory macros/latex/base/lppl.txt; either
+version 1 of the License, or any later version.
+
+For further copyright information see any other copyright notices in
+this file.
+
+  This file is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+  For error reports concerning UNCHANGED versions of this file no more
+  than one year old, send a bug report, using latex-bugs.tex to me at
+  the address jlbraams@cistron.nl.
+
+  Please do not request updates from me directly.  Primary
+  distribution is through the CTAN archives.
+
+\endpreamble
+\def\batchfile{changebar.dst}
+\input docstrip.tex
+\keepsilent
+
+%  package file
+
+\generateFile{changebar.sty}{t}{\from{changebar.dtx}{package}}
+
+\Msg{***********************************************************}
+\Msg{*}
+\Msg{* To finish the installation you have to move the following}
+\Msg{* file into a directory searched by TeX:}
+\Msg{*}
+\Msg{* \space\space changebar.sty}
+\Msg{*}
+\Msg{* To produce the documentation run the file changebar.dtx}
+\Msg{* through LaTeX, then run makeindex -s gind.ist changebar}
+\Msg{  produce the index in a second LaTeX run.}
+\Msg{*}
+\Msg{* Happy TeXing}
+\Msg{***********************************************************}
+
+\endinput

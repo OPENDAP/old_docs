@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Why Use DODS?</title>
+  </head>
+
+  <body>
+    <p>
+      [<a href="./">Contents</a>]
+      [<a href="./node3.html">Next</a>]
+      [<a href="./node1.html">Previous</a>]
+    </p>
+
+    <h1>
+      Using DODS to Access and Deliver Remote Data
+    </h1>
+    <h1>2. Why Use DODS?</h1>
+
+    <p>
+      As a provider of data, the power of DODS is that you can make
+      your latest results available to your colleagues (including
+      control over access) with very little effort.  That effort
+      involves the one-time insertion of the DODS server binaries into
+      your Web server's "cgi-bin" area.
+    </p>
+
+    <p>
+      As a user of data, the power of DODS is that it allows you to
+      easily ingest data from multiple sources across the internet
+      into your data analysis and visualization package.  Since DODS
+      can be integrated into many analysis packages, you need not
+      learn a new package or rewrite already developed scripts.  Once
+      you have the URL for the data you want, you can work with the
+      data through your analysis application as with any local data.
+      DODS handles both supplying your application with the desired
+      data and translating the data into a format your application can
+      use.
+    </p>
+
+    <p>
+      For example, suppose you wanted to use data from two different
+      sites in an analysis.  One location stored data in HDF and the
+      other in netCDF.  To accomplish your analysis without DODS, you
+      would have to go to each site and order or download the data
+      files to your machine. If your analysis package reads netCDF but
+      not HDF, you have to determine how to convert the HDF data into
+      netCDF and then convert the data.  Once the conversion is
+      completed, you can look at the data you downloaded and make sure
+      it is what you need.  If it is not what you want, you have to go
+      back to the download step.  Finally, when you have the data
+      files containing the data of interest, you can perform your
+      analysis on the specific data you want from those data files.
+    </p>
+
+    <p>
+      If your analysis package has been DODS enabled, you can use the
+      URLs for the two datasets of the above example to access the
+      data directly from your analysis package.  Also, by qualifying
+      the URL with constraint information, you can limit the
+      parameters and range of data that will be accessed over the
+      network.  For instance, you might want to request just the
+      surface temperature from the Midwest US.  Since the process of
+      accessing data is so simple, you can quickly examine data sets
+      to determine their suitability to your analysis needs.
+    </p>
+
+    <p>
+      Assuming your DODS enabled application includes a scripting
+      language (like Matlab or IDL), you can do all of this under
+      program control. Specifically, you could write a script for your
+      application that ingests data from one site, analyzes it, and,
+      depending on the analysis, requests data from the same or
+      another site to add to your analysis.  The script could continue
+      through a particular dataset looking for relevant data.
+    </p>
+
+    <hr>
+
+    <address>
+      This page was Webified by
+
+      <a href="http://www.unidata.ucar.edu/staff/edavis/">
+      Ethan Davis</a>
+      <BR>
+
+      Questions or comments can be sent to
+      <A HREF="mailto:support@unidata.ucar.edu">
+        &lt;support@unidata.ucar.edu&gt;</A>.
+    </address>
+
+<!-- Created: Wed Sep 30 13:12:38 MDT 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Sep 30 14:30:22 MDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

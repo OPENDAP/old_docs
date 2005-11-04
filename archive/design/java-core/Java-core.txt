@@ -1,0 +1,29 @@
+
+	$Id$
+
+My Plan for writing the Java core software:
+
+1) Write a replacement for DAS & AttrTable.
+    - Take the DAS.h and AttrTable.h files and clone the interface with
+      an empty Java Class 
+    - Document each of the Java class's mfuncs.
+    - Pick someone to check my empty class to make sure that all the
+      functionality of DAS/AttrTable is present in my Java DAS class.
+    - Once it seems that I have the functionality covered (I might do it a
+      different way but the new class(es) should have capabilities as the
+      existing DAS/AttrTable code) I'll fill in the guts.
+
+2) Analyze this to see if its going to work for writing the other classes.
+    - Can I hack something that can use the new JDAS/jAttrTable (or whatever)
+      to read from a server? 
+    - What other things should I be looking at?
+
+I'm picking the DAS/AttrTable code because it is much simpler than the DDS
+and related code and because I think that the stuff in Java that will be
+analogous to Connect or DODSFilter will be so different I might have to redo
+it from the ground up.
+
+My guess is that I can estimate coding times pretty closely for the DDS and
+other stuff by keeping track of how much time the DAS takes.
+
+Comments?

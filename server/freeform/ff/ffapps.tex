@@ -1,0 +1,596 @@
+%CHAPTER 10       
+%
+% $Id$
+%
+
+\chapter{Developing FreeForm ND Applications}
+\label{ff,develop}
+
+\indc{developing FreeForm applications}
+\indc{FreeForm applications!developing}
+\indc{programming with FreeForm}\indc{FreeForm!programming}
+As applications have become increasingly complex, the concept of
+layered application development has gained wide acceptance. A series
+of layers, each of which is as self-contained as possible, is used to
+interface between user and data. Interactions between layers are kept
+as simple as possible. FreeForm ND applications use this model and
+also incorporate the object-oriented approach to increase application
+power and efficiency while simplifying design and maintenance. As an
+application programmer, you can use the FreeForm ND Data Access System
+to build your own FreeForm ND-based programs.
+
+\section{FreeForm ND Application Layers}
+
+\indc{layers!FreeForm application}
+FreeForm ND applications are composed of the layers shown below.
+
+The FreeForm ND Data Access System comprises the FreeForm ND Library
+and Data Objects layers. You, the application programmer, write the
+application-specific code and the user interface that sit above and
+make use of the FreeForm ND layers. The FreeForm ND Library sits
+closest to the data. It includes functions for creating and
+interpreting format description files, and for reading, converting,
+and writing data.
+
+The Data Object layer above the FreeForm ND Library consists of
+several types of objects that provide a simplified interface to the
+Library. Many common data access tasks have been implemented as events
+that the objects know how to accomplish. These objects are implemented
+as structures in the C programming language. The members of a
+structure are attributes of the object described by the structure.
+
+\section{Building an Application}
+
+You build a FreeForm ND application using the FreeForm ND library
+functions and data objects. To use an object in an application, you
+must complete three steps:
+
+\begin{enumerate}
+\item Create the object. 
+
+\item Set the object's attributes. 
+
+\item Send events to the object to trigger the desired action. 
+\end{enumerate}
+
+You can also include calls to show functions, e.g., \lit{db\_show}, to
+determine current characteristics of objects as the application runs.
+
+\subsection{Example Program}
+
+\indc{example!FreeForm application}
+\indc{example!programming with FreeForm}
+\indc{developing FreeForm applications!example}
+\indc{FreeForm applications!developing!example}
+The example FreeForm ND application \lit{getll.c} extracts and
+converts latitude and longitude values in any data file from their
+native format into a signed decimal degree representation. The program
+first defines a data bin with the native input format for a data file
+that includes latitude and longitude variables in any representation.
+Then it defines a compile-time format for just latitude and longitude,
+and reformats the latitude and longitude variables from their native
+format into the decimal degrees format.
+
+Compile-time formats are used to read data from any hard-coded format
+into memory, where the data can then be accessed by applications.
+Unlike other formats, a compile-time format is not intended to be
+written to a file (although it could be). The example program
+\lit{getll.c} demonstrates how to implement a compile-time format in a
+FreeForm ND-based application.
+
+
+\subsubsection{Source Code-\lit{getll.c}}
+\indc{getll@\lit{getll.c} source code}
+\nopagebreak
+\T\bgroup
+\T\footnotesize
+%\T\def\verbatim@font{\tt\small}
+
+\begin{verbatim}
+/*
+ * NAME:        getll
+ *
+ * PURPOSE:     This program reads latitude and longitude in any recognized 
+ * format, converting to values in decimal degrees.
+ *
+ * AUTHOR: Ted Habermann, NGDC, (303) 497-6472, haber@mail.ngdc.noaa.gov
+ * Modified (MAO)
+ *
+ * USAGE:              getll data_file
+ *
+ * COMMENTS:
+ *
+ * FreeForm ND applications are designed to run on many different types of
+ * computers. One of the differences between these computers is the names
+ * of various include files. These differences are taken care of by defining
+ * your environment by defining one of the following three preprocessor
+ * macros:  1) CCMSC (PC, Microsoft C), 2) SUNCC (Unix workstation, ANSI C),
+ * or 3) CCLSC (Macintosh, ANSI C).  
+ *
+ */
+
+#include <limits.h>
+
+/* The FreeForm ND include file is surrounded by a definition of the
+ * constant DEFINE_DATA in the main program so that extern arrays that
+\end{verbatim}
+\subj{}
+\vspace{-2.75\baselineskip}
+\begin{verbatim}
+ * FreeForm ND uses get initialized.  The DEFINE_DATA constant must not be
+ * defined in any other files.
+ */
+ 
+#define DEFINE_DATA
+#include <FreeForm ND.h>
+#undef DEFINE_DATA
+
+/* This include file defines the data objects */
+#include <databin.h>
+
+#define ROUTINE_NAME "getll"
+
+/* An error call back routine - it tells make_standard_dbin which events
+   are okay if they fail.  getll "dynamically" creates the output data
+   format, and throws away any existing output data format, so we don't
+   require an output data format in the format file.  This function allows
+   make_standard_dbin() to process other events, even if the OUTPUT_FORMAT
+   event fails to produce an output format.
+*/
+#ifdef PROTO
+static int mkstdbin_cb(int routine_name)
+#else
+static int mkstdbin_cb(routine_name)
+int routine_name;
+#endif
+       {
+       return(routine_name != OUTPUT_FORMAT);
+       }
+
+/*****************************************************************************
+ * NAME:  check_for_unused_flags()
+ *
+ * PURPOSE:  Has user asked for an unimplemented option?
+ *
+ * USAGE:  check_for_unused_flags(std_args_ptr);
+ *
+ * RETURNS:  void
+ *
+ * DESCRIPTION:  All FreeForm ND utilities do not employ all of the "standard"
+ * FreeForm ND command line options.  Check if the user has unwittingly asked
+ * for any options which this utility will ignore.
+ *
+ * The following "standard" command line options are not used by this
+ * application:
+ *
+ * -v  variable file
+ * -q  query file
+ * -p  precision (checkvar only)
+ * -md missing data flag (checkvar only)
+ * -m maximum number of bins (checkvar only)
+ * -mm maximum/minimum processing only (checkvar only)
+ *
+ * AUTHOR:  Mark Ohrenschall, NGDC
+ *
+ * SYSTEM DEPENDENT FUNCTIONS:
+ *
+ * GLOBALS:
+ *
+ * COMMENTS:
+ *
+ * KEYWORDS:
+ *
+ * ERRORS:
+ ****************************************************************************/
+
+#ifdef PROTO
+static void check_for_unused_flags(FFF_STD_ARGS_PTR std_args)
+#else
+static void check_for_unused_flags(std_args)
+FFF_STD_ARGS_PTR std_args;
+#endif
+       {
+       if (std_args->user.set_var_file)
+              {
+              err_push(ROUTINE_NAME, ERR_IGNORED_OPTION, 
+                       "variable file"
+                      );
+              }
+       
+       if (std_args->user.set_query_file)
+              {
+              err_push(ROUTINE_NAME, ERR_IGNORED_OPTION,
+                       "query file"
+                      );
+              }
+       
+       if (std_args->user.set_cv_precision)
+              {
+              err_push(ROUTINE_NAME, ERR_IGNORED_OPTION,
+                       "precision (checkvar only)"
+                      );
+              }
+       
+       if (std_args->user.set_cv_missing_data)
+              {                                        
+              err_push(ROUTINE_NAME, ERR_IGNORED_OPTION,
+                       "missing data flag (checkvar only)"
+                      );
+              }
+       
+       if (std_args->user.set_cv_maxbins)
+              {
+              err_push(ROUTINE_NAME, ERR_IGNORED_OPTION,
+                      "maximum number of histogram bins (checkvar only)"
+                      );
+              }
+       
+       if (std_args->user.set_cv_maxmin_only)
+              {
+              err_push(ROUTINE_NAME, ERR_IGNORED_OPTION,
+                       "maximum and minimum processing only (checkvar only)"
+                      );
+              }
+       
+       if (err_state())
+              {
+              err_disp();
+              }
+       }
+
+#ifdef PROTO
+void main(int argc, char *argv[])
+#else
+void main(argc, argv)
+int argc;
+char *argv[]
+#endif
+       {
+       int error = 0;    /* to hold error return values */
+
+       char *output_buffer = NULL; /* output data buffer */
+       long  output_bytes  = 0;    /* bytes written into output buffer */
+
+       FFF_STD_ARGS  std_args; /* holds command line information */
+       DATA_BIN_PTR  input         = NULL; /* the data bin */
+       FILE         *pfile         = NULL; /* output file */
+            
+       if (argc == 1)
+              {
+              fprintf(stderr, "%s%s",
+#ifdef ALPHA
+"\nWelcome to getll alpha "FF_LIB_VER" "__DATE__\
+" -- an NGDC FreeForm ND example application\n\n",
+#elif defined(BETA)
+"\nWelcome to getll beta "FF_LIB_VER" "__DATE__\
+" -- an NGDC FreeForm ND example application\n\n",
+#else
+"\nWelcome to getll release "FF_LIB_VER\
+" -- an NGDC FreeForm ND example application\n\n",
+#endif
+"Default extensions: .bin = binary, .dat = ASCII, .dab = dBASE\n\
+\t.fmt = format description file\n\
+\t.bfm/.afm/.dfm = binary/ASCII/dBASE variable description file\n\n\
+getll data_file [-f format_file] [-if input_format_file]\n\
+                [-of output_format_file] [-ft \"format title\"]\n\
+                [-ift \"input format title\"] [-oft \"output format 
+                 title\"]\n\
+                [-c count] No. records to process at head(+)/tail(-) of 
+                 file\n\
+                [-o output_file] default = output to screen\n\n\
+See the FreeForm ND User's Guide for detailed information.\n"
+                     );
+              exit(EXIT_FAILURE);
+              }
+     
+        /* The FreeForm ND system uses a hierarchical error handling system
+        which allows each layer of an application to add error messages to
+        a queue. err_push is the function which adds messages to the queue.
+        It is called by any function which runs into an error. err_disp is
+        the function that interactivly displays those errors to the user.
+        It is called by the main application program when an error occurs.*/
+            
+        /* Allocate the output buffer:
+        FreeForm ND uses two types of buffers extensively and defines default
+        buffer sizes in the include file FreeForm ND.h. The local or scratch
+        buffers are used as temporary work space. The cache buffers are
+        used for reading large blocks of data.*/
+     
+       output_buffer = (char *)malloc((size_t)DEFAULT_CACHE_SIZE);
+       if (!output_buffer)
+              {
+              err_push(ROUTINE_NAME, ERR_MEM_LACK, "Output Buffer");
+              err_disp();
+              exit(EXIT_FAILURE);
+              }
+     
+       /* Collect options entered on the command line, this information will be
+          used in the call to make_standard_dbin(), below.
+       */
+       if (parse_command_line(argc, argv, &std_args))
+              {
+              free(output_buffer);
+
+              err_disp();
+              exit(EXIT_FAILURE);
+              }
+       check_for_unused_flags(&std_args);
+
+       /* Create and initialize the data bin */
+       if (make_standard_dbin(&std_args, &input, mkstdbin_cb))
+              {
+              free(output_buffer);
+
+              err_disp();
+              exit(EXIT_FAILURE);
+              }
+       
+       /* make_standard_dbin may have generated an incidental error, in case 
+          the OUTPUT_FORMAT event failed.  mkstdbin_cb downgrades such an error 
+          from a terminal error to a warning, but an error message might still 
+          have been queued.  If so, clear it.
+       */
+       if (err_state())
+              err_clear();
+       
+       /* Has user indicated an output file? */
+       if (std_args.output_file)
+              {
+              pfile = fopen(std_args.output_file, "wb");
+              if (!pfile)
+                     {
+                     free(output_buffer);
+
+                     err_push(ROUTINE_NAME, ERR_CREATE_FILE, 
+                               std_args.output_file);
+                     err_disp();
+                     exit(EXIT_FAILURE);
+                     }
+              }
+       else
+              {
+              /* If not, write to standard output */
+              pfile = stdout;
+              }
+                     
+       /* Rather than using an output format contained in a file, create a
+          "dynamic" buffer, write an output format description into it, and
+          use that to initialize the data bin's output format
+       */
+     
+       sprintf(output_buffer, "\
+ASCII_output_data \"hard-coded in getll.c:main()\"\n\
+longitude  1 11 double 6\n\
+latitude  13 25 double 6\n"
+         );
+         
+  /* Use the FORMAT_BUFFER event to set the output format.  The data bin
+     knows that this is an output format because of the format type,
+     "ASCII_output_data".
+  */
+       if (db_set(input,
+                   FORMAT_BUFFER, output_buffer, NULL, NULL,
+                   END_ARGS
+                 )
+          )
+              {
+       /* Error in the output format creation -- this must never happen!
+          Ensure that the output buffer is syntactically correct, since it
+          is hard-coded into the program!
+       */
+              free(output_buffer);
+              if (std_args.output_file)
+                     fclose(pfile);
+
+              err_push(ROUTINE_NAME, ERR_MAKE_FORM, output_buffer);
+              err_disp();
+              exit(EXIT_FAILURE);
+              }
+       
+       /* Display some information about the data formats */
+       db_show(input, FORMAT_LIST, FFF_INFO, END_ARGS);
+       /* db_show writes into data bin's working buffer */
+       fprintf(stderr, "%s", input->buffer);
+
+       /*
+       ** process the data
+       */
+     
+       /* use PROCESS_FORMAT_LIST to fill cache and fill headers */
+       while ((error = db_events(input,
+                                     PROCESS_FORMAT_LIST, FFF_ALL_TYPES,
+                                     END_ARGS
+                                 )
+               ) == 0
+              )
+              {
+              /* Make sure output buffer is large enough for the cache */
+              db_show(input, 
+                          DBIN_BYTE_COUNTS, DBIN_OUTPUT_CACHE, &output_bytes, 
+                       END_ARGS, END_ARGS
+                     );
+
+              if ((unsigned long)output_bytes > (unsigned long)UINT_MAX)
+                     {
+                     error = 1;
+                     err_push(ROUTINE_NAME, ERR_MEM_LACK, 
+                               "reallocation size too big");
+                     break;
+                     }
+              if (output_bytes > DEFAULT_CACHE_SIZE)
+                     {
+                     /* The default cache size was too small for the number of 
+                        output bytes needed.  This contigency is coded for, but 
+                        is extremely unlikely to happen.  However, it is possible 
+                        that the program will error out if it can not resize the 
+                        output buffer.
+                     */
+                     char *cp = NULL;
+                     
+                     cp = (char *)realloc(output_buffer, (size_t)output_bytes);
+                     if (cp)
+                            {
+                            output_buffer = cp;
+                            }
+                     else
+                            {
+                            error = 1;
+                            err_push(ROUTINE_NAME, ERR_MEM_LACK,
+                                     "reallocation of output_buffer");
+                            break;
+                            }
+                     }
+         
+              /* Convert the cache into the output_buffer -- this will perform a 
+                 binary to ASCII conversion if necessary.  (The example shows 
+                 getll running on llmaxmin.dat, an ASCII file, but this program 
+                 works equally well on llmaxmin.bin, which is created by running 
+                 newform on llmaxmin.dat.)
+              */
+              error = db_events(input,
+                                    DBIN_DATA_TO_NATIVE, NULL, NULL, NULL,
+                                    DBIN_CONVERT_CACHE, output_buffer, NULL, 
+                                    &output_bytes, 
+                                END_ARGS
+                               );
+              if (error)
+                     break;
+
+              /* Write the contents of the output buffer to the file
+                 (or screen).
+              */
+              if (  (long)fwrite(output_buffer, sizeof(char), 
+                                 (size_t)output_bytes, pfile)
+                  < output_bytes
+                 )
+                     {
+                     err_push(ROUTINE_NAME, ERR_WRITE_FILE,  std_args.output_file
+                                                           ? std_args.output_file
+                                                           : "to screen"
+                             );
+                     break;
+                     }
+              }/* End Processing */
+
+       if (std_args.output_file)
+              fclose(pfile);
+
+       free(output_buffer);
+       
+       /* Deallocate all memory assocated with the data bin */
+       db_free(input);
+
+       /* The error stack is checked to see if anything went wrong during 
+          processing
+       */
+       if ((error && error != EOF) || err_state())
+              {
+              err_push(ROUTINE_NAME, ERR_PROCESS_DATA, NULL);
+              err_disp();
+              exit(EXIT_FAILURE);
+              }
+
+       } /* end main() for program getll */
+\end{verbatim}
+\T\egroup
+
+\subsubsection{Using getll}
+
+In this example, you will use \lit{getll} to extract latitude and
+longitude values from the ASCII data file \lit{latlon.dat}. Their
+native format is signed decimal degrees, so no conversion takes place.
+Enter the following command:
+
+\begin{example}
+getll latlon.dat 
+\end{example}
+
+This command prints format summary information and a list of longitude
+and latitude values to the screen:
+
+\begin{vcode}{ib}
+-176.161101   -47.303545
+   0.777265    -0.928001
+  35.591879   -28.286662
+ 149.408117    12.588231
+       .
+       .
+       .
+\end{vcode}
+
+As another example, use the following command to extract the latitude
+and longitude values from the file \lit{calif.tap}.
+
+\begin{example}
+getll calif.tap -f eqtape.fmt 
+\end{example}
+
+The latitude and longitude values are extracted and converted from
+their native representation as absolute values with quadrant
+indicated. You should see the following signed decimal degree values
+written to the screen:
+
+\begin{vcode}{ib}
+-121.815000     37.852000 
+-121.740000     37.737000 
+-116.550000     33.517000 
+       .
+       .
+       . 
+\end{vcode}
+
+Writing out latitude and longitude values to standard output (the
+screen) is not a very impressive feat, but you could create a similar
+program to use as the front end for a graphics package. In that case,
+you might want to include a third output column which contains the
+values of a third variable. For example, with a seismological
+application, you might want to include values for magnitude or depth.
+You can easily add the third column to the \lit{getll} program by
+changing the \lit{sprintf} statement, which creates the compile-time
+format, so it is similar to the following:
+
+\begin{vcode}{xib}
+sprintf(output_buffer, 
+        "longitude 1 8 double 6\nlatitude 9 16 double 6\n %s 17 24 double 2", 
+        *(argv+2)); 
+\end{vcode}
+
+The getllvar program incorporates a more general version of the
+sprintf statement and several other small changes to the getll code;
+see \lit{getllvar.c}. Now the second command line argument is the name
+of the third variable (only with getllvar; this is at variance with
+standard FreeForm ND command line syntax). Try the following command:
+
+\begin{example}
+getllvar calif.tap depth -f eqtape.fmt 
+\end{example}
+
+You should see the following output with values for depth given in the
+third column:
+
+\begin{vcode}{ib}
+-121.815000     37.852000          11
+-121.740000     37.737000          15
+-116.550000     33.517000           6
+-125.033000     40.600000           5
+-118.840000     37.600000           5
+-118.875000     37.609000          24
+-118.832000     37.527000          12
+-118.820000     37.569000          15
+     .
+     .
+     . 
+\end{vcode}
+
+If you enter the following command: 
+
+\begin{example}
+getllvar calif.tap year -f eqtape.fmt 
+\end{example}
+
+the year will be shown in the third column. 
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

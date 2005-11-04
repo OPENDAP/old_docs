@@ -1,0 +1,1104 @@
+%\documentstyle[12pt,html,psfig]{article}
+%\input{margins.tex}
+%\begin{document}              
+\Large
+\begin{center}
+{\bf Distributed Oceanographic Data System\\
+Workshop\\
+\large
+September 29 - October 1, 1993\\
+W. Alton Jones Conference Center\\ 
+University of Rhode Island}\\
+\end{center}
+\begin{latexonly}
+\vskip4pt\hrule height4pt\vskip4pt\hrule height2pt\smallskip
+\vskip .35in
+\end{latexonly}
+\centerline {\bf Day 1:}
+\normalsize
+
+\vskip .25in
+\begin{center}
+ {Introduction by Dr. Cornillon at 8:50}
+\end{center}
+\medskip
+Visions of "Utopia", a perfect oceanographic data system, which will 
+then be limited by some of the realities. 
+ 
+I need access to various data sets to design an algorithm to estimate 
+mixed layer depths globally from scatterometer winds and AVHRR-derived 
+day-night SST differences.
+
+I will need other data:
+mooring data with good vertical resolution to help design the algorithm
+XBT/CTD data to help validate the algorithm
+
+will also need the data to be coincident with scatterometer data and clear 
+AVHRR day and preceding or night fields
+
+have the best geographic coverage possible
+Such data does now exist at NODC, WHOI, JPL , URI and other sites
+
+We envision a system accessed from our workstation that will
+allow us to locate and acquire these data sets including those held on our 
+site quickly and easily
+
+provide these data to our favorite analysis package in a format that the 
+package recognizes.
+
+We envision others accessing our data the same way (reducing the load of 
+providing data to others that is currently an  impediment to data 
+exchange)
+\bigskip
+
+\noindent {\bf Assumptions:}
+
+The system will: 
+\begin{itemize}
+	\item focus on oceanographic data (Schramm- does this include met
+data?)  
+	\item be designed to serve the researcher
+	\item be distributed (available to any data sites)
+	\item based on a client-server model
+	\item be dynamic and changing daily
+	\item be easy to install (approximately 1 day for systems programmer)
+	\item contain a variety of different data sets and data types
+	\item not support distributed processing (at least not designed with
+this as a requirement.
+	\item upwardly compatible
+\end{itemize}
+
+Question about acceptable time delay in locating and receiving data.\\
+\smallskip
+{\bf B. Douglas -} It's easier to locate a large data set than a highly
+delimited small data base, for these are "well supported".\\
+\smallskip
+{\bf G. Flierl -} question about "install times"\\ 
+\smallskip
+{\bf E. Dobinson -} two other assumptions need to be added:
+\begin{description}
+	\item{1)} do we assume the user knows what data he/she wants?  
+
+\smallskip
+	{\bf P. Cornillon -} we will need a "front end" director to provide a
+location function
+\smallskip
+	\item{2)} second assumption - is it always better to move GB of data
+around, or do we move the request to the site where this data is stored and
+do the processing on-site (move the request to the data site rather that the
+data to the request site)
+\end{description}
+
+\medskip
+{\bf W. Schramm -} if your data are stored at multiple sites, this would be
+very hard. 
+
+\medskip
+{\bf D. Glover -} Distributed Computing Environment - actual processing 
+location should be transparent, system will optimize.  Do we want to 
+consider such as system?\\
+{\bf P. Cornillon -} We will restrict this morning's discussion to more 
+traditional move request to data.
+
+\medskip
+{\bf H. Debaugh -} As long as you get your data, you don't care where you get 
+your data from - it's much more complex to move your "program" to an 
+unknown processing environment.
+
+\smallskip
+{\bf J. Corbin -} we should not preclude the ability to do distributed
+processing but our system should not require it.\\
+{\bf P. Cornillon -} Lets assume for the near term discussion we do not have 
+distributed processing---
+\smallskip
+The Client/Server architecture allows flexibility in
+\begin{itemize}
+	\item The data formats served the oceanographic data systems may be
+linked to other disciplines data systems in the future 
+
+	\item The user interface other user groups can build their own
+interface to the system (e.g. school teachers) 
+\end{itemize}
+
+\noindent {\bf The workshop series:}
+\begin{itemize}
+	\item Objective - {\bf To develop the base for our distributed
+oceanographic data system}
+	\item Two workshops 
+    	   \begin{itemize}
+		\item Workshop \#1 (now) - communications
+		\item Workshop \#2 (summer 1994) servers
+    	   \end{itemize}
+	\item Fourth TOS meeting - spring 1995 the rest of the world
+	(systems programmer to implement the system designed in workshop 
+	\#1 and to help data providers build servers)
+
+	\item Coordinated by TOS (not a URI of JGOFS effort!)
+	\item Steered by a steering committee
+     	   \begin{itemize}
+		\item Glenn Flierl - MIT
+		\item Ken McDonald - NASA
+		\item Jim Holbrook - NOAA
+		\item Peter Cornillon - URI
+     	   \end{itemize}
+\end{itemize}
+
+\medskip
+\noindent Question about use and value of metadata\\
+
+{\bf W. Brown -} should capacity to have/use metadata be an assumption?\\
+{\bf P. Cornillon -} metadata varies so much in descriptions, ranging from
+what it is to how it was calculated.  Issues of what the metadata is are very 
+important.
+
+\medskip
+{\bf R. Wilson -} it is very important to have a browse capability of the
+host.  This lets you verify the suitability and applicability of the data.\\
+{\bf P. Cornillon -} data browse will be an important requirement in our
+system.  This will be an internet accessible system.
+
+\medskip
+{\bf B. Douglas -} question about data a PI is still working on and has not 
+published. What happens when this data loses its identity in the system - 
+since his career depends on proper recognition.  How will originators get 
+credit for participating in this system?\\
+{\bf P. Cornillon -} we will have a "voluntary" system.  We want to have
+people use it because our system will help them. We're seeing a real change in 
+how oceanographers make their data available.\\
+{\bf B. Douglas -} reality says we must have citations of how much our data is 
+being used, and by whom.
+
+\medskip
+{\bf B. Schramm -} researchers need access to "operational" Navy and NWS data, 
+yet we have constraints on who in the international community will have 
+free access to this data.\\
+{\bf P. Cornillon -} we don't want "password" protection...
+
+\medskip
+\noindent back to introduction...
+
+This workshop is sponsored by TOS, not URI...
+
+Time line viewgraph of workshop sequencing, with the goal of eventually 
+developing our prototype client:
+
+\begin{center}
+ {\bf Timeline Figure}
+\end{center}
+\bigskip
+\noindent Workshop \#1 Communication Objective 
+\begin{itemize}
+	\item Define the architecture of the System form of the Client/Server 
+System
+    	   \begin{itemize}
+		\item focus on the first day
+    	   \end{itemize}
+
+	\item Choose the Communications Protocol for Data Objects passed 
+between clients and servers - 
+    	   \begin{itemize}
+		\item focus of the second day 
+    	   \end{itemize}
+\end{itemize}
+\smallskip
+{\bf E. Dobinson -} without rank-ordered system requirements from the 
+scientists, its hard to come up with a desired system architecture.\\
+{\bf P. Cornillon -} how the different architectures scale will be an issue.\\
+{\bf R. Chinman -} isn't agenda for "data providers" much wider than just
+"what data will be available"?\\
+{\bf P. Cornillon -} We will let breakout groups define their own agendas.
+
+\bigskip
+\noindent {\bf G. Flierl:  Discussion of Distributed Systems Architectures}
+
+\medskip
+Where do existing systems fit in the context of the models we have discussed?
+(Slides are included in notes) 
+\begin{description}
+	\item{Slide 1:}  Conventional Data Base Management System --
+
+	   \begin{itemize} 
+		\item Data held in a few formats specific to that system.
+		\item Multiple data formats pose problems.
+	   \end{itemize}
+
+\begin{figure}[h]
+\centerline{\psfig{figure=slide1.xfig.ps,height=5.0in}}
+\end{figure}
+
+	\item{Slide 2:}  Client-Server model -- Moves some of the processing
+functions to the client.  No distinction between "data" and "metadata" . 
+\begin{figure}[h]
+\centerline{\psfig{figure=slide2.xfig.ps,height=5.0in}}
+\end{figure}
+\clearpage
+
+	\item{Slide 3:} Client-Servers  (One client supporting multiple
+servers,  with possible multiple protocols) 
+\begin{figure}[h]
+\centerline{\psfig{figure=slide3.xfig.ps,height=5.0in}}
+\end{figure}
+\clearpage
+
+	\item{Slide 4:} Multiple Clients and one server; clients at different
+levels of complexity (e.g. PI, industry, educational)
+\begin{figure}[h]
+\centerline{\psfig{figure=slide4.xfig.ps,height=5.0in}}
+\end{figure}
+\clearpage
+
+	\item{Slide 5:} Multiple Clients and Multiple Servers.  Servers must
+interpret queries and retrieve data.  
+\begin{figure}[h]
+\centerline{\psfig{figure=slide5.xfig.ps,height=5.0in}}
+\end{figure}
+
+
+\smallskip
+{\bf R. Chinman -} if master directory acts as repository of data, is it
+serving as a  layer between two clients?   
+Issues - locating information; clients/local dictionary; master dictionary 
+server; dictionaries in servers; polling
+
+\smallskip
+{\bf H. Debaugh -} can we have an additional "open" server between clients.  
+(will be addressed in subsequent slide)
+\clearpage
+\item{Slide 6:}
+	   \begin{itemize}
+		\item Types of Queries --
+	  	   \begin{itemize}
+			\item sub-selections
+			\item other SQL functions
+			\item incremental requests
+	  	   \end{itemize}
+
+		\item Types of Responses--
+	  	   \begin{itemize}
+			\item documentation of data set
+			\item identifiers
+			\item attributes
+			\item values/types (real numbers, integers..)
+			\item structure (most oceanographic data is not highly
+structured) 
+   	   	   \end{itemize}
+
+\begin{figure}[h]
+\centerline{\psfig{figure=slide6.xfig.ps,height=5.0in}}
+\end{figure}
+\clearpage
+	   \end{itemize}
+\item{Slide 7:} Data Objects -- Object Oriented Programming overview,
+	\begin{itemize}
+		\item program is built up of objects
+		\item encapsulation (data hiding - you do not see internal
+information) 
+		\item polymorphism
+		\item different objects accept same message but react
+appropriately and differently
+
+		\item Inheritance -- you can have a "parent" class with its
+own methods and data, and a sub-class with less capability.  If the lower
+level cannot process the request, it will be passed up to the "parent" for
+processing.  
+	\end{itemize}
+
+\begin{figure}[h]
+\centerline{\psfig{figure=slide7.xfig.ps,height=5.0in}}
+\end{figure}
+\clearpage
+
+\item{Slide 8:} Object Oriented Data Bases (OODB) --
+	\begin{itemize}
+		\item encapsulation
+		\item polymorphism
+		\item inheritance
+		\item nested structure (inheritance)
+		\item query optimization
+		\item extensible
+		\item new data types
+		\item new operations
+	\end{itemize}
+
+{\em The vision which we are looking for is to define an appropriate 
+combinations of the "clients-servers" structure in an OODB environment.}
+\normalsize
+
+\begin{figure}[h]
+\centerline{\psfig{figure=slide8.xfig.ps,height=5.0in}}
+\end{figure}
+\clearpage
+\item{Slide 9:} Other Aspects--
+	\begin{description}
+		\item{I.} Pre- and post- filters  (data compression)
+
+		\item{II.} Telephone Operators - one object may talk to
+multiple objects or sets to get the information out.  Standard way to get
+data if you don't know where it is would be to call up master directory
+which will locate the data you want.  Remote directory may update your local
+directory once the data are located. - keeping local system current will be a
+challenge, depending on frequency of use.
+		\end{description}
+
+\begin{figure}[h]
+\centerline{\psfig{figure=slide9.xfig.ps,height=5.0in}}
+\end{figure}
+\clearpage
+\end{description}
+
+\medskip
+{\bf H. Debaugh -} concern about data server doing compression and other tasks 
+may cause problems.  There may be other machines/programs in the link.
+
+\medskip
+{\bf B. Schramm -} a variety of providers will be available.  Do we want to
+have  different "classes" of servers instead of trying to put them all in one 
+"box"?  
+
+\medskip
+{\bf G. McConaughy -} are "server" and "object" the same thing?\\
+{\bf G. Flierl -} Yes,  at this point in discussion.
+
+\medskip
+{\bf H. Debaugh} presented viewgraph interpretation of open server. (Slide 6 
+included in notes)
+
+\medskip
+{\bf G. McConaughy -} "scalability" is an issue of concern.  We want to keep 
+knowledge close to the data.  "Intelligent" servers,  "minimally-
+intelligent" routers, and "stupid" clients....
+
+\medskip
+{\bf T. Kelly -} open server lets you run more efficiently.  The open server only 
+has to order data once, and can then redistribute the data multiple times.
+
+\medskip
+{\bf D. Collins -} the open server provides an opportunity to bypass the 
+"bottleneck" once you have established a repeated need for similar data.  
+The "left" direct arrow on the diagram can be used then.
+
+\medskip
+{\bf N. Soreide -} what is in the open server? Does it have metadata, or is it 
+just a "traffic cop"?\\
+{\bf G. Flierl -} Specifically, it would know where the 
+data is, and would be able to respond to some data directly, but would 
+have to go out and get other data.
+
+\medskip
+Three important functions:{\bf  Location, Routing, and Caching}
+
+\medskip
+{\bf J. Gallagher -} maintaining open server with small number of formats on 
+the bottom will be easy, but once the number of formats is large this will 
+be hard.
+
+\medskip
+(back to Flierl's slides)
+\begin{description}
+     \begin{description}
+	\item{III.} Feedback, results from previous queries used to
+constrain/optimize current query 
+	\item{IV.} Hypertext
+      \end{description}
+
+\item{} Issues:
+     \begin{itemize}
+	\item which elements?
+	\item directory protocol
+	\item updates
+	\item long-term stability 
+	\item redundancy
+	     \begin{itemize}
+		\item versions
+		\item updates
+	     \end{itemize}
+	\item protection/privilege
+	\item credit for data sets
+     \end{itemize}
+\end{description}
+
+\medskip
+{\bf R. Chinman -} what happens when an oceanographer takes their workstation 
+with them - can be an issue for stability of a data base which may reside 
+on that system.
+
+\medskip
+{\bf D. Fulker -} if result of a query gives you location of many different 
+versions of the same data, then there is a problem.  Must uniquely identify 
+data sets.
+
+\medskip
+{\bf B. Douglas -} AGU has issued requirements to clearly identify data cited
+in research, in a manner such that another researcher could uniquely access 
+it. 
+
+\medskip
+{\bf B. Douglas -} "30-year" rule - will the data still have value in 30
+years.
+
+\medskip
+{\bf W. Brown -} can't archived data be a distributed set of centers?
+
+\medskip
+{\bf G. McConaughy -} offered software (EOSDIS Version 0) as a base for the 
+system we are trying to develop.
+
+\medskip
+{\bf E. Dobinson -} can we get a JGOFS overview?\\
+{\bf P. Cornillon -} JGOFS is just an approach we're looking at.  It is not
+the model for the system we're developing.  JGOFS requires a UNIX
+workstation, there is no automatic update. There are many things about JGOFS
+which should be improved. 
+
+\medskip
+{\bf B. Schramm -} CD ROMs are becoming a common data format, and would be 
+especially useful for maintaining "local" data.  Can this group foster a 
+format for CD ROMs?  
+
+\medskip
+{\bf J. Corbin -} Do we envision unrestricted access and no data charges for
+this system?\\
+{\bf P. Cornillon -} it's an issue we need to address, but one which is 
+fairly easy to look at.
+
+\medskip
+{\bf L. Walstad -} there must be some restrictions so that someone doesn't ask 
+to download a 30 GB data set on internet.\\
+{\bf P. Cornillon -} X-Browse system allows certain access to the data for
+free, but you can't take the entire image archive and download it.  The
+objective is to limit how long the line is used by one person.	
+
+\begin{latexonly}
+\newpage
+\end{latexonly}
+\Large
+\begin{center}
+{\bf Afternoon session}
+\end{center}
+\normalsize
+\vskip .25in
+Broke into working groups for the afternoon
+
+\medskip
+\noindent Working Groups:
+\begin{itemize}
+\item System Designers
+\item Data providers
+\item Data Users/Scientists 
+\item Data Objects
+\end{itemize}
+\medskip
+\vskip .25in
+\Large
+\begin{center}
+{\bf Evening Session}
+\end{center}
+\begin{center}
+{\bf Presentations by working groups}
+\end{center}
+\normalsize
+
+\medskip
+\begin{center}
+{\bf Data Users Working Group}
+\end{center}
+\begin{center}
+ {W. Brown-- Chairman}
+\end{center}
+
+
+\medskip
+\underline{Data User Requirements}
+
+\medskip
+\begin{center}
+ {\bf "Data" - primary "observations" and information}
+\end{center}
+   \begin{description}
+	\item{(O)} {\em Must provide access to both investigator and
+archive-held data}
+	\item{(1)} Data Selection
+	   \begin{itemize}
+		\item Ability to "locate" specified data in terms of:
+parameter, time-space window, type, source, QUERIES 
+
+		\item Refinement of search
+		\item Coincident parameter search
+		\item Flexibility to handle "unknown" parameter selections
+	   \end{itemize}
+	\item{(2)} Data Acquisition
+	   \begin{itemize}
+		\item Timeliness - electronic and/or mail delivery possible
+		\item "Useful" Form - interactive and/or batch access
+		\item Interface with simple programming languages
+		\item Different formats
+		\item Data subset selection possible
+	   \end{itemize}
+	\item{(3)} Redundant Data Screening
+
+	\item{(4)} Data transfer protocol(s)-- Investigator to Archive
+\end{description}
+\medskip
+\begin{center}
+{----------------------------}
+\end{center}
+\vskip .25in
+\begin{center}
+{\bf Data Providers Working Group}
+\end{center}
+\begin{center}
+ {R. Chinman--Chairman}
+\end{center}
+
+\medskip
+\noindent Representation of the group:
+\begin{itemize}
+	\item NOA-NOS, FNOC
+	\item NODC
+	\item NOAA-NOS (Ocean, Lake Level Div)
+	\item PODAAC
+	\item PI
+	\item NOAA-NESDIS (DMSP, ERSY, METEOSAT, GMS)
+	\item UNOLS R/V Tech
+	\item Global Change Data Center GDAAC
+	\item TOGA COARE
+\end{itemize}
+Dataset Classification:
+\begin{itemize}
+	\item Open-ended
+	\item Project (Closed)
+	\item Rotating
+	\item Orphan (incidental data to another study)
+	\item Real-time
+\end{itemize}
+
+Providers - PI\\
+Users -	Data Center\\
+			repetitive data distribution tool
+			data discovery tool (e.g. sociologists)
+
+The types and kinds of data and providers and users {\em suggest/requires a 
+relatively wide range of options/capabilities for distributing data}
+
+What data providers need from or will do for the distributed ocean data 
+system:
+\begin{itemize}
+   	\item Data for a wider community than ocean community alone
+   	\item Internet based
+	\item Generation and distribution of metadata critical!! including
+citation info , algorithms, when and where data collected, data set version
+caveats 
+	\item MD-like locator needed for this system
+	\item DIF-like metadata file needed for the locator, for the data
+file to be findable on the system
+	\item Provider-specific capabilities for instituting restrictions,
+privileges, protection of datasets including log of users and activities
+	\item Distribution of processing capabilities restricted to data
+format translation and subsetting
+\end{itemize}
+\medskip
+Discussion about data sets including appropriate credit for the PI who 
+provided the data to the data center, and the requirement that a second 
+investigator can obtain the exact same data set, apply the stated model or 
+algorithm to it, and derive the same result.
+
+
+\medskip
+{\bf P. Cornillon -} MD is not populated as much as it should/could be because
+of the excessive documentation requirements for data sets 
+\medskip
+\begin{itemize}
+	\item Ease of installation - higher overhead of server installation
+acceptable, but ease still important
+
+	\item Data format translators necessary, with at least the following
+translations: 
+	   \begin{itemize}
+		\item GRIB/BUFR
+		\item HDF
+		\item net CDF
+	   \end{itemize}
+\end{itemize}
+
+\medskip
+\begin{center}
+{----------------------------}
+\end{center}
+\vskip .25in
+\begin{center}
+{\bf System Architecture Working Group}
+\end{center}
+\begin{center}
+ {E. Dobinson-- Chairwoman}
+\end{center}
+
+\medskip
+Basic Constraints
+\begin{description}
+	\item{1)} Cost - reusable code, functions,  systems
+	\item{2)} Schedule - 9 working months to build system
+	\item{3)} Extensibility (grow with time) and Scalability (start small
+then grow dynamically)
+	\item{4)} Simple to use, easy to install, easy to use
+	\item{5)} Dynamic - easy to grow and administrate
+\end{description}
+\smallskip
+Given these constraints, what is essential functionality?
+\begin{itemize}
+	\item Location and Search function primary - user must be able to
+locate and find data (look at USGS system?)
+	\item Need an order function to provide the user with the data he or
+she wants..  
+	\item Services a server can provide may vary, based on the data set
+(BASIC CORE SYSTEM)
+\end{itemize}
+Discussion of Client/Server viewgraphs:
+
+\medskip
+\begin{center}
+{\bf End of Day 1}
+\end{center}
+\bigskip
+\bigskip
+\begin{latexonly}
+\vskip4pt\hrule height2pt\smallskip
+\end{latexonly}
+\bigskip
+\Large
+\begin{center}
+{\bf Day 2:}
+\end{center}
+\vskip .25in
+\normalsize
+\smallskip
+\begin{center}
+{\bf Data Objects Working Group}
+\end{center}
+\begin{center}
+{G. McConaughy-- Chairwoman} 
+\end{center}
+
+Started with an overview of existing systems.
+\begin{description}
+	\item{} Search to data access is range of service for most existing
+systems.  EOSDIS is mostly search, JGOFS much more focused on data access.
+IDBMS mostly one large data base.  
+				
+\smallskip
+{\bf B. Schramm -} net CDF (UniData), NEONS were left out.
+
+	\item{} EOSDIS Version 0 assumption is that you're sitting at your
+client, and it sends out a search message and gets a response message based
+on who it is talking to.  None of these messages is visible to user.  It is
+using ODL (Object Definition Language).  A lot of info isn't seen by client.
+
+	\item{}MEDS/Gopher system - messages coming back are menus which are
+data services at sites.  Inventory search and results and data order - you
+get back a "form" to fill out with data order and processing options.  Some
+software is provided in the client for looking at data.  It is less of a
+search system and more of an ordering system.  Burden on data provider to
+hook in would be very small.
+
+	\item{} IDBMS has 9 nodes (ORACLE-based) with centralized node with
+Master Catalog where data are replicated and also used for data ingest.  Each
+server holds a different type of data, user does not even know which node
+data is being accessed.  Search can provide either metadata or primary data -
+similar to how EOSDIS works.
+
+	\item{} JGOFS - client has access to servers through calls.  There is
+a server and a data dictionary which has a list of objects, as well as a path
+to tell how to execute the method.  There will be different entries in the
+dictionary for data and methods.  Tagged with the data are metadata.  The
+client program connects to an executable remote -- all of the dictionary
+serves to make this happen.  Metadata can be searched to come up with data
+objects that may satisfy the users.  Can list all variables which can be
+extracted from the data - including looking at multiple servers to do this
+based upon the entry in the dictionary.  Focus of system is to support a PI.
+Every server has a data dictionary for all holdings.
+
+\end{description}
+
+\smallskip
+{\bf R. Mairs -} how would/could JGOFS send a message to EOSDIS? \\
+{\bf G. Flierl -} suppose you wanted SST within some latitude bounds, 
+and you seek a yes/no answer about the data. This is very much the kind of 
+information EOSDIS handles.
+
+\smallskip
+{\bf P. Cornillon -} discussion about "capability" of a system, at the
+frequent expense of ease of use and menu-driven operations.  EOSDIS may be
+the system designed for the broad range of users who desire ease of use,
+while a system like JGOFS is "harder" to use but of higher value to a PI who
+has more specific data requirements.
+
+\smallskip
+{\bf B. Starek -} discussion of "query by example" on IDBMS. ARCInfo keys to 
+databases (Common Production Tools - like methods).  
+
+\smallskip
+{\bf P. Cornillon -} our system must provide a very basic level of easy-to-use 
+services yet have expert capability to support science users.  A modified 
+JGOFS may be a good starting point.
+
+\smallskip
+{\bf G. Flierl -} discussion of JGOFS "Problems":
+\begin{description}
+	\item{1)} Feedback (in "client"?)
+
+	\item{2)} Limitations on query: $<$, $=$, $>$, $<=$,  $>=$, (  ), \&, $|$ or
+\~ \quad but no more than 20 strings grouped together 
+
+	\item{3)} Data types: all ASCII doesn't fully deal with
+matrices/tensors 
+
+	\item{4)} No interactive retrieval (like XBROWSE which lets you
+"look" at an image as you begin to receive it and decide if it will meet your needs .  
+\end{description}
+\medskip
+
+{\bf G. Flierl -} Summary of support requirements
+\begin{description}
+	\item{1)} Multiple Clients/User Interfaces
+	   \begin{itemize}
+		\item menus/hypertext \quad\quad        ...feedback
+		\item Fortran programmers \quad\quad ...simple full query
+specification
+	   \end{itemize}
+
+	\item {2)} Data servers
+	   \begin{description}
+		\item{a)} inventory and location
+		\item{b)} browse
+		\item{c)} data, including points to other data 
+	   \end{description}
+	\item{3)} Pre/Post filters
+
+	\item{4)} Multiple Servers-- routing
+
+	\item{5)} PIs adding servers-- 	support multiple DBMS
+\end{description}
+\smallskip
+{\bf L. Walstad -} How will we handle requests for 2-3 GB of data?\\
+{\bf G. Flierl -} Server will respond, but indicate the data block is too
+big.  It may suggest transfer by mail (tape).  
+
+\smallskip
+{\bf P. Cornillon -} list of problems he has encountered in using systems:
+One person wants "SST",  a second searches for "sea surface 
+temperatures".  Variable names need standardization, and we need to make 
+our locator object be "intelligent"
+
+
+{\bf G. Flierl -} discussion of data structure:
+
+\begin{center}
+{\bf Hierarchical Data Structure Diagram} 
+\end{center}
+\medskip
+
+\Large
+\begin{center}
+{\bf Afternoon session}
+\end{center}
+\normalsize
+
+The workshop will not try and endorse a specific data format in the 
+afternoon discussions - this question cannot be resolved in a workshop of 
+this scale.  
+
+We will break up into Users and Providers.  
+
+Discussion:  How much of the definition of communication protocol must 
+this group consider?  
+
+Developers can send out a  bit stream from their servers in some format, 
+and along with this is a structure (really a series of arguments) which 
+defines this format.  On the other end, the user must be able to 
+"understand" this structure and apply it.
+
+We're confusing communications protocols with the applications 
+interface.  
+
+{\bf G. Flierl -}  API has two calls---
+\begin{description}
+	\item{} call and get variable names (strings, numbers)
+	\item{} call and get values (strings, numbers)
+
+\begin{center}
+{\bf RPC vs Data Stream Diagram}
+\end{center}
+
+	           Top figure illustrates an RPC-based system while the lower 
+		illustrates the data stream approach
+
+\smallskip
+{\bf N. Soreide -} is "data volume" the amount of data (MBs) or number of data 
+requests?\\
+\smallskip
+{\bf G. Flierl -} A lot of research is being done via individual exchange of
+small data sets -- not transfers of large volumes of data from archives.  It
+is important the system support these "small" users...
+
+\smallskip
+{\bf J. Gallagher -} MB and GB per day is "large"; less than MB is "small"  
+(although these definitions are more commonly based on how long it takes 
+to receive the data, which is driven by communications technology...)
+\medskip
+
+\noindent Data Providers Subgroup Meeting   - R. Chinman 
+\smallskip
+Questions:  What Objects?  What Structure?
+\smallskip
+What is an object? - An object includes 
+\begin{description}
+	\item{a.}  inventory,
+	\item{b.}  browse
+	\item{c.}  data  
+\end{description}
+		(these are its attributes).  
+\smallskip
+To what extent are data providers willing to provide these?  
+\smallskip
+Inventory (for an image, for example) might be "is there an image?"
+\smallskip
+Browse - defined as a mechanism for sub-sampling.
+
+\smallskip
+{\bf B. Schramm -}- We need to look at two different cases.  The Data Center 
+will be significantly different from the PI in its implementation of these 
+capabilities.  
+
+
+DATA:	standard file format \quad\quad location \quad\quad disk space
+
+\Large
+\begin{center}
+{\bf Evening Session September 30}
+\end{center}
+\normalsize
+\smallskip
+{\bf P. Cornillon} presiding 
+
+\noindent {\bf System Functions}
+\begin{description} 
+	\item{} Selection
+	   \begin{itemize} 
+		\item Search (space/time, parameters, source, sensor, other),
+cross-inventory  
+		\item Refine search - optional but necessary (browse,
+quality, log) 
+	   \end{itemize}
+	\item {} Order 
+	   \begin{itemize}
+		\item Means of delivery and where
+		\item Timelines
+		\item Format
+		\item Either from the selection process or directly (
+bypassing selection process)	  
+	   \end{itemize}
+\noindent {\bf Principles}
+	   \begin{description}
+		\item Must provide access to PI data sets in addition to
+national archives (corollary) --- people should want to use the system to
+manage their own data
+	   \end{description}
+\end{description}
+
+\noindent {\bf Data Issues}
+\begin{description}
+	\item{} Provider of the data must be able to determine what data
+objects (and order) to be delivered
+
+	\item{} Mechanism  to resolve keyword conflicts (auto detection)
+
+	\item{} Global naming procedure for data sets
+
+	\item{} Central clearing house - system management (log)
+
+	\item{} We must avoid giving people a reason to NOT want to put their
+data into the server
+\end{description}
+\noindent {\bf Messages}
+
+\begin{description}
+	\item{} Functional description of data, e.g.,  for location or
+defined range of formats
+	\item{} Options available from provider
+	\item{} Must allow (and in some cases encourage) a description of
+data set or provide a pointer to a description (search) -- example, the "Gulf
+Stream Paths" data set.
+	\item{} Log File - Data set PI invites comments on data sets - central
+storage 
+	\item{} Be able to explore the system
+\end{description}
+
+
+\noindent Discussion --
+
+
+{\bf D. Fulker -} provision of data needs to be in a form suitable for use in
+an applications program  (API)
+
+
+{\bf Data Providers  - R. Chinman}
+\begin{description}
+	\item {}Desire to remove all impediments to using data
+
+	\item{}Desirable functions and structure
+\begin{description}
+	\item{} inventory - locator
+   	\item{} browse - refinement
+	\item{} data ---{\em server}--- standard format
+\end{description}
+\noindent inventory:
+	\begin{description}
+		\item{} id
+		\item{} latitude
+		\item{} long
+		\item{} date/time
+		\item{} PI
+		\item{} sensor
+		\item{} parameters
+	\end{description}
+\end{description}
+cannot translate all native format data into one of the standard formats - 
+PIs nor Data Centers
+So... use server software to do that and inventory (if necessary) 
+Use existing inventories via server translators on new system.
+
+\noindent {\bf Benefits}
+
+
+{\bf PI:}\quad fulfillment of contractual obligation to make data available
+to National Data Centers, \quad access to Data Center data and other PI data
+
+{\bf Data Center:}\quad get access to field project/PI-based data for their
+users 
+
+
+From the Data Providers (PI and Data Centers) will come a range of 
+services
+
+
+Ocean community should prioritize DATASETS and tell J. Gallagher
+\smallskip
+
+Data Centers provide an existing array of services and fold 2-3 into new 
+system, e.g., EOSDIS design group, Emery EOSDIS testbed, NOAA DAC  
+(includes NODC)
+
+
+{\bf E. Dobinson -} question about why this system (DODS)  seems initially 
+focused on large existing systems (EOSDIS, MEDS,NEONS.....) which have or 
+will have established mechanisms for getting their data, instead of 
+looking at developing a system uniquely but not exclusively designed to 
+gain access to small, non-automated datasets held by PIs .  Response from 
+P. Cornillon centered on difficulty in becoming familiar with all of these 
+different client/server system (or even knowing of them as they multiply) 
+, making the data received from them suitable for use on your system, and 
+having to wait until some of the big systems (e.g., EOSDIS (July 94)) are 
+ready to become operational. 
+\medskip
+\begin{center}
+{\bf End of Day 2}
+\end{center}
+\bigskip
+\bigskip
+\begin{latexonly}
+\vskip4pt\hrule height2pt\smallskip
+
+\end{latexonly}\bigskip
+\Large
+\begin{center}
+{\bf Day 3}
+\end{center}
+\begin{center}
+{\bf Conclusions}
+\end{center}
+\normalsize
+\medskip
+{\bf G. Flierl:}
+
+\noindent Next Steps:
+\begin{description}
+	\item{0)}  Meeting report(s); mailing lists and telemail
+
+	\item{1)} Architecture Strawman / Message Strawman
+	   \begin{itemize}
+		\item tell Gallagher
+		\item dialog or draft
+		\item join the development  group
+	   \end{itemize}
+	\item{2)} Testbeds
+	   \begin{itemize}
+		\item provide data/ work with URI/MIT
+		\item provide support (moral and personnel)
+	   \end{itemize}
+	\item{3)} Next Workshop (planned elsewhere than Alton?)
+	   \begin{itemize}
+		\item focus on people who want to develop servers and clients
+	   \end{itemize}
+	\item{4)} Colleagues
+\end{description}
+\medskip
+
+Software development will be undertaken in a phased approach. (Slide 10)
+\smallskip
+\begin{figure}[h]
+\centerline{\psfig{figure=slide10.xfig.ps,height=5.0in}}
+
+\end{figure}
+\clearpage
+{\bf R. Chinman -} Is the name "DODS" appropriate? It focuses on oceans, yet 
+there is a significant community outside "oceans" who may have interest 
+in this work.
+
+\smallskip
+{\bf G. McConaughy -} there may be an advantage to keeping it as an "oceans" 
+system, for if we broaden its basis (as implied by a more encompassing 
+name) it may sound like it will try and do things which are already being 
+done.
+
+\smallskip
+Discussion and refinement of system graphic (Slide 11).
+\smallskip
+
+\begin{figure}[h]
+\centerline{\psfig{figure=slide11.xfig.ps,height=5.0in}}
+\end{figure}
+\clearpage
+
+Is there a base level communication procedure?  Will there always be a 
+match?
+\begin{description}
+	\item{1)} May not be efficient
+	   \begin{itemize}
+		\item ASCII
+		\item XDR binary
+	   \end{itemize}
+
+	\item{2)} Must be buildable from DODS distribution
+\end{description}
+
+
+\smallskip
+{\bf P. Cornillon -}  One implementation option might be to just put an 
+additional server on a site.  We didn't consider this as much as we perhaps 
+should have.
+
+\smallskip
+{\bf D. Fulker -} discussed his concerns about locating translators on the 
+"client" side.
+
+
+The meeting concluded in general agreement of the system goals and 
+functionality.  
+
+\begin{center}
+{\bf End of Day 3}
+\end{center}
+\begin{latexonly}
+\vskip4pt\hrule height2pt\smallskip
+\end{latexonly}
+\end{description}
+%\end{document}

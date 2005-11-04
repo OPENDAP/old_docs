@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:10 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- Content-Description</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_24.html"><img alt="Content-Encoding" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_22.html"><img alt="Response Headers" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_22.html"><img alt="Response Headers" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Content-Description</b></td></tr></table>
+<h3>Content-Description</h3>
+The <tt>Content-Description</tt> header is used to tell clients which of the
+different basic responses is being returned or if an error message is being
+returned. For any of the basic responses (DDS, DAS, or
+DataDDS) or the error response, this header MUST be included. This
+header SHOULD NOT be included by the ASCII, HTML, INFO, version or directory
+responses. See RFC 2045&nbsp;<a HREF="dap_43.html#rfc2045">[6]</a> for information about this header.
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+Content-Description </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "Content-Description" ":" tag </td></tr>
+<tr><td colspan="1" align="LEFT">
+tag </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "dods-dds" | "dods-das" | "dods-data" | "dods-error" </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<p>Example:
+<pre class="ct">
+Content-Description: dods-error
+</pre>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_24.html"><img alt="Content-Encoding" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_22.html"><img alt="Response Headers" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_22.html"><img alt="Response Headers" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Content-Description</b></td></tr></table></body></html>

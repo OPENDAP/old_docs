@@ -1,0 +1,4 @@
+ASCII_data "lat/lon"
+latitude 1 10 double 6
+longitude 12 22 double 6
+t 24 31 double 4

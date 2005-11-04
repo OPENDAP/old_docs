@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+        "http://www.w3.org/TR/REC-html40/loose.dtd">
+
+<html>
+
+<head>
+<!-- $Id$ -->
+<title>
+Catalog Services Overview
+</title>
+</head>
+
+<body>
+
+<h1>Grid Selection Example</h1>
+<h3>
+<ul>
+<li>Given:<br>
+<pre>
+Dataset {
+    Grid {
+      Array:
+        Byte SST[lat = 1023][lon = 1023];
+      Map:
+        Float64 lat[1023];
+	Float64 lon[1023];
+    } SST;
+} avhrr_data_set;</pre>
+<p>
+
+<li><pre>http://...?grid(SST, "20.7 < lat < 10.9")<p></pre>
+<li><pre>http://...?grid(SST, "20.7 <= lat <= 10.9", "-50 < lon < -40")<p></pre>
+<li><pre>http://...?grid(SST, "20.7 <= lat", "lat > 10.9")<p></pre>
+</ul>
+</h3>
+
+<hr height=5>
+DODS Developer's Meeting; Catalog Services Overview: 
+<a href="cs-8.html">back</a> <a href="cs-1.html">start</a>
+</body>
+</html>
+
+

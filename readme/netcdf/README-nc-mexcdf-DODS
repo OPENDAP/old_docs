@@ -1,0 +1,18 @@
+
+ $Id$
+
+I have modified the src and tools directories for DODS. In the src directory
+I have added a Makefile.in and Makefile for DODS. This re-links the mexcdf
+object module with the DODS-netCDF software so that all of the functions in
+the mexcdf file can access DODS data servers. The Makefile is generated
+automatically when the configure script is run; the new version of mexcdf is
+built whenever you run `make' in the netCDF main directory.
+
+In the tools directory I modified some of the code so that it would accept
+URL where previously only local filenames would work. The new functions are
+named dinqcdf, dgetcdf and dgetcdf_batch. Except for the additional
+capabilities of DODS the functions are unchanged; they can still read local
+data just like the original versions (which are included in the tools
+directory as well).
+
+James Gallagher, 9/18/96

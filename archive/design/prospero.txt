@@ -1,0 +1,49 @@
+$Id$
+
+NB: This was written in early 1994 by James Gallagher.
+
+Prospero:
+
+The low-level interface to Prospero is through a `compatibility' library, not
+through the Unix OS file system call interface. It is not exactly clear to me
+how prospero uses nfs/afs. When a virtual system is used and the files are on
+a `file system' type of aftp (anonymous ftp), vcat does not work. You can
+vget the file, however. I looked at the source code for the pcompat
+library. Many of the calls for shadowed functions pass values through a
+filter called pfs_access which checks the pfs (prospero file system) access
+mode environment variable. This env variable provides a way for the user to
+say what special characters prospero should look for to determine that the
+given path is for a virtual file system. Once the special pathnames are
+parsed, regular system calls are used to perform the access
+operations. Because of this, programs like vcat only work on vfs that are
+actually mounted using NFS or AFS. I do not know the extent of these mounts,
+but the pcompat library definately mounts remote file systems using NFS. As
+an aside, the applications linked with the overloaded functions don't work
+very quickly -- the overloaded ls takes about 15 seconds to run when given a
+normal directory name while the real ls takes almost no time.
+
+The Prospero CLI uses shell environment variables to maintain the state of
+the virtual file system (e.g., the current working directory, current host,
+...  are strings stored in env variables). Commands in prospero are either
+executables that do not change state (e.g., vls -- lists the contents of the
+current virtual working diretory) or shell functions combined with
+executables. In the later case the executable performs the network I/O and
+the shell function alters the environment variables of the users shell to
+reflect the change in state.
+
+Two of Prospero's features are used to customize virtual file systems. The
+link can be used like a symbolic link to include one tree as a sub-tree of
+another or it can be used to form the union of two directories. Filters can
+be applied to a link and cause some of the `linked items' not to be displayed
+or to be displayed diferently. Neither fileters nor links can go below the
+file level.
+
+Prospero allows names to be resolved on different machines. Closure seems to
+be very important to the developers of Prospero.
+
+I find the Prospero CLI to be clumsy. It uses a nonstandard directory listing
+format along with nonstandard CLI options. In additon, vls prints line that
+are longer than 80 chars, which makes for a display that is hard to read.
+
+I think that we should look elsewhere for our virtual file system -- maybe to
+existing JGOFS code. 

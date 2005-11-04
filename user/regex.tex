@@ -1,0 +1,558 @@
+% A guide to installing DODS servers.
+%
+
+\documentclass{dods-book}
+\usepackage{longtable}
+
+\rcsInfo $Id$
+\newcommand{\DOCversion}{Version \rcsInfoRevision}
+
+\include{../boiler/layout}
+\include{../boiler/dods-def}
+
+\htmldirectory{regex-html}
+\htmlname{regex}
+\htmltitle{Introduction to Regular Expressions}
+\htmladdress{Tom Sgouros, \rcsInfoDate}
+\htmlcss{/resources/dods-book.css}
+%\W\renewcommand{\HlxIcons}[1]{http://top.gso.uri.edu/icons.n/}
+\setcounter{htmldepth}{2}
+\T\renewcommand{\b}[1]{\bgroup\tt\char '134 \egroup\lit{#1}}
+%% I don't see where \xmlsym is used here and this is causing a problem with
+%% hyperlatex. 04/14/04 jhrg
+%% \W\renewcommand{\b}[1]{\lit{\xmlsym{##92}#1}}
+
+%\makeindex
+
+\begin{document}
+%------------------------------------front matter
+\title{Introduction to Regular Expressions\\\DOCversion}
+\author{Tom Sgouros}
+\date{\rcsInfoDate}
+\pagenumbering{arabic}
+\maketitle
+
+%\copyrightmatter
+
+\W\pslink{http://www.opendap.org/pdf/regex.pdf}
+
+\tableofcontents
+%\listoffigures
+%\listoftables
+
+\clearemptydoublepage
+
+\T\chapter{Beginning Regular Expresions}
+
+Regular Expressions are an advanced pattern-matching languages that
+are a powerful feature of many modern computer programs.  Sadly, there
+are almost as many varieties of regular expressions as there are
+computer programs that use them.  This (very) brief introduction to
+regular expressions is about the species found in the underbrush of
+the Perl jungle.  Use the real Perl documentation for the definitive
+guide, and a better introduction.  Use this guide if you're lazy, and
+don't want to look away from your computer screen.
+
+Some of the material here was adapted from Marc Meurrens's tutorial.
+See \xlink{http://www.meurrens.org}{http://www.meurrens.org}.
+
+\texorhtml{}{\htmlmenu{4}\chapter{Beginning Regular Expressions}}
+
+A regular expression is simply an expression of characters used to test
+whether some other set of characters matches some pattern described by
+the expression.  Since patterns can be very complex, regular
+expressions can also be very complex.  The vast majority of uses will
+be for fairly simple applications, and the sections that follow
+provide an introduction to those fairly straightforward uses.  Do note
+that even with fairly simple constructs, regular expressions can be
+constructed to match some very subtle patterns.
+
+\section{The Simple Version}
+
+In its simplest form, a regular expression is just a sequence of
+ordinary characters, such as a word or phrase to search for.  For
+example,
+
+\begin{description}
+\item[\lit{gauss}] would match any character string with the substring
+  \lit{gauss}.  Thus, strings with \lit{gauss}, \lit{gaussian} or
+  \lit{degauss} would all be matched, as would a string containing the
+  phrases \lit{de-gauss the monitor} or \lit{gaussian elimination}.
+\item[\lit{carbon}] Finds any string containing \lit{carbon}, such as
+  \lit{carbonization} or \lit{hydrocarbons} or \lit{carbon-based life
+    forms}.
+\item[\lit{hydro}] Matches strings \lit{hydro}, \lit{hydrogen} or
+  \lit{hydrodynamics}.
+\item[\lit{top ten}] Spaces can be part of the regular expression.
+  This would match \lit{top ten}, but also \lit{stop tension}.
+\end{description}
+
+There are several characters with special meanings.  These can't be
+used in simple expressions like the ones above without being preceded
+by a backslash (\b{}).  For example, what if you wanted to search for
+a string containing a period?  Suppose we wished to search for
+references to pi.  The following regular expression would not work:
+
+\begin{vcode}{ib}
+3.14  
+\end{vcode}
+
+This would indeed match \lit{3.14}, but it would also match
+\lit{3514}, \lit{3f14}, or even \lit{3+14}.  In short, any string of
+the form \lit{3x14}, where \lit{x} is any character, would be matched
+by the regular expression above.
+
+To get around this, you use the backslash character to ``quote'' the
+period, to indicate that it is to be taken literally.  Thus, to search
+for the string \lit{3.14}, we would use:
+
+\begin{vcode}{ib}
+3\.14
+\end{vcode}
+
+In general, whenever the backslash is placed before a special character,
+the searcher treats the special character literally rather than invoking
+its special meaning.
+
+(Unfortunately, the backslash is used for other things besides
+quoting.  Many ``normal'' characters take on special meanings when
+preceded by a backslash.  The rule of thumb is that quoting a special
+character turns it into a normal character, and quoting a normal
+character \emph{may} turn it into a special character.  It's not very
+satisfying as a rule of thumb, but it's the best available.)
+
+These are the special characters:
+
+\begin{vcode}
+\ | ( ) [ ] { } ^ $ * + ? .
+\end{vcode}
+%$
+
+
+\section{Difficult Characters}
+\label{difficult}
+
+Certain characters that are difficult to type have special
+abbreviations\texorhtml{ as in \tableref{tab:special}}{:}
+
+\begin{table}[h]
+  \begin{center}
+    \begin{tabular}[c]{|c|l|} \hline
+      \b{a} & alarm (beep) \\ \hline
+      \b{n} & newline \\ \hline
+      \b{r} & carriage return \\ \hline
+      \b{t} & tab \\ \hline
+      \b{f} & formfeed \\ \hline
+      \b{e} & escape \\ \hline
+    \end{tabular}
+    \caption{Special Character Abbreviations}
+    \label{tab:special}
+  \end{center}
+\end{table}
+
+You can use these abbreviations to match character strings that
+contain these.  So, for example, the pattern \lit{a\b{n}b} would
+match:
+
+\begin{vcode}{ib}
+a
+b
+\end{vcode}
+
+Abbreviations like this, as well as any other character that matches
+something more complicated than itself, are commonly called regular
+expression \new{metacharacters}.  But don't let that bother you.  It's
+just a name.
+
+There are also a bunch of special abbreviations, or metacharacters,
+for classes of characters (but also read \chapterref{classes}).
+\texorhtml{These are listed in \tableref{tab:class-abbrevs}.}{}
+
+\begin{table}[h]
+  \begin{center}
+    \begin{tabular}[c]{|c|l|} \hline
+      \lit{.} & matches any character except newline \\ \hline
+      \b{d} & a digit (anything except the characters
+      0,1,2,3,4,5,6,7,8 or 9)\\ \hline
+      \b{D} & not a digit \\ \hline
+      \b{w} & a letter or number (or \lit{\_})\\ \hline
+      \b{W} & not a letter or number (or \lit{\_})\\ \hline
+      \b{s} & white space (space, tab, newline, formfeed, carriage
+      return) \\ \hline
+      \b{S} & not white space\\ \hline
+    \end{tabular}
+    \caption{Special Character Classes}
+    \label{tab:class-abbrevs}
+  \end{center}
+\end{table}
+
+Here are some examples.  The regular expression:
+
+\begin{vcode}{ib}
+a.z  
+\end{vcode}
+
+Will match any three-character sequence that starts with \lit{a} and
+ends with \lit{z}, including \lit{a.z}, \lit{a_z}, \lit{abz},
+\lit{a8z}, and so on.  The middle character usually can't be a newline
+(\b{n}), although Perl contains ways to avoid this restriction.  Here
+are more examples:
+
+\begin{vcode}{ib}
+2,\d-Dimethylbutane
+\end{vcode}
+
+would match \lit{2,2-Dimethylbutane}, \lit{2,3-Dimethylbutane} and so forth.
+Similarly,
+
+\begin{vcode}{ib}
+1\.\d\d\d\d\d  
+\end{vcode}
+
+would match any six-digit floating-point number from \lit{1.00000} to
+\lit{1.99999} inclusive.
+
+The Capital version, \b{D}, is used to match anything except a digit,
+so:
+
+\begin{vcode}{ib}
+a\Dz  
+\end{vcode}
+
+would match \lit{abz}, \lit{aTz} or \lit{a`z}, but would \emph{not}
+match \lit{a2z}, \lit{a5z} or \lit{a9z}. 
+
+There are a few other abbreviations we'll encounter.  In general, the
+upper-case version matches the converse of the lower-case version.
+
+Here are two more examples:
+
+\begin{vcode}{ib}
+a\wz
+\end{vcode}
+
+would match \lit{abz}, \lit{aTz}, \lit{a5z}, \lit{a\_z}, or any
+three-character string starting with \lit{a}, ending with \lit{z},
+and whose second character was either a letter (upper- or lower-case),
+a number, or the underscore.  Similarly,
+
+\begin{vcode}{ib}
+a\Wz  
+\end{vcode}
+
+would not match \lit{abz}, \lit{aTz}, \lit{a5z}, or \lit{a\_z}.  It
+would match \lit{a`z}, \lit{a:z}, \lit{a?z} or any three-character
+string starting with \lit{a} and ending with \lit{z} and whose
+second character was not a letter, number, or underscore.
+
+\section{Multiple Matches}
+
+If you want to match more than one of something, you can use one of
+the regular expression \new{quantifiers} (also called \new{closures}).
+These simply modify the preceding characters to say how many of these
+should be matched.  \texorhtml{The available forms are listed in
+  \tableref{tab:multiple}}{Here are the available forms:} 
+
+\begin{table}[h]
+  \begin{center}
+    \begin{tabular}[c]{|c|l|} \hline
+      \lit{*} & Zero or more\\ \hline
+      \lit{+} & One or more\\ \hline
+      \lit{?} & Zero or one\\ \hline
+      \lit{\{2\}} & Two exactly\\ \hline
+      \lit{\{2,\}} & Two or more\\ \hline
+      \lit{\{2,5\}} & At least two but no more than five\\ \hline
+    \end{tabular}
+    \caption{Multiple Match Quantifiers}
+    \label{tab:multiple}
+  \end{center}
+\end{table}
+
+Examples:
+
+\begin{description}
+\item[\lit{m?ethane}] would match either \lit{ethane} or
+  \lit{methane}.  
+
+\item[\lit{comm?a}] would match either \lit{coma} or \lit{comma}.
+  
+\item[\lit{ab*c}] would match \lit{ac}, \lit{abc}, \lit{abbc},
+  \lit{abbbc}, \lit{abbbbbbbbc}, and any string that starts with an
+  \lit{a}, is followed by a sequence of \lit{b}'s, and ends with a
+  \lit{c}.
+
+\item[\lit{ab+c}] would \emph{not} match \lit{ac}, but it \emph{would}
+  match \lit{abc}, \lit{abbc}, \lit{abbbc}, \lit{abbbbbbbbc} and so
+  on.
+
+\item[\lit{ab\{3\}c}] would match \lit{abbbc}, and nothing else.
+  
+\item[\lit{ab\{3,\}c}] would match \lit{abbbc}, \lit{abbbbc},
+  \lit{abbbbbc}, and so on.
+
+\item[\lit{ab\{3,5\}c}] would match \lit{abbbc}, \lit{abbbbc},
+  \lit{abbbbbc}, and nothing else.
+  
+\item[\lit{cyclo.*ane}] would match \lit{cyclodecane},
+  \lit{cyclohexane} and even \lit{cyclones drive me insane}, and any
+  string that starts with \lit{cyclo}, is followed by an arbitrary
+  string, and ends with \lit{ane}.  Note that the null string will be
+  matched by the period-star pair; thus, \lit{cycloane} would be also
+  match.
+  
+\item[\lit{cyclo...ane}] would match \lit{cyclodecane} and
+  \lit{cyclohexane}, but would not match \lit{cyclones drive me
+    insane.}  Only strings eleven characters long which start with
+  \lit{cyclo} and end with \lit{ane} will be matched. (Note that
+  \lit{cyclopentane} would not be matched, however, since cyclopentane
+  has twelve characters, not eleven.)
+
+\end{description}
+
+Usually, these quantifiers match the largest number of multiples they
+are allowed to.  You can change this so that a pattern matches the
+smallest number possible. If you know enough about pattern matching to
+want to change this behavior, you have graduated from this tutorial,
+and need to check out the documentation listed in
+\chapterref{elsewhere}.
+
+\section{Grouping Strings and Alternate Patterns}
+
+If you want to match multiple copies of groups of letters, you can
+group them with parentheses, so that \lit{(apple)+} means \lit{apple},
+and also \lit{appleapple}, and \lit{appleappleapple} and so on.
+
+You can also provide matching alternatives by using the \lit{|}
+character inside a group.  For example, \lit{(TEXT|text)} matches
+\lit{TEXT} or \lit{text}, but not \lit{Text} or \lit{tExt}, and so
+on.  To take care of all combinations of upper and lower case, you
+could do this: \lit{(T|t)(E|e)(X|x)(T|t)}.  There are a variety of
+other ways to do this, as you will see if you read on.
+
+
+\section{Character Classes}
+\label{classes}
+
+In \tableref{tab:class-abbrevs}, we saw a list of characters that
+stand for entire classes of characters.  If these classes aren't right
+for you, you can create new classes with the \lit{[]} characters, and
+the \lit{\^{}} character.  Any group of characters contained in square
+brackets is interpreted as defining a class of characters.  So:
+
+\begin{vcode}{ib}
+a[bz]c
+\end{vcode}
+
+matches \lit{abc} and \lit{azc}, and nothing else.  You can put as
+many characters as you like in the brackets, and indicate ranges with
+the hyphen (\lit{-}).  (If you want to include a hyphen in the class,
+list it first.)
+
+\begin{description}
+\item[\lit{a[bhi:'9]c}] matches \lit{abc}, \lit{ahc}, \lit{aic},
+  \lit{a:c}, \lit{a'c}, and \lit{a9c}.
+
+\item[\lit{a[4-7]c}] matches \lit{a4c}, \lit{a5c}, \lit{a6c}, and
+  \lit{a7c}. 
+  
+\item[\lit{a[-0-9]c}] matches \lit{a-c}, \lit{a0c}, \lit{a1c}, and so
+  on to \lit{a9c}.
+
+\item[\lit{a[4-7]*c}] matches \lit{ac}, \lit{a4c}, \lit{a45c}, and any
+  sequence that starts with \lit{a}, ends with \lit{c}, and has any
+  combination of \lit{4}, \lit{5}, \lit{6}, or \lit{7} in between.
+\end{description}
+
+A character class can appear anywhere in a regular expression that a
+regular character can appear.
+
+You can also negate a class by including the \lit{\^{}} sign at the
+start of the string.  The class \lit{[\^{}0-9]} includes everything
+except digits, and is equivalent to \b{D}.
+
+\begin{description}
+\item[\lit{[\^{}abc]*}] Matches any string of characters that does not
+  include \lit{a}, \lit{b}, or \lit{c}.
+
+\item[\lit{[\^{}\b{(}\b{)}]}] Matches any string that doesn't contain
+  parentheses.  Note that we had to quote the parentheses with the
+  backslash character. 
+\end{description}
+
+\subsection{Special Classes}
+
+Typically, the story doesn't end there.  There are several pre-defined
+special character classes you can use.  Use them in class brackets
+like this: \lit{[:alpha:]}.  You can negate these classes by putting a
+\lit{\^{}} in front, like this: \lit{[:\^{}alpha:]}.
+
+These classes may be useful to you if you want your patterns to be
+independent of the locale in which they are used.  That is, the
+definition of a ``printable character'' is different depending on
+locales.  What is an unprintable control code in one locale may be an
+extended character set accented character in another.
+
+\texorhtml{\Tableref{tab:special-class} lists all the special classes
+available.}{The available special classes are these:}
+
+\begin{table}[h]
+  \begin{center}
+    \begin{tabular}[c]{|c|p{3in}|} \hline
+      \lit{[:alpha:]} &  alphabetic characters \\ \hline
+      \lit{[:alnum:]} &  alphanumeric characters \\ \hline
+      \lit{[:ascii:]} &  7-bit ascii character \\ \hline
+      \lit{[:cntrl:]} &  unprintable control character \\ \hline
+      \lit{[:digit:]} &  a number (\lit{[0-9]} or \lit{\b{d}}) \\ \hline 
+      \lit{[:graph:]} &  printable (a combination of \lit{alnum} and
+                         \lit{punct})  \\ \hline
+      \lit{[:lower:]} &  lower case letter \\ \hline
+      \lit{[:print:]} &  printable (a combination of \lit{alnum} and
+                         \lit{punct}, and the space character) \\ \hline
+      \lit{[:punct:]} &  punctuation (not including the space
+                         character) \\ \hline
+      \lit{[:space:]} &  whitespace character (space, tab, carriage-return,
+                         newline, vertical tab, and form-feed) \\  \hline   
+      \lit{[:upper:]} &  upper case letter \\ \hline
+      \lit{[:word:]} &   a component of a word (\lit{alpha} plus
+                         \lit{\_}) \\ \hline
+      \lit{[:xdigit:]} & a hex digit (\lit{[0-9a-fA-f]})  \\ \hline
+    \end{tabular}
+    \caption{Special Character Classes}
+    \label{tab:special-class}
+  \end{center}
+\end{table}
+
+You can use these special classes inside other character classes, like
+this: \lit{[01[:alpha:]]}, which matches any alphabetic character, as
+well as zero or one.
+
+
+\section{Special Characters}
+
+The basic matching characters have now been covered.  What's left is a
+few special characters you can use to modify the matches you've come
+up with.  For example, if you want to match a pattern when it appears
+at the end of a string (or the end of a line), you can append \lit{\$}
+to it.
+
+\texorhtml{A list of all the special characters is shown in
+\tableref{tab:modifiers}}{The special characters are shown here:}
+
+\begin{table}[h]
+  \begin{center}
+    \begin{tabular}[c]{|c|p{3in}|} \hline
+      \lit{\$} or \lit{\b{Z}} or \lit{\b{z}} & Match the end of the
+                                               string\\ \hline 
+      \lit{\^{}} or \lit{\b{A}} & Match the beginning of the string\\ \hline
+      \lit{\b{b}} & Match only at a word boundary \\ \hline
+      \lit{\b{B}} & Don't match at a word boundary \\ \hline
+      \lit{?} & Change the behavior of the preceding multiple match to
+    match the minimum number of characters possible.\\ \hline
+    \end{tabular}
+    \caption{Match Modifiers}
+    \label{tab:modifiers}
+  \end{center}
+\end{table}
+
+\begin{description}
+
+\item[\lit{.*and\$}] matches \lit{hatband} and \lit{marching band},
+  but not \lit{band-aid}.
+
+\item[\lit{\^{}[Gg].*}] matches any string beginning with a g (upper or
+  lower case).
+
+\item[\lit{\^{}hello\$}] matches the string \lit{hello} and nothing else.
+
+\item[\lit{.*\b{b}and.*}] matches \lit{He's androgynous} and
+\lit{She's an andiron}, but not \lit{It's a hatband}.
+
+\item[\lit{.*\b{B}and.*}] matches \lit{The food is bland} or \lit{This
+land is your land}, but not \lit{a one and a two}.
+
+\end{description}
+
+The behavior of the \lit{?} modifier is a little subtle.  Usually, a
+multiple match pattern matches as many copies of its pattern as
+possible.  The \lit{?} changes this behavior to match the fewest.  For
+further description and examples of its use, see the references in
+\chapterref{elsewhere}. 
+
+\chapter{DODS-Specific Examples}
+
+If you are writing a configuration file for a DODS server, the
+following examples may be of some assistance.
+
+\begin{description}
+
+\item[\lit{.*\b{.}(NC|nc|cdf|CDF)\$}]  matches any string that ends in
+  \lit{.NC}, \lit{.nc}, \lit{.cdf}, or \lit{.CDF}.  So \lit{data.nc} and
+  \lit{DATA.NC} would be matched, but not \lit{data.nc.gz} or
+  \lit{data.Nc}.
+
+\item[\lit{.*\b{.}(HDF|hdf)(.Z|.gz)*\$ hdf}]  matches any string of the
+  form \lit{data.HDF} or \lit{data.hdf}, that may or may not have a
+  \lit{.Z} or \lit{.gz} appended to it.
+
+\item[\lit{\^{}dods-data\b{/}.*}]  matches any file name at all in the
+  \lit{dods-data} directory.
+
+\item[\lit{\^{}dods-data\b{/}.*\b{.}(NC|nc)(.Z|.gz)*\$}] matches any
+  file in the \lit{dods-data} directory, of the form \lit{data.NC} or
+  \lit{data.nc}, and that may or may not have \lit{.Z} or \lit{.gz}
+  appended to it.
+
+\end{description}
+
+
+\chapter{Backreferences, Extensions, and What-Have-You}
+\label{elsewhere}
+
+The regular expression syntax contains methods for referring to
+earlier matches in a string, embedding comments in an expression, and
+extending the semantics to include whatever you please.  These topics
+are not covered here, however.
+
+If you've gotten this far, you understand enough to read the real
+documentation.  If you want to know about regular expression arcana,
+there are a multitude of places you can look.  My favorites are the
+\emph{Programming Perl} book by Larry Wall (O'Reilly, 2000), or the
+book \emph{Mastering Regular Expressions} by Jeffrey Friedl (O'Reilly,
+1997).
+
+Enjoy.
+
+%\printindex
+
+\end{document}
+
+
+
+
+
+% $Log: regex.tex,v $
+% Revision 1.7  2004/07/07 22:27:43  jimg
+% Changed css to dods-book.css, switched to dods-book, updated pdf link and
+% switched to rcsInfoDate.
+%
+% Revision 1.6  2004/04/24 21:37:23  jimg
+% I added every directory in preparation for adding everyting. This is
+% part of getting the opendap web pages going...
+%
+% Revision 1.5  2004/04/14 22:09:54  jimg
+% hyperlatex fix
+%
+% Revision 1.4  2001/06/29 15:54:15  tom
+% added PDF file generation
+%
+% Revision 1.3  2001/02/19 20:41:01  tom
+% grammar, moved links to unidata.
+%
+% Revision 1.2  2000/12/18 20:51:28  tom
+% second revision
+%
+
+
+
+
+

@@ -1,0 +1,49 @@
+Brian Schlining from \ac{MBARI} was unable to attend due to the blizzard.  
+However, Kevin Gomes from \ac{MBARI} gave Brian's presentation: ``Using
+OPeNDAP for Oceanographic Observatory Data Management at \ac{MBARI}.''
+
+\ac{MBARI} is operating and expanding an ocean observatory that
+collects, analyses, and disceminates a wide variety of oceanographic
+data and data products under the umbrella of \ac{MOOS}.  The problem 
+consists of several components:
+
+\begin{itemize}
+   \item  Large number of data sources
+   \item  Large variety of data sources
+   \item  Dynamic System:  data sources may appear and disappear
+   \item  No standard data format:  data may be "instrument-native"
+\end{itemize}
+
+The solution:
+
+\begin{itemize}
+   \item Data providers send description of data before sending the data.
+   \item Store the "raw" data,
+   \item Where possible convert "raw" data to NetCDF,
+   \item Support distriuted data sources.
+\end{itemize}
+
+An instrumental connector, \ac{PUCK}, was described which transmits data from
+an instrument after the appropriate metadata for the instrument and date
+are transmitted.  Based on the input from \ac{PUCK}, and similar
+metadata, a data system, \ac{SSDS}, is being developed to allow a user to
+store and access the data with the appropriate metadata.  The up-side
+and down-side of  \ac{LAS} in the system were described.  Then the
+use of HOOVES and \ac{JSP} uas described.   The current state of the
+system and future expectations were mentioned. 
+
+% $Id$
+%
+% $Log: schliningsummary.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

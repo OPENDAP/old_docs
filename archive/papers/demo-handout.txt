@@ -1,0 +1,55 @@
+
+<html>
+
+<! $Id$>
+
+<head>
+<title>
+The Distriubted Oceanographic Data System: Demonstration Winter 1995
+</title>
+
+<body>
+
+<h1>
+The Distriubted Oceanographic Data System: Demonstration Winter 1995
+</h1>
+
+<h3>
+<ul>
+
+	<li>What:
+	<ul>
+		<li>DODS provides network access to scientific data.
+		<li>Clients are made using existing analysis programs.
+		<li>Data servers are built using <tt>httpd</tt>.
+		<li>Data is not modified.
+		<li>Servers access data in several formats or are customized
+		to `in house' formats.
+	</ul>
+	<li>Where:
+	<ul>
+		<li>WWW Home Page: <tt>http://dods.gso.uri.edu/
+		<li>Software: ftp://dods.gso.uri.edu/pub/dods/
+	</ul>
+	<li>Why:
+	<ul>
+		<li>Because making data available should be as easy as
+		writing it in a file.
+		<li>Data should be directly accessible by analysis
+		applications.
+	</ul>
+	<li>Who:
+	<ul>
+		<li>The University of Rhode Island and the Massechusetts
+		Institute of Technology: Design, Development, Management.
+		<li>The Jet Propulsion Laboratory: Development of HDF
+		component. 
+		<li>NOAA NODC: Access to national data archives.
+		<li>Unidata, inc., NOAA PMEL: Advisors.
+		<li>Many others have provided advice on DODS.
+	</ul>
+</ul>
+</h3>
+
+</body>
+</html>

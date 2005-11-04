@@ -1,0 +1,42 @@
+Ted Habermann reviewed a plan to enable GIS users to access
+OPeNDAP data via \ac{geoTIFF} files.  The system will use
+float-sized floating point values and WGS80 geo-referencing
+information.  All pixels will represent ``area'' rather than ``point''
+data. The system will correctly size and create geoTIFF files for
+\ac{COARDS} (and \ac{CF}-1.0 compliant NetCDF files (2D only currently).
+
+The current limitations are:
+
+\begin{itemize}
+  \item As of today does not slice in Z,
+  \item Dose not work with constrained URLs,
+  \item No mechanism other than constrained URLs to limit the size
+        of a request,
+  \item The usual problem of discovering and constraining an OPeNDAP
+         URL.
+\end{itemize}
+
+All of these problems are being addressed.
+The technical implementation was outlined.
+
+Conclusion: Several avenues for connecting GIS tools to OPeNDAP-served
+data are underway.  The intermediary of conversion to \ac{geoTIFF}
+format seems to be the most promising at the moment.
+% $Id$
+%
+% $Log: habermannsummary.tex,v $
+% Revision 1.3  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.2  2003/04/29 14:50:23  tom
+% fixed for LaTeX and hylerlatex
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

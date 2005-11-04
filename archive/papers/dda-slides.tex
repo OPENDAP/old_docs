@@ -1,0 +1,88 @@
+%
+% Slide for the informal meeting between Steve Hankin, Dave Fulker,
+% Glenn Flierl, George Milkowski and me. 3/10/94 -- 3/11/94
+%
+% $Id$
+
+% slide 1
+
+\begin{slide}{}
+\centerline{\psfig{figure=stand-alone2.ps}}
+Within DODS a user program is
+\begin{itemize}
+\item Application code
+\item An API
+\end{itemize}
+\end{slide}
+
+% slide 2
+
+\begin{slide}{}
+An API
+\begin{itemize}
+\item Used to access data
+\item Hides the data format
+\item Formally defined
+\end{itemize}
+\end{slide}
+
+% slide 3
+
+\begin{slide}{}
+\centerline{\psfig{figure=prog2client-server.ps,height=4.5in}}
+The Network Layer
+\begin{itemize}
+\item Distributes components
+\item Hides communication
+\item Restrictive
+\end{itemize}
+\end{slide}
+
+% slide 4
+
+\begin{slide}{}
+Simple Data server
+\begin{itemize}
+\item API access to data
+\item Application code unchanged
+\item Data format unchanged
+\end{itemize}
+\end{slide}
+
+% slide 5
+
+\begin{slide}{}
+\centerline{\psfig{figure=simple-server.ps}}
+\centerline{Simple Data Server}
+\end{slide}
+
+% slide 6
+
+\begin{slide}{}
+Translating server
+\begin{itemize}
+\item Access through DODS API
+\item Translation using heuristics
+\item Supports data model translation
+\end{itemize}
+\end{slide}
+
+% slide 7
+
+\begin{slide}{}
+\centerline{\psfig{figure=dods-server.ps,height=6in}}
+\centerline{Translating Server}
+\end{slide}
+
+% slide 8
+
+\begin{slide}{}
+Ancillary data
+\begin{itemize}
+\item Organizes data set
+\item Hides file-level structure 
+\item Increases data set value
+\item Accessed through DODS API
+\item New application code
+\end{itemize}
+\end{slide}

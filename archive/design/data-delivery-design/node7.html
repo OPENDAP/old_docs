@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Construction of the Data Server</TITLE>
+<META NAME="description" CONTENT="Construction of the Data Server">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="next" HREF="node10.html">
+<LINK REL="previous" HREF="node6.html">
+<LINK REL="up" HREF="node5.html">
+<LINK REL="next" HREF="node8.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html196"
+  HREF="node8.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html192"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html186"
+  HREF="node6.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html194"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html197"
+  HREF="node8.html">Building the DAS and</A>
+<B> Up:</B> <A NAME="tex2html193"
+  HREF="node5.html">Data Servers</A>
+<B> Previous:</B> <A NAME="tex2html187"
+  HREF="node6.html">Basic Requirements for the</A>
+ &nbsp; <B>  <A NAME="tex2html195"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00032000000000000000">
+Construction of the Data Server</A>
+</H2>
+
+<P>
+The data server structure is shown in Figure&nbsp;<A HREF="node3.html#fig:server-executables"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>.
+The `data server' is actually a collection of three separate programs which
+correspond to the three data objects in the DAP. There is no coordination of
+effort between the three programs; each operates independently<A NAME="tex2html39"
+  HREF="footnode.html#foot508"><SUP>6</SUP></A>.  
+
+<P>
+Each of the three programs which comprise the data server use the <A NAME="tex2html40"
+  HREF="http://hoohoo.ncsa.uiuc.edu/cgi/overview.html">Common Gateway Interface</A>
+mechanism to receive parameters from <A NAME="tex2html41"
+  HREF="http://hoohoo.ncsa.uiuc.edu/docs/Overview.html">HTTPD</A> (which is used to invoke the
+programs and manage the network I/O connections--see
+Figure&nbsp;<A HREF="node3.html#fig:client-executables"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>). Once parameters have been parsed, the
+programs read information from the data set which is used to satisfy the
+query. Accesses to the data set are made using an established API. Thus each
+of the programs consists of two modules:q CGI interface and a data-access
+API. The paper ``<A NAME="tex2html42"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html">DODS--Client and Server Toolkit</A>'' contains information on software which is
+designed to aid in the construction of these parts of the data server
+software.
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html198"
+  HREF="node8.html">Building the DAS and DDS filter programs</A>
+<LI><A NAME="tex2html199"
+  HREF="node9.html">Building the Data Read Program</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html196"
+  HREF="node8.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html192"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html186"
+  HREF="node6.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html194"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html197"
+  HREF="node8.html">Building the DAS and</A>
+<B> Up:</B> <A NAME="tex2html193"
+  HREF="node5.html">Data Servers</A>
+<B> Previous:</B> <A NAME="tex2html187"
+  HREF="node6.html">Basic Requirements for the</A>
+ &nbsp; <B>  <A NAME="tex2html195"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,44 @@
+
+	$Id$
+
+* The day before the release date, all changes that should be part of the
+  release need to be checked in on the release's CVS branch. 
+
+  Who owns which pieces of code??? Who sets the version.h files???
+
+  (For 3.2 the first release will be made on June 8th, the second on June
+  20th and the third on Aug. 20th. Hopefully the third `release candidate'
+  will be the one for the whole world. The first two are what we used to call
+  `beta' releases.)
+
+* The source code will be tagged and fresh directories made by exporting them
+  from CVS. The Makefile's tar command will be used to make the source
+  distributions. (This means running configure, make update-version and make
+  tar.) 
+
+* Use the newly made tar files to build binary distributions. (Run configure,
+  make and make binary-tar).
+
+* Ethan will ftp the source tar files and build binaries for Sun and SGI.
+
+* Dan will use them to build Alpha and SGI (dsp server only?) binaries.
+
+* I'll use them to build Linux binaries. (I can build RH 6.2/kernel 2.2 now.
+  At some point I'll get a copy of RH 7.1/Kernel 2.4 and build that, too).
+
+* After each of the binary builds all of the tests should be run. (make
+  check). If running the tests require that something else be done, that
+  should be changed (add a bugzilla entry) unless it's really necessary. For
+  example, servers can be tested using the output of the three filter
+  programs. Test the *_dods program by piping its output into geturl.
+
+  If a test fails and it's already in the bug database and not marked as
+  `blocker' then we can release the software. If a test fails and there's no
+  mention of it in the bug database, make an entry. If it's a problem that
+  will keep a large group of people from using the software, mark it as a
+  `blocker' and let me know. Otherwise, we can still release the software.
+
+Notes:
+
+1) We are not trying to coordinate C++ and Java releases. At least not right
+   now.

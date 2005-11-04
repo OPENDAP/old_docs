@@ -1,0 +1,91 @@
+
+We don't say much about translation in the crrent docs. There is, under
+construction, a doc for the toolkit (that is the implmentation of the
+DAP). It will talk about how to do translations. Here's the deal: it is not
+possible in general to translation from one data model to another in
+polynomial time. However, there are many useful translations which can be
+done in at least PT and there are many that are lossy but still useful. 
+
+For example, suppose a relational structure like:
+
+Dataset {
+	Sequence {
+		Int32 id;
+		Float64 latitude;
+		Float64 longitude;
+		Sequence {
+			Float64 depth;
+			Float64 temperature;
+		} xbt_drop;
+	} station;
+} cruise;
+		 
+Which is a typical data type for a cruise where a scientist sample ocean
+temperature using an expendable bathythermic device. Note that each tuple of
+is a set of values that are related but the row order within any sequence is
+not important (i.e., you can twidle the rows without loosing information).As
+a table this looks like:
+
+	id	lat	lon	depth	temp
+	1	10.8	60.8	0	70
+				10	46
+				20	34
+	2	11.2	61.0	0	71
+				10	45
+				20	34
+	3	11.6	61.2	0	69
+				10	47
+				20	34
+
+This can be first flattened to a single sequence (although that introduces
+redeundency) to look like:
+
+	id	lat	lon	depth	temp
+	1	10.8	60.8	0	70
+	1	10.8	60.8	10	46
+	1	10.8	60.8	20	34
+	2	11.2	61.0	0	71
+	2	11.2	61.0	10	45
+	2	11.2	61.0	20	34
+	3	11.6	61.2	0	69
+	3	11.6	61.2	10	47
+	3	11.6	61.2	20	34
+
+However, this is still not much use to an API like NetCDF since it is not
+capable of processing what we call sequences (realtions to the rest of the
+world). To translate this into something that netCDF can use you could make
+five arrays; one for id, lat, lon, depth and temp each. They could be bound
+up in a Structure or not - since netCDF ignores things like structures as far
+as I know. However, making the arrays part of a structure is a good idea
+because it notes that all these things are related in some
+way. Unfortunately, the actual nature of the realtion has been lost inthe
+translation. This is *still* a very useful thing to be able to do -
+scientists do this all the time when they work with relational data in a
+proccessing program like MatLAB (which work with arrays only).
+
+The Structure of arrays would look like:
+
+Dataset {
+	Structure {
+		Int32 id[9];
+		Float64 latitude[9];
+		Float64 longitude[9];
+		Float64 depth[9];
+		Float64 temperature[9];
+	} station_xbt_drop;
+} cruise;
+
+It could also be translated as:
+
+Dataset {
+	Structure {
+		Int32 id[3];
+		Float64 latitude[3];
+		Float64 longitude[3];
+		Structure {
+			Float64 depth[3];
+			Float64 temperature[3];
+		} xbt_drop;
+	} station;
+} cruise;
+

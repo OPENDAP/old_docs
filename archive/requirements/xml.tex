@@ -1,0 +1,27 @@
+XML Representation of DODS Objects
+
+Don't combine the DAS and DDS. (?)
+
+Options:
+Provide a class to do this for the client side.
+Keep the objects separate on the server but send them combined.
+
+Provide access to the XML representations using the extensions xdas, xdds and
+xdods.
+
+Develop DTDs for each of the three objects.
+
+Use a multipart MIME document to hold data, separating binary information
+from XML using the content referrer MIME header.
+
+____________________________________________________________________________
+
+Combine the DAS and DDS in one XML document.
+
+Data is returned using the multipart MIME hack described above.
+
+Access the Structure and Attrucbute information using the .xml extension.
+Access the data using the .xml extension *and* supplying a constraint.
+
+Internalize the XML-encoded information in our DAS, DDS and DataDDS objects.
+

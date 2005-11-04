@@ -1,0 +1,60 @@
+In order to make datasets easily accessible to clients in a uniform
+manner, they should include the following use metadata at a minimum:
+
+\begin{enumerate}
+   \item The convention being followed,
+   \item the variable title,
+   \item the variable units that follow some convention,
+   \item the variable "bad" flag,
+   \item the axis units,
+   \item the time axis encoding should follow some convention.
+\end{enumerate}
+
+Server loading needs to be studied and controlled based on either
+or both of:  volume of large requests and/or number of requests
+per unit time.
+
+End-to-end projects that use OPeNDAP as the data transport mechanism
+can work wonders for existing systems where the initial system originally
+relied on hand-to-mouth 19th century technologies for data transport.
+
+Large scale projects can and are successfully using the OPeNDAP
+transport mechanism for moving large volumes of data within
+the projects.  The use of OPeNDAP mechanism is becoming critical
+to the day-to-day operation of more and more projects.
+
+Several up-and-coming technologies,including Anagram, the \ac{AIS},
+and an aggregation server for in-situ data, will help meet the
+current and future needs of modelers and the \ac{ESG}.  
+
+New instrument technologies are making the routine collection of
+data automatic.  The storage and transmission of those data with
+the appropriate metadata often is problematic.  The solution may
+be to build in metadata generators into the instrumental transmission/
+collection systems, and put the data into a ``standard'' format such
+as netCDF.
+
+Data access speed and efficiencies depend on server/connection/client
+configurations, and whether or not the server and client are local
+to each other.  The efficiency also depends on the mode of access.
+Studies need to sort out the differences of the efficiencies including
+all these and other factors, in order to better determine which
+systems work best in a given situation.  A particular system may not
+be efficiently used if the capabilities of that system are not fully
+understood by the individual developer.
+
+% $Id$
+%
+% $Log: servingandaccessingconclusion.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

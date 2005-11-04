@@ -1,0 +1,54 @@
+Year-end DODS software development
+
+The principle focus of the development of DODS involves the design and
+implementation of two types of software: the DODS API and matched DODS data
+servers and DODS client libraries.  This software is intended to be used both
+by the DODS team at URI to analyze the effectiveness of DODS's data delivery
+architecture and to enable programmers at other institutions to build
+DODS-compliant modules tailored to their systems. The bulk of the software
+developed during this phase of DODS will be in C++, with some work done in
+ANSI C. In addition, we have decided to use the World Wide Web software as a
+base for the DODS data servers. This simplifies and standardizes the
+transmission components of DODS and provides for a powerful, seamless
+interface between the data delivery components and the separately developed
+data location system.
+
+In order to build the API translation components described in the data
+delivery architecture and design papers, there must be some realization of
+the DODS API. This API differs for APIs such as netCDF or HDF in that it is
+implemented in two pieces - one a client part and one a server part. The
+client part of the DODS API is used to build DODS-compliant `surrogate
+libraries' which present the same interface as some existing data access API
+(e.g., netcdf) but instead translate those API function calls into DODS calls
+which send information to a remote DODS data server.
+
+The client part of the DODS API is used to build new implementations of
+existing `user APIs' where each of these new implementations accesses data
+using a common set of operations that are independent of storage format.  In
+order to access data using this common set of operations, DODS data servers
+must translate each of those operations into the access methods used by the
+data set which they provide access. The server part of the DODS API
+generalizes some of this translation by providing a skeleton which server
+implementors can use to greatly simplify building the data server.
+
+In addition to the construction of the DODS API client and server parts, we
+will be constructing two complete sample surrogate libraries and data
+servers, one for the netcdf API and one for the JGOFS API. Once built, these
+components will allow any program which uses netcdf or JGOFS to read any of
+the data sets accessible via a DODS data server. furthermore, and data set
+stored in either netcdf or JGOFS will be a potential `DODS accessible data
+set'.
+
+The two complete sample systems will form the basis for further analysis of
+the basic data delivery architecture and design. In addition, combined with
+documentation they will server as pedagogical tools for two workshops to be
+held at URI where programmers from various institutions will learn how to
+build DODS software components so that their data will be accessible to the
+Internet community. It is important to note that will there is a learning
+curve for library or server builders, there is none for people who want to
+use the software we will develop. As our previous work with the RPC based
+servers has shown, users can simplely relink their programs with a DODS
+surrogate library and access networked data without modifying or adding to
+any part of their program.
+
+

@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Conclusion</TITLE>
+<META NAME="description" CONTENT="Conclusion">
+<META NAME="keywords" CONTENT="api">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="api.css">
+
+<LINK REL="next" HREF="node16.html">
+<LINK REL="previous" HREF="node5.html">
+<LINK REL="up" HREF="api.html">
+<LINK REL="next" HREF="node16.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html256"
+  HREF="node16.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html252"
+  HREF="api.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html246"
+  HREF="node14.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html254"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html257"
+  HREF="node16.html">Bibliography</A>
+<B> Up:</B> <A NAME="tex2html253"
+  HREF="api.html">DODS Data Access Protocol</A>
+<B> Previous:</B> <A NAME="tex2html247"
+  HREF="node14.html">Data Access Protocol Entry</A>
+ &nbsp; <B>  <A NAME="tex2html255"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00060000000000000000">
+Conclusion</A>
+</H1>
+
+<P>
+The Data Access Protocol is used to access data sets within the DODS data
+delivery system. It is not intended to be limited to DODS, but it is
+specialized for the system. Among those specializations are the stateless
+nature of the protocol. While the DAP could be used in many different
+contexts, it is principally designed to be the transmission protocol used by
+the data servers in the DODS data delivery system.
+
+<P>
+DODS supports access to data sets stored in a number of established, third
+party APIs. In addition, it supports cross-access to those data sets. Thus
+data in any one of the supported APIs is accessible using any one of the
+supported APIs (at least in principle--some <EM>possible</EM> accesses may
+wind up returning meaningless, or null, data). The DAP facilitates this cross
+connections of user programs and data sets by providing a common
+access protocol for each API. Each data server will provide access to data
+using the DAP and each surrogate library (See <A NAME="tex2html36"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-arch/data-delivery-arch.html">DODS--Data Delivery Architecture</A> and <A NAME="tex2html37"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-design/data-delivery-design.html">DODS--Data Delivery Design</A>) will satisfy
+the supported API's function calls with information obtained via the DAP.
+
+<P>
+To support its stateless interface, the DAP consists of two structures which
+contain attribute and type information about the variables in the data set
+and a single, programmable, mechanism for reading a variable. The attribute
+and type information structures can be used to build powerful translators
+which read variables in one type and transform them, on-the-fly, to types
+suitable for the surrogate API. 
+
+<P>
+
+<P>
+
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html256"
+  HREF="node16.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html252"
+  HREF="api.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html246"
+  HREF="node14.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html254"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html257"
+  HREF="node16.html">Bibliography</A>
+<B> Up:</B> <A NAME="tex2html253"
+  HREF="api.html">DODS Data Access Protocol</A>
+<B> Previous:</B> <A NAME="tex2html247"
+  HREF="node14.html">Data Access Protocol Entry</A>
+ &nbsp; <B>  <A NAME="tex2html255"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

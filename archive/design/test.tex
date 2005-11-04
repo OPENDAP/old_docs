@@ -1,0 +1,84 @@
+%
+% This file contains information on URLs. It describes how the different
+% parts of DODS use URLs as well as the structure DODS assumes those URLs to
+% have. 
+%
+% $Id$
+%
+
+\documentstyle[code,12pt,html,psfig,margins]{article}
+
+%\psfigurepath{url-figs}
+
+\begin{document}
+
+\title{DODS---Uniform Resource Locators}
+\author{}
+\date{\today}
+
+\maketitle
+
+\begin{abstract}
+
+  This document describes the syntax used by the Distributed Oceanographic
+  Data System (DODS) to reference objects on the Internet. The syntax is
+  based on the Uniform Resource Locator syntax used by the World Wide Web
+  system designed at \CERN\@. In addition to the syntax description, an
+  overview of the use of resource locators by the main components of the
+  system is given.
+
+\end{abstract}
+
+\newpage
+
+\section{Uses of URLs by DODS}
+
+The Data Delivery Mechanism consists of libraries with which users re-link
+their programs as well as stand alone utilities built at least partially from
+those libraries. URLs are used verbatim by the data delivery components of
+DODS\@. The URL is passed to the server or translator using the API {\em
+  open\/} call (e.g., {\tt ncopen()}). The client library stub is responsible
+for removing the envelope of the URL and sending either the path or embedded
+URL to the correct host/server or host/translator.
+
+When a user wants to access data via a DODS server they must give to a client
+(i.e., a program linked with one of the DODS reimplemented API libraries) A
+URL which references that data. Users may choose to supply a constraint along
+with that URL effectively limiting the parts of the data set that the client
+can see. For example, suppose a data set exists which contains several
+arrays:
+
+\begin{code}{cb}
+    Dataset {
+        Int32 u[time_a = 16][lat = 17][lon = 21];
+        Int32 v[time_a = 16][lat = 17][lon = 21];
+        Float64 lat[lat = 17];
+        Float64 lon[lon = 21];
+        Float64 time[time = 16];
+    } fnoc1;
+\end{code}
+
+\begin{code}{cb}
+    Dataset {
+        Int32 u[time_a = 1][lat = 17][lon = 21];
+    } fnoc1;
+\end{code}
+
+The user can refer to the entire dataset using a URL without a constraint
+expression;
+\htmladdnormallink{http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc}
+{http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc.dds}. If the user were to
+specify this, then the client-library will receive from the server a DDS like
+the one in Figure~\ref{url:fig:dds}. However, if the user knows that they
+only want to work with a small part of the data set they can supply a
+constraint expression along with the URL\@. For example, suppose that the
+user only wants the latitude and longitude values for $time_a = 2$, and
+furthermore that they are only interested in the array $u$. They could supply
+the user program with the following URL:
+\htmladdnormallink{http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc?u[2:2][1:17][1:21]}
+{http://dods.gso.uri.edu/cgi-bin/nc/data/fnoc1.nc?u[2:2][1:17][1:21].dds} The
+user program will receive DDS in Figure~\ref{url:fig:dds2}. For program which
+are designed to read the entire dataset without user interaction this is a
+powerful additional feature.
+
+\end{document}

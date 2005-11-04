@@ -1,0 +1,140 @@
+$Id$
+
+Notes from the SIGNIDR Meeting held at the National Archives in Greenbelt MD
+on 3/24/95.
+
+Elliot Christian (USGS):
+
+``Status Report on the Government Locator Service''
+E.C. is the designer of GILS. 
+
+Server-based searching is `mass market' (i.e. ``We know what you want'').
+Current clients are dumb.
+GILS must evolve.
+GILS is mandated by an law.
+GILS is a record-based, Z39.50 system.
+Z39.50 is now at version 3.x.
+May IITF meeting; demos only, high profile attendees.
+GILS list: listproc@cni.org, subscribe GILS
+WWW: http://www.usgs.gov/gils
+
+In private conversation:
+Strongly agrees that there is no real distinction between data and meta data.
+Agrees that Z39.50 is *not* appropriate for DODS Data delivery.
+Describes DODS data delivery as `analysis' rather than search.
+
+
+Avra Michelson (MITRE):
+
+``MITRE's Information Locator Project:Government Agencies Sharing
+Information''
+
+Their locator may/may not be GILS compliant (didn't know).
+Locate information in various systems.
+Done for intelligence agencies, so there are many security problems.
+Main problems were with access to public information within the secure system.
+Diverse users.
+Wanted to identify gaps in addition to catalogs.
+Data types: pictures, maps, sound.
+Definition of scope: most important milestone.
+Controlled vocabularies: necessary but not sufficient.
+Thesaurus: present different views to different users using Thesaurus for tx.
+Collecting information: its hard to get people to comply.
+Users need $ or people (site visit) to add data to system.
+There is need for up-front consensus building.
+Iterative search is a new paradigm for users.
+
+Chuck Stein (Mirror imaging/NRL Monterey, CA):
+
+``The Master Environmental Library(MEL): An [sic] NIDR System using WWW/WAIS
+Technology: Metadata Standards and Standard Transfer Formats''
+
+I missed most of this, but it is NEONS.
+All data stored in a database (OO).
+All data centralized.
+Clear distinction between data and metadata.
+
+In private conversation:
+Knows about DODS to some degree, but not about our `no metadata' stance.
+Commented that we are working on the same problem from opposite ends; he may
+have a point.
+
+Douglas Oard (U. of MD, College Park):
+
+``Filtering Networked Information Resources: Issues, Approaches, and
+Experimental System''
+
+Types: Programmable systems, Learning systems, Collaborative systems.
+Many have been implemented.
+
+Archie Warnock (A/WWW Enterprises):
+
+``The Electronic Astrophysical Journal Letters and Network Resource
+Location''
+
+AJL are going to be online.
+It will be a copy of the paper edition; they won't eliminate the paper ed.
+Since the Letters is currently free, billing is not addressed.
+Version tracking is an issue (as this go to the typesetter).
+He uses URCs (UR citations) so that references aren't mach. dependent.
+URCs are implemented using a URL to a CGI resolver.
+
+Met with Archie Warnock privately:
+
+He is still very interested in DODS, although he's left Huges/STX.
+He has built (w/Jim Fulton) a Z39.50 system which will work with our servers.
+We should talk with him more about the design.
+This could be a migration path which would give us some GILS compliance.
+This does not change how data are accessed.
+The `locator' is used for the first iterations of the search process.
+Suggested that URCs could be used by DODS.
+
+Carroll Hood (CIESIN Earth System Program Coordinator):
+
+``CIESIN Gateway & Information Cooperative: A globally Distributed
+Information Locator System''
+
+Uses Z39.50 and is not GILS compliant but will be soon.
+Strong distinction between data and metadata.
+Can perform several remote searches simultaneously.
+Client Cannot search (dumb client).
+Client runs on IBM PC and UNIX.
+System works on metadata only.
+Currently uses DIS, but will change for GILS.
+
+Overall impressions:
+
+DODS was well received by those that stayed to the end of the meeting.
+
+My statement that there was no difference between data and metadata did not
+cause much uproar (some people did not agree, but most did).
+
+However, the tone of the conference was very much in favor of systems that
+were essentially metadata systems. 
+
+I think the explanation for this contradiction (that most people see there
+is no such thing as metadata in and of itself and yet continue to build systems
+predicated on such a thing) is that the system designers don't know how to
+break out of the metadata mind set.
+
+While Z39.50 is a powerful query metalanguage, it is so poorly suited to
+analysis (for lack of a better term) that it is not usable.
+
+Many people see working with actual data as an analysis function, which may
+be in part true and also a function of the afore mentioned metadata mind
+set. 
+
+GILS is a standard that will only store simple text records. Period. If
+anything called GILS ever stores something else, it will be a different GILS.
+
+Gills is purely a search mechanism.
+
+Interestingly, both GILS and Z39.50 (GILS is one query language defined using
+the Z39.50 metalanguage) are specifically intended to put uniform search
+front-ends on disparate systems. In other words, it is intended to be a
+translation mechanism for searches, much as the DODS DAP is a translation
+mechanism for data access.
+
+It was clear that DODS will permit the development of intelligent
+clients. Many people see the current generation of systems as lacking in this
+capacity.

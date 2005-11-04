@@ -1,0 +1,12 @@
+$Id$
+
+Add information about libg++ the to descriptions of classes.
+
+Add information about new das and dds capabilities.
+
+Add information about transmission.
+
+Road map document - in html and LaTeX. 
+
+Add to toolkit doc: config.h is provided by the toolkit; don't define your
+own. 

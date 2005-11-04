@@ -1,0 +1,338 @@
+This is TeXk, Version 3.14159 (Web2C 7.4.5) (format=latex 2004.3.22)  20 APR 2004 15:02
+ %&-line parsing enabled.
+**stds.tex
+(./stds.tex
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+(/home/jimg/DODS-doc/latex/dods-book.cls
+DODS Book Class -- Tom Sgouros - 1999
+(/usr/share/texmf/tex/latex/base/book.cls
+Document Class: book 2001/04/21 v1.4e Standard LaTeX document class
+(/usr/share/texmf/tex/latex/base/bk11.clo
+File: bk11.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@chapter=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/home/jimg/DODS-doc/latex/hyperlatex.sty
+Package: hyperlatex 2000/03/29 v2.5 LaTeX2e package for Hyperlatex mode
+
+Package: 'hyperlatex' v2.5 Otfried Cheong
+(/usr/share/texmf/tex/latex/tools/verbatim.sty
+Package: verbatim 2001/03/12 v1.5p LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks14
+\verbatim@line=\toks15
+\verbatim@in@stream=\read1
+)
+\c@htmldepth=\count88
+\c@htmlautomenu=\count89
+)
+(/usr/share/texmf/tex/generic/misc/psfig.sty
+\@unused=\write3
+\ps@stream=\read2
+\p@intvaluex=\dimen103
+\p@intvaluey=\dimen104
+
+psfig/tex 1.10-dvips
+) (/usr/share/texmf/tex/latex/base/makeidx.sty
+Package: makeidx 2000/03/29 v1.0m Standard LaTeX package
+)
+(/usr/share/texmf/tex/latex/fancyhdr/fancyhdr.sty
+\headwidth=\dimen105
+)
+(/home/jimg/DODS-doc/latex/vcode.sty
+Style-option: `vcode' (George Ferguson & Tom Sgouros)
+Package: vcode 1999/01/31 v1.0 LaTeX2e package for source code
+\vcodeindent=\skip43
+\c@CodeLineNo=\count90
+\vc@CodeLineFlag=\count91
+\vc@indent=\skip44
+\vc@testwidth=\skip45
+\vc@adjustmargin=\skip46
+) (/usr/share/texmf/tex/latex/psnfss/pifont.sty
+Package: pifont 2002/09/08 PSNFSS-v9.0a Pi font support (SPQR) 
+LaTeX Font Info:    Try loading font information for U+pzd on input line 62.
+
+(/usr/share/texmf/tex/latex/psnfss/upzd.fd
+File: upzd.fd 2001/06/04 font definitions for U/pzd.
+)
+LaTeX Font Info:    Try loading font information for U+psy on input line 63.
+
+(/usr/share/texmf/tex/latex/psnfss/upsy.fd
+File: upsy.fd 2001/06/04 font definitions for U/psy.
+))
+(/usr/share/texmf/tex/latex/tools/xspace.sty
+Package: xspace 1997/10/13 v1.06 Space after command names (DPC)
+)
+(/usr/share/texmf/tex/latex/misc/mparhack.sty
+Package: mparhack 2002/12/20 v1.3 (T. Sgouros and S. Ulrich)
+)
+\exampleindent=\skip47
+\chapKern=\skip48
+\chapHeadWidth=\skip49
+\figadjust=\skip50
+\emphBoxWidth=\skip51
+\emphBoxHeight=\skip52
+\emphBoxRef=\skip53
+\rulewidth=\skip54
+\ruledist=\skip55
+)
+(/usr/share/texmf/tex/latex/tools/longtable.sty
+Package: longtable 2000/10/22 v4.10 Multi-page Table package (DPC)
+\LTleft=\skip56
+\LTright=\skip57
+\LTpre=\skip58
+\LTpost=\skip59
+\LTchunksize=\count92
+\LTcapwidth=\dimen106
+\LT@head=\box26
+\LT@firsthead=\box27
+\LT@foot=\box28
+\LT@lastfoot=\box29
+\LT@cols=\count93
+\LT@rows=\count94
+\c@LT@tables=\count95
+\c@LT@chunks=\count96
+\LT@p@ftn=\toks16
+)
+\@input{../boiler/layout.aux}
+\openout2 = `../boiler/layout.aux'.
+
+(../boiler/layout.tex)
+\@input{../boiler/dods-def.aux}
+\openout2 = `../boiler/dods-def.aux'.
+
+(../boiler/dods-def.tex)
+\@indexfile=\write4
+\openout4 = `stds.idx'.
+
+
+Writing index file stds.idx
+(./stds.aux (./stds/preface.aux) (./stds/ch01.aux) (./stds/ch02.aux)
+(./stds/ch03.aux) (./stds/appa.aux))
+\openout1 = `stds.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 46.
+LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 46.
+
+(/usr/share/texmf/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 51.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 51.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 51.
+ [1
+
+
+
+
+
+
+]
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 53.
+
+(/usr/share/texmf/tex/latex/psnfss/omsptm.fd
+File: omsptm.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <8> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 53.
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 57.
+
+(/usr/share/texmf/tex/latex/psnfss/ot1phv.fd
+File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
+)
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 57.
+ [2]
+\openout2 = `stds/preface.aux'.
+
+ (./stds/preface.tex
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <24.88> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 14.
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <24.88> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 14.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 14.
+
+Overfull \hbox (71.9989pt too wide) in paragraph at lines 14--14
+[]$[]$ 
+ []
+
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 30.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 51.
+[3
+
+
+]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 67.
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <9> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 67.
+) [4]
+Overfull \hbox (71.9989pt too wide) in paragraph at lines 59--59
+[]$[]$ 
+ []
+
+(./stds.toc)
+\tf@toc=\write5
+\openout5 = `stds.toc'.
+
+ (./stds.lof)
+\tf@lof=\write6
+\openout6 = `stds.lof'.
+
+ (./stds.lot [5
+
+
+])
+\tf@lot=\write7
+\openout7 = `stds.lot'.
+
+ [6]
+\openout2 = `stds/ch01.aux'.
+
+ (./stds/ch01.tex
+Chapter 1.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <100> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 12.
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <100> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 12.
+
+Overfull \hbox (123.0pt too wide) in paragraph at lines 12--12
+[]$[]$  
+ []
+
+[1
+
+
+
+]
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <12> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 63.
+ [2]) [3]
+\openout2 = `stds/ch02.aux'.
+
+ (./stds/ch02.tex [4
+
+
+
+]
+Chapter 2.
+
+Overfull \hbox (123.0pt too wide) in paragraph at lines 21--21
+[]$[]$  
+ []
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <9> on input line 32.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 32.
+
+Overfull \vbox (14.0pt too high) detected at line 52
+ []
+
+[5] [6] [7]
+Overfull \vbox (14.0pt too high) detected at line 216
+ []
+
+[8] [9] [10] [11]) [12]
+\openout2 = `stds/ch03.aux'.
+
+ (./stds/ch03.tex
+Chapter 3.
+
+Overfull \hbox (123.0pt too wide) in paragraph at lines 18--18
+[]$[]$  
+ []
+
+[13
+
+
+
+] [14] [15]
+Overfull \hbox (30.91077pt too wide) in paragraph at lines 200--201
+[]  
+ []
+
+[16]) [17]
+\openout2 = `stds/appa.aux'.
+
+ (./stds/appa.tex [18
+
+
+
+]
+Appendix A.
+
+Overfull \hbox (123.0pt too wide) in paragraph at lines 1--1
+[]$[]$  
+ []
+
+
+Overfull \hbox (37.34998pt too wide) in alignment at lines 11--16
+ [] [] [] 
+ []
+
+
+Overfull \hbox (37.34998pt too wide) in alignment at lines 16--21
+ [] [] [] 
+ []
+
+
+Overfull \hbox (37.34998pt too wide) in alignment at lines 21--23
+ [] [] [] 
+ []
+
+
+Overfull \hbox (37.34998pt too wide) in alignment at lines 23--29
+ [] [] [] 
+ []
+
+) [19] (./stds.ind
+Overfull \hbox (71.9989pt too wide) in paragraph at lines 1--1
+[]$[]$
+ []
+
+[20
+
+
+
+]) (./stds.aux (./stds/preface.aux) (./stds/ch01.aux) (./stds/ch02.aux)
+(./stds/ch03.aux) (./stds/appa.aux)) ) 
+Here is how much of TeX's memory you used:
+ 1391 strings out of 20847
+ 15567 string characters out of 195948
+ 71234 words of memory out of 350001
+ 4275 multiletter control sequences out of 10000+15000
+ 23341 words of font info for 60 fonts, out of 400000 for 1000
+ 14 hyphenation exceptions out of 10000
+ 32i,12n,45p,174b,473s stack positions out of 3000i,100n,1500p,50000b,4000s
+
+Output written on stds.dvi (26 pages, 50800 bytes).

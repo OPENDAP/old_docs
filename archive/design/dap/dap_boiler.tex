@@ -1,0 +1,240 @@
+% latex and HTML macros. Some latex commands become nops for HTML. 4/10/2001
+% jhrg 
+\T\newcommand{\Cpp}{\rm {\small C}\raise.5ex\hbox{\footnotesize++}\xspace}
+\T\newcommand{\C}{\rm {\small C}\xspace}
+\W\newcommand{\Cpp}{C++}
+\W\newcommand{\C}{C\xspace}
+\W\newcommand{\cdots}{...}
+\W\newcommand{\ddots}{}
+\W\newcommand{\vdots}{.}
+\W\newcommand{\pm}{+/-}
+\W\newcommand{\times}{*}
+\W\newcommand{\uppercase}[1]{\textsc{#1}}
+\T\newcommand{\qt}{\lit{\char127}}
+\W\newcommand{\qt}{"}
+
+\texorhtml{\def\rearrangedate#1/#2/#3#4{\ifcase#2\or January\or February\or
+  March\or April\or May\or June\or July\or August\or September\or
+  October\or November\or December\fi\ \ifx0#3\relax\else#3\fi#4, #1}
+\def\rcsdocumentdate{\expandafter\rearrangedate\rcsInfoDate}}%
+{\HlxEval{
+(put 'rearrangedate       'hyperlatex 'hyperlatex-ts-rearrange-date)
+
+(defun hyperlatex-ts-rearrange-date ()
+  (let ((date-string (hyperlatex-evaluate-string 
+                       (hyperlatex-parse-required-argument))))
+    (let ((year-string (substring date-string 0 4))
+          (month-string (substring date-string 5 7))
+          (day-string (substring date-string 8 10))
+          (month-list '("January" "February" "March" "April"
+                        "May" "June" "July" "August" 
+                        "September" "October" "November" "December")))
+       (insert
+         (concat (elt month-list (1- (string-to-number month-string)))
+                 " " (int-to-string (string-to-number day-string))
+                 ", " year-string)))))
+}
+\newcommand{\rcsdocumentdate}{\rearrangedate{\rcsInfoDate}}}
+
+\newcommand{\dapversion}{Version 4.0\xspace}
+\newcommand{\opendap}{OPeNDAP\xspace}
+\newcommand{\DAP}{DAP\xspace}
+\newcommand{\DODS}{DODS\xspace}
+\newcommand{\NVODS}{NVODS\xspace}
+\newcommand{\CE}{constraint expression\xspace}
+\newcommand{\CEs}{constraint expressions\xspace}
+\newcommand{\ErrorX}{ErrorX\xspace}
+\newcommand{\CapX}{Server Capabilities Document\xspace}
+\newcommand{\Blob}{Blob\xspace}
+\newcommand{\DDX}{DDX\xspace}
+\newcommand{\DAX}{DAX\xspace}
+\newcommand{\DDS}{DDS\xspace}
+\newcommand{\DAS}{DAS\xspace}
+\newcommand{\URI}{URI\xspace}
+\newcommand{\DataDDS}{DataDDS\xspace}
+
+\newcommand{\type}[1]{\emph{#1}}
+\newcommand{\Alias}{\type{Alias}\xspace}
+\newcommand{\Array}{\type{Array}\xspace}
+\newcommand{\Attribute}{\type{Attribute}\xspace}
+\newcommand{\ProcAttribute}{\type{Processing Attribute}\xspace}
+\newcommand{\Map}{\type{Map}\xspace}
+\newcommand{\Target}{\type{Target}\xspace}
+\newcommand{\FQN}{fully qualified name\xspace}
+\newcommand{\Grid}{\type{Grid}\xspace}
+\newcommand{\Structure}{\type{Structure}\xspace}
+\newcommand{\Dataset}{\type{Dataset}\xspace}
+\newcommand{\Sequence}{\type{Sequence}\xspace}
+\newcommand{\Container}{\type{Container}\xspace}
+\newcommand{\Bi}{\type{Binary Image}\xspace}
+\newcommand{\String}{\type{String}\xspace}
+\newcommand{\URL}{\type{URL}\xspace}
+\newcommand{\Boolean}{\type{Boolean}\xspace}
+\newcommand{\Byte}{\type{Byte}\xspace}
+\newcommand{\Enum}{\type{Enumeration}\xspace}
+\newcommand{\Time}{\type{Time}\xspace}
+\newcommand{\Function}{\type{Function}\xspace}
+\newcommand{\Description}{\type{Description}\xspace}
+\newcommand{\Parameter}{\type{Parameter}\xspace}
+\newcommand{\Constraint}{\type{Constraint}\xspace}
+\newcommand{\NoAttributes}{\type{NoAttributes}\xspace}
+\newcommand{\Project}{\type{Project}\xspace}
+\newcommand{\Select}{\type{Select}\xspace}
+\newcommand{\Hyperslab}{\type{Hyperslab}\xspace}
+
+\newcommand{\Aliases}{\type{Aliases}\xspace}
+\newcommand{\Arrays}{\type{Arrays}\xspace}
+\newcommand{\Attributes}{\type{Attributes}\xspace}
+\newcommand{\ProcAttributes}{\type{Processing Attributes}\xspace}
+\newcommand{\Maps}{\type{Maps}\xspace}
+\newcommand{\Targets}{\type{Targets}\xspace}
+\newcommand{\FQNs}{fully qualified names\xspace}
+\newcommand{\Grids}{\type{Grids}\xspace}
+\newcommand{\Structures}{\type{Structures}\xspace}
+\newcommand{\Sequences}{\type{Sequences}\xspace}
+\newcommand{\Containers}{\type{Containers}\xspace}
+\newcommand{\Bis}{\type{Binary Images}\xspace}
+\newcommand{\Strings}{\type{Strings}\xspace}
+\newcommand{\URLs}{\type{URLs}\xspace}
+\newcommand{\Booleans}{\type{Booleans}\xspace}
+\newcommand{\Bytes}{\type{Bytes}\xspace}
+\newcommand{\Enums}{\type{Enumerations}\xspace}
+\newcommand{\Times}{\type{Times}\xspace}
+\newcommand{\CSVs}{comma-separated values\xspace}
+\newcommand{\Functions}{\type{Functions}\xspace}
+\newcommand{\Descriptions}{\type{Descriptions}\xspace}
+\newcommand{\Parameters}{\type{Parameters}\xspace}
+\newcommand{\Constraints}{\type{Constraints}\xspace}
+\newcommand{\Projects}{\type{Projects}\xspace}
+\newcommand{\Selects}{\type{Selects}\xspace}
+\newcommand{\Hyperslabs}{\type{Hyperslabs}\xspace}
+
+\newcommand{\DIR}{\textbf{Directory}\xspace}
+\newcommand{\TEXT}{\textbf{Text}\xspace}
+\newcommand{\HTML}{\textbf{HTML}\xspace}
+\newcommand{\HELP}{\textbf{Help}\xspace}
+\newcommand{\VER}{\textbf{Version}\xspace}
+\newcommand{\INFO}{\textbf{Info}\xspace}
+
+%%%%%%%%%%%%%% Web Services Paper
+\newcommand{\GetDDX}{\textbf{GetDDX}\xspace}
+\newcommand{\GetData}{\textbf{GetData}\xspace}
+\newcommand{\GetBlobData}{\textbf{GetBlobData}\xspace}
+\newcommand{\GetBlob}{\textbf{GetBlob}\xspace}
+\newcommand{\GetDir}{\textbf{GetDir}\xspace}
+\newcommand{\GetInfo}{\textbf{GetInfo}\xspace}
+
+\newcommand{\FSs}{\type{Foundation Services}\xspace}
+\newcommand{\FS}{\type{Foundation Service}\xspace}
+\newcommand{\ODSN}{\type{OPeNDAP}\xspace}
+
+\newcommand{\blobdataelement}{\texttt{BlobData} element\xspace}
+\newcommand{\blobelement}{\texttt{Blob} element\xspace}
+
+
+
+%\setcounter{secnumdepth}{4}
+%\setcounter{tocdepth}{4}
+
+\newcommand{\Tableref}[1]{Table~\ref{#1}}%
+\newcommand{\Figureref}[1]{Figure~\ref{#1}}%
+\W\begin{iftex}
+\newcommand{\Sectionref}[2]{Section~\ref{#1}%
+  \ifx#2)%
+    \ on page~\pageref{#1}%
+  \else% 
+    \ (page~\pageref{#1})\xspace%
+  \fi\ifx#2\space\ \else #2\fi}%
+\W\end{iftex}
+\W\newcommand{\Sectionref}[1]{Section~\ref{#1}}
+\W\newcommand{\raggedright}{}
+
+
+%% Conveniences for documenting XML
+\newcommand{\tag}[1]{\emph{#1}}
+\newcommand{\element}[1]{\link{\tag{#1}}{sec-xml-#1}}
+\newcommand{\attribute}[1]{\emph{#1}}
+\newcommand{\currentelement}{}
+\newcommand{\ELEMENT}[1]{\renewcommand{\currentelement}{#1 element}%
+  \subsubsection{#1}\label{sec-xml-#1}\indc{\currentelement}%
+  \indc{catalog tag!#1}\indc{aggregation tag!#1}%
+  \indc{XML!#1 element}}
+\newcommand{\ATTRIBUTE}[1]{\item{\lit{#1}}\indc{\currentelement!#1}
+    \indc{#1 attribute!of \currentelement}%
+    \indc{XML!#1 attribute}}
+
+% Conveniences for examples
+\newcounter{exampleno}
+\setcounter{exampleno}{0}
+\newcounter{examplerefno}
+\setcounter{examplerefno}{0}
+\newcommand{\examplelabel}[1]{\refstepcounter{exampleno}\label{#1}%
+  \medskip Example \theexampleno :\smallskip}
+\newcommand{\exampleref}[1]{\texorhtml{Example~\ref{#1}%
+    \refstepcounter{examplerefno}\label{exref\theexamplerefno}%
+    % This is a test whether r@exref... is defined.  If not, skip
+    % anything with the \pageref macro.
+    \catcode`\@=11%
+    \expandafter\ifx\csname r@exref\theexamplerefno\endcsname\relax\else%
+    \expandafter\ifx\csname r@#1\endcsname\relax\else%
+    \bgroup\count100=\pageref{exref\theexamplerefno}%
+    \count101=\pageref{#1}\ifnum\count100=\count101\else~%
+    on page~\pageref{#1}\fi\egroup\fi\fi\xspace}%
+  {\link{Example \ref{#1}}{#1}}}%
+\T\setlength{\vcodeindent}{10pt}
+\texorhtml{
+%% LaTeX version
+\newenvironment{textoutput}[1]{\ifx #1\relax%
+  \medskip Output:\vspace{-\medskipamount}\else%
+  \medskip #1\vspace{-\medskipamount}\fi%
+  \begin{list}{}{\setlength{\leftmargin}{\vcodeindent}}\begin{ttfamily}\item}%
+ {\end{ttfamily}\end{list}} %
+}{%% Hyperlatex version
+\newenvironment{textoutput}[1]{\xml{blockquote}Output:\\ \\ \xml{tt}}%
+  {\xml{/tt}\xml{/blockquote}}%
+\newenvironment{minipage}[4]{}{}
+\newenvironment{ttfamily}{\xml{blockquote}\xml{tt}}%
+  {\xml{/tt}\xml{/blockquote}}}
+
+\newcommand{\DAPOverviewTitle}{DAP Specification Overview}
+\newcommand{\DAPOverview}{\xlink{\textbf{\textit{\DAPOverviewTitle}}}%
+  {dap.html}\xspace}
+
+% Old macros; new values
+\newcommand{\DAPObjectsTitle}{The Data Access Protocol---DAP 2.0}
+\newcommand{\DAPObjects}{\xlink{\textbf{\textit{\DAPObjectsTitle}}}%
+  {http://www.opendap.org/pdf/ESE-RFC-004v0.06.pdf}\xspace}
+  
+\newcommand{\DAPHTTPTitle}{Using DAP 2.0 with HTTP}
+\newcommand{\DAPHTTP}{\xlink{\textbf{\textit{\DAPHTTPTitle}}}%
+  {daph.html}\xspace}
+
+% New macros.
+\newcommand{\DAPDataModelTitle}{DAP Data Model Specification}
+\newcommand{\DAPDataModel}{\xlink{\textbf{\textit{\DAPDataModelTitle}}}%
+  {dapo.html}\xspace}
+  
+\newcommand{\DAPWebTitle}{DAP Web Services Specification}
+\newcommand{\DAPWeb}{\xlink{\textbf{\textit{\DAPWebTitle}}}%
+  {daph.html}\xspace}
+  
+
+\newcommand{\DAPASCIITitle}{DAP Formatted Data Specification}
+\newcommand{\DAPASCII}{\xlink{\textbf{\textit{\DAPASCIITitle}}}%
+  {dapa.html}\xspace}
+\newcommand{\DAPHTMLTitle}{DAP HTTP Query Specification}
+\newcommand{\DAPHTML}{\xlink{\textbf{\textit{\DAPHTMLTitle}}}%
+  {dapm.html}\xspace}
+
+% It probably doesn't matter what we call the macro, but SOAP does not have
+% to run over HTTP and I think that's going to be important for other groups.
+% 10/27/03 jhrg
+\newcommand{\DAPServicesTitle}{DAP HTTP Services Specification}
+\newcommand{\DAPServices}{\xlink{\textbf{\textit{\DAPServicesTitle}}}%
+  {daps.html}\xspace}
+
+\newcommand{\thirtytwobitlimit}[1]{$4,294,967,296$ #1 ($2^{32}$)}
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

@@ -1,0 +1,74 @@
+Some notes on DataCutter, plus some general ramblings.
+James Gallagher
+
+DataCutter is a stream-based distributed computing 'platform.' By platform, I
+mean a framework within which a distributed application can be coded and run.
+It supports well running a distributed application on several computers
+spread across the Internet (not just an *intranet*).
+
+A DataCutter application is composed of a set of filters. DataCutter (DC) uses
+two daemons to control starting and stopping the 'filters.'. Each filter reads
+from a stream, does something to the data and then writes the result to a
+stream. The DC toolkit simplifies writing distributed applications. The DC
+runtime infrastructure (those two daemons) is used to control the execution
+of the application.
+
+To use DC, you need access to each node that is used to run the distributed
+application. I'll explain... To build and run the sample application included
+in DC 3.0 on some of our machines, we'd have to download and build the code
+on each machine. Suppose we wanted to run the sample app on dodsdev, petes,
+and po at GSO plus comet, zanzibar and dcz at my site. We'd first download,
+build and install DC 3.0 on all six of those machines. This gets the two
+daemons installed on each of the six machines; each node that is going to run
+part of the distributed application has to have those daemons (just like you
+need an HTTP daemon to serve web pages and/or run an OPeNDAP server). In
+addition, each user (i.e. person who wants to run the DC distributed
+application) needs to have some authority on those machines. There's a way to
+remotely start and stop the daemons, but my *guess* is that w/o the Globus
+'extension' you need to be able to login to the computers (all six of them in
+this example). You *can* use Globus 2.2.2 to handle the authentication.
+Summary: DC requires a user to be able to access each node where the
+application runs. Hardly surprising.
+
+Why is this important? If we designed a hypothetical DC system where the nodes
+were all the systems that currently run OPeNDAP servers, while it is
+theoretically possible, it is very unlikely that the necessary access
+privileges could be arranged on *all* of those nodes. However, OPeNDAP
+servers can be plunked down anywhere. A DC application could be written to
+read from OPeNDAP servers *without* actually running on the machines that
+serve the data. In other words, OPeNDAP and DataCutter fit together to help
+solve the problem of access rights in a distributed *access and computation*
+environment. Data access necessarily has looser authorization requirements
+than computation.
+
+In any real distributed computing system, access rights are the major
+stumbling point (my opinion, not to say there are not other important issues,
+but you *must* have a *good* practical solution to that problem).
+
+Beyond access rights issues, OPeNDAP servers can be used to present a single
+data access interface to DC applications *and* that interface already
+supports data selection. This is important because DC applications need to be
+able to work with lots of different data from different sources (i.e. to run
+the same algorithm on imagery from JPL, GSFC and URI). It's possible, but not
+very efficient, to recode the DC app for each source. I imagine that
+sub-setting is also just as key. In fact, maybe even more so since that's where
+format/APIs like netCDF, HDF4 and DSP really diverge. This is well known to
+us but definitely worth mentioning.
+
+More stuff about DataCutter: It uses Globus for security (BTW, we might look
+into that ourselves, at least as an option), SRB, and NWS. The SRB is useful
+for access to nasty data stores, but seems limited (not meant in the
+pejorative sense) to a LAN. NWS is the name of the Network Weather System. It
+has nothing to do with sunshine or rain; it is a way of looking at current
+traffic patterns on the Internet. DC uses it to find out which nodes an
+application can use most effectively.
+
+Grand 'vision:' I think that OPeNDAP, SRB, DataCutter, NWS and Globus could be
+used to build a killer distributed data system. One that provides the
+flexibility to work with data stored in all kinds of ways (OPeNDAP and SRB),
+handle security (Globus) and perform distributed computation (DataCutter and
+NWS). Really, this is what the ESIP federation should be doing.
+
+06/16/03 jhrg
+
+$Id$

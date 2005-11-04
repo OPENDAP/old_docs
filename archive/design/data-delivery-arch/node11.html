@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>The Role of Ancillary Data in Translation</TITLE>
+<META NAME="description" CONTENT="The Role of Ancillary Data in Translation">
+<META NAME="keywords" CONTENT="data-delivery-arch">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-arch.css">
+
+<LINK REL="previous" HREF="node10.html">
+<LINK REL="up" HREF="node9.html">
+<LINK REL="next" HREF="node12.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html196"
+  HREF="node12.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html192"
+  HREF="node9.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html188"
+  HREF="node10.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html194"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html197"
+  HREF="node12.html">Conclusion</A>
+<B> Up:</B> <A NAME="tex2html193"
+  HREF="node9.html">Data Delivery Architecture</A>
+<B> Previous:</B> <A NAME="tex2html189"
+  HREF="node10.html">Two Prospective Models for</A>
+ &nbsp; <B>  <A NAME="tex2html195"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00042000000000000000">
+The Role of Ancillary Data in Translation</A>
+</H2>
+
+<P>
+In order to support different data access APIs, DODS must effectively
+translate between data models (See Section&nbsp;<A HREF="node7.html#data-models"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> and the <A NAME="tex2html33"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">DODS--Data Access Protocol</A>
+sections titled ``Dataset Descriptor Structure''&nbsp;<A HREF="#api:dds">
+<IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> and
+``Dataset Attribute Structure''&nbsp;<A HREF="#api:das">
+<IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>). It is often the case
+that the information about a data set available from an API is not sufficient
+to translate that data set's access to another API which implements a
+different data model. What is needed is some additional information about the
+organization and relationships of the variables within the data set.  This
+information is contained in the <EM>Ancillary Data</EM> store of a data set
+(Figure&nbsp;<A HREF="node10.html#fig:dods-server"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>).
+
+<P>
+The ancillary data for a given data set is stored in text files and is
+completely separate from the data set itself. A user who wishes to provide
+data to the DODS community can store the extra information in one of these
+text files without modifying the original data set. 
+
+<P>
+There are two types of ancillary data supported by the <A NAME="tex2html34"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A>. Information
+about the data types of the variables contained in a data set may be provided
+using the Dataset Descriptor Structure (DDS). This structure is used to
+describe the name, type, shape, and structural relation of the variables in a
+given data set. Whenever the client library needs to translate information
+from its network form (i.e., the form the information takes when it is
+encoded using the <A NAME="tex2html35"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A>) it will use information in the DDS structure to
+decide how to perform those transformations. Similarly, the Dataset Attribute
+Structure can be used to affect the translation of variable attributes in a
+given data set.
+
+<P>
+The ancillary data files contain knowledge about the variables for use by the
+data server during translation.  Data set translation is effectively the
+translation of each variable in a given data set and API combination to one
+or more variable(s) in a different API. The translation of each variable is a
+transformation of data type and that transformation is directed by the
+knowledge the translating software has about the API and the specific types
+and organization of a given data set. For a data server, the ancillary data
+structures are the only source of knowledge available beyond the API and the
+data set itself.
+
+<P>
+When the information reaches a client library, all content specific to a
+given API is lost. All information from the data set that is not actual data
+is coded in a structure that is the catenation of the ancillary data
+structures and information that can be extracted from the data set itself.
+This information is structured just like the ancillary data files stored on
+the server side. These files are the only source of knowledge about the data
+set the client library can access.
+
+<P>
+Ancillary information is a data type description language. Knowledge about
+the data set not available to the data server must be stored in one of the
+two ancillary data files if it is to be available to the server upon
+translation. The data server combines information evident from the data set
+with that in the ancillary files to create the two structures sent to the
+server. These two structures have the same form as an ancillary data.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html196"
+  HREF="node12.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html192"
+  HREF="node9.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html188"
+  HREF="node10.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html194"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html197"
+  HREF="node12.html">Conclusion</A>
+<B> Up:</B> <A NAME="tex2html193"
+  HREF="node9.html">Data Delivery Architecture</A>
+<B> Previous:</B> <A NAME="tex2html189"
+  HREF="node10.html">Two Prospective Models for</A>
+ &nbsp; <B>  <A NAME="tex2html195"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

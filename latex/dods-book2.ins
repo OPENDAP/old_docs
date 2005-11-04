@@ -1,0 +1,71 @@
+%% For writing DODS books.
+%%
+%% $Id$: dods-book.ins,v 1.3 1999/07/01 15:57:48 tom Exp $
+%%
+%% $Log: dods-book2.ins,v $
+%% Revision 1.1  2000/10/12 18:13:05  tom
+%% added to repository
+%%
+%%
+
+%% --------------- start of docstrip commands ------------------
+%%
+\def\batchfile{dods-book2.ins}
+\input docstrip.tex
+\keepsilent
+\preamble
+
+Use these styles to format DODS documentation...
+
+\endpreamble
+
+\generateFile{dods-book2.cls}{n}{%
+  \from{dods-book2.dtx}{cls}}
+\generateFile{dods-book2.hlx}{n}{%
+  \from{dods-book2.dtx}{hlx}}
+\generateFile{dods-book2.ist}{n}{%
+  \from{dods-book2.dtx}{ist}}
+\generateFile{vcode.sty}{n}{%
+  \from{vcode.dtx}{sty}}
+\generateFile{vcode.hlx}{n}{%
+  \from{vcode.dtx}{hlx}}
+\generateFile{mparhack.sty}{n}{%
+  \from{mparhack.dtx}{sty}}
+
+\ifToplevel{
+\Msg{***********************************************************}
+\Msg{* To finish the installation you have to move the following}
+\Msg{* files into a directory searched by TeX (or reset the }
+\Msg{* variable to point here):}
+\Msg{*}
+\Msg{* \space\space dods-book2.cls, vcode.sty, proto.sty,}
+\Msg{* \space\space\space and mparhack.sty.}
+\Msg{*}
+\Msg{* n.b. The proto.sty file is not generated here, but is an }
+\Msg{* important part of the DODS doc tools package.}
+\Msg{*}
+\Msg{* And then move the following files into a directory} 
+\Msg{* searched by Hyperlatex:}
+\Msg{*}
+\Msg{* \space\space dods-book2.hlx, vcode.hlx}
+\Msg{*}
+\Msg{* And then make sure this file (style sheet) is in your }
+\Msg{* browser's /css directory:}
+\Msg{*}
+\Msg{* \space\space dods-book2.css}
+\Msg{*}
+\Msg{* And this script should be somewhere on your PATH:}
+\Msg{*}
+\Msg{* \space\space gif-text.pl}
+\Msg{*}
+\Msg{* To produce the documentation run the files `dods-book2.dtx', }
+\Msg{* `vcode.dtx' and `mparhack.dtx' through LaTeX.}
+\Msg{*}
+\Msg{***********************************************************}
+}
+
+\endinput
+
+
+
+

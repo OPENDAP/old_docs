@@ -1,0 +1,962 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- $Id$ -->
+<html>
+<head>
+  <title>Writing an OPeNDAP Server</title>
+             
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+</head>
+  <body>
+   
+<div align="center"><font size="+2"><br>
+Writing an OPeNDAP Server<br>
+  </font></div>
+  <br>
+  <b>Preface</b><br>
+  <br>
+  Writing your own OPeNDAP server is one way to serve data to clients that
+ understand the Data Access Protocol (DAP). This tutorial describes the writing
+ such a server. <br>
+  <br>
+  However, even if the data you want to serve are stored in format, or accessed
+ using API, that you or your group have developed, there may be a server
+which,  with the correct configuration, can work with your data. <br>
+  <br>
+  <b>Contents</b><br>
+  <br>
+  &lt;&lt; this is wrong &gt;&gt;<br>
+  <br>
+  1. Before you write any code<br>
+  The FreeForm Server<br>
+  The JGOFS Server<br>
+  <br>
+  2. Writing your own OPeNDAP server<br>
+   Choose a language<br>
+   Parts of the server you don't have to write<br>
+   Getting ready to write your components<br>
+   Implementing the DDS component<br>
+   Implementing the DAS component<br>
+   Implementing the DataDDS component<br>
+   Packaging the server<br>
+  <br>
+  <b>1. Before you write any code</b><br>
+  <br>
+  The DODS project has developed two servers which can be customized to read
+ different types of data. &nbsp;One, the FreeForm server can be used to provide
+ table and array data, with some restrictions on the data's storage format.
+ The JGOFS server can only serve table-like data but has a more flexible,
+and more complicated, customization scheme. More introductory <a
+ href="http://www.unidata.ucar.edu/packages/dods/user/install-html/install_5.html">
+  information about these two servers</a> can be found in the Server Installation
+ Guide.<br>
+  <br>
+  <b>1.1 The FreeForm server</b><br>
+  <br>
+  The FreeForm server is configured for a specific dataset using a 'format
+ specification file.' Detailed information about writing itss format specification
+ file can be found in the <a
+ href="http://www.unidata.ucar.edu/packages/dods/user/servers/dff-html/">
+  FreeForm server guide</a>. The main limitation of the FreeForm server is
+ that it requires that all information be rigidly column-oriented. For example,
+ consider the two ASCII data files shown below:<br>
+  <br>
+   
+<table cellpadding="2" cellspacing="2" border="0" width="80%"
+ align="center">
+    <caption><br>
+    </caption><tbody>
+      <tr>
+        <td valign="top" align="left">              
+      <pre>1 one 13.4<br>2 two 27.8<br>3 three 17.4<br></pre>
+        </td>
+        <td valign="top">              
+      <pre>1 one   13.4<br>2 two   27.8<br>3 three 17.4<br><br></pre>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" width="50%">ASCII data that cannot be served<br>
+        </th>
+        <th valign="top" width="50%">Data that can<br>
+        </th>
+      </tr>
+       
+  </tbody>  
+</table>
+  <br>
+  The first file cannot be served by the FreeForm server because the thrid
+ value in each record does not start at the same column position. The same
+ data can be served if each datum in all the records 'lines up.' In addition
+ to ASCII data, the FreeForm server can also serve binary data and dbase
+files.  The FreeForm server cannot server CSV files.<br>
+  <br>
+  <b>1.2 The JGOFS server<br>
+  </b><br>
+  The JGOFS server can serve data that is logically structured in a table-like
+ fashion. By table-like, we mean that the data are organized in row and column
+ form with the additional twist that the rightmost column can itself be a
+table; it's not limited to the standard simple dtatypes such as Integer or
+floating point numbers. This enables the JGOFS server to efficently serve
+data that are hierarchical without duplicating values at the outer levels.
+Comapre JGOFS' nested tables with a regular flat table scheme:<br>
+  <br>
+   
+<table cellpadding="2" cellspacing="2" border="0" width="80%"
+ align="center">
+    <caption><br>
+    </caption><tbody>
+      <tr>
+        <td valign="top">              
+      <pre>sation depth temp<br>1      10    10.2<br>       20    10.3<br>       30    10.0<br>2      10    10.2<br>       20    10.35<br>       30    10.0<br></pre>
+        </td>
+        <td valign="top" align="center">              
+      <table cellpadding="0" cellspacing="0" border="0" width="100%">
+          <tbody>
+            <tr>
+     <td>                          
+            <pre>sation depth temp<br>1      10    10.2<br>1      20    10.3<br>1      30    10.0<br>2      10    10.2<br>2      20    10.35<br>2      30    10.0<br></pre>
+     </td>
+            </tr>
+                   
+        </tbody>              
+      </table>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top" width="50%">Nested tables<br>
+        </th>
+        <th valign="top" width="50%">A Flat table duplicates values<br>
+        </th>
+      </tr>
+       
+  </tbody>  
+</table>
+  <br>
+  <br>
+  The JGOFS server can also read data that's organized in many files, making
+ access to the indivigual files seamless. In practice this is quite powerfull.
+ If information about stations, continuing with the example above, is stored
+ in one file and information about each depth/temperature sounding is stored
+ in separate files, JGOFS can easily be configured to server these data.
+In  fact, the JGOFS server comes with a standard 'method' that can serve
+data  stored in just this configuration as long the data are in ASCII.<br>
+  <br>
+  However, JOGFS is far more flexible than just a scheme to serve ASCII data.
+ The JGOFS server is customized by writing a &nbsp;writing a specialized
+access  method for a new data storage format. For more information about
+the JGOFS  system see "<a
+ href="http://puddle.mit.edu/datasys/jgsys.html">JGOFS Data  System Overview</a>
+". &nbsp;There is also a detailed <a
+ href="http://puddle.mit.edu/datasys/jgsysdoc.html">method writing guide</a>
+   with examples available for JGOFS.<br>
+  <br>
+  <b>2. Writing your own OPeNDAP server<br>
+  <br>
+  Choose a language</b><br>
+  <br>
+  It is possible to take the <a
+ href="http://www.unidata.ucar.edu/packages/dods/design/dap-rfc-html/">DAP
+ specification</a> and implement a server which DAP-aware clients can use
+as a data source. Forexample, the data server hosted by the <a
+ href="http://ingrid.ldeo.columbia.edu/">IRI/LDEO Climate Data Library</a>
+   at Columbia University is such a server. However, server writers don't 
+have to work from the DAP specification. The DODS Project has developed two=20
+seprate object-oriented class libraries which, along with other software we
+provide, can greatly simplify building a server in most cases.<br>
+  <br>
+  The DODS project provides both a <a
+ href="http://www.unidata.ucar.edu/packages/dods/api/pref-html/">C++</a>
+and a <a href="http://www.unidata.ucar.edu/packages/dods/api/javaDocs/">Java</a>
+   implementation of the DAP. Each library includes both the classes that 
+implement the various objects which comprise the DAP and support software 
+that handles the mechanics or processing inbound requests and generating the
+correct responses.<br>
+  <br>
+  To choose one of the toolkits, several factors should be weighed. First,
+ with which of the two programming languages are you most comfortable? Also
+ to be considered are: What type of computer will the server run on (Java
+is equally supported on win32 and Unix (and mac, in all probability) while
+the C++ code for server development is supported only on Unix),&nbsp; If
+you have a API that can read the data, will it be easier to use it from C++
+or Java? and Lastly, the Java servers are implemented as servlets and typically
+ spend less time on startup tasks than the C++ servers which use the CGI
+mechanism.  If you anticipate many small requests, then you can expect noticable
+performance  improvements with the Java code, while &nbsp;larger average
+requests will  mitigate this difference. (Also note that developers at UCAR
+have implemented  DODS servers as Apache httpd modules; these DODS servers
+effectively run as Unix daemons and thus have none of the startup performance
+issues of CGI programs. These servers are noticably faster---about one order
+of magnitude---for very small requirests. In the future we plane to incorporate
+this software in our general distribution, contact <a
+ href="mailto:support@unidata.ucar.edu">technical support</a> or the <a
+ href="http://www.unidata.ucar.edu/packages/dods/home/mailLists/subscribe-dods-tech.html">
+  dods-tech</a> list for information/help.)<br>
+  <br>
+  <b>Server architecture</b><br>
+  <br>
+  The essance of the DODS server architecture is that a collection of programs
+ are used to handle various requests made to the servers. In addition to
+these  'handler' and 'service' programs there's also a dispatcher that interfaces
+ to an http daemon. The actual requests are made to the web daemon which
+then  passes them along to the dispatcher. The dispatcher examines the request
+and decides which handler or service program should process it and how that
+program should be passed parameters extracted from the request.<br>
+  <br>
+  The C++ software works exactly as described above; the Java code is the 
+same in principal but slightly different in actuality since it's based on 
+servlets.<br>
+  <br>
+  While the C++ toolkit uses an architecture based on CGI and the Java toolkit
+ uses servlets, both share many characteristics. If you understand how the
+ servers are built, it will be easy to see how your own server can be implmeneted
+ with minimal effort. The Server Installtion Guide's section on <a
+ href="http://www.unidata.ucar.edu/packages/dods/user/install-html/install_1.html">
+  Server Architecture</a> provides an excellent description of the CGI-based
+ (C++) servers.<br>
+  <br>
+  The Java servers use servlets. A short <a
+ href="http://www.unidata.ucar.edu/packages/dods/home/swJava1.0/sqlServerSetup.html">
+  How-to that covers setting up the DODS Relational Database Server</a> explains
+ the software needed to run the servlet-based DODS servers.<br>
+  <br>
+  <b>The DAP architecture</b><br>
+  <br>
+  The DAP can be thought of as a layered protocol. MIME, http, basic objects,
+ and complex presentation-style responses.<br>
+  <br>
+  <b>The DAP uses HTTP which in turn uses MIME</b><br>
+  <br>
+  Clients use HTTP when they make requests of DAP servers. HTTP is a fairly
+ stragihtforward protocol (<a href="http://www.w3.org/Protocols/">General
+information on HTTP</a>, <a
+ href="http://www.w3.org/Protocols/rfc2616/rfc2616.html">The HTTP/1.1 specification
+in HTML</a>). &nbsp;It uses MIME documents to encapsilate both the request
+sent from client to server and the response sent back. This is important
+for the DAP because the DAP uses headers in both the <a
+ href="http://www.unidata.ucar.edu/packages/dods/design/dap-rfc-html/dap_16.html">
+  request</a> and <a
+ href="http://www.unidata.ucar.edu/packages/dods/design/dap-rfc-html/dap_22.html">
+  response</a> documents to transfer some information. However, for a programmer
+ who intends on writing a DAP server, exactly what gets written into those
+ headers and how it get written is not important. Both the C++ and Java class
+ libraries will handle these tasks for you &lt;&lt;add a link to the C++
+DODSFilter  class here&gt;&gt;. It's important to know about, however, because
+if you  decide not to use the libraries, or the parts that automate generating
+the  correct MIME documents, then you'll have to explicitly generate the
+correct  headers. <br>
+  <br>
+   <b>The DAP defines three objects</b><br>
+  <br>
+  To transfer information from servers to clients, the DAP uses three objects.
+ Whenever a client asks a server for information, it does so by requesting
+ one of these three objects (note: this is not strickly true, but the whole
+ truth will be told in just a bit. For now, assume it's true). These are
+the  Dataset Descriptor Structure (DDS), Dataset Attriute Structure (DAS),
+and  Data object (DataDDS). These are described in considerable detail in
+other  documentation. The Programmer's Guide contains a description of the
+<a
+ href="http://www.unidata.ucar.edu/packages/dods/api/pguide-html/pguide_6.html">
+  DDS and DAS objects</a>. These objects contain the name and types of the
+ variables in a dataset, along with any attaibutes (name-value pairs) bound
+ to the variables. The DataDDS contains data values. We have implemented
+the  SDKs so that the DataDDS is a subclass of the DDS object that adds the
+capacity  to store values with each variable. <br>
+  <br>
+  <br>
+     
+<table cellpadding="2" cellspacing="2" border="0" width="80%"
+ align="center">
+     <tbody>
+       <tr>
+         <td valign="top" align="right" width="50%">COADS Climatology<a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/nc/coads_climatology.nc.html"><br>
+         </a></td>
+         <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/nc/coads_climatology.nc.das">
+  DAS<br>
+         </a></td>
+         <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/nc/coads_climatology.nc.dds">
+  DDS</a><br>
+        </td>
+              </tr>
+       <tr>
+         <td valign="top" align="right" width="50%">NASA Scaterometer Data<a
+ href="http://localhost/dods-3.2/nph-dods/data/hdf/S2000415.HDF.ascii?Wind_Speed%5B0:1:457%5D%5B0:1:23%5D%5B0:1:3%5D,Wind_Dir%5B0:1:457%5D%5B0:1:23%5D%5B0:1:3%5D"><br>
+         </a></td>
+         <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/hdf/S2000415.HDF.das">
+  DAS</a><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/hdf/S2000415.HDF.das"><br>
+         </a></td>
+         <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/hdf/S2000415.HDF.dds">
+  DDS</a><a
+ href="http://localhost/dods-3.2/nph-dods/data/hdf/S2000415.HDF.html"><br>
+         </a></td>
+              </tr>
+       <tr>
+         <td valign="top" align="right" width="50%">Catalog of AVHRR Files<br>
+         </td>
+         <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/ff/1998-6-avhrr.dat.das">
+  DAS</a><a
+ href="http://localhost/dods-3.2/nph-dods/data/ff/1998-6-avhrr.dat.html"><br>
+         </a></td>
+         <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/ff/1998-6-avhrr.dat.dds">
+  DDS</a><a
+ href="http://localhost/dods-3.2/nph-dods/data/ff/1998-6-avhrr.dat.info"><br>
+         </a></td>
+              </tr>
+       <tr>
+         <td valign="top" align="right" width="50%">AHVRR Image<a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/dsp/east.coast.pvu.ascii?dsp_band_1%5B0:1:511%5D%5B0:1:511%5D"><br>
+         </a></td>
+         <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/dsp/east.coast.pvu.das">
+  DAS</a><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/dsp/east.coast.pvu.html"><br>
+         </a></td>
+         <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/dsp/east.coast.pvu.dds">
+  DDS</a><br>
+         </td>
+              </tr>
+           
+  </tbody>   
+</table>
+   <br>
+  <br>
+  The DAP models all datasets as collections of <a
+ href="http://www.unidata.ucar.edu/packages/dods/api/pguide-html/pguide_9.html">
+  variables</a>. The <a
+ href="http://www.unidata.ucar.edu/packages/dods/api/pref-html/DDS.html">
+  DDS and DataDDS</a> objects are containers for those variables.&nbsp; How
+ you represent your dataset using the three objects and the variable's datatype
+ hierarchyis covered in the section <a
+ href="Implementing_the_DDS_component"><b>Implementing the DDS component</b></a><br>
+  <br>
+  <br>
+  <b>The DAP also defines services</b><br>
+  <br>
+  In the previous section we said that the DAP defined three objects and
+all  interaction with the server involved those three objects. In fact, the
+DAP  also defines other responses. They are:<br>
+   
+<ol>
+    <li>&nbsp;ASCII; data can be requested in CSV form</li>
+    <li>HTML; each server can return an HTML form that facilitates building
+ URLs</li>
+    <li>INFO; each server can combine the DDS and DAS and present that as 
+HTML</li>
+   
+</ol>
+  In each case the server's response to these requests is built using one 
+or more of the basic three objects. &nbsp;Here are some links to various datasets'
+ASCII, HTML and INFO responses:<br>
+  <br>
+   
+<table cellpadding="2" cellspacing="2" border="0" width="80%"
+ align="center">
+    <tbody>
+      <tr>
+        <td valign="top" align="right">COADS Climatology<a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/nc/coads_climatology.nc.html"><br>
+        </a></td>
+        <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/nc/coads_climatology.nc.asc?SST">
+  ASCII for the SST variable<br>
+        </a></td>
+        <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/nc/coads_climatology.nc.html">
+  HTML</a></td>
+        <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/nc/coads_climatology.nc.info">
+  INFO</a><br>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="right">NASA Scaterometer Data<a
+ href="http://localhost/dods-3.2/nph-dods/data/hdf/S2000415.HDF.ascii?Wind_Speed%5B0:1:457%5D%5B0:1:23%5D%5B0:1:3%5D,Wind_Dir%5B0:1:457%5D%5B0:1:23%5D%5B0:1:3%5D"><br>
+        </a></td>
+        <td valign="top" align="center"><a
+ href="http://localhost/dods-3.2/nph-dods/data/hdf/S2000415.HDF.ascii?Wind_Speed%5B0:1:457%5D%5B0:1:23%5D%5B0:1:3%5D,Wind_Dir%5B0:1:457%5D%5B0:1:23%5D%5B0:1:3%5D">
+  ASCII</a><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/hdf/S2000415.HDF.ascii?Wind_Speed%5B0:1:457%5D%5B0:1:23%5D%5B0:1:3%5D,Wind_Dir%5B0:1:457%5D%5B0:1:23%5D%5B0:1:3%5D">
+   for wind speed and direction<br>
+        </a></td>
+        <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/hdf/S2000415.HDF.html">
+  HTML</a><a
+ href="http://localhost/dods-3.2/nph-dods/data/hdf/S2000415.HDF.html"><br>
+        </a></td>
+        <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/hdf/S2000415.HDF.info">
+  INFO</a><br>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="right">Catalog of AVHRR Files<br>
+        </td>
+        <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/ff/1998-6-avhrr.dat.ascii?year,day_num,DODS_URL&amp;day_num%3C170">
+  ASCII for values within a date range</a><a
+ href="http://localhost/dods-3.2/nph-dods/data/ff/1998-6-avhrr.dat.html"><br>
+        </a></td>
+        <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/ff/1998-6-avhrr.dat.html">
+  HTML</a><a
+ href="http://localhost/dods-3.2/nph-dods/data/ff/1998-6-avhrr.dat.info"><br>
+        </a></td>
+        <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/ff/1998-6-avhrr.dat.info">
+  INFO</a><br>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="right">AHVRR Image<a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/dsp/east.coast.pvu.ascii?dsp_band_1%5B0:1:511%5D%5B0:1:511%5D"><br>
+        </a></td>
+        <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/dsp/east.coast.pvu.ascii?dsp_band_1%5B0:1:511%5D%5B0:1:511%5D">
+  ASCII for the SST</a><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/dsp/east.coast.pvu.html"><br>
+        </a></td>
+        <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/dsp/east.coast.pvu.html">
+  HTML</a><br>
+        </td>
+        <td valign="top" align="center"><a
+ href="http://dodsdev.gso.uri.edu/dods-3.2/nph-dods/data/dsp/east.coast.pvu.info">
+  INFO</a><br>
+        </td>
+      </tr>
+       
+  </tbody>  
+</table>
+  <br>
+  <br>
+  <b>Parts of the server you don't have to write</b><br>
+  <br>
+  You do not have to write handlers for the ASCII, HTML or INFO responses 
+beacuse the DODS server includes software that genreates these using the DAS,
+DDS and DataDDS objects. In addition, if you follow a simple rule about how
+you name the programs that generate the object responses, you'll be able to
+fit these within the existing dispatch software and can avaoid writing that
+as well. The rule is that the three objects are generated by programs named
+<tt>&lt;name&gt;_das</tt>, <tt>&lt;name&gt;_dds</tt> and <tt>&lt;name&gt;_dods</tt>
+   (the last one generates the DataDDS object). The <tt>&lt;name&gt;</tt>
+ maybe any text. In practice, it should be short and describe the data with=20
+which it's designed to work.<br>
+  <br>
+  Below is a snapshot of the directory which holds the programs that make 
+up the DODS servers on my development computer. The ASCII response is generated
+ by the asciival program, The HTML and INFO responses are generated bythe
+www_int and usage programs. You can also see the dispatch program (nph-dods)
+as well as the DAS, DDS and DataDDS handlers for the netCDF (nc), HDF, Matlab
+(mat), JGOFS (jg) and FreeForm (ff) servers.<br>
+   
+<pre>[jimg@zanzibar etc]$ ls<br>aclocal.m4	      ftp_dods_source.html   MIME/<br>asciival*	      handler_name.pm	     nc_das*<br>ChangeLog	      hdf_das@		     nc_dds*<br>check_perl.sh*	      hdf_dds@		     nc_dods*<br>common_tests.exp      hdf_dods*		     nightly_dods_build.conf<br>config.guess*	      HTML/		     nightly_dods_build.conf.example<br>config.sub*	      HTTP/		     nightly_dods_build.sh*<br>COPYRIGHT	      INSTALL-clients	     nph-dods*<br>CVS/		      INSTALL-matlab-client  nph-dods.in*<br>cvsdate*	      installServers	     printenv*<br>def*		      INSTALL-servers	     README<br>deflate*	      install-sh*	     README-Matlab-GUI<br>depend.sh*	      jg_das*		     tar-builder.pl*<br>DODS_Cache.pm	      jg_dds*		     test-dispatch.sh*<br>DODS_Dispatch.pm      jg_dods*		     ud_aclocal.m4<br>dods.ini	      jgofs_objects_readme*  update-manifest.pl*<br>ff_das*		      localize.sh*	     update-manifest.pl~*<br>ff_dds*		      LWP/		     usage*<br>ff_dods*	      Makefile.common	     usage~*<br>FilterDirHTML.pm      mat_das*		     usage-jg*<br>ftp_dods_binary.html  mat_dds*		     www_int*<br>ftp_dods_ml_gui.html  mat_dods*<br>[jimg@zanzibar etc]$ <br><br><br></pre>
+  <b>Getting ready to write your components</b><br>
+  <br>
+  The three object handlers are normally implemented in three seaprate programs.
+ Each program has a <tt>main()</tt> function that looks like:<br>
+  <br>
+   
+<table cellpadding="2" cellspacing="2" border="1" width="90%"
+ align="center">
+    <tbody>
+      <tr>
+        <td valign="top" nowrap="true"><tt>#include &lt;iostream&gt;<br>
+  #include &lt;string&gt;<br>
+        <br>
+  #include "DDS.h"<br>
+  #include "cgi_util.h"<br>
+  #include "DODSFilter.h"<br>
+        <br>
+  extern void read_descriptors(DDS &amp;dds, const string &amp;filename)
+throw  (Error);<br>
+        <br>
+  int <br>
+  main(int argc, char *argv[])<br>
+  {<br>
+  &nbsp;&nbsp;&nbsp; DDS dds;<br>
+  &nbsp;&nbsp;&nbsp; DODSFilter df(argc, argv);<br>
+        <br>
+  &nbsp;&nbsp;&nbsp; try {<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; if (!df.OK()) {<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; df.print_usage();<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; return 1;<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; }<br>
+        <br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; if (df.version()) {<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; df.send_version_info();<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; return 0;<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; }<br>
+        <br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; // Read the netCDF file dataset descriptor
+ in memory<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; read_descriptors(dds, df.get_dataset_name());<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; df.read_ancillary_dds(dds);<br>
+        <br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; df.send_dds(dds, true);<br>
+  &nbsp;&nbsp;&nbsp; }<br>
+  &nbsp;&nbsp;&nbsp; catch (Error &amp;e) {<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; set_mime_text(cout, dods_error, df.get_cgi_version());<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; e.print(cout);<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; return 1;<br>
+  &nbsp;&nbsp;&nbsp; }<br>
+        <br>
+  &nbsp;&nbsp;&nbsp; return 0;<br>
+  }</tt><br>
+        </td>
+      </tr>
+       
+  </tbody>  
+</table>
+  <br>
+  <br>
+  Most of the software is boiler plate. The first two lines of main:<br>
+  <br>
+   
+<table cellpadding="2" cellspacing="2" border="1" width="90%"
+ align="center">
+    <tbody>
+      <tr>
+        <td valign="top"><tt>&nbsp;&nbsp;&nbsp; DDS dds;<br>
+   &nbsp;&nbsp;&nbsp; DODSFilter df(argc, argv);</tt><br>
+        </td>
+      </tr>
+       
+  </tbody>  
+</table>
+  <br>
+  declare an instance of DDS, to be used a little later as well as an instance
+ of DODSFilter. The latter is used to parse command line arguments feed to
+ the program by the dispatch script. By using this class and the disptach
+scipt, you can assume that the correct options and arguments will be passed
+into you program and parsed. The instance of DODSFilter, <tt>df</tt>, contains
+ accessors for all the switches that the dispatch script might use, so by
+passing <tt>argc</tt> and <tt>argv</tt> to it your sure to parse them all.<br>
+  <br>
+   
+<table cellpadding="2" cellspacing="2" border="1" width="90%"
+ align="center">
+    <tbody>
+      <tr>
+        <td valign="top"><tt>&nbsp;&nbsp;&nbsp; try {<br>
+   &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; if (!df.OK()) {<br>
+   &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; df.print_usage();<br>
+   &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; return 1;<br>
+   &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; }<br>
+   <br>
+   &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; if (df.version()) {<br>
+   &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; df.send_version_info();<br>
+   &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; return 0;<br>
+   &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; }</tt><br>
+        </td>
+      </tr>
+       
+  </tbody>  
+</table>
+  <br>
+  This code calls the DODSFilter invariant to check that the handler was
+invoked  correctly. If a malformed request was made to the server, this will
+be flagged  here and the server will return an error message describing how
+to submit  a correctly formed URL. This also tests to see if the request
+is for version  information. If so, the the DODSFilter object prints the
+servers version number and the handler exists. Just about every server built
+with our code includes these line verbatim.<br>
+  <br>
+   
+<table cellpadding="2" cellspacing="2" border="1" width="90%"
+ align="center">
+    <tbody>
+      <tr>
+        <td valign="top"><tt>&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; // Read the=20
+netCDF file dataset descriptor in memory<br>
+   &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; read_descriptors(dds, df.get_dataset_name());<br>
+   &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; df.read_ancillary_dds(dds);<br>
+   <br>
+   &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; df.send_dds(dds, true);</tt><br>
+        </td>
+      </tr>
+       
+  </tbody>  
+</table>
+  <br>
+  These lines are the heart of the handler. Exactly what's goin gon here
+will  be covered in more detail later. However, each of the three object
+handlers  contains similar code that builds the object to returned as the
+response and then passes that object to the DODSFilter::send_dds, send_das
+or send_data  method, depending on the type of object to be returned.<br>
+  <br>
+   
+<table cellpadding="2" cellspacing="2" border="1" width="90%"
+ align="center">
+    <tbody>
+      <tr>
+        <td valign="top"><tt>&nbsp;&nbsp;&nbsp; catch (Error &amp;e) {<br>
+   &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; set_mime_text(cout, dods_error, df.get_cgi_version());<br>
+   &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; e.print(cout);<br>
+   &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; return 1;<br>
+   &nbsp;&nbsp;&nbsp; }<br>
+   <br>
+   &nbsp;&nbsp;&nbsp; return 0</tt><br>
+        </td>
+      </tr>
+       
+  </tbody>  
+</table>
+  <br>
+  Rounding out the program is a catch block that picks up exceptions thrown
+ by the any of DAP library code. The DAP library throws two types of exceptions,
+ <tt>Error</tt> and <tt>InternalErr</tt>. The latter is a subclass of <tt>
+  Error</tt>, so catching just Error will get everything. Note that you should
+ also catch <tt>bad_alloc</tt> exceptions at this level (the library does
+not) unless you catch them inside the function or method that builds the
+DDS, DAS or DataDDS. Note that if <tt>e</tt> is an <tt>InternalErr</tt>,
+then &nbsp;when it prints you'll see inforamtion about the file and line
+&nbsp;number where the problem was detected. Regular <tt>Error</tt> objects
+print something that's more useful to users. By calling the set_mime_text
+function (see the file cgi_util.cc) you're sure that the error message will
+be returned to the client in a form that both web browsers and more sophisticated
+clients can use.<br>
+  <br>
+  <b>Subclassing the datatypes</b><br>
+  <br>
+  The DAP defines a data type hierarchy as the core of its data model. This=20
+collection of data types includes scalar, vector and constructor types. Most 
+of the types are available in all modern programming languages with the exceptions 
+being Url, Sequence and Grid. In the DAP library, the class <tt>BaseType</tt>
+  is the root of the data type tree. &lt;&lt; Add a UML figure of the datatype
+classes. I have one but dia seems hosed at the moment... Fix this in the
+AM&gt;&gt;<br>
+  <b><br>
+ </b> A quick review of the datatypes supported by the DAP. The DAP supports 
+the common scalar datatypes such a Byte, 16 and 32 bit signed and unsigned 
+integers and 32 and 64 bit floating point. The DAP also supports Strings and
+Urls a basic scalar dataypes. The DAP includes two vector datatypes, Arrays
+(of unlimited size and dimensionality) and Lists. Lists in the DAP must be
+type homogeneous and we don't support Lists of Lists. The DAP also supports
+three type-constuctors: Sturcture, Sequence and Grid. A Structure on the
+DAP mimics a strcut in C. A Sequence is a table-like data structure inherited
+from the JGOFS data system. It can be used to hold information read from
+relational databases or tables, either flat or hierarchical, read from all
+sorts of files. The JGOFS, FreeForm and HDF servers all use the Sequence
+datatype. Lastly, the Grid datatype is used to bind an array to a group of
+'map vectors', single dimension arrays that provide non-integral values for
+the indices of the array. The most typical use of a Grid is to provide latitude
+and longitude registration for some georeferenced array data (e.g., a projected
+statelite image). The DAP does not have a pointer datatypes, but in some
+cases the Url datatype can be used as a pointer to variables between files.
+More information about the <a
+ href="http://www.unidata.ucar.edu/packages/dods/api/pguide-html/pguide_9.html">
+  DAP's datatype hierarchy</a> is given in the Programmer's Guide.<br>
+<br>
+When you start building a DAP server, the first thing you musy do is create
+a collection of data type subclasses. That is each of the leaf classes in
+the preceding class diagram must be subclassed by your server. This is pretty
+easy since a good bit of the work is rote. <br>
+<br>
+First we'll illustrate the parts that are mechanical. Here's an example from
+the Matlab server. The class is the Byte class. In the case of the matlab
+server, this class doesn't do anything beyond the bare minimum, so it's a
+good starting point:<br>
+<br>
+<table cellpadding="2" cellspacing="2" border="1" width="90%"
+ align="center">
+  <tbody>
+    <tr>
+      <td valign="top">
+      <pre>Byte *<br>NewByte(const string &amp;n)<br>{<br>    return new MATByte(n);<br>}<br><br>MATByte::MATByte(const string &amp;n) : Byte(n)<br>{<br>}<br><br>BaseType *<br>MATByte::ptr_duplicate()<br>{<br>    return new MATByte(*this);<br>}<br><br>bool<br>MATByte::read(const string &amp;)<br>{<br>    throw InternalErr(__FILE__, __LINE__, "Unimplemented read method called.");<br>}<br><br></pre>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+ To create a child of any of the data type leaf classes, you must define
+three methods and one function. Let's talk about the function first. The
+function <tt>NewByte</tt> is a what Meyrs calls a 'virtual constructor.'
+it's similar to a low-budget factory class, low-budget because it's not a
+class. This function is undefined in the DAP library but it used there when
+creating instances of the <tt>Byte</tt>. Thus the function NewByte is an
+interface that can be used to create instances of Byte without knowing in
+advance the static type of the object that will be created. If all this sounds
+like weird, just remember that your Byte, Int16, ... Grid classes, whatever
+they may be called must all contain an implementation of this function and
+they should all return a pointer to an instance of your child classes. In
+this case, it's an instrance of the MATByte class. If you look in the files
+for the Matlab server, you'll see that Grid returns a pointer to a new MATGrid,
+and so on.<br>
+<br>
+Second, a constructor must be implemented and should take the name of the
+variable as its sole argument.<br>
+<br>
+Third, your child classes should also define the ptr_duplicate() method.
+This method returns a &nbsp;pointer to a new instance of &nbsp;an object
+in the same class. &nbsp;Occasionally objects are indicated with pointers
+specified as <tt>BaseType *</tt>.&nbsp; If you use new to copy an object
+referenced this way, you would get an object of type <tt>BaseType</tt> instead
+of the class you really want, presumably a subclass of that type.<br>
+<br>
+Finally, each of the child classes must provide an implementation of the
+read method. This method is called by code inthe DAP library to read values
+from the data set. It will be explained in more detail when we get to building
+DataDDS reponses. For now, it's enough to know that if a particular server
+has no use for a given data type (it happens that the Matlab server will
+never need to create an instnace of Byte) this methods should throw an InternalErr
+object.<br>
+ <b><br>
+  <a name="Implementing_the_DDS_component"></a>Implementing the DDS object</b><br>
+  <br>
+  Building a DDS object is the heart of writing your own OPeNDAP server.
+First,  this object will be used to generate the DDS response and secondly
+it will  be the basis of the DataDDS response. You have to do two things
+to accomplish  build the DDS. First you must decide how the variables that
+comprise your  dataset can be represented using the data type heirarchy that
+is part of the DAP. Once you have done this, you need to write code that
+can build an instance of DDS for your dataset. In practice the hardest part
+of this the first part; once you know how to map variables in your dataset
+to the DAP datatypes, writing code to build the DDS instance is easy.<br>
+  <br>
+ <br>
+  Many datasets are actually an instance of large group. In some cases there
+ may be an API that can read the datasets and there may even be a formal
+data  model. in such a case you're best off using the API and writing general
+code  to build the DDS while performing a depth-first scan of the variables
+in the dataset. <br>
+  <br>
+  Here's how the Matlab server builds a DDS object:<br>
+  <br>
+   
+<table cellpadding="2" cellspacing="2" border="1" width="90%"
+ align="center">
+    <tbody>
+      <tr>
+        <td valign="top"><tt>void<br>
+  read_descriptors(DDS &amp;dds_table, string filename)<br>
+  {<br>
+  &nbsp;&nbsp;&nbsp; MATFile *fp;<br>
+  &nbsp;&nbsp;&nbsp; Matrix *mp;<br>
+        <br>
+  &nbsp;&nbsp;&nbsp; // dataset name<br>
+  &nbsp;&nbsp;&nbsp; dds_table.set_dataset_name(name_path(filename));<br>
+  &nbsp;<br>
+  &nbsp;&nbsp;&nbsp; fp = matOpen(static_cast&lt;char *&gt;(filename.c_str()),
+ "r");<br>
+  &nbsp;&nbsp;&nbsp; if (fp == NULL)<br>
+  &nbsp; &nbsp; &nbsp; &nbsp; throw Error(</tt><tt>string("Could not open 
+the file: ") + filename);</tt><br>
+        <tt>&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; // Read all the matrices in file<br>
+  &nbsp;&nbsp;&nbsp; while ((mp = matGetNextMatrix(fp)) != NULL) {<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; // String types are used as attributes<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; if(mxIsNumeric(mp)) {<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; if(mxIsComplex(mp)) 
+{<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; string
+ Real = (string)mxGetName(mp) + "_Real";<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // real
+ part<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; MakeMatrix(&amp;dds_table,
+ Real, mxGetM(mp),mxGetN(mp)); <br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; string
+ Imag = (string)mxGetName(mp) + "_Imaginary";<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // imaginary
+ part<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; MakeMatrix(&amp;dds_table,
+ Imag, mxGetM(mp),mxGetN(mp)); <br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; }<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; else<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; MakeMatrix(&amp;dds_table,
+ (string)mxGetName(mp), mxGetM(mp),<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; mxGetN(mp)); <br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; }<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; mxFreeMatrix(mp);<br>
+  &nbsp;&nbsp;&nbsp; }<br>
+  &nbsp;&nbsp;&nbsp; matClose(fp);<br>
+        <br>
+  &nbsp;&nbsp;&nbsp; return tr</tt>ue;<br>
+  }<br>
+        </td>
+      </tr>
+       
+  </tbody>  
+</table>
+  <br>
+  This function iterates over all the variables in the matlab file named
+by  <tt>filename</tt> and creates a variable in the DDS for each numerical
+array  in the dataset. Matlab does not have the notion of attributes bound
+to specific  variables, but it is often the case that attribute information
+is present  in string varaibles, something this code checks for. However,
+this function  simply ignores the string variables since attriute information
+is the job  of a different object. Of course, a function could be written
+to build both  objects at the same time...<br>
+  <br>
+  It's illustrative to look at how the MakeMatrix function is written:<br>
+  <br>
+   
+<table cellpadding="2" cellspacing="2" border="1" width="90%"
+ align="center">
+    <tbody>
+      <tr>
+        <td valign="top"><tt>void <br>
+  MakeMatrix(DDS *dds_table, string name, int row, int column)<br>
+  {<br>
+  &nbsp;&nbsp;&nbsp; Array *ar; <br>
+  &nbsp;&nbsp;&nbsp; string DimName;<br>
+  &nbsp;&nbsp;&nbsp; size_t pos;<br>
+        <br>
+  &nbsp;&nbsp;&nbsp; // complex matrices have common rows and columns<br>
+  &nbsp;&nbsp;&nbsp; if ((pos = name.find("_Real")) != name.npos)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; DimName = name.substr(0, pos);<br>
+  &nbsp;&nbsp;&nbsp; else{<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; if ((pos = name.find("_Imaginary")) !=3D 
+name.npos)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; DimName = name.substr(0,
+ pos);<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; else<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; DimName = name;<br>
+  &nbsp;&nbsp;&nbsp; }<br>
+        <br>
+  &nbsp;&nbsp;&nbsp; BaseType *bt = NewFloat64(name);&nbsp;&nbsp;&nbsp; <br>
+  &nbsp;&nbsp;&nbsp; ar = NewArray(name);<br>
+  &nbsp;&nbsp;&nbsp; ar-&gt;add_var(bt);<br>
+  &nbsp;&nbsp;&nbsp; ar-&gt;append_dim(row,DimName+"_row");<br>
+  &nbsp;&nbsp;&nbsp; ar-&gt;append_dim(column,DimName+"_column");<br>
+        <br>
+  &nbsp;&nbsp;&nbsp; if (!dds_table)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; throw InternalErr(__FILE__, __LINE__,
+ "NULL DDS object.");<br>
+        <br>
+  &nbsp;&nbsp;&nbsp; dds_table-&gt;add_var(ar);<br>
+  }<br>
+        </tt><br>
+        </td>
+      </tr>
+       
+  </tbody>  
+</table>
+  <br>
+  This function has two main parts, the first, which is of less interest
+to  this tutorial, checks to see if the matrix holds complex numbers and
+does  some special stuff if it does. The second part creates a new array
+of 64 bit floating point numbers. Here's the code:<br>
+  <br>
+   
+<table cellpadding="2" cellspacing="2" border="1" width="90%"
+ align="center">
+    <tbody>
+      <tr>
+        <td valign="top"><tt>&nbsp;&nbsp;&nbsp; BaseType *bt = NewFloat64(name);&nbsp;&nbsp;&nbsp;
+       <br>
+   &nbsp;&nbsp;&nbsp; ar = NewArray(name);</tt><tt><br>
+  &nbsp; &nbsp; ar-&gt;add_var(bt);<br>
+   &nbsp;&nbsp;&nbsp; ar-&gt;append_dim(row,DimName+"_row");<br>
+   &nbsp;&nbsp;&nbsp; ar-&gt;append_dim(column,DimName+"_column");<br>
+   </tt><br>
+        </td>
+      </tr>
+       
+  </tbody>  
+</table>
+  <br>
+  The first line creates a new instance of the <tt>Float64</tt> datatype
+and  assigns it to <tt>BaseType,</tt> the parent of all the datatyes. There's
+no reason in <i>this</i> example that it couldn't be bound to an instance
+of <tt>Float64</tt>, but in a server where there might be many types of arrays,
+ it is easier to use a pointer to a more general object. &nbsp;The second
+line creates a new Array instance and the thrid line binds the <tt>Float64</tt>
+   object &nbsp;to the new <tt>Array</tt> object, making the array an array
+ of <tt>Float64</tt>s. The last two lines set the sizes of the array's dimensions.
+ Because instances of Array occur frequently, it is a good idea to be familair
+ with the <a
+ href="http://www.unidata.ucar.edu/packages/dods/api/pref-html/Array.html"><tt>
+  Array</tt></a> and <a
+ href="http://www.unidata.ucar.edu/packages/dods/api/pref-html/Vector.html"><tt>
+  Vector</tt></a> classes (<tt>Vector</tt> is the parent of both <tt>Array</tt>
+   and <tt>List</tt><tt>)</tt>.<br>
+<br>
+Finally, the last line of the function,<br>
+<br>
+<table cellpadding="2" cellspacing="2" border="1" width="90%"
+ align="center">
+  <tbody>
+    <tr>
+      <td valign="top"><tt>  &nbsp;&nbsp;&nbsp; dds_table-&gt;add_var(ar);</tt><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+Adds variable <tt>ar</tt> to the DDS.<br>
+<br>
+Note that our Matlab server supports only the data types that can appear
+in a Matlab 5 file. This means that the only numeric data type supported
+is a matrix of 64 bit floating point numbers. Strings, as mentioned earlier,
+are handled specially. In most other servers, the code to build the valiables
+and load them in a DDS object is more complex since it must handle mapping
+the dataset's different types to the DAP's.<br>
+  <br>
+  <b>Implementing the DAS object</b><br>
+<br>
+To implement the DAS handler, replace the function that builds a DDS with
+one that builds a DAS. Here's an example from the Matlab server.<br>
+<br>
+&lt;&lt;elaborate&gt;&gt;<br>
+<br>
+<table cellpadding="2" cellspacing="2" border="1" width="90%"
+ align="center">
+  <tbody>
+    <tr>
+      <td valign="top">
+      <pre>void<br>read_attributes(DAS &amp;das_table, string filename)<br>{<br>    AttrTable *attr_table = das_table.add_table("MAT_GLOBAL", new AttrTable);<br>    <br>    MATFile *fp = matOpen(static_cast&lt;char *&gt;(filename.c_str()), "r");<br>&nbsp;   if (fp == NULL)<br>&nbsp;       throw Error(string("Could not open the file: ") + filename.c_str());<br><br>    // Read all the matrices in file<br>    Matrix *mp;<br>    while ((mp =3D matGetNextMatrix(fp)) != NULL) {<br>	// String types are used as attributes<br>	if(mxIsString(mp)) {<br>	    // get size<br>	    int X = mxGetN(mp);<br>	    int Y = mxGetM(mp);<br><br>	    char *str_rep = new char [X*Y+3];<br>      <br>	    // quote the string for parser<br>	    *str_rep = '"'; <br>	    mxGetString(mp,str_rep+1,X*Y+1);<br>	    *(str_rep + X*Y + 1) = '"';<br>	    *(str_rep + X*Y + 2 )= '\0';<br><br>	    if (attr_table-&gt;append_attr(mxGetName(mp), "String",str_rep) == 0) {<br>                delete [] str_rep;<br>                mxFreeMatrix(mp);<br>                matClose(fp);<br>&nbsp;               throw Error(string("Couldn't output attribute: ") + mxGetName(mp));<br>&nbsp;	    }<br><br>	    delete [] str_rep;<br>	}<br>	mxFreeMatrix(mp);<br>    }<br>    matClose(fp);<br><br>    return true;<br>}<br><br></pre>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+  <br>
+  <b>Implementing the DataDDS object</b><br>
+<br>
+To build the DataDDS handler, implement the read method for all the classes
+which might appear in a DDS for this type of dataset.<br>
+<br>
+&lt;&lt;explain how read is called&gt;&gt;<br>
+  <br>
+<table cellpadding="2" cellspacing="2" border="1" width="90%"
+ align="center">
+  <tbody>
+    <tr>
+      <td valign="top">
+      <pre>bool<br>MATArray::read(const string &amp;dataset)<br>{<br>    int start, stride, stop;<br>    int start_p, stride_p, stop_p;<br>    int nline, npix; <br>    size_t pos;<br>    MATFile *fp;<br>    Matrix *mp;<br>    double *DataPtr;<br><br>    if (read_p())  // Nothing to do<br>	return false;<br><br>    fp = matOpen((char *)dataset.c_str(), "r");<br>    if (fp =3D= NULL){<br>	sprintf(Msgt, "MATArray: Could not open file %s", dataset.data());<br>	ErrMsgT(Msgt);<br>	throw Error(cannot_read_file, "Could not open dataset.");<br>    }<br>  <br>    Pix p = first_dim();<br>    start =3D dimension_start(p,true);<br>    stride = dimension_stride(p, true);<br>    stop = dimension_stop(p, true); <br><br>    next_dim(p);<br>    start_p = dimension_start(p,true);<br>    stride_p = dimension_stride(p, true);<br>    stop_p = dimension_stop(p, true); <br><br><br>    // get real part of the complex  matrix<br>    if ((pos = name().find("_Real")) !=3D name().npos) {  <br>	string Rname = name().substr(0,pos);<br>	mp = matGetMatrix(fp,Rname.data());<br>	DataPtr = mxGetPr(mp); <br>    }<br>    else{<br>        // get Img part of the complex matrix<br>	if ((pos = name().find("_Imaginary")) != name().npos) {  <br>	    string Iname = name().substr(0,pos);<br>	    mp = matGetMatrix(fp,Iname.data());<br>	    DataPtr = mxGetPi(mp); <br>	}<br>	else{<br>	    mp = matGetMatrix(fp,name().data());<br>	    DataPtr = mxGetPr(mp); // get the matrix structure<br>	}<br>    }<br><br>    if (DataPtr == NULL) {<br>	sprintf(Msgt, "MATArray: Error reading matrix");<br>	ErrMsgT(Msgt);<br>	throw Error(unknown_error, Msgt);<br>    }  <br><br>    if(start+stop+stride == 0){ //default rows<br>	start = 0;<br>	stride = 1;<br>	stop = mxGetM(mp)-1;<br>    }<br>    if(start_p+stop_p+stride_p == 0){ //default columns<br>	start_p = 0;<br>	stride_p = 1;<br>	stop_p = mxGetN(mp)-1;<br>    }<br><br>    int Len = (((stop-start)/stride)+1)*(((stop_p-start_p)/stride_p)+1);<br>  <br>    int Tcount = 0;<br>    dods_float64 *BufFlt64 = new dods_float64 [Len]; 	<br>  <br>    for (int row = start; row &lt;= stop; row +=3Dstride) {	  <br>	for(int column = start_p; column &lt;= stop_p; column+=stride_p){<br>	    *(BufFlt64+Tcount) = (dods_float64) *(DataPtr+row+column*mxGetM(mp));  <br>	    Tcount++;<br>	}<br>    }<br><br>    set_read_p(true);      <br>    val2buf((void *)BufFlt64);<br>    delete [] BufFlt64;<br>	  <br>    mxFreeMatrix(mp);<br>    matClose(fp);<br>    return false;<br>}<br></pre>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+  <b>Packaging the server</b><br>
+  <br>
+  Issues:<br>
+Explain how the DAP library calls the CE evaluator --&gt; this is linked
+to the read() method.<br>
+Explain that you don't have to define a function; you can subclass DDS and
+DAS adding builder methods.<br>
+  Writing a server for internal use<br>
+  &lt;include info about high performance servers&gt;<br>
+  Places where you can get examples and help<br>
+  Serving multifile datasets<br>
+  When returning filenames in error messages, make sure to remove the pathname<br>
+   
+</body>
+</html>
+<!-- 
+$Log: writing_an_OPeNDAP_server.html,v $
+Revision 1.1  2002/05/10 15:11:08  tom
+inital entry into CVS
+
+-->

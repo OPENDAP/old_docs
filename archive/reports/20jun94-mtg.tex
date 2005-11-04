@@ -1,0 +1,187 @@
+\documentstyle[12pt,html,psfig]{article}
+\input{margins.tex}
+% Adding this fixes the top and bottom margin sizes. jhrg
+
+\textheight 8.75in
+
+\newcommand{\postscript}[2]{
+        \par
+        \hbox{
+                \vbox to #1{
+                        \vfil
+                        \special{ps: plotfile #2.ps}
+                }
+        }
+}
+
+\begin{document}
+
+\LARGE
+\centerline{Discussion of DODS Development Status}
+\centerline{Current and Evolving Efforts}
+\large
+\centerline{Meeting at URI \hfil 20 June 1994}
+\centerline{Peter, Jim and George}
+\vskip 6em
+
+
+\noindent {\bf Discussion of the move to use the World Wide Web (WWW) server
+as the network transport agent within DODS.}
+\vskip 1em
+\normalsize
+
+Jim reported on his meeting with Glenn on Friday, 17 June 1994, during which
+they discussed the advantage of abandoning Remote Procedure Calls, (RPC), as
+the network transport agent in favor of using the WWW server.  Glenn has
+been working on using the WWW server with JGOFS and is convinced that it can
+support the kinds of functionality that will be necessary for DODS.  The
+change to the WWW server is viewed as an implementation decision and does not
+change the fundamental DODS architecture.  Jim felt that the redesign would
+cost us about 4-6 weeks in terms of the development schedule and raised the
+issue of whether or not to push back the the October DODS meeting.  In
+addition to addressing the change in schedule Jim also wanted to the clarify
+what the objectives of the meeting are.
+
+Jim summarized the main points of the WWW server implementation as:
+
+\begin{itemize}
+
+  \item The WWW server would be installed at each data provider site.
+  \item The DODS WWW server implementation will use API procedure calls as
+        the data delivery mechanism, just as the RPC designed implementation
+        did.  The move to the WWW server reflects more of an implementation
+        decision than a redesign of the basic DODS architecture.  
+  \item Linked to the back-end of the WWW servers would be a translating
+        module (CGI), that included the local data set's API library and a DODS
+        API library. 
+  \item For a client procedure request, the WWW server translating module
+        would perform the following operations: 
+  \begin{itemize}
+	\item Translate from the incoming (WWW server) DODS API procedure
+              call to the local data sets API procedure call(s) (e.g.; JGOFS). 
+	\item Execute the appropriate local API procedure(s) on the data.
+	\item Translate the retrieved data from the local API structure to
+              an appropriate DODS API structure.
+	\item Pass the DODS API data structure to the WWW server for
+	      transport to the client application.
+  \end{itemize}
+  \item A user's client applications that accesses a DODS supported WWW
+	servers would perform the following operations:
+  \begin{itemize}
+	\item A user's application makes a procedure call using a supported
+	      API. 
+	\item The API procedure call is translated into the appropriate DODS
+	      API procedure call(s) by the client translating module.
+	\item The client translating module passes the DODS API structure to
+	      the WWW network client module  which transmits it to the
+	      appropriate WWW server. 
+	\item Responses from the WWW server, in DODS API structures, are
+	      captured by the WWW network client module and passed to client
+	      translating module.
+	\item The client translating module translates the DODS API surrogate
+	      procedure call(s) to the appropriate user application API
+	      procedure call. 
+  \end{itemize}
+\end{itemize}
+
+Jim emphasized the following key issues with regard to this implementation:
+
+\begin{enumerate}
+  \item  Utilizing WWW servers decreases the amount of software that DODS would
+         be responsible for writing, debugging and maintaining. 
+  \item  We will need to develop translators regardless of whether we
+         implement RPC or the WWW server, in the WWW implementation
+         the number of translators is a linear function of the number of
+         supported APIs.
+  \item  This approach requires that the DODS API be a fully realized API and
+         not a patch to supplement other APIs that may not have the breadth
+         of functional capabilities that the DODS data model model supports.
+  \item  The DODS API supports more data types than either JGOFS or NetCDF.
+  \item  The DODS API is simpler in terms of the number of separate procedure
+         calls that it implements.
+\end{enumerate}
+
+
+Jim reported that Glenn felt concern about the upcoming
+workshop\footnote{Besides the need to reschedule on account of the switch to
+WWW server implementation} because our NASA proposal for server
+development had not been funded.  Glenn had anticipated that the DODS design
+and implementation architecture would be presented at the workshop to the
+other server developers in the proposal.  Peter felt that we could still
+focus on server development at a DODS workshop if we restricted the workshop
+attendees to a small select group that were invited primarily to do just
+that, write code for DODS servers.  The need to coordinate the DODS server
+development so that an operational version of DODS could be presented at the
+TOS workshop in April 1995 was also discussed.  The following tentative plans
+were made related to DODS server development:
+
+\begin{itemize}
+
+  \item Two small DODS workshops will be held.
+  \item A small, select group of participants will be invited to each
+        workshop\footnote{ We might consider requiring that participants
+        write a short statement of intent or proposal indicating what data
+        sets they are going to support with DODS servers and what their plans
+        are for maintaining support for DODS}.  Between 4 and 5 organizations
+        will be asked to attend with the request that each organization send
+        at least one systems' programmer who will be asked to spend time at
+        the workshop developing and installing a DODS server to support
+        access to at their organization's data.
+  \item Each workshop will be approximately 1 week long, with the 1-2 day
+        relegated to a technical overview of DODS its design and
+        implementation and the rest of the time devoted to DODS server
+        development. 
+  \item The first workshop would be scheduled for the week of 5-9 December
+        1994.  Large federal organization would be invited to this meeting 
+        {e.g; NODC, MEDS, JPL/PODAAC, NOAA/PMEL, NOAA/TOGA/COARE}.
+  \item The second workshop would be scheduled for the week of 23-27 January
+        1995.  Non federal organizations would be invited to this workshop 
+        {e.g.; Scripps, WHOI, OSU, Hawaii, UW}.
+  \item The primary objectives of the workshop would be:
+  \begin{itemize}
+	\item Write code and install DODS servers for on-line data sets that
+	      are managed by the participating organizations.
+	\item Coordinate the set-up of a stable operational DODS prototype.
+	\item Develop working relationships with the technical personnel at
+	      the different organizations who will be responsible for the day
+	      to day management of the DODS servers.
+  \end{itemize}
+  \item A stable DODS prototype system will be operational for the April 1995
+        TOS.  A presentation would be made at the meeting by Glenn.  A
+        demonstration of DODS would highlight two different user applications
+        (e.g.; JGOFS and MATLAB) accessing the same data over the Internet.
+\end{itemize}
+
+In the near term the following plans were made:
+
+\begin{itemize} 
+  \item Jim will organize his notes from the meeting with Glenn.
+  \item Jim will need to modify the NetCDF RPC libraries in order to
+        utilize the WWW http daemon.
+  \item Translators for NetCDF to DODS, DODS to NetCDF, JGOFS to DODS and
+        DODS to JGOFS need to be developed.
+  \item Reza will be brought in to help with the software development for the
+        translators.
+  \item We will focus on the development of libraries for translators and the
+        DODS API as well as system developers documentation at this time.
+        Integration of third party systems (i.e.; MATLAB\footnote{It was
+        pointed out that MATLAB supports NetCDF and therefore will be able to
+        access DODS data through that API}) will be a lower priority for now. 
+  \item The issue of how we announce the shift to the WWW server
+        implementation was raised.  We want to avoid the perception of our
+        taking a hit-or-miss approach to DODS development.  This is
+	particularly the case with the NetCDF RPC libraries that have already
+        been developed.  These libraries will no longer be supported by DODS
+        in the WWW server implementation.  
+  \item George will work on modifying current documentation to reflect the
+        changes in the DODS implementation and finish high level overview
+        documentation on DODS.
+  \item George will be responsible for the planning and organization of the
+        workshops.
+  \item Peter spoke with Dan about whether he would be interested in
+        participating in the DODS development activities.  Dan said that he
+        could spend two days a week working on DODS.
+\end{itemize}
+
+\end{document}
+ 

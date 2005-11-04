@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Conclusion</TITLE>
+<META NAME="description" CONTENT="Conclusion">
+<META NAME="keywords" CONTENT="data-delivery-arch">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-arch.css">
+
+<LINK REL="next" HREF="node13.html">
+<LINK REL="previous" HREF="node9.html">
+<LINK REL="up" HREF="data-delivery-arch.html">
+<LINK REL="next" HREF="node13.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html208"
+  HREF="node13.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html204"
+  HREF="data-delivery-arch.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html198"
+  HREF="node11.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html206"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html209"
+  HREF="node13.html">About this document ...</A>
+<B> Up:</B> <A NAME="tex2html205"
+  HREF="data-delivery-arch.html">DODS Data Delivery Architecture</A>
+<B> Previous:</B> <A NAME="tex2html199"
+  HREF="node11.html">The Role of Ancillary</A>
+ &nbsp; <B>  <A NAME="tex2html207"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00050000000000000000">
+Conclusion</A>
+</H1>
+
+<P>
+The DODS data delivery architecture is based on a set of loosely cooperating
+data servers spread throughout host computers on the Internet. The extent of
+these host's commitment to DODS is that they run the servers and permit people
+with client software to connect and access data. This system
+architecture follows in the footsteps of other client-server systems where
+participation is wholly voluntary. 
+
+<P>
+To provide a basic level of server security and accounting, the data delivery
+architecture prescribes that third-party HTTP servers be the principle
+network interface of DODS. Using these servers as the basis for the data
+servers frees the DODS project from the task of building secondary support
+services into DODS serves. The extra work required to build servers robust
+enough to be considered trustworthy is a considerable drawback to RPC
+technology.
+
+<P>
+The DODS data delivery architecture is based heavily on data access through a
+set of known, stable and documented APIs. Each of these APIs defines, to a
+greater or lesser extent, the semantics of the data models which it uses and
+thus the data it can be used to store/access. Given this and that most
+science data APIs draw on a small set data models, it is reasonable to assume
+that calls in these APIs can be translated into a common access protocol.
+Since each client program will use this common protocol to access data
+servers, DODS will facilitate interoperability between the set of APIs it
+supports. Because the characteristics of APIs that make this possible are not
+limited to a small set of APIs it is reasonable to assume that the set of
+APIs supported by DODS can be extended without radical modifications to the
+basic structure of the system.
+
+<P>
+In order to maximize the body of existing software that can be used with
+DODS, the development of the data delivery system will concentrate on
+building data servers and reimplementing API libraries. The data servers can
+be used to provide access to data stored in any one of the supported APIs
+data sets. The reimplemented libraries (i.e., client libraries) can be used
+to re-link existing application programs providing the extended functionality
+of DODS without necessitating any modification of those programs.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html208"
+  HREF="node13.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html204"
+  HREF="data-delivery-arch.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html198"
+  HREF="node11.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html206"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html209"
+  HREF="node13.html">About this document ...</A>
+<B> Up:</B> <A NAME="tex2html205"
+  HREF="data-delivery-arch.html">DODS Data Delivery Architecture</A>
+<B> Previous:</B> <A NAME="tex2html199"
+  HREF="node11.html">The Role of Ancillary</A>
+ &nbsp; <B>  <A NAME="tex2html207"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

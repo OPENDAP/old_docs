@@ -1,0 +1,182 @@
+
+	$Id$
+
+
+James,
+
+Interface looks good although (and I hear this a lot about the browser)
+it's not obvious what to do.  
+
+Looking at COADS:
+
+At first, I just typed in some constraints to COADSX COADSY TIME 
+and SST.  I used:
+
+COADSX: 0:1:29
+COADSY 0:1:29
+TIME 0:0
+SST 0:0 0:1:29 0:1:29
+
+I asked for ASCII data.  I got a new Netscape window with the message:
+
+Error:
+
+Not very illuminating.
+
+Then I noticed the little radio buttons.  So I clicked on the
+readio buttons for TIME, COADSX COADSY and SST.  They reset my
+constraints to the whole dataset range.  I modified these slightly
+to read:
+
+COADSX: 0:1:29
+COADSY 0:1:29
+TIME 0:1:0
+SST 0:1:0 0:1:29 0:1:29
+
+I again asked for ASCII data.  I got:
+
+Error:
+
+Then I tried getting just the default ranges.  I was able to get COADSX and 
+COADSY and TIME as ASCII data, but not SST, or UWND or VWND or AIRT.
+
+I am using Netscape v4.06[en]-98225.
+
+----------------------------------
+
+Hi James,
+
+I tried out the ifh. I think that it is a good start. I did however
+have some problems with it and have some comments on usability.
+
+Problem: I filled in the form, but it wasn't clear what I had to
+do to get a dump of the data. I used the FNOC dataset. 
+
+Usability: (1) I found the metadata stuff to be useful at first,
+but it quickly became an obstacle to easy use. For a dataset with
+a lot of variables, the form could get very long indeed. One 
+approach might be to make that information optional. This could
+be done either by an optional hot link for each variable for
+such information and/or a dataset wide switch. My preference
+would be for both. While I am learning how to use the interface
+I would want it in the show everything mode. When I become a
+pro I would prefer not to see all that stuff, but would like the
+option of calling it up for any variable.
+
+(2) The metadata stuff is accessible in the form; i.e., the
+user can type into this area. It is not obvious to me why that
+is the case. This is not something that the user can change or
+select on is it? 
+
+(3) If I enter <cr> it goes to the next box. That is fine except
+that it goes into the metadata box and then an additional <cr>
+simply put blank lines in the box. Back to (2) above. If you
+agree that this should not be accessible, then (3) goes away.
+
+(4) It seems like there should be a "how to use this interface"
+button. I know enough about DODS to know about projection and
+selection, but most users will not, so the check box for a variable
+may not be clear. 
+
+(5) Since the new servers can access information about longitude
+and latitude range in order to do the fancy geophysical constraints
+for grids, it seems that the form should also make use of thie
+information; i.e., allow the user to select longitude and latitude
+(and maybe other constraints such as date and time) using thise
+constraints. The ifh should present the data to the user this way.
+I am not sure how to handle this. The array information along
+with the lat and lon limits provide a feel for the resolution,
+how much data you will get for a given request, but they are
+a pain to use. Additionally some users may prefer to give the
+grid range while others the geophysical range. Maybe a switch
+for grids that allows the user to toggle between computer notation
+and geophysical notation (and selection) would be good.
+
+------------------------------
+
+Just quik feedback:
+
+Form and JavaScript seem to work fine on my NT using NetScape 4.5
+
+The form almost serves a double purpose as a URL constructor tutorial 
+
+On your first URL, however, I tried this request and got a response of
+simply "Error:"  Other URLs I tried worked fine.
+
+http://www.dods.org/test/nph-nc/data/nc/fnoc1.nc?u[0:1:2][0:1:16][0:1:10]
+
+"Disposition" is an interesting word to choose ... usually would refer
+to "Keep", "Delete", etc. in this context.
+
+Kind of odd to se "Data to Matlab" ... but would look good in the
+company of "HDF" and "netCDF" as output options.
+
+On the FreeForm example I tried fvar and svar>0 (figuring the svar
+constraint would also constrain fvar?). It looks like the wrong URL was
+generated:
+	http://www.dods.org/etc/nph-ff/data/ff/test1.dat?svar1&svar1>0
+so there were no fvar results. (Also, the URL wasn't generated until I
+actually requested the data.
+
+-----------------------------
+
+Hi James,
+
+Sorry for taking up yet more of your time ... Its only BLUE SKY stuff to
+think about when the pressure is off.
+
+The challenge that you have described on many occasions is that the Web
+browser has no obvious way to trigger the "loadDODS" command in MATLAB
+... thus the browsing process has had to be made quasi-internal to
+MATLAB to get the level of integration desired.
+
+My question is whether the following approach might work:
+
+1. User with Web browser requests "MATLAB format" data from server
+
+2. Web server sends data file back as a MIME type -- call it ".MAT"
+
+3. Browser is configured to run a script -- fire off a helper program --
+when inputs of type .MAT are received
+
+4. The script tells MATLAB to load the file (typically saved in /tmp
+under some funky name)
+
+We use this procedure to launch Ferret when a netCDF file comes in from
+the browser or to launch Excel when a comma-delimited file shows up.
+
+There is an additional challenge to making sure that the same MATLAB
+image that the user is already running is the one that gets the LOAD
+command .... I don't know MATLAB details but I imaging it has some
+mechanism like a signal that you can send to it that causes it to
+execute the commands in ~/.matlab or some such thing.
+
+Your experiences or thoughts?
+
+--------------------------------
+
+Looks very clean. It will be great to throw a search engine onto the "web" of
+DODS sites after this interface gets propagated out to data suppliers. If
+"collections" are suitably implemented, they can appear (later) as a part of this
+directory tree, too.
+
+I have reservations about the final HTML forms interface ... though only minor
+reservations. As an HTML form the display of a files structure and attributes is
+not near as clean looking as it is in the straight HTML text versions. What about
+using the text version as an intermediate: click on ...
+    directory
+        --> subdirectory
+            --> foobar.nc
+                 --> "get data" on text version of DAS/DDS
+                    --> your forms interface to get data
+
+    - steve
+
+minor note: the HELP links (e.g. "Global Attributes":) are broken
+
+    http://dcz.dods.org/dods/query-help.html#global_attr
+    Forbidden
+
+    You don't have permission to access /dods/query-help.html
+    on this server.
+

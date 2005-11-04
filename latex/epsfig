@@ -1,0 +1,62 @@
+#!/usr/local/bin/perl
+#
+# usage: epsfig [-c] FILE
+#
+# Write (possibly compressed) epsfig FILE to stdout.  The TEXINPUTS path is
+# searched for FILE{,.gz,z,Z}.  With the -c option the FILE is gziped and
+# FILE.bb is generated.  If FILE is in the system default $SYSTEXINPUTS path
+# no attempt is made to epsbb it.
+#
+# Used by epsfig.sty inside backquoted dvips specials.
+#
+#  Author: Peter Whaite (peta@mcrcim.mcgill.edu)
+#          Centre for Intelligent Machines, McGill University.
+# $Id$
+
+## USER CONFIG -- edit the following to suit your system.
+#
+$SYSTEXINPUTS='.:/usr/local/tex/lib/texinputs';
+$ZCAT='/usr/local/bin/gunzip -c';
+#
+## END USER CONFIG
+
+while ($_=shift,/^-/)
+{
+    /^-c/ && do {$compress++;next};
+    die "$0: bad option $_\nusage: $0 [-c] <file>\n";
+}
+die "usage: $0 [-c] <file>\n" unless $#ARGV == -1;
+$file=$_;
+
+$TEXINPUTS=$ENV{'TEXINPUTS'};
+$TEXINPUTS .= $SYSTEXINPUTS if ((! $TEXINPUTS)||($TEXINPUTS =~ /:$/));
+@SYSTEXINPUTS = split(/:/,$SYSTEXINPUTS);
+@TEXINPUTS = split(/:/,$TEXINPUTS);
+
+foreach $dir (@TEXINPUTS)
+{
+    $epsf = "$dir/$file";
+    (-f $epsf)      && do {$cmd = "$epsf"; $uncompressed=1; last;};
+    (-f "$epsf.gz") && do {$cmd="$ZCAT $epsf|"; last;};
+    (-f "$epsf.z")  && do {$cmd="$ZCAT $epsf|"; last;};
+    (-f "$epsf.Z")  && do {$cmd= "$ZCAT $epsf|"; last;};
+}
+$cmd || die("$0: $file.{z,gz,Z} not found\n");
+
+open(EPSF,$cmd) || die("$0: $cmd: $!\n");
+while (<EPSF>)
+{
+    print;
+}
+close EPSF;
+
+if ($compress && $uncompressed)
+{
+    exit(0) if (grep(/^$dir$/,@SYSTEXINPUTS) && ($dir =~ m#^/#));
+    system("epsbb $epsf");
+};
+
+# Local Variables:
+# mode: perl
+# auto-fill-hook: do-auto-fill
+# End:

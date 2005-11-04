@@ -1,0 +1,1 @@
+g++ idlgif.cc -o idlgif -lidl_rpc -I../../../include -I/usr/local/rsi/idl/external/rpc -L/usr/local/rsi/idl/bin/bin.alpha -w

@@ -1,0 +1,221 @@
+
+% Description of the work to be done for the four new (9/24/98) DODS servers.
+%
+% $Id$
+
+\documentclass[12pt]{article}
+\usepackage{html}
+
+\input{../../boiler/html-refs}
+
+\begin{document}
+
+\title{Work~Description: Additional~Data~Servers~for~DODS}
+\author{James Gallagher\\
+Richard Chinman}
+\date{\today}
+
+\maketitle
+
+\begin{htmlonly}
+\pslink{http://dcz.cvo.oneworld.com/server-work-desc.ps}
+\end{htmlonly}
+
+\tableofcontents
+
+\section{Introduction}
+
+The DODS Project has undertaken, since 1995, the task of building a
+distributed data system using a two-tier client-server architecture.  The
+project now contains servers for six (6) different data formats.  We need to
+add generic servers for data stored using the GRIB and BUFR file formats to
+the suite of existing servers. In addition, we need specialized servers for a
+GIF-based storage format used at IFREMER and a relational database management
+system used at Oregon State University.
+
+While the four servers needed are described here, each is to be considered a
+separate project. Individuals or organizations proposing to build one need
+not build the others, or be prohibited from building others.
+
+\section{Background Information}
+
+Before considering this work, interested parties should become familiar
+with DODS, its programming libraries and tools and the specifics of the
+target file format or data system with which they propose to work. 
+
+Information about DODS is available both on line and on paper. All of the
+DODS Guides and white papers may be found on the \htmladdnormallinkfoot{DODS
+  Web page.} {http://unidata.ucar.edu/packages/dods/} Copies of the User's
+and Programmer's Guides are available through the \htmladdnormallink{DODS
+  Project Management Office}{mailto:chinman@ucar.edu} at UCAR, Boulder,
+CO.\footnote{Richard Chinman, chinman@ucar.edu, 303.497.8696}
+
+\begin{enumerate}
+  
+\item Information on GRIB can be found \htmladdnormallinkfoot{on the Web,}
+  {http://wesley.wwb.noaa.gov/reading\_grib.html} through the World
+  Meteorological Organization or through the DODS project management office.
+
+\item Information on BUFR is available \htmladdnormallinkfoot{on the
+    Web}{http://www.scd.ucar.edu/dss/pub/reanalysis/data\_usr.html} or through
+  the DODS project management office.
+  
+\item Information about the IFREMER gif-based format is available through the
+  DODS project management office.
+
+\item Information about the Oregon State University relational database is
+  available through the DODS project management office.
+  
+\end{enumerate}
+
+\section{Work to be Done}
+
+Work on each server should be completed in four parts unless it can be
+shown that a more sensible plan exists:
+
+\begin{enumerate}
+  
+\item Submit a design for critical review. If it would help to also have a
+  preliminary design review, that could be arranged.
+
+\item Submit the software.
+
+\item Submit an automated test suite for the server. The server should pass
+  all of the tests except in unusual circumstances.
+
+\item Submit documentation for the server. This should cover any
+  idiosyncrasies of the server. 
+
+\end{enumerate}
+
+The payment schedule for this work is to be proposed by the interested
+parties. 
+
+\begin{quote}
+  
+  It may be possible to pay consultants be extending existing contracts
+  that DODS has. Those working on these servers would technically be
+  employees/sub-contractors of/for those companies. Contact the
+  \htmladdnormallink{DODS Program Manager}{mailto:chinman@ucar.edu} for more
+  information.
+
+\end{quote}
+
+\section{Requirements for the Four Servers}
+
+The four servers share some requirements because they all must function
+within DODS. However, the GRIB and BUFR servers have more restrictive
+requirements because they are to be part of the general DODS distribution.
+They will be installed by many different data providers. The IFREMER and OSU
+servers are intended only for use by their respective institutions and the
+requirements are consequently less specific; those servers' design will be
+determined more by the target data system than by DODS' architecture.
+
+During the evaluation of the proposals or statements of work, additional
+requirements may be identified. If that is the case, any extra burden those
+place on the design will be taken into account. Either the time or money
+alloted to the work will be increased or some other accommodation will be
+made.\footnote{In other words, we know how these things go. We don't want to
+  leave out something important, but we also don't want to put anybody
+  through the ringer either.}
+
+The requirements common to all four servers are:
+
+\begin{enumerate}
+  
+\item The servers must adhere to the DODS Data Access Protocol (DAP). It is
+  OK if support for other protocols is also built into the servers, but
+  maintenance of that portion of the software must be described in detail in
+  the server's supporting documentation.
+  
+\item The servers must provide access to data using objects and data types
+  defined by the DODS DAP. The software package {\tt
+    DODS-dap-<version>.tar.gz}, available from the DODS Web site, contains an
+  implementation of these objects and data types. The DODS Programmer's Guide
+  describes how to write servers using this implementation of the DAP.
+
+\item The servers must implement the DODS constraint expression processing
+  scheme using the core library as supplied or provide both faithful
+  emulation and a convincing argument for not using that implementation. The
+  intent here is simplify maintenance and future development by consolidating
+  the expression evaluation software.
+
+\end{enumerate}
+
+\subsection{The GRIB and BUFR Servers}
+
+The requirements specific to the GRIB and BUFR servers are:
+
+\begin{enumerate}
+  
+\item The GRIB and BUFR servers must run on UNIX. We must be able to build
+  binaries for the current set of supported platforms using the current
+  development tools. As of \today\ the supported platforms are: 
+
+  \begin{enumerate}
+
+  \item SUN Sparc (Solaris 2.x)
+  \item Dec Alpha (Digital UNIX)
+  \item SGI Mips (IRIX 5.3, 6.x)
+  \item Intel 586/686 (Linux 2.x)
+  \item HP (HP/UX)
+
+  \end{enumerate}
+  
+  The current development environment uses the FSF's gcc/g++ compiler and STL
+  implementation. In addition, implementors are encouraged to support other
+  platforms and/or tools particularly Windows 95/98, Windows NT and different
+  vendor's compilers.  Currently, DODS provides support for neither non-UNIX
+  operating systems nor other compilers. However, recent changes to DODS make
+  it simpler to build DODS with various tools and ostensibly other operating
+  systems. For more information about this subject, contact the
+  \htmladdnormallink{DODS technical
+    lead}{mailto:jgallagher@gso.uri.edu}.\footnote{James Gallagher,
+    jgallagher@gso.uri.edu, 541.752.7499}
+  
+\item The GRIB and BUFR servers must conform to the general design of the
+  existing DODS servers so as to minimize time needed to maintain the server
+  software once it is completed. To satisfy this requirement the software
+  does not need to follow the exact architecture of existing servers, but it
+  should use similar mechanisms and deviate from the existing design pattern
+  only if the new design is demonstrably superior.
+  
+\item The GRIB and BUFR servers must have essentially the same
+  installation overhead for users as do the current servers. That is, users
+  should be able to install the server by copying programs into a web
+  server's CGI binaries directory. Any further installation steps are
+  discouraged unless the GRIB format makes it absolutely necessary. For
+  example, the FreeForm server requires that one or more format description
+  files be written before the server will work. There is no way around that
+  since those files are dependent on the data and we cannot control that!
+
+\end{enumerate}
+
+\subsection{The IFREMER and OSU Servers}
+
+The requirements specific to the IFREMER and OSU servers are:
+
+\begin{enumerate}
+
+\item The servers must run on platforms which pose the lowest overall
+  maintenance burden for the target institutions.
+  
+\item Source code for the servers must be supplied as well as executable
+  images.
+  
+\item Considerable latitude is available when implementing these servers, but
+  a significant deviation from the design of other DODS servers must be
+  explained in the server's documentation.
+
+\end{enumerate}
+
+\section{Proposing Work}
+
+Potential Server developers should expect to submit a proposal or statement
+of work describing the development effort, accompanied by a budget, to the
+DODS project management office at UCAR. In addition, descriptions of past
+work (e.g., a resum\'e) should be submitted prior to,
+or with, the proposal or statement. The project office will consult with
+the DODS project technical lead to evaluate the proposals.
+
+\end{document}

@@ -1,0 +1,70 @@
+Searching the Universe of DODS Data Sets
+
+    Statement of Problem
+
+An end-to-end scientific data system must provide 3 fundamental components
+1. locating data sets (search)
+2. evaluating data sets (browse)
+3. delivering data (delivery)
+4. utilizing data (analysis and visualization)
+
+Historically, most distributed data systems (e.g. NOAAServer, US Navy/MEL,
+...) have approached the development of their systems beginning first with
+the machinery of component one -- data-base wide search. These systems have
+relied on metadata that is maintained independently from the data sets,
+themselves, often utilizing the FGDC metadata standard. Certain limitations
+descend from this approach: 1. The metadata contents is inadequate for
+precise geo-special searching. Although the FGDC standard is broad enough to
+include coordinate information, in typical usage only a bounding rectangle is
+included. This means, for example, that low resolution global gridded data
+sets match on all spatial searches - even, for example, searches for a small,
+named bay or estuary. 2. The metadata is frequently incomplete or out of
+date. Managing metadata records independently from the data sets, themselves,
+increases the likelihood that the metadata will not be 100% faithful to the
+data.
+
+The DODS development path has been the reverse of this order - concentrating
+initially on the development of component three -- a client-server framework
+emphasizing easily installed servers and direct binary delivery of both data
+and metadata to clients. DODS focuses on self-describing data where metadata
+and data are united. For legacy formats, where metadata may be lacking, DODS
+provides simple mechanisms based on ASCII files, for completing the
+self-description.
+
+To date, the DODS project has not directed significant energies to the
+problem of searching. With the infrastructure that is now in place, however,
+DODS has built a foundation upon which a metadata and search strategy of
+superlative quality can be built.
+
+    A Framework for Building DODS Search Engines - the DODS WebCrawler
+
+There is no uniquely correct interface or set of search criteria for broad
+data set searching, any more than there is a uniquely correct data format or
+scientific analysis tool. An appropriate search strategy for DODS is to
+develop a framework for building search engines, much as it has developed a
+framework for connecting applications to remote data sets. The search
+framework can build upon the ability of DODS to query the data sets,
+themselves, to harvest detailed metadata, including the coordinate
+information directly from data sets.
+
+The foundation of this framework is the concept of a DODS "WebCrawler", a
+network robot that will recursively explore DODS servers, descending through
+subdirectories to individual files, recording DODS path names, variables,
+attributes, and coordinates. The data base created by this robot can be
+stored and searched to fit the particular needs of individual projects. One
+such project, of course, would be a "generic" DODS search engine that
+catalogs and searches the entire universe of DODS data sets (as well,
+potentially, as non-DODS data sets).
+
+    Proposed Work
+
+In year one of this proposal PMEL will develop a prototype DODS WebCrawler.
+The WebCrawler will be built as portable modules, written in perl or Java.
+The modules will be customizable so that, for example, the output of the
+WebCrawler may be stored in a commercial data base manager. PMEL will create
+a demonstration searchable data base and link it to a data browse and
+retrieval system. The resulting demonstration will be presented and discussed
+at the national DODS meeting near the end of year one. Based on those
+discussions a generic DODS search project will be proposed for the out years,
+likely spearheaded by an experienced member organization such as NASA/GCMD.
+

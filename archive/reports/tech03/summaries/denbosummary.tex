@@ -1,0 +1,73 @@
+Don Denbo was unable to attend due to the blizzard.  However, his
+report on the Climate Data Portal is available on the web:
+\xlink{http://www.epic.noaa.gov/talks/dwd/NVODS\_Workshop\_2003/ncBrowse\_CDP.htm
+}{http://www.epic.noaa.gov/talks/dwd/NVODS\_Workshop\_2003/ncBrowse\_CDP.htm
+} and is summarized here.  Also, he attended the in-situ breakout via
+speaker-phone. 
+
+The Climate Data Portal at PMEL is available for accessing distributed
+in-situ data.  First LDAP Directory Service is used to find relevant
+servers.  Second, a coarse latitude/longitude/depth/time selection is
+made.  Finally, the selection is refined to individual stations using
+ndEdit.  The selected data then can be downloaded and saved or displayed.
+The requirements to support multi-tiered data selection are: 
+
+\begin{enumerate}
+  \item Determine what datasets are available, 
+  \item Select a dataset and, given a coarse selection, get a list of 
+       stations and appropriate metadata, and 
+  \item retrieve stations from a list of selected stations.  
+\end{enumerate} 
+
+ncBrowse is a general
+purpose, interactive tool for graphical browsing of data and attributes in 
+NetCDF files.  It has OPeNDAP data access to datasets compatible with
+the Java-NetCDF API, and currently is being enhanced to support 
+OPeNDAP datasets with more complex data models than NetCDF supports.
+Several proposals were made to enhance ease-of-use of OPeNDAP datasets
+through ncBrowse: 
+
+\begin{enumerate}
+  \item Combine the DDS and DAS, 
+  \item Provide an easy-to-use interface to OPeNDAP Sequence and 
+    Structure objects.  
+\end{enumerate} 
+
+Specific issues listed with respect to ncBrowse included:
+
+\begin{enumerate}
+  \item DAS and DDS structures don't match
+  \item DAS and DDS namespaces are not always compatible
+  \item It's not always possible to matich attributes to variables
+        with an automatic system.
+  \item There is no guaranteed way to determine that NetCDF conventions
+        apply.
+  \item Data structures for DAS and DDS are substantially different
+        causing a little confusion and awkward programming.
+\end{enumerate}
+
+\paragraph{Denbo's reommendations}
+
+Develop an OPeNDAP conventions framework:
+
+\begin{enumerate}
+   \item  Formalize existing OPeNDAP convention for NetCDF files.
+   \item  Develop an in-situ data access convention.
+   \item  Develop a Java-OPeNDAP in-situ API.
+\end{enumerate}
+
+% $Id$
+%
+% $Log: denbosummary.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

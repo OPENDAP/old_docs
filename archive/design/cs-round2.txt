@@ -1,0 +1,89 @@
+
+	$Id$
+
+What we want: Data should be easy to use, not just access.
+
+Current state:
+
+A user can install a server in 5-60 mins for a single-file dataset.
+A user can install a server for a multi-file dataset only with our help.
+A user cannot, in general, make data usable although exceptions exist.
+
+Where we would like to be:
+
+A: Installing a server for a multi-file dataset should be no more work than
+installing a server for a single-file dataset. That is, 5-60 mins for the
+`base' server and 5-60 mins for the `file' server. [This still assumes a
+dual server design].
+
+B: A user should be able to make data usable in several clients with no more
+than 10 minutes of extra work.
+
+How are we going to get this done:
+
+1: We have a standard for encoding the needed metadata that is concise.
+
+2: We have geographic access functions in the servers.
+
+3: We have servers that are extensible WRT metadata.
+
+4: We have clients that can use the information in #s 1, 2 and 3.
+
+So why doesn't this work:
+
+#1: The standard is not being used.
+
+Solution: 
+a: For every dataset we have in the ML GUI, add the metadata. This
+means doing _all_ the steps for adding the metadata.
+
+b: For every new dataset added by us, add the metadata. No exceptions.
+
+c: For any dataset added by us that falls through the cracks, figure out why
+and fix the problem.
+
+d: ***modify our clients to use this information if they don't (e.g. the ML
+GUI).
+
+#2: The functions are not being used (well, some are, but some are not).
+
+Solution:
+a: Modify the GUI to use the function(s).
+b: Fix the functions as needed.
+
+#3 We're OK here.
+
+#4 Fix the ML GUI/loaddods. Assume the IDL loaddods is also broken WRT this
+ feature.
+
+Other issues/facts/features:
+
+- How do we resolve the cases where the current standard is lacking?
+
+  Solution: Use an on-line lexicon and make the changes when the problem is
+  found not by coding a work-around for a particular client *unless* we all
+  agree that the work-around should actually be the permanent solution.
+
+- How do client programs find out about datasets?
+
+  Solution: Change our model from one of bundling dataset with clients to one
+  where users build lists of URLs in which they're interested. 
+
+  - The current page of datasets should become a `What's New' page where new
+    datasets appear.
+  - Users (human and machine) will be able to ask the GCMD for DODS datasets
+    (they can now).
+  - Maintaining the hot list will be the province of an application.
+  - The What's New web page will probably become a sub-system within DODS
+    that will involve development effort (i.e., the support for automatic
+    additions).
+    - This *must not* replicate the GCMD/Mercury functions.
+    - We must allow people to submit `bad' URLs! See the next item.
+
+- Seal of Approval
+
+  - We will need to QC some of the datasets on the What's New list and give
+    them a seal of approval.
+  - These dataset must be easy to identify on the list. 
+  Question: what criteria should we use to evaluate datasets? I think Paul,
+    Kwok Lin, et al. should develop these criteria.

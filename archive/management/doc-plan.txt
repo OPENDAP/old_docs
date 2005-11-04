@@ -1,0 +1,253 @@
+DODS Documentation plan
+
+$Id$
+
+This is a plan for the DODS documentation. It covers both the user and
+technical documentation.
+
+
+0. Online documentation
+
+DODS's online documentation is in the form a WWW page which contains links to
+other pages. Each document about DODS will be written so that both a hardcopy
+and hyper text version can be made from the same `source'. We will use LaTeX
+to write our documentation and produce HTML from that with a separate
+processor. 
+
+The online documentation will also contain pages with pointers to the user
+and technical documentation as well as other hyper text pages containing
+links to the new information, software and other miscellaneous things.
+
+1. User documentation
+
+The user documentation for DODS must cover two groups of users: those who want
+to provide access to data via DODS and those who want to use data. In many
+cases the people will be one and-the-same since most providers will also be
+data users. 
+
+This documentation should assume that the readers are familiar with
+computers, but not programmers. Thus, tasks such as compilation an linking of
+programs will have to be explained with examples, while in the technical
+documentation this would not be necessary.
+
+Some information will be common to both documents:
+	DODS is a client-server system
+	DODS extends certain APIs `to the network'
+	DODS leverages off of the WWW
+
+1a Data provider 
+
+Concepts: The core ideas of DODS as they relate to providing access to data
+
+	These are design issues, but they need to be presented as
+	characteristics of the system rather than design goals or criteria
+	which need to satisfied. That is, this document must say why these
+	features exist so that users will understand how to use the system.
+
+	1. DODS view of data
+	   a. Data models provide a framework for describing all data.
+	   b. Type constructors describe an infinite number of data models.
+	      i. Data types and data models are equivalent phrases
+	   c. Data lives in files
+	      i. File access is a fundamental paradigm.
+	      ii. Actual files
+	      iii. Databases with APIs that make them look like files.
+
+	Here a map showing distribution is an important aid, but it is also
+	important to tell users that they may have a good understanding of
+	these ideas since they know about the Web.
+
+	2. Data access without a central authority 
+	   a. There is no *mandated* central authority
+	      i. Each provider joins/leaves when its convenient
+	      ii. Each dataset maybe unknown to the system
+	      iii. ...just like the Web
+	   b. There are certain benefits to central authority
+	      i. ... if participation is voluntary.
+	      ii. one place data consumers can go to find your data.
+
+	There are various levels of involvement for data providers (e.g., you
+	don't *have* to register data with the locator). However, that
+	implies that there are various levels of involvement for the data,
+	too. Data does not to be reformatted nor does it need to have lots of
+	ancillary information added to it. However, when data moves from the
+	comfortable confines of its home to the Internet, a new set of
+	requirements comes into play. Data might *benefit* from modification
+	of ancillary data. DODS makes adding ancillary data
+	`easy'. Question: What is the difference between data and data
+	provider. Answer: From the user's point of view, none. 
+
+	3. Various levels of involvement in DODS for the data providers.
+	   a. Participation in data locator stuff is voluntary.
+	      i. Voluntary participation constrains the system.
+	      ii. Simplifies becoming part of the system
+	   b. Data description detail has various levels, too.
+	      i. Data type description
+	      ii. Data attribute description
+	      iii. From self-describing file
+	      iv. From SD file plus external file.
+	      v. Solely from external description (over-rides SD file info)
+	      vi. Most complicated, but also most powerful.
+
+Data transport topics: 
+	1. How are servers built?
+	   a. Server arch:
+	      i. httpd
+	      ii. CGI
+	      iii. filter programs
+	   b. server operation
+	      i. httpd starts CGI
+	      ii. CGI selects appropriate filter program
+	      iii. filter program returns information to client program
+	   c. filter programs
+	      i. Each supported API has a different set of filter programs 
+	      ii. DAS: returns information about data attributes
+	      iii. DDS: returns information about data types
+	      iv. DODS: returns data values
+	      v. There can be other filter programs
+
+	2. Customizing data servers
+	   a. Writing new filter programs
+	      i. optimizing the filters for your data
+	      ii. adding more ancillary data to the filter output
+	      iii. filters don't have to be written in C++
+
+	   b. Adding ancillary information
+	      i. You don't have to add it to the data files
+	      ii. Adding more information to the DAS or DDS
+
+	3. Installing the server:
+	   a. Must put CGI in one of httpd's CGI directories (see
+	      httpd documentation).
+	      i. filters normally go there too, but you can modify the
+		 CGI and put them anywhere.
+	   b. Testing the filter programs:
+	      i. You can test the filter programs by looking at their output.
+	      ii. The das and dds programs take a filename as their
+		   sole argument and out the DODS DAS and DDS respectively.
+	      iii. The dods filter takes a filename, variable name and
+		  constraint expression and dumps the (binary) data matching
+		  that variable and constraint expression to stdout. However,
+	          it is prefixed with text that describes the type of the
+	          variables .
+
+	3. Where data is stored:
+	   a. Three places to store data:
+	      i. htdocs directory tree (htdocs is set in httpd.conf). 
+	      ii. Users home dir tree (if enabled for your server)
+	      iii. Any dir that is soft-linked to a dir with htdocs
+		   (if your server turns on FollowSymLinks).
+	      iv. See the setup information for httpd for more details.
+
+	4. Managing data
+	   a. Data can be stored in files or databases.
+	      i. All access uses the `file paradigm' 
+	      ii. for a database, you can fake it
+	      iii. DODS URLs combine a `filename' with a query string.
+	   b. DODS supports several popular data formats.
+	      i. netcdf, jgofs, hdf (complete in early 1997).
+	      ii. For a large archive, build a custom server
+	      iii. The Toolkit simplifies writing custom C++ code for DODS.
+	   c. Data longevity
+	      i. We are working with agencies to make it simpler to move data
+		 from private holdings to their archives.
+
+Data locator topics: 
+	Registering data with the locator
+
+1b Data consumer 
+
+Concepts: 
+	Clients are built from user programs
+	Both existing or new software may become a client
+
+Data transport topics: 
+	1. Configuring programs to use DODS
+	   a. DODS is a client-server system
+	      i. User programs must be configured to be DODS clients
+	      ii. User programs are made clients by relinking them with DODS
+		  implementations of existing API libraries.
+	      iii. Any program that uses one of the supported APIs can be
+		   re-linked
+	      iv. Supported APIs are netCDF and JGOFS
+	      v. Planned APIs are HDF (early 97)
+
+	   b. Re-linking: object modules and new libraries
+	      i. modify Makefile
+	      ii. replace library with:
+		  -ldap++ -l<api>-dods -ldap++ -l<api>-dods -lnetio
+	      iii. need the sequence -ldap++ -l<api>-dods repeated twice to
+	           resolve circular dependencies 
+	      iv. replace linking program with `g++'.
+	      v. If you don't have g++, use gcc and add -lg++
+	      vi. Example from DODS-netCDF source distribution
+
+	   c. Caveats
+	      i. Some programs use more than one API.
+	      ii. Some programs access data using both API and UNIX system
+	          calls 
+	      iii. Some Programs use undocumented features of the APIs
+	      iv. Re-linked programs can be very large - strip the execs.
+
+	2. Writing new programs
+	   a. You can write new programs using the existing libraries.
+	      i. No new programming paradigm to learn.
+	      ii. You must be aware that data is remote, however.
+	   b. You can use the DAP directly.
+	      i. harder that APIs
+	      ii. more efficient
+	      iii. only C++ currently supported
+
+	3. Data are accessed using URLS
+	   a. local data are still accessed using local file names
+	   b. remote data use the URLs
+	   c. A URL has three parts
+	      i. protocol: how information is transmitted (always http for
+		 DODS).
+	      ii. machine name: Internet name of computer
+	      iii. filename of information on that computer
+	      iv. E.G.: http://dcz.gso.uri.edu/data/test.nc
+				protocol: http
+				machine name: dcz.gso.uri.edu
+				filename: /data/test.nc
+	      v. filename contains the CGI name plus more text passed to the
+		 CGI.
+	      vi. The additional text might correspond to a real file or
+		  might be info for a database.
+
+	   d. Constraint expressions limit data
+	      i. Algebraic expressions
+	      ii. Select part of a dataset or variable
+	      iii. CEs are optional
+
+Data locator topics:
+	Finding data
+	browsing data	
+
+2. Technical documentation
+
+The technical documentation for DODS consists of white papers describing
+parts of the design before they were implemented as well as various papers,
+diagrams and manuals written once the software has been completed.
+
+There are two components to DODS: the data transport system and the data
+locator. In addition, there are some documents which describe the software
+development process used within DODS and thus apply to both components.
+
+The technical documentation is intended for those people working on DODS
+itself. This documentation will be written by programmers/designers of the
+various components.
+
+2a Data delivery architecture
+
+2b Data delivery design
+
+2c Data access protocol
+
+2d DODS toolkit software
+
+2e Data locator
+
+2f Workshop report (include DODS requirements and design goals)
+
+2g various documents covering the `software engineering' process.

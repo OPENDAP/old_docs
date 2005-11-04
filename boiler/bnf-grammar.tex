@@ -1,0 +1,212 @@
+
+% This was taken verbatim from rfc2616. The original section title was
+% `Notational Conventions and Generic Grammar' 3/21/2001 jhrg
+
+\subsection{Augmented BNF}
+All of the mechanisms specified in this document are described in both prose
+and an augmented Backus-Naur Form (BNF) similar to that used by RFC
+822~\cite{rfc822}. Implementors will need to be familiar with the notation in
+order to understand this specification. The augmented BNF includes the
+following constructs:
+
+\begin{description}
+  
+\item [\texttt{name = definition}] The name of a rule is simply the name
+  itself (without any enclosing \texttt{"$<$"} and \texttt{"$>$"}) and is
+  separated from its definition by the equal \texttt{"="} character. White
+  space is only significant in that indentation of continuation lines is used
+  to indicate a rule definition that spans more than one line. Certain basic
+  rules are in uppercase, such as SP, LWS, HT, CRLF, DIGIT, ALPHA, etc. Angle
+  brackets are used within definitions whenever their presence will
+  facilitate discerning the use of rule names.
+  
+\item [\texttt{"literal"}] Quotation marks surround literal text. Unless
+  stated otherwise, the text is case-insensitive.
+      
+\item [\texttt{rule1 | rule2}] Elements separated by a bar (\texttt{"|"}) are
+  alternatives, e.g., \texttt{"yes | no"} will accept \texttt{yes} or
+  \texttt{no}.
+  
+\item [\texttt{(rule1 rule2)}] Elements enclosed in parentheses are treated
+  as a single element.  Thus, \texttt{"(elem (foo | bar) elem)"} allows the
+  token sequences \texttt{"elem foo elem"} and \texttt{"elem bar elem"}.
+  
+\item [\texttt{*rule}] The character \texttt{"*"} preceding an element
+  indicates repetition. The full form is \texttt{"$<$n$>$*$<$m$>$element"}
+  indicating at least \texttt{$<$n$>$} and at most \texttt{$<$m$>$}
+  occurrences of element. Default values are 0 and infinity so that
+  \texttt{"*(element)"} allows any number, including zero;
+  \texttt{"1*element"} requires at least one; and \texttt{"1*2element"}
+  allows one or two.
+  
+\item [\texttt{[rule]}] Square brackets enclose optional elements;
+  \texttt{"[foo bar]"} is equivalent to \texttt{"*1(foo bar)"}.
+  
+\item [\texttt{N rule}] Specific repetition: \texttt{"$<$n$>$(element)"} is
+  equivalent to \texttt{"$<$n>*$<$n$>$(element)"}; that is, exactly
+  \texttt{$<$n$>$} occurrences of (element).  Thus 2DIGIT is a 2-digit
+  number, and 3ALPHA is a string of three alphabetic characters.
+  
+\item [\texttt{\#rule}] A construct \texttt{"\#"} is defined, similar to
+  \texttt{"*"}, for defining lists of elements. The full form is
+  \texttt{"$<$n$>$\#$<$m$>$element"} indicating at least \texttt{$<$n$>$} and
+  at most \texttt{$<$m$>$} elements, each separated by one or more commas
+  (\texttt{","}) and OPTIONAL linear white space (LWS). This makes the usual
+  form of lists very easy; a rule such as \texttt{( *LWS element *( *LWS ","
+    *LWS element ))} can be shown as \texttt{1\#element} Wherever this
+  construct is used, null elements are allowed, but do not contribute to the
+  count of elements present. That is, \texttt{"(element), , (element) "} is
+  permitted, but counts as only two elements. Therefore, where at least one
+  element is required, at least one non-null element MUST be present. Default
+  values are 0 and infinity so that \texttt{"\#element"} allows any number,
+  including zero; \texttt{"1\#element"} requires at least one; and
+  \texttt{"1\#2element"} allows one or two.
+  
+\item [\texttt{;} comment] A semi-colon, set off some distance to the right
+  of rule text, starts a comment that continues to the end of line. This is a
+  simple way of including useful notes in parallel with the specifications.
+  
+\item [implied \texttt{*LWS}] The grammar described by this specification is
+  word-based. Except where noted otherwise, linear white space (LWS) can be
+  included between any two adjacent words (token or quoted-string), and
+  between adjacent words and separators, without changing the interpretation
+  of a field. At least one delimiter (LWS and/or separators) MUST exist
+  between any two tokens (for the definition of "token" below), since they
+  would otherwise be interpreted as a single token.
+\end{description}
+
+\subsection{Basic Rules}
+
+   The following rules are used throughout this specification to
+   describe basic parsing constructs. The US-ASCII coded character set
+   is defined by ANSI X3.4-1986~\cite{ANSI:US-ASCII}.
+
+\begin{vcode}{it}
+       OCTET          = <any 8-bit sequence of data>
+       CHAR           = <any US-ASCII character (octets 0 - 127)>
+       UPALPHA        = <any US-ASCII uppercase letter "A".."Z">
+       LOALPHA        = <any US-ASCII lowercase letter "a".."z">
+       ALPHA          = UPALPHA | LOALPHA
+       DIGIT          = <any US-ASCII digit "0".."9">
+       CTL            = <any US-ASCII control character
+                        (octets 0 - 31) and DEL (127)>
+       CR             = <US-ASCII CR, carriage return (13)>
+       LF             = <US-ASCII LF, linefeed (10)>
+       SP             = <US-ASCII SP, space (32)>
+       HT             = <US-ASCII HT, horizontal-tab (9)>
+       <">            = <US-ASCII double-quote mark (34)>
+\end{vcode}
+
+HTTP/1.1 defines the sequence CR LF as the end-of-line marker for all
+protocol elements except the entity-body (see Appendix 19.3 of RFC
+2616[9] for tolerant applications). The end-of-line marker within an
+entity-body is defined by its associated media type, as described in
+Section 3.7 of RFC 2616[9].
+
+% My original text:
+% except the entity-body (see appendix
+%    19.3\footnote{In RFC 2616\cite{rfc2616}.} for
+%    tolerant applications). The end-of-line marker within an entity-body
+%    is defined by its associated media type, as described in section
+%    3.7.\footnote{In RFC 2616\cite{rfc2616}.}
+% The replacement text above was suggested by Allan Doyle, 20 April
+% 2005.
+
+\begin{vcode}{it}
+       CRLF           = CR LF
+\end{vcode}
+
+   HTTP/1.1 header field values can be folded onto multiple lines if the
+   continuation line begins with a space or horizontal tab. All linear
+   white space, including folding, has the same semantics as SP. A
+   recipient MAY replace any linear white space with a single SP before
+   interpreting the field value or forwarding the message downstream.
+
+\begin{vcode}{it}
+       LWS            = [CRLF] 1*( SP | HT )
+\end{vcode}
+
+   The TEXT rule is only used for descriptive field contents and values
+   that are not intended to be interpreted by the message parser. Words
+   of *TEXT MAY contain characters from character sets other than ISO-
+   8859-1 [22] only when encoded according to the rules of RFC 2047
+   [14].
+
+\begin{vcode}{it}
+       TEXT           = <any OCTET except CTLs,
+                        but including LWS>
+\end{vcode}
+
+   A CRLF is allowed in the definition of TEXT only as part of a header
+   field continuation. It is expected that the folding LWS will be
+   replaced with a single SP before interpretation of the TEXT value.
+
+   Hexadecimal numeric characters are used in several protocol elements.
+
+\begin{vcode}{it}
+       HEX            = "A" | "B" | "C" | "D" | "E" | "F"
+                      | "a" | "b" | "c" | "d" | "e" | "f" | DIGIT
+\end{vcode}
+
+   Many HTTP/1.1 header field values consist of words separated by LWS
+   or special characters. These special characters MUST be in a quoted
+   string to be used within a parameter value (as defined in section
+   3.6).
+
+\begin{vcode}{it}
+       token          = 1*<any CHAR except CTLs or separators>
+       separators     = "(" | ")" | "<" | ">" | "@"
+                      | "," | ";" | ":" | "\" | <">
+                      | "/" | "[" | "]" | "?" | "="
+                      | "{" | "}" | SP | HT
+\end{vcode}
+
+   Comments can be included in some HTTP header fields by surrounding
+   the comment text with parentheses. Comments are only allowed in
+   fields containing "comment" as part of their field value definition.
+   In all other fields, parentheses are considered part of the field
+   value.
+
+\begin{vcode}{it}
+       comment        = "(" *( ctext | quoted-pair | comment ) ")"
+       ctext          = <any TEXT excluding "(" and ")">
+\end{vcode}
+
+   A string of text is parsed as a single word if it is quoted using
+   double-quote marks.
+
+\begin{vcode}{it}
+       quoted-string  = ( <"> *(qdtext | quoted-pair ) <"> )
+       qdtext         = <any TEXT except <">>
+\end{vcode}
+
+   The backslash character ("\verb+\+") MAY be used as a single-character
+   quoting mechanism only within quoted-string and comment constructs.
+
+\begin{vcode}{it}
+       quoted-pair    = "\" CHAR
+\end{vcode}
+
+\begin{quote}
+This appendix was copied from RFC 2616~\cite{rfc2616}. The copyright
+from that document reads:
+
+\begin{quote}
+  Copyright (C) The Internet Society (1999).  All Rights Reserved.
+
+   This document and translations of it may be copied and furnished to
+   others, and derivative works that comment on or otherwise explain it
+   or assist in its implementation may be prepared, copied, published
+   and distributed, in whole or in part, without restriction of any
+   kind, provided that the above copyright notice and this paragraph are
+   included on all such copies and derivative works.  However, this
+   document itself may not be modified in any way, such as by removing
+   the copyright notice or references to the Internet Society or other
+   Internet organizations, except as needed for the purpose of
+   developing Internet standards in which case the procedures for
+   copyrights defined in the Internet Standards process must be
+   followed, or as required to translate it into languages other than
+   English.
+\end{quote}
+
+\end{quote}

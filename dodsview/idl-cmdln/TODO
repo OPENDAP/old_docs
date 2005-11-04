@@ -1,0 +1,14 @@
+
+	$Id$
+
+IDL_DODS command line client:
+
+Enhancements.
+
+Add option for adding to a data structure.
+Documentation of IDL routine interface.
+Return DAS,DDS.
+Access to anciliary DAS?
+Add DLM access.
+Return better error codes.
+

@@ -1,0 +1,29 @@
+# A list of the acceptable DODS names.  DODS datasets using these
+# names are DODS-compliant at level 1 if they also conform to the
+# meta-data standards defined in chapter 2 of the stds.tex book.
+#
+# Please add to the list below the dashed line.  Names will be moved
+# above the line if they create no important conflicts.
+
+# The list below is a simple comma-separated list of triples,
+# containing the DODS name, its decription, and the units in which it
+# is to be presented.  The unit names come from the list compiled at
+# Unidata for the udunits package.  See the udunits package home page
+# at http://www.unidata.ucar.edu/packages/udunits/.  As you may have
+# noticed, you can use the `#' symbol to indicate comments.
+#
+# $Id$
+#
+
+#
+# NAME       DESCRIPTION        UNITS                 GCMD NAME
+#---------------------------------------------------------------------
+Sea_Temp,    Temperature,       degreeC,             EARTH SCIENCE > Oceans  > Ocean Temperature  > Water Temperature 
+time,        Time,              seconds,             # empty
+latitude,    Latitude,          degree_east,         # empty
+longitude,   Longitude,         degree_north,        #empty
+
+
+#-----------------------------------------------------------------
+# Add new names here
+#

@@ -1,0 +1,378 @@
+
+% The system software section of the NOAA NOPP proposal. 11/10/99 jhrg
+%
+% $Id$
+
+\documentclass[10pt]{article}
+\bibliographystyle{plain}
+\newcommand{\Cpp}{{\rm {\small C}\raise.5ex\hbox{\footnotesize ++}}}
+\begin{document}
+\title{NOAA NOPP Software}
+
+\maketitle
+
+\section{DODS Software}
+
+The DODS system software can be divided into three categories. First there is
+the software that implements the Data Access Protocol, DODS' unique data
+transmission protocol. Second there is the software that implements servers
+and clients. This software uses the DAP and also adds other features that any
+functional system must have but which do not belong in a data transmission
+protocol. Lastly, some features of the DODS system software don't make any
+use of the DAP but instead use features of the World Wide Web (WWW). We
+propose to extend DODS' software by continuing development in each of these
+three categories. In the following, the current status and near-term plans for
+the software is described and new development is proposed.
+
+% \begin{quote}
+% \emph{Describe the software as middle-ware. Define middle-ware. Explain its
+% importance. Relate to other ventures (e.g., WWW). Relate our project to the
+% CERN/W3C WWW project?}
+% \end{quote}
+
+\subsection{The Data Access Protocol}
+
+The Data Access Protocol (DAP) is a simple request/response protocol which
+provides access to data. The DAP is used to transfer three types of objects
+from remote sites (servers) to a client: 1) An object which describes the
+variables contained in a dataset by listing their name, datatype and
+relationship with other variables in the dataset, 2) An object that lists
+attributes for each of those variables and, 3) A data object which contains
+both variable names, types and relationships along with numeric values for
+each variable. A request for a data object can be accompanied by a Constraint
+Expression (CE) which lists which of the variables, and of those variables
+which values or ranges of values, to return. Thus the DAP provides both a
+simple way to ask a dataset about it contents and to selectively read from
+that dataset.
+
+The DAP has now been implemented in two different languages on a variety of
+different computing platforms. As it stands now, the DAP has been fully
+implemented in \Cpp\ and runs on a variety of UNIX platforms. This software
+is stable and has been used by our group and others since 1997. In addition,
+our partners at JPL have ported this software to the Microsoft Windows
+operating system (Windows 95, 98 and NT). This port is currently available
+only to developers principally because some of the client software is not
+working well. However, the DAP portion of the port is very robust. We have
+also developed, through our partners at JPL and OSU, a second implementation
+of the DAP using the Java programming language. This implementation of the
+DAP is not complete, but we expect that it will be complete by January 2000.
+Thus the DAP can be used on both UNIX and MS Windows and by \Cpp, C and
+Java programs.
+
+The DAP as a specification has also been evolving during the last two years.
+The original design called for a limited capability to add functions to
+individual servers and have those functions called from within the CE. This
+capability has been expanded to include a standard set of functions which
+provide access to new datatypes. Unlike the basic datatypes around which DODS
+was designed, these types carry a lots of implicit metadata. While this was
+seen as a weakness in general, for certain datatypes it proves to be the most
+pragmatic way to transport information. For example, the DAP now supports a
+set of CE Functions for processing dates. These functions provide an
+interface which hides a dataset's internal representation of the date
+information while providing a standard external representation for the rest
+of the world. To implement these CE function the specification of the DAP was
+changed to generalize functions.
+
+There are some significant enhancements to the DAP on which we and others are
+currently working. These include server-based datatype translation,
+geographical selection functions, response caching, greater control over the
+transmission process, better error handling and more efficient memory
+management. Each of these improvements does not fundamentally alter the DAP
+specification itself but, instead, simplifies using, or improves performance
+of, the DAP. Most of these suggestion have come from requests from the
+developer community based on their experience.\footnote{For example, response
+caching is being added because our partners at PMEL commented that users in
+Australia found the DODS-enhanced Ferret hard to use because of long network
+latencies.} Because each of these improvements, while not radically altering
+the DAP, have come from the user/developer community, they will almost
+certainly have a huge impact on the utility of the protocol.
+
+\subsection{DODS Client and Server Software}
+\label{sec:c-s}
+
+The DODS project software most visible to users are its clients and servers.
+The DODS clients we have written fall into three categories:
+client-libraries, command line clients and Graphical User Interface (GUI)
+clients.  The client-libraries are software libraries that can be used by
+programmers and sophisticated users to build clients for DODS with existing
+software.  These client-libraries implement \emph{already existing} APIs but
+do so in a way that enables them to read information from DODS servers. We
+have two client-libraries currently available; one for NetCDF 3.x and one for
+the JGOFS API. The NetCDF client-library has been used very successfully,
+enabling most notably, Ferret\cite{Ferret} to access DODS servers. In
+addition, this client library has been tested with GrADS, Perl (using the
+netCDF/Perl interface), MexCDF, GMT and others. Client-libraries are a
+powerful software tool because they make it simple to leverage existing work
+in the important process of building a useful body of client software.
+
+The command-line clients we provide work with the UNIX and Windows operating
+systems and with the Matlab and IDL commercial analysis packages. These
+clients require users to compose DODS URLs, which many find a complex task,
+but provide a useful basis for testing servers, and more importantly, writing
+scripts which read from DODS servers. In effect the command-line clients for
+both Matlab and IDL are similar in function to the client-libraries because
+they provide a programatic interface to DODS servers. These command line
+tools can (and have) be used to build complex graphical interfaces and
+scripts which automate access to data served by DODS under program control.
+
+The last group of clients for DODS are Graphical User Interfaces. We have
+built a GUI fro Matlab, based on our Matlab command-line client. In addition,
+our partners at HAO have developed a similar GUI for IDL using the IDL
+command-line client. These interfaces are very popular with users because
+they simplify choosing datasets and fetching data by insulating them from the
+URLs used to retrieve data. Other GUI clients that read from DODS servers
+have already been mentioned; Ferret is the most prominent example. In all
+these cases, the GUI clients are built using either a client-library or one
+of our command-line clients. In essence the GUI clients are almost (or are,
+in fact, in the case of Ferret) separate projects which make use of DODS
+as middle-ware.
+
+DODS currently provides six different servers which make it possible for
+clients to access data stored in many different ways. We have servers for
+NetCDF, HDF4 and HDF EOS, JGOFS, FreeForm, DSP and Matlab. The FreeForm and
+JGOFS servers are easily customizable to various institution-specific ways of
+storing data. 
+
+In the near-term we plan on expanding the capabilities of some of our
+existing servers and adding servers for some new file formats. Both our
+FreeForm and JGOFS servers will undergo changes to make them more usable.  To
+the FreeForm server we will add capabilities to read data files with ragged
+lines, and comma separated values. The JGOFS server will be modified so that
+it can run our more generalized for of CE function. We plan to add servers
+for GRIB, BUFR and HDF5 within the next year. Our efforts to build GRIB and
+BUFR servers have been hampered so far by lack of experience with these
+formats within our group. However, we are going to pursue building these
+servers through our partners at GMU/COLA and UCAR. similarly, we are going to
+pursue building a server for HDF5 though our partnership with NCSA.
+
+Until recently DODS was limited to the UNIX family of platforms. We provide
+source code as well as binaries for Sun, Dec, SGI and Intel-based UNIX
+workstations. However, the software has recently been ported to the Windows
+platform by our partners at JPL. While this port is still in its infancy, it
+holds great promise to open up many doors for DODS. We will continue working
+with JPL to get the port to the stage where it can be released.
+
+DODS currently includes minimal support for datasets comprised of collections
+of files. Because this is an important class of dataset, we have worked to
+broaden its support. Our first revision file servers do this by providing a
+way to index the files which make up a multi-file dataset by date, time
+and/or parameter. In the next year we plan to extend this so that accessing
+the catalog and accessing data in any of the files it lists can be made in a
+single step, effectively aggregating the files into a single dataset from the
+perspective of a client program.
+
+DODS' focus to date has been on data accessibility. However, we are now
+extending the system to provide ease-of-use features. When users are
+unfamiliar with a dataset, using that dataset is greatly simplified if some
+relatively uniform set of information about it is available. This is hardly a
+new concept and DODS' DAP has always provided ample ways to add this sort of
+information easily and without actually modifying the dataset itself. Our new
+ease-of-use conventions will help data providers make data available that
+will not only be easy to access, but also easy to use. These features will be
+based on the COARDS standard\cite{COARDS} which has the added benefit of
+increasing the viability of our netCDF client-library\footnote{Ferret, GrADS
+  and similar programs which use NetCDF are much more powerful tools when
+  used with COARDS-compliant datasets.}.  However, these new features, which
+amount to a new, though small, set of conventions for datasets, will not be
+limited to COARDS.
+
+\subsection{The World Wide Web and DODS Software}
+
+Is is possible to run the DAP over any basic transport protocol. Our
+implementations use HTTP. Because our implementation is layered on HTTP our
+system can take advantage of many features of the evolving WWW
+infrastructure. Because the DAP and HTTP are not tightly coupled, changes in
+the DAP (and \emph{vice versa}) do not affect the purely-HTTP based services
+of DODS.
+
+Because DODS uses HTTP to send requests and responses to and from servers,
+any web browser can be considered a potential DODS client. We have capitalized
+on this in several ways. DODS servers now support a variety of HTTP/WWW
+based accesses. These are:
+\begin{itemize}
+\item All of the basic objects returned by servers in request to a response
+  are pseudo-MIME\cite{rfc:mime} documents. The objects describing variables
+  and their attributes are text documents and can be displayed by any web
+  browser. The data object is a binary document and browsers will offer to
+  save it to a file.
+
+\item It is possible to request data in ASCII form from a DODS server. This
+information is returned as a plain text document which can be viewed in a
+browser, saved to a file or read by a spreadsheet. All the CE features which
+can be used to tailor a request when asking for a data object can be used
+when asking for ASCII data.
+
+\item Another WWW feature recently introduced to our servers is a simple HTML
+form-based query interface. This interface provides a way for users to view
+the variables and their attributes from a given dataset and request data
+without first mastering the somewhat complex syntax of DODS.\footnote{DODS
+uses URLs to reference data, but most users find that the CE notation is
+complicated---the web interface helps users write URLs.}
+
+\item Server version information, help and general information can also be
+requested.
+\end{itemize}
+
+One component missing from DODS is a way to find data. Because many other
+groups had approached the distributed dataset problem from this
+end---building systems to locate datasets---we felt it was acceptable to not
+include a dataset registry. However, it has become apparent that such a
+registry is really needed even if it provides fairly limited features. First
+and foremost, a registry will provide an interface for those other projects
+which already have years of experience in building dataset search tools to
+learn about new DODS datasets as they come on line. We have implemented a
+prototype registry which uses standard WWW technology to interface and HTML
+form with a simple database system. We will finish this prototype to produce
+a working system and register our existing datasets with it. We will also use
+this registry to provide information about DODS datasets to the GCMD who will
+incorporate information about DODS datasets in their catalog. Our goal is to
+complete this first level of catalog within one year.
+
+\section{Future Directions for the DODS Software}
+
+We propose four areas of expansion for the DODS software:
+\begin{itemize}
+\item Add support for GIS by adding both client and server capabilities,
+\item Add support for user specified virtual datasets by extending our File
+  Server software,
+\item Continue expanding our ease-of-use features and,
+\item Enhance the general capabilities of our DAP implementations.
+\end{itemize}
+
+\subsection{GIS systems}
+Geographical Information System (GIS) analysis packages such as ArcView can
+benefit greatly from access to the types of science data served by DODS. We
+propose to work with ESRI, Inc. to build an interface for its GIS analysis
+packages using a similar approach to the command-line clients we have already
+built for IDL and Matlab. This client will enable the huge GIS audience to
+access DODS data and merge it with GIS data.
+
+We also propose to build servers for the GEOTIFF and ARC-GRID formats.
+Support of these formats within DODS appears to be straightforward and will
+enable the science analysis tools such as Matlab, Ferret, etc. to use the
+extensive body of GIS data in concert with the science data already served by
+DODS.  
+
+The overall goal of both planned GIS efforts is to bridge the gap between GIS
+data and GIS analysis tools and the corresponding data and analysis tools in
+the science community. We have some exploratory work currently underway, but
+the scope of this effort will require between one full-time person for
+two to three years, depending on level of support we can secure from outside
+the project.
+
+\subsection{Virtual datasets}
+We want to extend our current and developing file server technology so that
+datasets spread across several computers can be combined and accessed as if
+they we a single object. This activity is a natural outgrowth of our work
+with file servers (see Section~\ref{sec:c-s}). File servers aggregate
+multiple files into a single, cohesive, dataset. While our current file
+servers are fairly primitive, we are in the process of making their use
+indistinguishable from servers used to access single-file datasets. If DODS
+can see both single- and multi-file datasets as equivalent using a server
+that automatically aggregates the components of the later, then it should
+also be possible to apply the same \emph{essential} process to multiple
+remote datasets. However, this will be complicated by the nature of
+distributed systems. It has become apparent to us that techniques which work
+well on single host systems and within intranets are often not well suited to
+distribution across the Internet. This observation has been backed up by
+others\cite{waldo:dist-comp}. Thus, adapting our file server so it can be
+used to aggregate remote datasets will require that we make significant
+extensions to the file server technology. This will take one person two years.
+
+\subsection{Additional ease-of-use features}
+
+The DODS project plans on developing an initial set of dataset conventions
+for oceanography within a year and then working to extend those conventions
+to increase the scope of datasets they address. Because DODS is moving
+towards providing ease-of-use features in addition to ease-of-access,
+continuing this effort is extremely important. Furthermore, while this part
+of the project may appear to be a technical one, it is more an adaptation of
+technology to long-held practices in the oceanographic community. 
+
+We propose to address the communal aspect of data by extending our
+server-based ease-of-use features (which includes, in part, a metadata
+convention) to hub sites. These sites will hold additional information about
+various datasets contributed by the dataset providers themselves as well as
+by other people; data users and DODS project data specialists. It is feasible
+with current DODS technology to build a functional prototype system which
+could hold several different types of information about the 80--100 datasets
+currently in our Matlab GUI client. Users, or other DODS client programs,
+could go to one hub site for COARDS-compliant metadata for those datasets,
+another hub site for FGDC metadata about those same datasets.
+
+We have found that in DODS (and other system implementors have echoed this
+observation) the toughest issue to resolve is the balance between the burden
+placed on data providers by requiring that they include information about
+their datasets and the usefulness of those datasets to the naive user.  The
+advantage of using hub sites over storing the metadata with the dataset is
+that users can contribute information about datasets, and very rich bodies of
+metadata can be built, without taxing the provider of those data. Similarly,
+hub sites are different from centralized catalog systems because it has been
+impossible for individual users to set up and run their own site\footnote{The
+  GCMD has made some moves towards this, but they currently don't store the
+  type of ease-of-use information we are interested in. In fact, we have a
+  partnership with the GCMD and it is certainly conceivable that they would
+  be (or run) one, of many, of these hub sites.} and it has been the practice
+that these centralized catalog systems do not allow third-party submissions.
+
+The development of metadata hub sites, and the continued development of our
+ease-of-use features, will require a person for three years. 
+
+\subsection{DAP Improvements}
+
+Improvements to the DODS DAP can affect the entire system in positive ways.
+We propose to expand or enhance the DAP in three ways. By adding support XML
+encodings the DAP will be more generally accessible. By developing a CORBA
+2.x toolkit both CORBA-based servers and clients can be participants in
+DODS. Finally, by enhancing our support for HTTP, our servers can transfer
+data more efficiently. While each of these changes won't directly change what
+users can or cannot do with DODS, they will give other developers more
+flexibility and power which, in turn, will improve the user software they
+build.
+
+Support for XML can be easily integrated into DODS because, although DODS'
+design predates XML\cite{w3c:xml} it can accommodate and use XML in a
+seamless way. DODS currently transfers information using a small collection
+of WWW documents. Three of these are MIME-encapsulated \Cpp\ objects or, more
+correctly, the persistent representation of those \Cpp\ objects. When DODS
+was originally designed, we chose a simple text format for that persistent
+representation. To accommodate XML we will add a persistent representation
+that uses XML instead of plain text. Thus, it will be fairly straightforward
+to extend our servers (by extending the DAP) so that XML representations of
+objects used by the DAP are available.
+
+We plan to build interfaces to CORBA for both the client and server ends of
+DODS. CORBA can be thought of as both a transport and encapsulation
+technology\cite{siegel:corba-prog}. Because the DAP can easily be used with
+transports other than HTTP and because both CORBA and DODS are object-based
+technologies, it is possible to build interfaces that go from systems
+which use one (either DODS or CORBA) to the other. We propose to build a
+CORBA object which can be used to access DODS datasets by encapsulating the
+three basic DODS objects in a single CORBA object. This would provide a way
+for CORBA-based clients to interact with DODS servers. We also propose to
+build a toolkit which will enable a CORBA object to act as a DODS server.
+
+The last of three planned improvements to the DAP will add full support for
+HTTP 1.1. This will improve the efficiency of our servers in two important
+ways. First, our servers will be able to reuse TCP/IP connections which are
+time consuming to set up. This will benefit DODS clients because they will
+not need any modification and will see significant performance improvements,
+especially for clients, like Ferret, that access servers through one of our
+client-libraries. These clients typically ask for several objects in a row
+and currently our software rebuilds the TCP/IP connection for each request.
+Full support of HTTP 1.1 will eliminate this waste resulting in shorter
+response times for users. 
+
+Full support of HTTP 1.1 will have another benefit; users who stop
+transmissions in mid-stream will be able to restart those transmissions for
+the place they stopped. This provides users with much flexibility because
+they often don't know ahead of time how long a given request will take or how
+much data will be returned. being able to stop a request and later on restart
+provides an important level of control for users over the data access process.
+
+To accomplish these goals will require one person for three years.
+
+\raggedright
+\bibliography{../../boiler/dods}
+
+\end{document}

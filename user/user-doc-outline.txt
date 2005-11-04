@@ -1,0 +1,182 @@
+
+$Id$
+
+This is an outline of the user documentation for DODS. jhrg 8/11/95
+
+Users
+	Types of users addressed in this document
+		access data with DODS
+		modify programs so that they can be used to access data
+		provide data for access
+
+	Other types of users (issues addressed in other docs)
+		developers of enhancements to the DODS core software
+		developers of new surrogate libraries
+
+	Background information
+		DODS is a client server system
+		DODS uses existing APIs to build the system
+			new implementations of old APIs make
+			data servers which read data stored using the APIs
+			e.g., netCDF, JGOFS (currently available)
+			HDF, FreeForm (planned)
+			
+		DODS uses the WWW data server (httpd)
+			A CGI and three filters for each API
+			Data does not have to be re-formatted
+			Files in any supported API can be used as is
+			Files in a homegrown API will be supported using
+			 FreeForm. 
+
+		Existing user programs can be configured as clients
+			they loose none of their old functionality
+			Exiting programs are simply re-linked
+
+		Getting DODS
+			DODS is freely available via ftp
+			Two parts: surrogate libraries to re-link clients
+			CGI/filters to provide data
+			Available as source code and in binary form
+			You also need libg++
+
+	Accessing data
+		User programs need to be configured to use DODS (see section 2)
+
+		Data are accessed using URLS
+			local data are still accessed using local file names
+			remote (and local-if you want) data use the URLs
+
+		A URL has three parts
+			protocol: how information is transmitted (always http
+			  for DODS) 
+			machine name: Internet name of computer where data is
+			filename: data file on the remote computer 
+			E.G.: http://dcz.gso.uri.edu/data/test.nc
+				protocol: http
+				machine name: dcz.gso.uri.edu
+				filename: /data/test.nc
+	      
+		Constraint expressions limit data
+			Algebraic expressions
+			Select part of a dataset or variable
+			Available in 3/96
+
+		Finding data
+			A WWW data locator is under development...
+			(Ted: email george@zeno.gso.uri.edu about this)
+
+	Configuring programs to use DODS
+		DODS is a client-server system
+		User programs must be configured to be DODS clients
+		User programs are made clients by relinking them with DODS
+		  implementations of existing API libraries.
+		Any program that uses one of the supported APIs can be
+		  re-linked
+		Supported APIs are netCDF and JGOFS (9/95)
+		Planned APIs are HDF and FreeForm
+
+		Re-linking: object modules and new libraries
+			easiest: modify Makefile
+			replace library with -ldap++ -l<api>-dods -ldap++
+			  -l<api>-dods -lnetio
+				need the sequence dap++ <api>-dods repeated
+				  twice to resolve circular dependencies
+			replace linking program with `g++'.
+			If you don't have g++, use gcc as linker and add
+			  -lg++ to list of libraries
+			If you can't replace linker with g++or gcc, then ...
+			(Ted: email reza@hadaf.gso.uri.edu about this)
+			E.G. from nc-dods Makefile (look at how ncdump is
+			  re-linked). 
+
+		Caveats
+			Some programs use more than one API - all libraries
+			  must be replaced by DODS surrogates else those calls
+			  not replaced will not recognize URLs (which may or
+			  may not be a problem).
+			Some programs access data using both API and UNIX
+			  file system calls - these file system calls (open,
+			  read, fopen, fread, ...) break when given a URL.
+			Programs that use undocumented features will probably
+			  break the surrogate libraries.
+			Re-linked programs can be very large - strip the
+			  execs. unless you need the symbols (but *don't* strip
+			  the libraries!! They need the external symbols!!).
+
+	Making data available via DODS
+
+		Data format does not need to change if using supported API
+		
+		Server arch:
+			httpd
+			CGI
+			filter programs
+		server operation
+			httpd starts CGI
+			CGI selects appropriate filter program
+			filter program returns information to client program
+		filter programs
+			Each supported API has a different set of filter
+			  programs 
+			DAS: returns information about data attributes
+			DDS: returns information about data types
+			DODS: returns data values
+			There can be other filter programs
+
+		Installing the server:
+			Must put CGI in one of httpd's CGI directories (see
+			  httpd documentation setup information).
+			filters normally go there too, but you can modify the
+			  CGI and put them anywhere
+			You can test the filter programs by looking at their
+			  output 			
+			The das and dds programs take a filename as their
+			  sole argument and out the DODS DAS and DDS
+			  respectively.
+			The dods filter takes a filename, variable name and
+			  constraint expression and dumps the (binary) data
+			  matching that variable and constraint expression to
+			  stdout. 
+			
+		Data location:
+			Three places to store data:
+			      htdocs directory tree (htdocs is set in
+			        httpd.conf). 
+			      Users home dir tree (if enabled for your
+			        server)
+			      Any dir that is soft-linked to a dir with htdocs
+			        (if your server turns on FollowSymLinks).
+			See the setup information for httpd for more on httpd
+			configuration. 
+
+		URLs that point to data
+			because DODS servers use a CGI, it must be named in
+			the URL
+
+			E.G.: suppose a data set is in a netCDF file called
+			data/bathymetric.nc (within htdocs) on
+			machine.net. Its URL is:
+			http://machine.net/cgi-bin/nc/data/bathymetric.nc
+
+			Explanation: 
+				http: the protocol.
+
+				machine.net: the computer.
+
+				/cgi-bin: the name of the machine.net's
+				httpd's CGI directory. There can be more than
+				one of these - you use the one that contains
+				the CGI script.
+
+				nc: this is the CGI for use with netCDF.
+
+				data/bathymetric.nc: the file. If htdocs is
+				/usr/local/spool/http, then this file's
+				actual location is
+				/usr/local/spool/http/data/bathymetric.nc. 
+				Note: httpd automatically prepends the htdocs
+				directory to whatever follows the name of the
+				CGI script.
+
+
+			

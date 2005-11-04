@@ -1,0 +1,87 @@
+$Id$
+
+Tasks for 1996:
+
+James:
+
+Management tasks:
+	Merge 1.x to 2.x in preparation for 2.x release (< 1 wk)
+	Coordinate the 2.x release (1 wk over the lifetime of version 2.x)
+	maintain the dreaded PERT chart (2 wks over the entire year)
+
+Design tasks:
+	Design error reporting mechanism (< 1 wk)
+	Design user feedback GUI for translation mechanism (3 wks)
+
+Documentation tasks:
+	Complete toolkit document (3 wks)
+	Update toolkit reference document (?) (2 wk)
+	Work with Tom on user documents (1 wk over the next 3 months)
+	Fiddle with existing documentation (2 wk over the next 3 months)
+
+Programming tasks:
+	Add generalized grid to DAP (part of translation ?) (1 wk)
+	Implement error reporting mechanism (1 wk)
+	Implement user feedback GUI for translation mechanism (??)
+	Merge STL into dods  for version 3.x (?) (??)
+	Complete constraint evaluator in DAP (2 wks)
+	Enhance `Test' class hierarchy (1 wk)
+	Reorganize DAP Constructor classes (1 wk)
+
+Reza:
+
+Design tasks:
+	Design translation software
+
+Documentation tasks:
+	Document translation software (figures & terse explanation)
+	Document data server and client library (terse)
+
+Programming tasks:
+	Implement caching in netcdf server
+	Build catalog server for netcdf
+	Build boolean server for netcdf
+	Implement translation software in DAP
+	Add translation software to netcdf server
+	Add constraint expression eval to netcdf server
+
+Dan:
+
+Design tasks:
+	* What error codes will be useful for realtion systems
+
+Documentation tasks:
+	Document data server and client library (structure charts)
+
+Programming tasks:
+	- Implement caching in the jgofs server
+	- Implement catalog server for jgofs
+	- Implement boolean server for jgofs
+	- Add translation to jgofs server
+	Add constraints to jgofs server
+	Add attributes to jgofs server
+	* Modify the NODC server to handle scale and offset
+	
+George:
+
+Management tasks:
+	GCMD 
+	JPL
+
+Documentation tasks:
+	Document the registration process (diagrams, terse explanation)
+	Document the locator (d, te)
+	Document the catalog server (d, te)
+	Document the boolean server (yes, that's right...)
+
+Design tasks:
+	Design the registration mechanism
+	Design the data locator
+	Design the catalog server
+	Design the boolean server
+
+Programming tasks:
+	Implement the registration mechanism
+	Implement the locator (?)
+
+

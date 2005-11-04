@@ -1,0 +1,22 @@
+\sffamily 
+\contentsline {chapter}{Preface}{iii}
+\contentsline {section}{\numberline {0.1}Who is this Guide for?}{iii}
+\contentsline {section}{\numberline {0.2}Organization of this Document}{iv}
+\contentsline {section}{\numberline {0.3}Conventions}{iv}
+\contentsline {chapter}{\numberline {1}DODS and Data Standards}{1}
+\contentsline {section}{\numberline {1.1}Levels of Compatibility}{2}
+\contentsline {subsection}{\numberline {1.1.1}Data Storage Format}{2}
+\contentsline {subsection}{\numberline {1.1.2}Data Attributes}{2}
+\contentsline {subsection}{\numberline {1.1.3}Data Organization}{3}
+\contentsline {subsection}{\numberline {1.1.4}Server Interface}{3}
+\contentsline {chapter}{\numberline {2}The Emerging DODS Data Standards}{5}
+\contentsline {section}{\numberline {2.1}Essential and Optional Attributes}{6}
+\contentsline {subsection}{\numberline {2.1.1}Global and Variable Attributes}{7}
+\contentsline {section}{\numberline {2.2}Utterly Essential Attributes (Class 0)}{8}
+\contentsline {subsection}{\numberline {2.2.1}Missing Data}{9}
+\contentsline {subsection}{\numberline {2.2.2}Array Data}{9}
+\contentsline {section}{\numberline {2.3}Less Essential, But Still Useful Attributes (Class 1)}{11}
+\contentsline {section}{\numberline {2.4}Very Useful Attributes, But Not Essential (Class 2)}{12}
+\contentsline {chapter}{\numberline {3}Adding Data Attributes}{13}
+\contentsline {section}{\numberline {3.1}A Worked Example}{14}
+\contentsline {chapter}{\numberline {A}DODS Names}{19}

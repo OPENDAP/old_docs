@@ -1,0 +1,147 @@
+-*-Mode: Outline-*-
+
+$Id$
+
+* SE Tools at GSO
+
+This is a listing of software engineering tools available at GSO. It is not a
+comprehensive list of all tools here; it is a short list of important
+tools. Each tool is listed in roughly the order of the software life-cycle
+phase where it would be used. Each tool appears as an outline subject
+heading. Following the name of a tool is a one line description of that
+tool as well as a short paragraph providing a little more detail. In some
+cases there are references to longer descriptions of a particular tool's use
+that is in another file or a manual.
+
+** Make - Maintain groups of programs
+ 
+We have both `standard' make programs distributed with our workstation OSs
+and GNU make. If you rely on a workstation's `native' make utility take care
+not to write makefiles that operate only on one platform. Using GNU make can
+sidestep this problem since it behaves the same on any workstation (but of
+course all workstations must have GNU make). In addition, GNU make often has
+features that vendor make utilities lack which can be useful for some complex
+tasks.
+
+Good references for make are hard to find; The GNU make manual is one of the
+best and so is the Sun hardcopy manual.
+
+NB: a make file has many `targets'. Often only a small set of the targets
+useful for development are needed by people who only want to build and
+install the software. Thus only that set of targets needs to be compatible
+with any given make implementation for the makefile to be used on that
+platform. 
+
+** RCS - Revision control
+
+RCS is a revision control system. It is used to control development and
+maintenance of software systems (sets of source files that are combined in
+some way). It is primarily intended to control just the revision of
+individual source files that make up a system rather than managing different
+versions of the complete system. However, with some extra effort it can be
+used for both tasks. 
+
+The online manual for RCS (rcs, co, ci, rcsmerge, ...) is the best source of
+information on command options and specific use of rcs in revision
+management. There is a paper by RCS's author (Tichy - I have it in a
+black binder - jhrg) which describes the motivations behind RCS along with
+some example uses. There is an email message in the DODS/doc directory which
+describes how RCS can be used to control versions as well as revisions
+(RCS-version.doc). 
+
+** CVS - Version control
+
+CVS manages different versions of a system (or collection of systems) that are
+built from the same set of source files. It uses RCS to maintain different
+revisions of those source files but adds symbolic checkin/checkout functions.
+
+** xfig - X11 drawing program
+
+This program is a drawing program for X11. It is not a graph drawing program,
+but it does a good job of creating figures for [La]TeX documents. It is
+similar to idraw, but better.
+
+** xf - User Interface prototyping tool
+
+xf is an interactive GUI prototyping tool. It has been used to produce useful
+programs as well as simply prototyping their UIs. It outputs tcl code, not
+C.
+
+** dirt - User interface prototyping tool
+
+Dirt is similar to xf in concept, however, it produces C code as output.
+Dirt uses the Wcl (Widget Creation Library) library. It is much harder to
+work with than xf. If the goal of UI prototyping is to produce something
+flexible to work with and later recode by hand, xf is a better choice. If you
+want to use the interface as produced, then Dirt is most likely to be the
+best choice.
+
+There is a man page and a printed manual.
+
+** TAGS files - Indexing functions within source files
+
+TAGS files allow emacs to find any function definition within a set of source
+files. Created with etags and make. Very useful and simple.
+
+Documentation: Emacs online help and online manpage (etags).
+
+** dbmalloc - Debugging library for dynamic memory and string functions
+
+Very useful `malloc heap' debugger.
+
+Documentation: Online man page.
+
+** GCT - Test case coverage tool
+
+Automated testing tool from cs.uiuc.edu.
+
+Online man page and manual (not yet printed though - jhrg 9/27/93)
+
+** index-db - Flatfile database tool
+
+Index-dg creates and updates text-file databases. It is useful for defect
+tracking, maintenance, and todo lists. However, if a project already has a DB
+fr requirements, that could be extended to defect tracking.
+
+** kdsi - C program line counter
+
+Counts lines of code (with and without comments, blank lines, ...)
+
+Online man page
+
+** halstead, mccabe - C Code complexity analysis tools
+
+These tools are of limited benefit when you do not understand what it is that
+they measure (I don't -- not really anyway). They are useful for maintainers
+and for comparing complexity estimates made during design with the actual
+system in the hopes that future estimates can be made more accurate.
+
+Online man page, research paper reprints (on file - jhrg)
+
+* Revision log
+
+$Log: SE-tools.txt,v $
+Revision 1.1  1998/02/11 19:03:22  tom
+moved to archive branch
+
+Revision 1.3  1997/03/25 22:59:35  jimg
+*** empty log message ***
+
+# Revision 1.2  1994/04/27  20:08:48  jimg
+# Fixed some mistakes.
+# Added information about Mosaic as an interface.
+# Added links to postscript files for the online docs.
+#
+# Revision 1.1  1993/12/17  18:44:06  jimg
+# Software Engineering and management docs for the DODS
+#
+Revision 1.2  1993/10/07  19:16:20  jimg
+Fixed emacs outline mode regex; I was using `+' while the default value emacs
+provides is `*'. I changed each of teh DODS/doc outline-mode files so that
+`*' was used.
+
+Revision 1.1.1.1  1993/09/16  15:11:24  jimg
+Initial copy of documents for DODS development.
+
+Revision 1.1  1993/09/15  20:24:39  jimg
+Initial revision

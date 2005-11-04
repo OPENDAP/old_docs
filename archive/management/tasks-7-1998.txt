@@ -1,0 +1,89 @@
+
+	$Id$
+
+Tasks from the June 1998 workshop on DODS
+
+The main tasks listed here are, in reality, very broad categories. They need
+to be refined to define specific things which can be finished quickly. The
+ongoing/minor tasks are those things that we have started and must continue
+to support the project or are those tasks which we should do before making
+decisions about the future direction of the project.
+
+New tasks:
+
+1. Catalog Services
+2. Translation
+
+Ongoing or minor tasks:
+
+a. GUIs
+b. Core
+c. Servers
+d. NetCDF client-library
+e. Java testing
+f. CORBA testing
+
+Description of the tasks
+
+1. Catalog Services
+
+This task involves defining and implementing the software that will provide
+access to information about datasets in a uniform manner. It almost certainly
+will entail choosing a way to represent that information since no one has yet
+said that standard X is clearly the best choice for us to use. 
+
+We will start work on this by determining what information is required by the
+current GUIs and building a service that provides that information. 
+
+Dan and I will work on this.
+
+2. Translation
+
+This task involves translation of data types, particularly Sequence to/from
+Array. Reza has this one pretty much nailed down but server building is
+competing for his time. In fact, if you realistically look at the time
+required to finish/build servers for FreeForm, the French people, GRIB and
+BUFR there is no time for him to work on translation between no and the next
+six months. That is, I think that those four things are about six months of
+work. It may turn out that those do no require all of a six month block of
+time, but it would be foolish to plan on.
+
+I am very concerned about this task because it relates directly to the
+veracity of our claim that DODS renders datasets format neutral. I think we
+should talk about getting someone else to write these servers. 
+
+a. GUIs
+
+Included in this set of tasks are the Matlab, IDL, Java and Web interfaces. I
+think we have been successful in getting Peter Fox to champion the IDL and
+Web interfaces. Elaine's group will also do an IDL GUI. I'm not sure who is
+going to handle the Java GUI. 
+
+The Matlab GUI represents a problem because I'm not sure how far from done it
+is. I should know fairly soon since Deirdre gets back on the 18th of July. I
+may start to do some of the work I have allocated to her before she gets
+back. That will depend on my load.
+
+b. Core
+
+Included here are general improvements to the core software base of DODS.
+Better caching, better support for ancillary documents, performance testing
+and various fixes (String --> string, Jake's read() fixes). For the most part
+I should do these.
+
+c. Servers
+
+These are FreeForm, The French people, GRIB and BUFR. Figure six months for
+these. As I said above, I wonder if someone besides Reza might do all but the
+FreeForm one? How about Brian Wolf?
+
+d. NetCDF client-library
+
+This category of tasks encompasses all this is needed to keep this code
+going. Reza is the logical choice.
+
+e. Java testing
+f. CORBA testing
+
+These two testing tasks are for evaluating newer technologies so that we know
+what's up. I'll do these. 

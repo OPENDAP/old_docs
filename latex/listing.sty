@@ -1,0 +1,88 @@
+%Re: Including code within a verbatim environment
+
+%Jeffrey C. Gealow (jgealow@mtl.mit.edu)
+%Fri, 22 Apr 1994 11:46:41 -0400
+
+%   * Messages sorted by: [ date ][ thread ][ subject ][ author ]
+%   * Next message: Jeremy Henty: "Re: Including code within a verbatim
+%     environment"
+%   * Previous message: Buff Miner: "Including code within a verbatim
+%     environment"
+%   * Maybe in reply to: Buff Miner: "Including code within a verbatim
+%     environment"
+%   * Next in thread: Jeremy Henty: "Re: Including code within a verbatim
+%     environment"
+
+%> Date: Wed, 23 Mar 1994 16:01:12 -0600
+%> From: miner@hagar.ph.utexas.edu (Buff Miner)
+%> Subject: Including code within a verbatim environment
+
+%> Is there any way to read a file within a verbatim environment? One would
+%> like to place a code fragment or a subroutine in a document something like
+%> the following
+
+%> \begin{verbatim}
+%> \input code.c
+%> \end{verbatim}
+
+%> Obviously, this won't work because "\input code.c" will be typeset as it
+%> is. I don't want to put the \begin{verbatim}-\end{verbatim} in the actual
+%> file code.c because it is a working piece of code.
+
+%> Any suggestions?
+
+%A few years ago, I created a style file, listing.sty, to provide such a =
+
+%facility.
+
+%Typical usage:
+
+%\documentstyle[listing]{report}
+
+%\begin{document}
+
+%\listing{code.c} % plain listing
+%\nlisting{more-code.c} % listing with line numbers
+
+%\end{document}
+
+%Here is the style file (listing.sty):
+
+% listing.sty 29-Nov-90 JCG
+% see The TeXbook, pp. 380-381, 391
+
+\def\uncatcodespecials{\def\do##1{\catcode`##1=3D12 }\dospecials}
+
+% numbered listing
+\def\nlisting#1{\par\begingroup\nsetupverbatim\input#1 \endgroup}
+\newcount\lineno % the number of file lines listed
+\def\nsetupverbatim{\tt \lineno=3D0
+\def\par{\leavevmode\egroup\box0\endgraf}
+\obeylines \uncatcodespecials \obeyspaces
+% \catcode`\`=3D\active =
+
+\catcode`\^^I=3D\active
+\everypar{\advance\lineno by1
+\llap{\sevrm\the\lineno\ \ }\startbox}}
+{\obeyspaces\global\let =3D\ } % let active space =3D control space
+
+% unnumbered listing
+\def\listing#1{\par\begingroup\setupverbatim\input#1 \endgroup}
+\def\setupverbatim{\tt \parindent=3D0pt
+\def\par{\leavevmode\egroup\box0\endgraf}
+\obeylines \uncatcodespecials \obeyspaces
+% \catcode`\`=3D\active =
+
+\catcode`\^^I=3D\active
+\everypar{\startbox}}
+{\obeyspaces\global\let =3D\ } % let active space =3D control space
+
+\newdimen\w \setbox0=3D\hbox{\tt\space} \w=3D8\wd0 % tab amount
+\def\startbox{\setbox0=3D\hbox\bgroup}
+{\catcode`\^^I=3D\active
+\gdef^^I{\leavevmode\egroup
+\dimen0=3D\wd0 % the width so far, or since previous tab
+\divide\dimen0 by\w
+\multiply\dimen0 by\w % compute previous multiple of \w
+\advance\dimen0 by\w % advance to next multiple of \w
+\wd0=3D\dimen0 \box0 \startbox}}

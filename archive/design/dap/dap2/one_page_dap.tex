@@ -1,0 +1,79 @@
+%
+% This is a one page description of DAP2. It's based on material extracted
+% from the DAP2 RFC (NASA/ESE RFC 004). jhrg 11/03/04
+
+\documentclass[justify]{dods-paper}
+
+\rcsInfo $Id$
+
+\input{../dap_boiler}
+
+\title{The Data Access Protocol --- DAP 2.0}
+\author{James Gallagher, Nathan Potter, Tom Sgouros, Steve Hankin, Glenn
+  Flierl}
+\date{\rcsInfoDate \\ Revision: \rcsInfoRevision}
+
+\begin{document}
+
+\begin{center}
+\textbf{What is the Data Access Protocol?}
+\end{center}
+
+The Data Acces Protocol (DAP) is a protocol for access to data organized as
+name-datatype-value tuples. It is particularly suited to accesses by a client
+computer to data stored on remote (server) computers which are networked to
+the client computer. The protocol has been used by the Distributed
+Oceanpgraphic Data System (DODS) since 1995 and subsequently by many other
+projects and groups.
+
+While the name-datatype-value model is a nearly universal \emph{conceptual}
+organization of data, the actual organization of data takes nearly as many
+forms as there are individual collections because there are many different
+file formats, APIs and file/directory organizations used to house data. The
+DAP was designed to hide the implementation of different collections of data
+behind a simple language-like interface based on the name-datatype-value
+conceptual model.
+
+The DAP and its associated software components (data servers and client
+libraries) form the foundation of the National Virtual Ocean Data System
+(NVODS). NVODS was developed as a system that facilitates access to
+oceanographic data and data products via the Internet, freeing clients
+(users) from considerations of: where the data are stored; the format or data
+management structure under which they are stored; and (to a significant
+degree) the size of the database. NVODS (formerly known as the 'Virtual Ocean
+Data Hub' -- VODHub ) was created under a 1999 Broad Agency Announcement
+issued by the National Ocean Partnership Program. The concept of the
+VODHub is to be "a key element of the full community-based 'system' to
+broaden and improve access to ocean data..." The resulting NVODS is also
+planned for use in the Integrated Ocean Observing System.
+
+Although the DAP was originally developed by and for the oceanographic
+community it has been adopted by a number of meteorological and climate
+groups as well and today is extensively used in all three communities -
+climate, oceanography and meteorology. 
+
+It is important to stress the discipline neutrality of the DAP and the
+relationship between this and adoption of the DAP in disciplines other than
+the Earth sciences. First, because the DAP is agnostic as relates to
+discipline, it can be used across the very broad range of data types
+encountered in oceanography - biological, chemical, physical and geological.
+But of particular interest here is that there is nothing that constrains the
+use of the DAP to the Earth sciences. For example, groups in the solar
+physics community have adopted the DAP for their use and proposals are under
+consideration in other areas of space physics. By standardizing the DAP for
+the Earth sciences we hope that this will provide an impetus for other
+disciplines to adopt it as well.
+
+Acting on a request from the NASA/ESE Standards Process Group, the DAP
+version 2 was described in RFC document and submitted to the SPG. Its current
+(\rcsInfoDate) status is 'Draft Community Standard'.
+
+\end{document}
+
+% $Log: one_page_dap.tex,v $
+% Revision 1.2  2004/11/03 22:49:52  jimg
+% Added date in last paragraph.
+%
+% Revision 1.1  2004/11/03 22:44:58  jimg
+% Created using text from the introduction of the DAP2 RFC.
+%

@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Client Library Functions</TITLE>
+<META NAME="description" CONTENT="Client Library Functions">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="next" HREF="node19.html">
+<LINK REL="previous" HREF="node13.html">
+<LINK REL="up" HREF="node13.html">
+<LINK REL="next" HREF="node15.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html284"
+  HREF="node15.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html280"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html274"
+  HREF="node13.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html282"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html285"
+  HREF="node15.html">Rewriting the Open and</A>
+<B> Up:</B> <A NAME="tex2html281"
+  HREF="node13.html">User Programs and DODS</A>
+<B> Previous:</B> <A NAME="tex2html275"
+  HREF="node13.html">User Programs and DODS</A>
+ &nbsp; <B>  <A NAME="tex2html283"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00041000000000000000">
+Client Library Functions</A>
+</H2>
+
+<P>
+The central premise of the DODS <A NAME="tex2html59"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-arch/data-delivery-arch.html">data delivery architecture</A> is that it is possible to categorize
+many APIs used to store/access scientific data as following closely with the
+UNIX file system paradigm of open, read and close<A NAME="tex2html58"
+
+HREF="footnode.html#foot540"><SUP>9</SUP></A>. Furthermore, it is assumed that any state information used by the
+API can be stored locally in the client process and does not need to be
+retained by the data server.
+
+<P>
+In order to build the client library for a particular API, it is necessary to
+re-implement that API so that it uses data that can be acquired from the DODS
+<A NAME="tex2html60"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A> rather than the files or other data store it was originally design to
+use. The client library must also maintain the illusion of a connection
+(state) for each open data object (typically a file) even though no such
+connection actually exists (because the DAP is a stateless protocol). 
+
+<P>
+To accomplish these tasks with a minimum of difficulty, it is useful to divide
+the API to be re-implemented in five types of functions:
+
+<UL>
+<LI>Open or connect
+</LI>
+<LI>Variable information read
+</LI>
+<LI>Data read
+</LI>
+<LI>Write 
+</LI>
+<LI>Close or disconnect
+</LI>
+</UL>
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html286"
+  HREF="node15.html">Rewriting the Open and Close Functions</A>
+<LI><A NAME="tex2html287"
+  HREF="node16.html">Getting Information about Variables</A>
+<LI><A NAME="tex2html288"
+  HREF="node17.html">Reading the Values of Variables from a Data Set</A>
+<LI><A NAME="tex2html289"
+  HREF="node18.html">Functions that Write to Data Sets</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html284"
+  HREF="node15.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html280"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html274"
+  HREF="node13.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html282"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html285"
+  HREF="node15.html">Rewriting the Open and</A>
+<B> Up:</B> <A NAME="tex2html281"
+  HREF="node13.html">User Programs and DODS</A>
+<B> Previous:</B> <A NAME="tex2html275"
+  HREF="node13.html">User Programs and DODS</A>
+ &nbsp; <B>  <A NAME="tex2html283"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

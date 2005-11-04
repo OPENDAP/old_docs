@@ -1,0 +1,109 @@
+% -*- TeX -*-
+%
+% This is the DODS' section of the PES proposal NSDL proposal. Here's Peter's
+% summary: 
+%
+% For this NSDL project, PES will extend its collaboration with the
+% developers of DODS to create user-side software for the Earth Data 
+% Real-Time Reference Toolkit. PES will create a user-side GUI that 
+% will:
+% 
+% 1) access data for original as well as "virtual" DODS data sets 
+%    (the addition of virtual DODS data sets is the focus of the 
+%    DODS portion of this project and is discussed in the next
+%    paragraph; a DODS data set is a data set served with a DODS 
+%    server);
+% 
+% 2) develop data-reference visualization tools for MACos and Windows
+%    utilizing the EDMI; and,
+% 
+% 3) provide educational (curricular and instructional) deliverables 
+%    that show teachers how use the data within their own courses. 
+%
+% 4/4/2000 jhrg
+
+% $Id$
+
+\subsection{Virtual Datasets}
+
+Clients which access the virtual dataset will make queries of a single
+composite entity without any need to explicitly access individual components
+of that dataset. Virtual datasets will provide a way for data providers
+(scientists, national labs, etc.) to organize and present data holdings
+without changing the storage architecture of those data.
+
+Virtual datasets will be created by our aggregation server. This new server
+will combine existing datasets, already served by DODS, using a configuration
+file. Each dataset to be combined will have an entry for the DODS URL of that
+dataset. There will be other information in the file, too, including the
+spatial relationships between each of the URLs/datasets. By combining the
+URLs with the extra information, the aggregation server will be able to
+create, and respond to queries on, the virtual dataset.
+
+While the problem of aggregation is very hard in general, DODS' features make
+it reasonable for a computer program to handle many less general cases of the
+problem. These features include using a general network reference (i.e., URL)
+to describe where data are located, a clean and clear separation of datatype
+information from other attributes of data and a simple constraint-based
+access mechanism. Using a URL to reference data makes it easy to expand a
+initial design based on local files to include datasets distributed anywhere
+on the Internet.  The clean separation of datatype from other attributes
+makes it simpler to create a virtual dataset based on the data component's
+datatype signatures---something that computer programs can easily process.
+Finally, the constraint-based access mechanism clearly defines the interface
+with which the server must interact, both in terms of receiving queries and
+in making requests of the data components.
+
+There are two easily identified types of virtual datasets we are considering
+in this proposal: Aggregation of similarly typed variables along one or more
+axis or dimensions and aggregation of two or more variables of different
+types that share an equal set of axis or dimensions. An example of the first
+category is a collection of image files, all of the same area but varying in
+the time at which the image was captured. The aggregation server would take
+such a collection of two dimensional datasets and combine them to create a
+single virtual three dimensional dataset. An example of the second type of
+virtual dataset is the combination of two or more measured values, currently
+held in separate datasets, where the measurements were performed in the same
+way (e.g., over the same space and time). 
+
+\subsection{Specific Deliverables}
+
+We propose to implement several distinct aggregation servers, each of which
+will be able to serve a broader class of virtual datasets. 
+
+\begin{enumerate}
+\item We will build an aggregation server using our current netCDF server and
+   client library. The configuration file will itself be a netCDF file and
+   will be created using netCDF utilities. The server will be limited to a
+   subset of the first category of aggregation servers; it will be able to
+   aggregate along one dimension only. Furthermore, this server will be
+   limited to array or grid data components. While this server may sound
+   limited, there are already many collections of data which can make
+   immediate use of this type of server as well as client programs, such as
+   Matlab, IDL  and Ferret.
+   
+ \item We will extend the server to handle the second category of aggregation
+   problems. This will be done in concert with technical enhancements of the
+   server so that it uses XML to describe the organization of the components
+   and so that the bulk of the software uses our DAP C++ class library
+   directly.
+   
+ \item We will further extend the server so that it can handle the general
+   case of the first category of aggregation. At this time we will also
+   expand support for the aggregation server to include our Java software
+   base.
+\end{enumerate}
+
+\subsection{Time Required}
+
+In each case the time required is the time to perform analysis, design,
+implementation, documentation, testing and deployment. 
+
+\begin{enumerate}
+\item 6 months FTE
+\item 9 months FTE
+\item 9 months FTE
+\end{enumerate}
+
+
+

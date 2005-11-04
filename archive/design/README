@@ -1,0 +1,21 @@
+$Id$
+
+What's here. Specifically, which things here are also available on the web
+pages. (These should probably be moved out of the archive section since it's
+really more of a scatchpad than an archive and these are not likely ot change
+anytime soon.)
+
+dods-vfs.tex: A TeX (not LaTeX) file from Glenn (c.1994). The VFS means
+virtual file system. It's just about the oldest document we have Re system
+design. 
+
+These four documents are the original DAP design papers:
+    api, api.tex: Original DAP document; way out of date.
+    data-delivery-arch
+    data-delivery-design
+    urls
+They are really out-of-date! Build the html using latex2html
+
+dap/dap-rfc.tex, dap/dap-rfc-html/: The DAP 2 specification. Build html with
+hyperlatex. 
+

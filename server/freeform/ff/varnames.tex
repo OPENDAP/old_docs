@@ -1,0 +1,272 @@
+%CHAPTER 11       
+%
+% $Id$
+%
+
+ 
+\chapter{Conversion Variable Names}
+\label{ff,varname}
+
+\indc{conversion variables!names}
+FreeForm ND can automatically perform conversions between various
+representations of space and time values. When FreeForm ND encounters
+standard conversion variable names in a format description file, it
+performs the appropriate conversion.
+
+This appendix lists the conversion variable names that FreeForm ND
+recognizes. For conversions that occur in one direction only, the
+conversion variable names are listed in columns titled Input and
+Output. Conversion names that you can use for either input or output
+variables are in untitled columns.
+
+\section{General}
+
+By adding the appropriate suffix to a variable name, you can perform
+several general conversions. To convert between meters
+and feet, add \lit{\_m} and \lit{\_ft} to the relevant variable
+names.  That is, you should add \lit{\_m} to the input variable name
+and \lit{\_ft} to the output name or vice versa.
+
+\indc{m@\lit{\_m}}\indc{meters!conversion variable}
+\indc{ft@\lit{\_ft}}\indc{feet!conversion variable}
+\indc{abs@\lit{\_abd}}\indc{absolute value!conversion variable}
+\indc{sign@\lit{\_sign}}\indc{sign!conversion variable}
+\indc{enote@\lit{\_enote}}\indc{exponential notation!reading}
+\indc{scientific notation!reading}
+For absolute and signed values, add \lit{\_abs} and \lit{\_sign}. The
+sign value is a single \emph{character}, either `+' or `-'.  For
+exponential notation, you can use \lit{\_enote}.  The range of the
+exponent is E+/-999. Be sure the output field is large enough for the
+converted number.
+
+%\begin{table}[h]
+%\caption{General Variable Name Conversions}
+\begin{center}
+\begin{tabular}{ll}
+$\begin{array}{l} 
+\var{name}\lit{\_m}
+\end{array}$
+& \var{name}\lit{\_ft} \\
+$\left. \begin{array}{l} 
+\var{name}\lit{\_abs} \\
+\var{name}\lit{\_sign} \\
+\end{array}
+\right\} $
+& \var{name} \\
+$\left. \begin{array}{l}
+\var{name}\lit{\_enote}
+\end{array}
+\right\} $
+& \var{name}\\ 
+\end{tabular}
+\end{center}
+%\end{table}
+
+Where \var{name} = any character string without blanks.  Note,
+however, that using \lit{\_ft} and \lit{\_m} with special names, such
+as \lit{latitude} or \lit{year}, may create unintended consequences or
+may not work.
+
+\section{Latitude/Longitude}
+
+FreeForm ND supports conversions between a number of representations
+of latitude and longitude values with the use of the correct
+conversion variable names.
+
+\subsection{General Lat/Lon}
+
+By using the appropriate suffixes, you can perform conversions between
+a number of different representations of latitudes and longitudes.
+
+\indc{deg@\lit{\_deg}}
+\indc{min@\lit{\_min}}
+\indc{sec@\lit{\_sec}}
+\indc{abs@\lit{\_abs}}
+\indc{ns@\lit{\_ns}}
+\indc{ew@\lit{\_ew}}
+\ffnd\ supports a variety of expressions of longitude and latitude.
+You can use these suffixes to convert back and forth between any of
+them.  For example, you can convert from decimal degrees, with a sign
+(\var{name}) to degrees, minutes and seconds (\var{name}\lit{\_deg},
+\var{name}\lit{\_min} and \var{name}\lit{\_sec}).  The
+conversion would happen automatically when one variable appears in the
+input format description, and the other three in the output format
+description.  The conversions also work in the opposite direction, and
+you can input degrees, minutes, and seconds, and write decimal degrees
+to output.
+
+In the following, \var{name} can be \lit{latitude} or \lit{longitude}.
+
+\begin{tabular}{lp{3.0in}} 
+\begin{tabular}{l}
+\var{name}
+\end{tabular}
+& The location in decimal degrees, with a sign
+  indicating the quadrant (positive is North and East).
+\\ 
+\begin{tabular}[b]{l}
+  \var{name}\lit{\_deg}\\
+  \var{name}\lit{\_min}\\
+  \var{name}\lit{\_sec}\\
+\end{tabular}
+& These are integers representing degrees,
+  minutes, and seconds.  The sign of \var{name}\lit{\_deg} indicates
+  the quadrant, but if it is between zero and one, the sign of the
+  minutes or seconds variable indicates the quadrant.
+\\ 
+\begin{tabular}[b]{l} 
+  \var{name}\lit{\_abs} \\
+  \lit{latitude\_ns}\\
+  \lit{longitude\_ew}\\ 
+\end{tabular}
+& This representation is in decimal degrees, but
+  without a sign.  The quadrant is indicated by a single character
+  (\lit{N}, \lit{S}, \lit{E}, or \lit{W}) contained in
+  \lit{longitude\_ew} or \lit{latitude\_ns}
+\\ 
+\begin{tabular}[b]{l} 
+  \var{name}\lit{\_deg\_abs}\\
+  \var{name}\lit{\_min\_abs}\\
+  \var{name}\lit{\_sec\_abs}
+\end{tabular}
+& These are integers representing degrees,
+  minutes, and seconds.  The quadrant can be derived from
+  \lit{longitude\_ew} or \lit{latitude\_ns}
+\\ 
+\end{tabular}
+
+\subsubsection{Geographic Quadrants}
+
+\indc{geogquadcode@\lit{geog\_quad\_code}}
+You can use the following variables to convert from several different
+representations of latitude and longitude to a geographic quadrant
+defined by DMA (Defense Mapping Agency) for their gravity data. \ffnd\  
+stores this code as a single character (\lit{char}).
+
+DMA defines four geographic quad codes as follows: 
+
+\begin{tabular}{|c|l|} \hline
+\lit{1} & Northeast \\ \hline
+\lit{2} & Northwest \\ \hline
+\lit{3} & Southeast \\ \hline
+\lit{4} & Southwest \\ \hline
+\end{tabular}
+
+You can produce this code with any of the following pairs of input
+data:
+
+\begin{itemize}
+
+\item \lit{latitude} and \lit{longitude}
+
+\item \lit{latitude\_ns} and \lit{longitude\_ew}
+
+\item \lit{latitude\_sign} and \lit{longitude\_sign}
+\end{itemize}
+
+Note that this conversion is not reversible.  That is, if you have 
+\lit{geog\_quad\_code} on input, you cannot produce
+\lit{latitude\_sign} and \lit{longitude\_sign}. 
+
+\subsubsection{Longitude East}
+
+\indc{longitudeeast@\lit{longitude\_east}}
+\indc{east@\lit{\_east}}
+\ffnd\ defines (\lit{longitude\_east}) as longitude where the values
+range from 0 to 360, instead of -180 to 180 for \lit{longitude}.
+\ffnd\ can freely convert one form to the other, including the other 
+
+Either form can stand as input or output, and you can convert freely
+with the other longitude formats, such as the degrees, minutes,
+seconds, and so on.
+
+\subsubsection{Quadrant, Sign}
+
+The \var{name}\lit{\_sign} form for longitude and latitude converts
+readily back and forth into the corresponding \lit{\_ns} and
+\lit{\_ew} variables.  Note that the sign variable is a single
+character (`+' or `-'), as are the quadrant variables (`N', `S', `E',
+and `W').
+
+\section{Earthquake Magnitude}
+
+FreeForm ND includes a conversion function that lets you extract one
+of the three magnitudes out of the variable \lit{longmag}, or create
+\lit{longmag} from one, two, or more of the individual magnitudes.
+
+\indc{longmag@\lit{longmag}}
+\indc{ms1@\lit{ms1}}\indc{ms2@\lit{ms2}}\indc{mb@\lit{mb}}
+\indc{earthquake magnitude}\indc{magnitude!earthquake}
+The variable \lit{longmag} is a long which contains three magnitudes: 
+
+\begin{description}
+\item[\lit{ms2}] has a precision of 2 and is multiplied by 10,000,000
+\item[\lit{ms1}] has a precision of 2 and is multiplied by 10,000
+\item[\lit{mb}]  has a precision of 1 and is multiplied by 10
+\end{description}
+
+The variable names are as follows:
+
+\begin{center}
+\begin{tabular}{ll}
+\lit{longmag} &
+$\left\{ \begin{array}{l} 
+\lit{magnitude\_mb} \\
+\lit{magnitude\_ms1} \\
+\lit{magnitude\_ms2} \\
+\lit{magnitude\_ml} \\
+\lit{magnitude\_local} \\
+\end{array}
+\right. $ \\
+\end{tabular}
+\end{center}
+
+\section{Date and Time}
+
+\indc{date!conversion}\indc{time!conversion}
+\indc{yeardecimal@\lit{year\_decimal}}\indc{decimal years!conversion}
+\indc{serial day}\indc{day!serial}\indc{date!serial day}
+\indc{ipedate@\lit{ipe\_date}}\indc{minutes!AD}\indc{date!in minutes}
+\indc{Institute of Physics of the Earth!date format}
+FreeForm ND includes conversion functions that let you convert between
+various representations of date and time including decimal year;
+serial date with January 1, 1980 as 0; any combination of year, month,
+day, hour, minute, second; and IPE (Institute of Physics of the Earth)
+date in minutes AD.
+
+The following three date representations may be freely converted among
+each other:
+
+\begin{tabular}{lll}
+\begin{tabular}{l}
+\lit{year} \\
+\lit{month} \\
+\lit{day} \\
+\lit{hour} \\
+\lit{minute} \\
+\lit{second} \\ 
+\end{tabular}
+&
+\begin{tabular}{l}
+\lit{year\_decimal} \\
+\end{tabular}
+&
+\begin{tabular}{l}
+\lit{serial\_day\_1980} \\
+\end{tabular}
+\end{tabular}
+
+In addition, \lit{serial\_day\_1980} and \lit{year}, \lit{month},
+\lit{day}, \lit{hour}, \lit{minute}, \lit{second} may be converted
+\emph{into} \lit{ipe\_date} (though not vice versa).
+
+You can also convert back and forth between different string
+representations of time and date: \lit{date\_dd/mm/yy} and 
+\lit{date\_ddmmyy}, and \lit{time\_hhmmss} and 
+\lit{time\_hh:mm:ss}.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

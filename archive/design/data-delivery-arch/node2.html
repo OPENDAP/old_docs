@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Introduction</TITLE>
+<META NAME="description" CONTENT="Introduction">
+<META NAME="keywords" CONTENT="data-delivery-arch">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-arch.css">
+
+<LINK REL="next" HREF="node3.html">
+<LINK REL="previous" HREF="node1.html">
+<LINK REL="up" HREF="data-delivery-arch.html">
+<LINK REL="next" HREF="node3.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html85"
+  HREF="node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html81"
+  HREF="data-delivery-arch.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html75"
+  HREF="node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html83"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html86"
+  HREF="node3.html">Important Terms and Technologies</A>
+<B> Up:</B> <A NAME="tex2html82"
+  HREF="data-delivery-arch.html">DODS Data Delivery Architecture</A>
+<B> Previous:</B> <A NAME="tex2html76"
+  HREF="node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html84"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00020000000000000000">
+Introduction</A>
+</H1>
+
+<P>
+This document is an introduction to the DODS data delivery system. It
+presents an architectural view of the system and provides rationale for some
+of the important decisions that lead up to this design. This document is not
+a detailed description of the design; that can be found in <A NAME="tex2html7"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-design/data-delivery-design.html">DODS--Data Delivery Design</A> and related
+documents.
+
+<P>
+The data delivery system uses the client-server paradigm to provide access to
+remote data sets. On each computer which hosts a data set, a data server must
+be installed. Client programs which communicate with these servers can be
+built either from scratch or from existing code using reimplementations of
+commonly used data access Application Programmer Interfaces (API)<A NAME="tex2html4"
+  HREF="footnode.html#foot434"><SUP>1</SUP></A>. The API libraries
+are reimplemented so that existing code can be re-linked <EM>without</EM>
+modification. Thus the data delivery system provides a pathway for existing
+code to migrate from local access to remote access without requiring
+modification of that code.
+
+<P>
+DODS addresses access to on-line data only. It would be nice to provide
+access to data that are not already on-line, but the problems associated with
+that are outside the scope of DODS (e.g., some data collections are not
+suited to on-line access because of their size or content). Thus, the data
+delivery architecture addresses the problem of network access to data sets
+that are already on-line.
+
+<P>
+Before describing the data delivery system, some important computer
+networking and data management terms and concepts are discussed. Each of
+these is first defined in general terms and then particular aspects of those
+ideas that are important to DODS are discussed. These include networking
+technologies (remote procedure calls and the hypertext transfer protocol) and
+data access tools and concepts (application programmer interface, data model
+and data format).
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html85"
+  HREF="node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html81"
+  HREF="data-delivery-arch.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html75"
+  HREF="node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html83"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html86"
+  HREF="node3.html">Important Terms and Technologies</A>
+<B> Up:</B> <A NAME="tex2html82"
+  HREF="data-delivery-arch.html">DODS Data Delivery Architecture</A>
+<B> Previous:</B> <A NAME="tex2html76"
+  HREF="node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html84"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

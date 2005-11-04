@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- XML file produced from file: using-cvs.tex
+     using Hyperlatex v 2.6 (c) Otfried Cheong
+     on Emacs 21.3.1, Wed Jun 23 13:54:09 2004 -->
+<head>
+<title>Using CVS -- 2 Using CVS to get the OPeNDAP Software</title>
+
+<style type="text/css">
+.maketitle { align : center }
+div.abstract { margin-left: 20%; margin-right: 10%; }
+h3.abstract  { align : center }
+div.verse, div.quote, div.quotation {
+  margin-left : 10%; 
+  margin-right : 10%;
+}
+</style>
+
+<link rel=stylesheet
+        href="http://unidata.ucar.edu/packages/dods/css/dods-paper.css" type="text/css">
+</head>
+<body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="cvs_3.html"><img border="0" alt="3 Write Access and Automatic Logins" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="cvs.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="cvs_1.html"><img border="0" alt="1 Introduction" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>2 Using CVS to get the OPeNDAP Software</b></td></tr></table>
+<h1>2 Using CVS to get the OPeNDAP Software</h1>
+<p>To start the ball rolling, check out the OPeNDAP software module. Unless you
+are working on <CODE class="literal">dodsdev.gso.uri.edu</CODE> you will be using CVS to access a
+remote repository. We used to use the <CODE class="literal">pserver</CODE> method of login, but
+since June 2004 we've been using <CODE class="literal">ssh</CODE>. Here's how to access the
+repository:
+<ul><li>Set <CODE class="literal">CVS&#95;RSH</CODE> to <CODE class="literal">ssh</CODE>
+<li>Set <CODE class="literal">CVSROOT</CODE> to
+  <CODE class="literal">:ext:&lt;user&gt;@dodsdev.gso.uri.edu:/usr/local/cvs-repository</CODE> where
+  <CODE class="literal">&lt;user&gt;</CODE> is your user name (or <CODE class="literal">anoncvs</CODE> if you want
+  anonymous/read-only access. Instead of setting CVSROOT, you can use the CVS
+  option -d <CODE class="literal">:ext:&lt;user&gt;@dodsdev.gso </CODE>...Once you have checked out
+  directories, you can run CVS commands within them without setting CVSROOT
+  or using -d.
+</ul>
+<p>Make sure not to add a trailing <CODE class="literal">/</CODE> to the repository name; some
+versions of CVS gag if you do.
+<p>If you want to get the entire OPeNDAP source tree, use the command:.
+<p><pre class="it">
+cvs -d :ext:&lt;user&gt;@dodsdev.gso.uri.edu:/usr/local/cvs-repository co DODS
+</pre>
+<p>It should ask for your password. Unlike the <CODE class="literal">pserver</CODE> access method,
+using <CODE class="literal">ssh</CODE> will prompt you for your password <em>every</em> time you run a
+CVS command that affects the remote repository. This can get old quickly;
+see Section&nbsp;<a href="cvs_3.html">3</a>. 
+<p>This will check out the entire <CODE class="literal">DODS</CODE> <em>module</em> from CVS. If this is
+what you want, you're all set. To build the software you may need autoconf,
+GNU make, bison and flex in addition to a decent C++ compiler (we're building
+with gcc 3.2.1 and VC++ 6.0).
+<p>In the past the DODS CVS module was much larger. To help people cope with
+that we used to advise that they check out only the part of the module in
+which they were interested. There's little need for this now, but in case
+someone finds the information useful, here's how to do it:
+<div class="quote"><p>
+From now on I'm going to leave off the -d option and repository string.
+You'll need it unless you set CVSROOT or are working inside already checked
+out directories.
+</p></div>
+<p><pre class="it">
+cvs co -l DODS
+</pre>
+<p>This will checkout the root directory without recurring through all the
+subdirectories (the <CODE class="literal">-l</CODE> option suppresses recurring on all the
+subdirectories). You will have to select the subdirectories you want by hand.
+Unfortunately, there is no way to tell it to checkout everything except
+<i>&lt;foo&gt;</i> (<CODE class="literal">co</CODE> is an alias for <CODE class="literal">checkout</CODE>).
+<p>Once you have checked out the root directory you no longer need to feed CVS
+the <CODE class="literal">-d &lt;big long string&gt;</CODE> thing; CVS remembers which repository to use.
+<p>Use:
+<p><pre class="it">
+cvs co DODS/etc
+
+cvs co DODS/src/dap
+cvs co DODS/src/nc-dods
+</pre>
+<p>to get only the source directories for the DAP library and netCDF server, for
+example, or
+<p><pre class="it">
+cvs co DODS/src
+</pre>
+<p>to get all the source directories.
+<p>Because it is not possible to get CVS to create the subdirectories of DODS without
+checking out the subdirectories contents (which would amount to the entire DODS
+module - it is very large) it is hard to know which subdirectories you might want.
+Here is a list of the subdirectories under DODS:
+<p><pre class="it">
+src     The source code.
+etc     Destination for servers and also some support scripts.
+bin     You must make this by hand.
+lib     You must make this by hand.
+include The include files installed by src/dap.
+</pre>
+<p>As with all software, there are dependencies that exist between these
+directories. If you get the <CODE class="literal">src</CODE> directory, you will also need <CODE class="literal">etc</CODE>
+and include before you can build any of the software. In addition, you must
+make the <CODE class="literal">bin</CODE> and <CODE class="literal">lib</CODE> directories.
+<hr /><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, 
+  2004/06/23, Revision: 1.8</address><br />
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="cvs_3.html"><img border="0" alt="3 Write Access and Automatic Logins" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="cvs.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="cvs_1.html"><img border="0" alt="1 Introduction" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>2 Using CVS to get the OPeNDAP Software</b></td></tr></table></body></html>

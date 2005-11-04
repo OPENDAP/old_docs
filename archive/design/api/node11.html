@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>The External Representation of Variables</TITLE>
+<META NAME="description" CONTENT="The External Representation of Variables">
+<META NAME="keywords" CONTENT="api">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="api.css">
+
+<LINK REL="next" HREF="node12.html">
+<LINK REL="previous" HREF="node7.html">
+<LINK REL="up" HREF="node5.html">
+<LINK REL="next" HREF="node12.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html210"
+  HREF="node12.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html206"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html200"
+  HREF="node10.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html208"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html211"
+  HREF="node12.html">Dataset Descriptor Structure</A>
+<B> Up:</B> <A NAME="tex2html207"
+  HREF="node5.html">Design</A>
+<B> Previous:</B> <A NAME="tex2html201"
+  HREF="node10.html">Operators</A>
+ &nbsp; <B>  <A NAME="tex2html209"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00053000000000000000"></A>
+<A NAME="api:external-rep"></A>
+<BR>
+The External Representation of Variables
+</H2>
+
+<P>
+Each of the base-type and type constructor variables has an external
+representation defined by the <A NAME="tex2html22"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A>. This representation is used when an
+object of the given type is transferred from one computer to another.
+Defining a single external representation simplifies the translation of
+variables from one computer to another when those computers use different
+internal representations for those variable types[#!xdr!#]. 
+
+<P>
+Constraint expressions, which are an importat part of the <A NAME="tex2html23"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A>, do not affect
+<EM>how</EM> a base-type variable is transmitted. Constraint expressions only
+determine if, given a particular value for a variable, that variable should
+be transmitted. However, for constructor type variables contraint expressions
+may be used to exclude portions of the variable. In these cases, the
+constraint expressions can be used to change the way a particular variable is
+transmitted. For example, if a constraint expression is used to select the
+first three of six fields in a structure, the last three fields of that
+structure are <EM>not</EM> transmitted by the server.
+
+<P>
+The <A NAME="tex2html24"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A>uses Sun Microsystems' XDR protocol[#!xdr!#] for the external
+representation of all of the base type variables. Table&nbsp;<A HREF="#tab:base-xdr"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>
+shows the XDR types used to represent the various base type
+variables.
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER">
+
+<A NAME="tab:base-xdr"></A>
+<DIV ALIGN="CENTER">
+<A NAME="591"></A>
+<TABLE CELLPADDING=3 BORDER="1">
+<CAPTION><STRONG>Table:</STRONG>
+The XDR data types used by the <A NAME="tex2html18"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A>as the external representations
+of base-type variables</CAPTION>
+<TR><TD ALIGN="CENTER" COLSPAN=1>B<SMALL>ASE </SMALL>T<SMALL>YPE</SMALL></TD>
+<TD ALIGN="CENTER" COLSPAN=1>XDR T<SMALL>YPE</SMALL></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>byte</TT></TD>
+<TD ALIGN="LEFT"><TT>xdr byte</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>int32</TT></TD>
+<TD ALIGN="LEFT"><TT>xdr long</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>float64</TT></TD>
+<TD ALIGN="LEFT"><TT>xdr double</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>string</TT></TD>
+<TD ALIGN="LEFT"><TT>xdr string</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>URL</TT></TD>
+<TD ALIGN="LEFT"><TT>xdr string</TT></TD>
+</TR>
+</TABLE>
+</DIV>
+</DIV>
+<BR>
+
+<P>
+In order to transmit constructor type variables, the <A NAME="tex2html25"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A>defines how the
+various base type variables, which comprise the constructor type variable,
+are transmitted. Any constructor type variable may be subject to a constraint
+expression which changes the amount of data transmitted for the variable (see
+Section&nbsp;<A HREF="node14.html#api:constraints"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>). For each of the six constructor types these
+definitions are:
+
+<P>
+<DL>
+<DT><STRONG>Array</STRONG></DT>
+<DD>An array is sent using the <TT>xdr_array</TT> function. This means
+  that an array of 100 <TT>Int32</TT>s is sent as a single block of 100 <TT>    xdr long</TT>s, not 100 separate <TT>xdr long</TT>s. 
+
+<P>
+</DD>
+<DT><STRONG>List</STRONG></DT>
+<DD>A list is sent as if it were an array.
+
+<P>
+</DD>
+<DT><STRONG>Structure</STRONG></DT>
+<DD>A structure is sent by encoding each field in the order
+  those fields are declared in the DDS and transmitting the resulting block
+  of bytes.
+
+<P>
+</DD>
+<DT><STRONG>Sequence</STRONG></DT>
+<DD>A Sequence is transmitted by encoding each instance as for a
+  structure and sending one after the other, in the order of their occurrence
+  in the data set. The entire sequence is sent, subject to the constraint
+  expression. In other words, if no constraint expression is supplied then
+  the entire sequence is sent. However, if a constraint expression is given
+  all the records in the sequence that satisfy the expression are
+  sent<A NAME="tex2html21"
+  HREF="footnode.html#foot621"><SUP>4</SUP></A>.
+
+<P>
+</DD>
+<DT><STRONG>Function</STRONG></DT>
+<DD>A function is encoded as if it is a Sequence (one component
+  after the other, in the order of their declaration).
+
+<P>
+</DD>
+<DT><STRONG>Grid</STRONG></DT>
+<DD>A grid is encoded as if it is a Structure (one component
+  after the other, in the order of their declaration).
+
+<P>
+</DD>
+</DL>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html210"
+  HREF="node12.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html206"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html200"
+  HREF="node10.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html208"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html211"
+  HREF="node12.html">Dataset Descriptor Structure</A>
+<B> Up:</B> <A NAME="tex2html207"
+  HREF="node5.html">Design</A>
+<B> Previous:</B> <A NAME="tex2html201"
+  HREF="node10.html">Operators</A>
+ &nbsp; <B>  <A NAME="tex2html209"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

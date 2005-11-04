@@ -1,0 +1,1365 @@
+
+% This file describes the client and server toolkits. These are used to build
+% the server CGIs and the surrogate library for a new API.
+%
+% jhrg 11/15/94
+%
+% $Id$
+
+\documentstyle[code,12pt,html,psfig,margins]{article}
+
+\psfigurepath{toolkits-figs}
+
+\input{../boiler/html-refs}
+
+\begin{document}
+
+\title{DODS---The Client and Server Toolkit} 
+\author{}
+\date{\today}
+
+\maketitle
+
+\begin{abstract}
+  
+  This paper describes how to use the DODS Client and Server Toolkit software
+  to build both DODS client-libraries and data servers. The Client and Server
+  Toolkit software contains an implementation of the DODS \Dap\ as well as
+  additional software to simplify building DODS client-libraries and servers.
+  This software is implemented in \Cpp\ as four groups of classes and some
+  utility functions: one class hierarchy for the data types, one for each of
+  the {\tt DAS} and {\tt DDS} described in the \dap\ and one to manage the
+  virtual connection in the client library.  Each of these groups of classes
+  are described in this paper. Note that this document is not a reference
+  volume for the member functions in each of the classes; that can be found
+  in ``\TKR''.
+
+\end{abstract}
+
+\input{../boiler/questions}
+\input{../boiler/warning} 
+\input{../boiler/implementors}
+\begin{htmlonly}
+\pslink{file://dods.gso.uri.edu/pub/DODS/toolkits.ps}
+\end{htmlonly}
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\section{Introduction}
+
+This document describes how to use the DODS toolkit software to build both
+DODS data servers and client-libraries. Before using the toolkit software it
+is important that the basic ideas behind DODS the design of the data
+transport system be understood. For this information see ``\DDA'' and
+``\DDD''. The data transport system using the \dap\ to move information from
+a data server to a client-library; this protocol is described in ``\DAP''. In
+addition, DODS uses as much of the existing \www\ infrastructure as it can;
+to find out about DODS' use of URLs, see ``\URL''.
+
+The body of this document is divided into five
+sections. Section~\ref{tk:overview} provides background information on the
+organization of the toolkit software. Section~\ref{tk:manage-conns} describes
+how to use the Network I/O classes to manage virtual
+connections. Section~\ref{tk:subclassing} discusses how to sub-class the
+toolkit \Cpp\ classes so that they are specialized for your specific
+use. Section~\ref{tk:using} describes in detail how to write certain sections
+of both the data server and the client-library for a new API. Lastly,
+Section~\ref{tk:linking} describes how to link user programs with the new
+client-library implementation of an API. Note that this is {\em not\/} a
+reference volume. See \TKR\ for a concise listing of the member functions in
+each of the toolkit's classes.
+
+Missing from this document is a discussion of translation between data
+types. This  topic will be addressed in a future version of the toolkit
+software and at that time this document will be updated.
+
+Because the type of information presented in a document like this depends
+to a large extent on the needs of its readers I would like as much feedback
+as possible. In particular, if you have any questions about individual
+sections, email me those questions and I'll send back an answer as well as
+including that information in the next version of this document. I hope that
+this will improve the overall content much more rapidly than if I try to
+guess what people need to know. Note that the online version of the document
+has `Question' buttons in the navigation panels of each frame which you can
+use to send me email, otherwise send the questions to
+jgallagher@gso.uri.edu. 
+
+\section{Overview of the Toolkit Software} 
+\label{tk:overview}
+
+The \TOOLKIT\ software consists of a collection of \Cpp\ classes distributed
+in two libraries and is intended to simplify building the data servers and
+client-libraries described in ``\DDD''. The toolkit software contains an
+implementation of the data access protocol described in ``\DAP'' as well as
+additional software that simplifies maintenance of a virtual connection in
+the client-library. The implementation of the DAP is contained in the 
+\Cpp\ class library {\tt libdap++}. The network I/O software is contained in
+the \Cpp\ class library {\tt libnetio}.
+
+The DAP implementation contains three class hierarchies: one for each of the
+{\tt DAS} and {\tt DDS} objects, rooted in classes with those names, and one
+for the variables, rooted at the class {\tt BaseType}. The following sections
+present an overview of these class hierarchies and describe, in general
+terms, how they are used to build the client-library and data server. See
+Section~\ref{das-dds-objects}.
+
+The netio implementation consists of two classes, one that manages a single
+connection ({\tt Connect}) and one that manages a group of those objects
+({\tt Connections}). The Connect class is meant to be subclassed when used by
+a real client-library. See Section~\ref{tk:manage-conns}.
+
+\subsection{The DAS and DDS Objects}
+\label{das-dds-objects}
+
+The dataset attribute structure DAS~\externalref{api:das} and dataset
+descriptor structure DDS~\externalref{api:dds} objects are used to store
+information about the data set's variables. These can be thought of a
+metadata objects, but it is worth noting that we shy away from the term {\em
+  metadata\/} because often this is {\em data\/} to many users.
+
+Neither the DAS nor the DDS contains science data---the DAS contains
+attribute information from the data set while the DDS contains structural
+information about the data set and variables in the data set.
+
+To build both the DAS and DDS, the server must open the data set and use
+whatever appropriate API calls to extract the necessary information about the
+data set and its constituent variables. The DAS and DDS server filter
+programs do this and then transmit the resulting \Cpp\ object to the client.
+
+On the client-side, the surrogate library uses information in the DAS and DDS
+to satisfy calls which are issued by the user program requesting information
+about variables, their type, shape, and attributes.  The two existing
+Client-libraries request both of these objects when they first contact the
+remote data set. The DAS and DDS objects are then stored as part of a {\em
+  virtual connection\/} to that data set and can be used repeatedly by the
+client-library without retransmission.
+
+The {\tt DAS} and {\tt DDS} objects have both an internal and an external
+representation. Their internal representation is as a \Cpp\ object while
+their external representation is as text. The object is sent from the server
+to the client-library using this text representation. Each of the two classes
+contains a parser which can read the text representation and (re)create the
+object's internal representation. In addition, it is possible to write the
+text representation for either object (using a text editor) and then use the
+parser to create the internal, \Cpp, object. Furthermore, the text
+representation is a type of persistence and can be used to build a flexible
+object caching mechanism.
+
+One possible use for this caching mechanism is to store the DAS and DDS for a
+dataset and use the stored versions in place of opening the data set and
+reading information about it and its contents. This can be tricky to
+implement, but for large data sets with many variables can also result in a
+significant performance improvement. The caching mechanism may also be used
+on the server-side to store extra information about the data
+set---information that is not present in the data set proper, but which the
+data provider would like included when people access the data set over the
+network. In this scenario, the data server first integrates the data set
+file(s) using the API and builds the DAS and DDS. Once an initial version of
+the {\tt DAS} and {\tt DDS} are resident in memory, the parser is used to
+read an external text file which contains additions to, or corrections of,
+the information extracted from the data file. In the \Ddd\ paper the extra
+information is referred to as `ancillary information'.
+
+\subsubsection{The DAS Object}
+\label{toolkits:das}
+
+The {\tt DAS} contains attribute information that is generally {\em not\/}
+used by software when processing the variables; this object is specifically
+designed to hold all the information in a data set that has no where else to
+go. Each variable can have an unlimited number of attributes. There are also
+`global' attributes that apply to the dataset as a whole. Each attribute is a
+tuple of three elements: the attribute name, type and value. The supported
+types for an attribute are: Byte, Int32, Float64, String and URL. These types
+have the same range of values as the corresponding types in the \dap.
+
+Attributes are any qualities that are not listed in the \dap\ in the section
+discussing the DDS~\externalref{api:dds}.  Thus, the type, shape, and units
+of a variable are {\em not\/} attributes; they are characteristics of the
+variable and are part of the DDS (see Section~\ref{toolkits:dds}). However,
+users make store any other information in as attributes (actually, there is
+no reason that type, etc. cannot be stored as an attribute; however, it must
+be in the DDS regardless) including paragraphs of text, vectors of integer
+and floating point values, etc.
+
+Many APIs support the concept of information in the data set that is not
+computable and provide function calls to access that information. The DAS
+object provides a place for all tat information. The data server can
+interrogate the data set and build the DAS and the client-library can use the
+DAS object to satisfy many of the API calls requesting information about the
+variables in a data set.
+
+Figure~\ref{fig:das-class-diagram} is a Booch~\cite{booch:oo-analysis}
+diagram of the {\tt DAS} class and its related classes. The figure shows that
+the class {\tt DAS} contains a parser and related utilities as well as an
+instance of the class {\tt DASVHMap}. The parser utilities are can read the
+textual representation of a {\tt DAS} object and create the \Cpp\ (or binary)
+representation. The parser and scanner are built using GNU's {\tt bison} and
+{\tt flex} respectively; source for them can be found in the dap source file
+{\tt das.y} and {\tt das.lex}.
+
+The {\tt DASVHMap} object deserves more explanation. It was created using
+{\tt g++}'s {\tt genclass} utility; several other classes in the dap library
+were also created that way. {\tt Genclass} is a tool that creates a
+parameterized class from a template given certain parameters. The parameters
+are class names and header file names. This utility predates the current
+(\today) Draft ANSI \Cpp\ standard for template classes. It is used by DODS
+because the project started using {\tt g++} before its template mechanism was
+implemented on the DODS development platforms.
+
+The {\tt DASVHMap} class uses the {\tt DASMap} class to map objects of type
+{\tt String} onto objects of type {\tt AttrTable}. Each variable in the data
+set has a name and that name is used as an index into the {\tt DASVHMap} to
+get the matching {\tt AttrTable}. In addition to an attribute table for each
+variable, the {\tt DASVHMap} is used to store the data set's global
+attributes by using the string ``Global''.
+
+Each {\tt AttrTable} object contains a doubly-linked list of attribute
+triples, named {\tt entry}. Each entry contains a Name, Type and vector of
+values.
+
+The {\tt DAS} object contains member functions to add or retrieve {\tt
+  AttrTable}s as well as individual attributes based on a variable name. In
+addition, both the {\tt DASVHMap} object and the {\tt AttrTable} object may
+be traversed using a {\tt Pix}\footnote{A {\tt Pix} is a libg++ psuedoindex
+  object. See the libg++ documentation for more information.}.
+
+\begin{figure}
+\centerline{\psfig{figure=das-class-diagram.ps}}
+\caption{A Booch diagram of the {\tt DAS} class hierarchy.} 
+\label{fig:das-class-diagram} 
+\end{figure}
+
+\subsubsection{The DDS Object}
+\label{toolkits:dds}
+
+The DDS is used to store information about the organization of the data set
+and its variables. It contains information about the type, shape, units, ...
+of variables. The DDS is `lexically scoped' so that two {\tt Structure}
+variables may have components with the same names; each component will be
+referred to using the {\tt Structure} name and the dot operator (see the \Dap
+section on operators\externalref{api:operators}).
+
+While the DDS is similar to the DAS in that it is used to store
+information about the data set, it is used quite differently by both the
+client-library and server components. The DAS is a stand alone object and is
+used solely for the purpose of storing attributes of variables and the
+dataset. The DDS, however, is used to store type information about the
+data set's variables using instances of those variables. Because the variable
+objects have methods that can be used to read values from a data set or
+transfer the variable's value over the network, the DDS object is used by
+both the DDS filter program and the data filter program.
+
+Figure~\ref{fig:dds-class-diagram} shows the class hierarchy for the {\tt
+  DDS} object. Rather than use the Gnu {\tt VHMap} template object, the {\tt
+  DDS} class uses a singly-linked list to store multiple instances of
+variables in the data set. Each variable is stored in an instance of one of
+{\tt BaseType}'s descendent classes. Each DDS contains a {\tt String} object
+used to store the name of the dataset and a singly-linked list of constraint
+expression clauses.
+
+The {\tt DDS} class contains member functions that can be used to set or
+access any of its members. In addition, the class contains a parser and
+scanner that can be used to internalize the textual representation of the DDS
+and a parser and scanner which can be used to parse a constraint expression.
+This parser stores information about the constraint expression in the DDS and
+its contained variable objects which can be used later during constraint
+expression evaluation.
+
+\begin{figure}
+\centerline{\psfig{figure=dds-class-diagram.ps}}
+\caption{A diagram of the {\tt DDS} class hierarchy.}
+\label{fig:dds-class-diagram}
+\end{figure}
+
+\subsection{The Type Hierarchy}
+
+The {\em Type Hierarchy\/} is the implementation of the data model described
+in ``\DAP''. It refers to the set of classes that form the hierarchy used to
+build objects that contain data. These classes comprise the data model for
+DODS. It contains simple programming language types such as integer and
+floating point values as well as constructor type like structure and
+sequence. The \dap\ paper describes the semantics of these data types.
+
+Unlike the other classes in the DODS toolkit libraries, these are abstract
+classes---in order to be used by a program, you must subclass the hierarchy
+and create concrete classes to instantiate.
+Figures~\ref{fig:cardinal-types}~to~\ref{fig:ctor-types} contain diagrams
+which show how this class hierarchy is organized. Note that the entire
+hierarchy is split into three figures for clarity's sake; in the toolkit
+library it is one hierarchy. 
+
+\subsubsection{Common Ancestor: BaseType}
+
+The root of the type hierarchy is the abstract class {\tt BaseType}. This
+class, because it is abstract, is never instantiated itself. It contains
+common member functions used by all the other classes. {\tt BaseType} is used
+as the base class for all of the different types of variables. For scalar
+variables such as {\tt Int32}, only the abstract virtual functions in {\tt
+BaseType} need to be added to complete the class definition. However,
+constructor types like {\tt Structure} require more. Each constructor data
+type contains one or more instances of {\tt BaseType}. These {\em contained
+variables\/} are the fundamental types used by the type constructors to build
+new types.
+
+\subsubsection{Cardinal Types: Byte, Int32, Float64, Str, Url}
+
+The cardinal data types (see Figure~\ref{fig:cardinal-types}) consist of {\tt
+  Byte}, {\tt Int32}, {\tt Float64}, {\tt Str} and {\tt Url}. These data
+types match very closely the corresponding types in C or Fortran. Note that
+each of these types uses either the C or \Cpp\ representation to hold the
+value of the object. The class {\tt BaseType} adds some additional behavior
+such as network transmission.
+
+These five abstract classes are direct descendents of {\tt BaseType} which
+contain only their definitions for {\tt BaseType}'s abstract member functions
+and a single constructor.
+
+\begin{description}
+
+\item [Byte] Variables which store bytes. Equivalent to unsigned
+char on most UNIX workstations.
+
+\item [Int32] Variables which store integer values as 32-bit
+twos-complement  signed integers. Equivalent to {\tt int} on
+most 32-bit UNIX workstations.
+
+\item [Float64] Variables which store floating point data.
+Defined as the  IEEE 64-bit floating point data type, equivalent
+to a {\tt double} in ANSI  C.
+
+\item [Str] Variables which store string information. A string in the DAP is
+{\em not\/} a sequence of characters referenced using a pointer (as it is in
+C). In the DAP a string represented using a \Cpp\ object. 
+
+\item [Url] Variables which store references to network
+resources. The  semantics of this type is defined in \URL.
+
+\end{description}
+
+\subsubsection{Vector Types: Array, List}
+
+The vector data types (see Figure~\ref{fig:vector-types}) are {\tt Array} and
+{\tt List}.  Note that an array is a vector with a list of dimensions. When
+creating an array, the dimension sizes (and optionally their names) must be
+set.  Regardless of the shape of the array, it is always stored as a vector.
+In order to access the element of a multidimensional array it is necessary to
+calculate the offset for a given element.
+
+\begin{description}
+  
+\item[Array] Instances of {\tt Array} have different semantics than arrays in
+  C.  They are multi-dimensional data structures which contain {\em N\/}
+  instances of some data type. Each instance in the array can be referred to
+  by an integer index between {\em 0 and N-1\/}. Multidimensional arrays are
+  declared using C's syntax of a sequence of bracketed integer values: {\tt
+    Int32 a[10][20]} declares an array of 10 arrays of 20 integers. However,
+  unlike C arrays, the {\tt Array} class supports named dimensions. In the
+  preceding example, the array could have been declared: {\tt Int32 a[row =
+    10][col = 20]} where {\tt row} and {\tt col} are the names of the first
+  and second dimension, respectively. It is possible to determine the name
+  for the $i^{th}$ dimension using member functions supported by this class.
+  
+  {\tt Array}, like all of the constructor types, contains a reference to a
+  component variable. In the preceding example, the instance of {\tt Array}
+  would contain information about the dimensions of the array (10 by 20), but
+  not the type of the elements (Int32). The element type information is
+  stored in the component variable which the instance of {\tt Array}
+  references.
+  
+\item[List] A List is an ordered collection of elements of unknown length
+  (whereas an array's size is always known in advance). Each element of the
+  List must be of the same type. When a List type is declared no size
+  information is supplied. However, to transmit a {\tt List} object the
+  length of that list must be known.  Thus, internally the number of elements
+  in the current value {\em is\/} stored.
+
+\end{description}
+
+\subsubsection{Constructor Types: Structure, Sequence, Function, Grid}
+
+The constructor data types are used to build new types as aggregates of other
+types, including constructor types. Note that List and Array are constructor
+types, also. Structure, Sequence and Function all contain a list (or lists
+for Function) of {\tt BaseType} objects. However, they have different
+semantics; a Structure is a simple aggregate; nothing other than aggregation
+is implied, while Sequence and Function define templates for relational
+objects. A Grid combines several {\tt Array} objects so that nonlinear values
+may be applied to the indices of an array.
+
+\begin{description}
+  
+\item[Structure] A Structure is an ordered collection of variables that
+  conveys no relational information other than grouping. The variables that
+  are members of a Structure may be of different types. In addition to the
+  (possible) benefit of added organization, Structure may be used to supply
+  information to the system that may be useful in optimizing the access or
+  translation operations.
+
+\item[Sequence]
+  
+  A Sequence {\em S\/} is similar to a Structure in that it consists of an
+  ordered collection of {\em N\/} variables which may be of different types.
+  However, the sequence {\em S\/} actually describes a template for an
+  ordered collection of instances {\em I\/}. Each element {\em i\/} of {\em
+    I\/} is an instance {\em s\/} of {\em S\/}. An entire sequence {\em S\/}
+  may be described thusly:
+
+\begin{displaymath} 
+\begin{array}{ccc}  
+        s_{0 0} & \cdots & s_{0 n} \\  
+        \vdots & \ddots & \vdots \\  
+        s_{i 0} & \cdots & s_{i n}
+\end{array} 
+\end{displaymath}
+
+\noindent Every instance {\em s\/} of Sequence {\em S\/} has the same number,
+order, and class of variables. A Sequence implies that each of the {\em N\/}
+variables is related to each other in some logical way. A Sequence is
+different from a Structure because its constituent variables have several
+instances while a Structure's values have only one set of variables. Because
+a Sequence has several values for each of its variables it has an implied
+{\em state}, in addition to those values.
+
+\begin{table} 
+\caption{Table of relational data.}
+\label{toolkit:seq2} 
+\begin{center} 
+\begin{tabular}{|| c | c | c ||} \hline 
+{\sc Name} & {\sc Age} & {\sc Weight} \\ \hline 
+James & 32 & 165 \\ 
+Charlie & 6 & 65 \\ 
+Bob & 10 & 80 \\ \hline
+\end{tabular} 
+\end{center} 
+\end{table}
+
+For example given the the information in Table~\ref{toolkit:seq2}, $s_{0}$ is
+{\tt James}, {\tt 32}, {\tt 165}, $s_{1}$ is {\tt Charlie}, {\tt 7}, {\tt
+  65.4}, \ldots. The data in the table might have the following Sequence:
+
+\begin{code}{cb}
+Sequence {
+    Str name;
+    Int32 age;
+    Float64 weight;
+} people;
+\end{code}
+
+\item[Functions] A Function is a special case of a Sequence that separates
+  its variables into two categories: {\em independent\/} and {\em
+    dependent\/} corresponding to the independent and dependent variables in
+  an experiment. Variables in a Function may be of differing classes. The
+  mathematical description of this functional relation is not specified.
+  Instead the Function type is used to indicate that one of the two sets
+  constitute the independent variables and the other the dependent variables.
+  
+\item[Grid] A Grid is an association of an {\em N\/} dimensional Array with
+  {\em N\/} named vectors, each of which has the same number of elements as
+  the corresponding dimension of the Array. Each vector is used to map
+  indices of one of the Array's dimensions to a set of values which are
+  normally non-integral (e.g., floating point values). The {\em N\/} (map)
+  vectors may be members of different classes. 
+
+\end{description}
+
+\begin{figure}
+\centerline{\psfig{figure=cardinal-types-diagram.ps}}
+\caption{A diagram of the cardinal data type hierarchy.}
+\label{fig:cardinal-types}
+\end{figure}
+
+\begin{figure}
+\centerline{\psfig{figure=vector-types-diagram.ps}}
+\caption{A diagram of the vector data type hierarchy.}
+\label{fig:vector-types}
+\end{figure}
+
+\begin{figure}
+\centerline{\psfig{figure=ctor-types-diagram.ps}}
+\caption{A diagram of the constructor data type hierarchy.}
+\label{fig:ctor-types}
+\end{figure}
+
+\section{Managing Connections Using Netio} 
+\label{tk:manage-conns}
+
+The toolkit contains two classes to help managing connections within
+surrogate libraries. One class, {\tt Connect} stores information that is used
+by the surrogate library when a connection is established. It also provides
+some rudimentary support for providing local access without using a DODS data
+server.
+
+The class {\tt Connections} manages instances of the {\tt Connect} class. It
+provides a mechanism for the surrogate libraries to pass back to user
+programs the type of object ({\tt int}, opaque pointer, \ldots) they expect
+and then to use one of those objects to access the correct instance of {\tt
+  Connect}. {\tt Connections} is a template class. A client-library uses the
+{\tt Connections} class to make an array of some sub-class of {\tt Connect}.
+
+\subsection{Connect}
+
+{\tt Connect} manages one connection to either a remote data set, via a DODS
+data server, or a local access. For each data set or file that the user
+program opens, there must be exactly one instance of {\tt Connect}. Because
+information needed for local access is stored in an instance of {\tt
+  Connect}, the class is normally sub classed for each supported
+API\footnote{As of \today, subclasses {\tt JGConnect} and {\tt NCConnect}
+  exist for JGOFS and NetCDF, respectively.}. In the API-specific child of
+{\rm Connect\/} additional members can be added to store state information
+that the client-library needs to maintain the virtual connection (See
+Section~\ref{tk:virtual-connections} for more information on making virtual
+connections).
+
+The {\tt Connect} class contains member function which are used to get the
+data set's DAS, DDS and data. The Instance of {\tt Connect} (or a subclass of
+{\tt Connect}) stores the URL as the user provides it, usually by being
+created inside the API's open function call. It then appends information to
+the user-supplied URL to make the URL which will return the various objects
+from the data set's DODS data server (See
+``\URL''~\externalref{urls:user-vs-generated} for a discussion on the
+difference between user URLs and those actually sent to a data server; see
+Section~\ref{tk:using-constraints} for more information on using constraints
+to access data).
+
+The {\tt Connect} class also contains information about all of the
+constraints used to access data so far. This information includes all of the
+expressions as well as all of the resulting DDSs and values they returned.
+This is a powerful form of caching that can be tricky to use. If the user
+program, via the API, has previously requested the exact same data (i.e., the
+constraint expressions match exactly for any two requests) then you can use
+the data already stored by the {\tt Connect} object rather than send for the
+data a second time. Within the {\tt Connect} class there are member functions
+that can be used to search the previously submitted constraint expressions.
+
+If you are re-implementing an API and must support function calls that modify
+how data is accessed (e.g., by creating array slices or by choosing one of a
+set of variables), then you will need to translate those requests into a DODS
+constraint expression (See ``\DAP''~\externalref{api:constraints} for more
+information on constraint expressions, their syntax and semantics). You would
+then pass these synthesized constraint expressions to the {\tt
+  Connect::request\_data} member function.
+
+\begin{figure}
+\centerline{\psfig{figure=connect-diagram.ps}}
+\caption{The Connect class; used to store information about a virtual
+connection to a data set.}
+\label{fig:connect-diagram}
+\end{figure}
+
+\subsection{Connections}
+
+The class {\tt Connections} is used to manage a set of instance of the class
+{\tt Connect} by providing a means to map an index or opaque pointer to an
+instance of {\tt Connect}. 
+
+When a new instance of {\tt Connect} (or a descendent of {\tt Connect}; See
+Section~\ref{tk:subclass-netio}) is created, it is added to the {\tt
+  Connections} object using the {\tt add\_connect} member function. {\tt
+  add\_connect} returns an integer that can be used to access that instance
+of Connect at any time. Similarly, when an instance of {\tt Connect} is to be
+deleted, the object can be referred to via the {\tt Connections} object and
+this index.
+
+\section{Sub-classing the DAP and Net I/O Libraries}
+\label{tk:subclassing}
+
+In order to be used by real client-libraries and data servers, many of the
+classes in the DODS toolkit must be subclassed. For example, the {\em Type
+Hierarchy\/} classes, which represent the data types in the DODS data model,
+are all abstract classes. In order to use them in a program they must be
+subclassed. Furthermore, the {\tt Connect} class (in {\tt libnetio} must be
+subclassed if it to hold additional information about the connection. In this
+section sub-classing is discussed in general and some specific caveats are
+discussed. 
+
+\subsection{Sub-classing the Type Hierarchy}
+
+In order to link a program with the DAP library, eleven of the DAP's abstract
+classes must be subclassed and those subclasses must ensure that all of the
+member functions of those classes have valid definitions. This is necessary
+because of \Cpp's rules governing abstract classes\cite{stroustrup:cpp}. The
+classes are {\tt Byte}, {\tt Int32}, {\tt Float64}, {\tt Str}, {\tt Url},
+{\tt Array}, {\tt List}, {\tt Structure}, {\tt Sequence}, {\tt Function} and
+{\tt Grid}. The next three sections cover sub-classing the cardinal, vector
+and constructor classes, respectively. In addition, a sample set of classes
+(called the {\tt Test} classes because they are used by the DAP tests) is
+included with the DAP distribution. You can read the source code for those
+classes to find out how they were created.
+
+\subsubsection{Sub-classing the Cardinal Types}
+
+The DODS Cardinal types all inherit directly from the class {\tt BaseType}
+(see Figure~\ref{fig:cardinal-types}. Each of the cardinal classes must
+define two member functions {\tt ptr\_duplicate} and {\tt read}.
+
+The {\tt ptr\_duplicate} member function returns a pointer to a new instance
+of the type of object from which it was invoked. This member function exists
+so that objects that are referenced through pointers to {\tt BaseType} can
+correctly copy themselves. If you were to use the operator {\tt new} to copy
+and object referenced through {\tt BaseType}, you would get a {\tt BaseType},
+not a new instance of the type of the referenced object! Note that {\tt
+  ptr\_duplicate} is a virtual function so an object which is a descendent of
+{\tt BaseType} will get the most specific definition of the member function.
+
+The read member function is much more complicated to write that the 
+{\tt ptr\_duplication} member function. Note however, that the {\tt read}
+member 
+function is only used on the server side of the system (i.e., it is only used
+in construction of the data server, and not the client-library) and thus can
+be implemented as a with a null function body if all you are building is a
+client-library. read takes a single argument, the data set name, and must
+read from that data set the values specified by the current constraint
+expression. The class {\tt BaseType} contains a number of member functions
+that facilitate this (See Section~\ref{tk:constraints} for more information).
+
+Once the name of the variable to be read is determined, the value must be
+read and stored in the object's internal buffer. To do the later, use the
+member function {\tt val2buf}. Note that the toolkit does not provide any
+support for reading the data from the data set; that is out of the scope of
+the DAP. IF the data server must work with files written using an API (such
+as \netcdf\ or \hdf) then use what ever function calls the API provides
+to read a variable given its name.
+
+Finally each of the cardinal subclasses must define a constructor and a
+virtual destructor. The constructor must take a reference to a single {\tt
+  String} (that's the GNU String class, not the DODS {\tt Str} class) as its
+only argument.
+
+The {\tt read} member function is used by the constraint expression evaluator
+to extract data from a data set during evaluation of the constraint
+expression.  This is particularly important to remember because the {\tt
+  read} member function for a cardinal will be called when reading an
+aggregate type such as Structure.
+
+\subsubsection{Sub-classing the Vector Types}
+
+The vector types (classes {\tt Array} and {\tt List}) require the same
+abstract member functions be defined as the cardinal types. The definition
+for {\tt ptr\_duplicate} is the same for vector as for cardinal types.
+However, the {\tt read} member function is more complicated because arrays of
+values are represented in two ways in DODS, depending on the type of
+variable. Arrays are stored as C~\cite{kr:c} would store them for the
+cardinal types {\tt Byte}, {\tt Int32} and {\tt Float64} and are stored as
+arrays of \Cpp\ objects for all other types (with the exception of arrays
+themselves, but more on that latter).
+
+When reading a array of Byte values, the {\tt val2buf} member function should
+be passed a pointer to values stored in a contiguous piece of memory. For
+example, it read is called to read a variable {\tt byte-array}, then it
+should determine how much memory to allocate to hold that much information,
+use {\tt new} to allocate the memory, use the data set's API calls to read
+byte-array into the newly allocated memory and then pass that memory to {\tt
+  val2buf}q. This same procedure can be followed for all the cardinal types.
+
+However, when reading an array of {\tt Structures}, for example, the values
+must be stored in the DODS {\tt Array} object one at a time using the {\tt
+  Array} member function {\em set\_vec}. In this case a C-like chunk of
+memory is not allocated.
+
+Arrays in DODS are unlike arrays in C in that an array object may have more
+than one dimension. In terms of the way a value is stored, however, and Array
+is a single dimensional object. When an Array is declared as having two or
+more dimensions, those are mapped onto a single vector. To access the element
+$A_ij$ of array {\em A\/}, you must know the size of the first dimension,
+{\em I\/}, and use the expression {\em i * I + j\/} to compute the offset
+into the vector.
+
+Since the class {\tt List} is a single dimension array without {\em
+  declared\/} size (the size of each value of the List object is stored in
+the object) the rules for {\tt Array}'s read member function apply.
+
+\subsubsection{Sub-classing the Constructor Types}
+
+In order to subclass the constructor classes you must supply the {\tt
+  ptr\_duplicate} and (as of \today) the read member functions. The {\tt
+  ptr\_duplicate} member function has the same semantics for constructor
+types as it does for vector and cardinal types and it can be implemented in a
+similar fashion. The {\tt read} member function simply iterates over the
+contained variables calling their {\tt read} member functions. In the future,
+this definition will move into the supplied classes (i.e., read will no
+longer be a abstract member function).
+
+The two constructor types Sequence and Function are different from all the
+other types in the DAP in that they have {\em state}. That is, the value of a
+sequence depends on how many values have been read previously.  This is very
+different from an array where the $i^{th}$ element has the same value
+regardless of what has happened before. When you write implementations for
+{\tt read} in the {\tt Sequence} and {\tt Function} classes, you must be sure
+to write those member functions so that they can be called repeatedly and
+that each call to read return the next value of the Sequence or Function.
+This is true because the constraint expression evaluator must be able to
+apply certain constraints to values of individual sequence elements and is
+actually implemented in the DDS class by first calling the read member
+function, evaluating the constraint expression based on the values and, if
+they constraint expression is satisfied, calling the serialize member
+function.  See the member function {\tt DDS::send} (See
+section~\ref{tk:ce-evaluation} for more information on evaluation of
+constraint expressions).
+
+If, for some reason, it is not possible to write {\tt read} so that it gets
+called once for each sequence value (sometimes called and instance of the
+sequence, but that's confusing when we are also talking about instances of
+objects \ldots), then you must re implement {\tt DDS::send} so that its
+functions are performed. For example, your could implement {\tt
+  Sequence::read} so that the entire sequence is read in and overload {\tt
+  Sequence::serialize} and {\tt Sequence::deserialize} so that the next set
+of values are sent/received. You would then build a send that called the {\tt
+  Sequence::read} member function once and extracted each successive value,
+evaluated the constraint expression using on that value and used the result
+of that evaluation to determine whether to send the value or not.
+
+\subsection{Sub-classing the Network I/O Classes}
+\label{tk:subclass-netio}
+
+There are two network I/O classes: {\tt Connect} and {\tt Connections}. Note
+that the network I/O library is used only by the client library. If you are
+building a data server only, you do not need to use {\tt libnetio}.
+
+The {\tt Connections} class (a template class) is not generally subclassed.
+
+To be effective, the {\tt Connect} class must be subclassed for each API. For
+each API that is reimplemented as a DODS client library, some additional
+information must be stored with each virtual connection that is made to a
+data set. This information can be stored in the subclassed {\tt Connect}.
+
+It is important to note that the {\tt Connect} class contains and instance of
+the data set's complete DDS plus {\em N\/} more instances of the DDS
+constrained by the constraint expressions used to read information from the
+data set. However, to subclass {\tt Connect} you do not need to use any of
+this information. What is done when sub-classing Connect is to add additional
+fields to the new class and to ensure that the class constructor takes all
+the arguments required by the API's open function call. For example, NetCDF's
+{\tt ncopen} function call takes two arguments, a string which names the data
+file to open and a mode flag similar to UNIX's open system call. The
+constructor for {\tt Connect} takes only one argument, a data set name (as a
+\Cpp\ {\tt String}). In the reimplementation of NetCDF for DODS, {\tt
+  Connect} is subclassed by {\tt NCConnect}. The constructor for {\tt
+  NCConnect} takes two arguments, a {\tt String} and a file access mode flag.
+The new version of {\tt ncopen} calls {\tt NCConnect}'s constructor, when it
+makes a new instance of the class {\tt NCConnect}, using the arguments passed
+to ncopen by the user program. the {\tt NCConnect} constructor in turn calls
+{\tt Connect}'s constructor to complete the object creation process.
+
+I addition to adding a new constructor, the subclass of {\tt Connect} will
+typically require a new destructor which frees any storage allocated by the
+new class. This storage might be used by the new client-library to keep state
+information. The API's close function call is the best place to delete the
+instance of {\tt Connect}'s subclass.
+
+\section{Using the Toolkit to Build Client-Libraries and Data Servers}
+\label{tk:using}
+
+This section describes how to use the toolkit software to build new client
+libraries and data servers. Both tasks are potentially demanding because
+knowledge of the API for which the software is being built is paramount. To
+create a client-library that can {\em replace\/} the original API
+implementation at {\em link time\/} means that the client-library must
+present exactly the same interface as the original library. This includes,
+to the extent that they are widely used, any undocumented features of the
+original implementation that manifest themselves as symbols that require
+link-time resolution. Thus building a client-library requires great
+understanding of the existing implementation and current use of the target
+API. 
+
+To build a good data server for files or data sets encoded using an API it is
+important to understand the data model(s) the API supports and how they
+relate to the DODS data models. Each of the various data types that the API
+supports must be translated into a DODS data type (i.e., one of the DODS
+classes that descend from {\tt BaseType}). However, there is often not a
+one-to-one match between the API's types and the DODS types. Thus, the data
+server author must decide how to best translate the API's types into DODS's
+so as to preserve as much of the data set author's intent. This is
+exacerbated by the use of various conventions that (implicitly) bind several
+variables together with a data set. When this pattern shows up (as it does
+with NetCDF) you must decide whether to lump all variables together that {\em
+  appear\/} to use the convention (and thus falsely group some variables) or
+to group only those which actually are explicitly grouped using whatever the
+API provides. If you choose the later then any data sets which follow the
+convention will lose information. When building the data server it is
+important to keep such tradeoffs in mind.
+
+In the following subsections the specifics of building a data server and a
+client-library are discussed. The existing NetCDF server and client library
+are used as examples. At this time they are the most complete software for
+the supported APIs and many APIs are very similar in their overall
+organization. The source code used for these examples can be found in {\em
+  \$(DODS\_ROOT)/src/http/nc-dods/\/}. If you are building a data server or
+client-library for a relational system, much of the NetCDF example will still
+be relevant. In addition, the software in {\em
+  \$(DODS\_ROOT)/src/http/jg-dods/\/} contains both a data server and
+client-library for the \JGOFS\ relational data system.
+
+\subsection{Data Servers}
+
+The data server consists of three filter programs written in \Cpp\ and a
+dispatch CGI which selects which of the filters to run based on the URL. When
+the client-library receives a URL via its open call (which will not actually
+be called {\em open\/} but performs the function of opening a file or data
+set; e.g., NetCDF's {\tt ncopen}) it passes that URL to the class Connect
+member functions {\tt request\_das} and {\tt request\_dds}. These member
+functions append the extension {\tt .das} and {\tt .dds} (respectively) on to
+the URL and retrieve the resulting URL, which is the DAS and DDS for the data
+set (for more information about URLs, and the difference between URLs
+supplied by the user and those used by the software, see ``\URL'').
+
+\begin{figure}
+\begin{code}{cb}
+
+#!\bin\sh
+
+cgi_dir=`pwd`
+cgi_dir2=`echo $cgi_dir | sed 's@\\(.*\\)/.*@\\1@'`
+
+extension=`echo "$PATH_INFO" | sed 's/.*\.\(.*\)/\1/'`
+
+server_pgm="${cgi_dir2}${SCRIPT_NAME}_${extension}"
+
+file_name=`echo "$PATH_TRANSLATED" | sed "s/\(.*\)\.${extension}/\\1/"`
+
+query=`echo "$QUERY_STRING" | sed 's/+/ /g'` 
+
+$server_pgm $file_name $query
+$
+
+\end{code}
+\caption{The DODS-NetCDF data server dispatch CGI (comments elided).}
+\label{fig:cgi}
+\end{figure}
+
+\subsubsection{The Dispatch CGI}
+\label{tk:cgi}
+
+A sample dispatch CGI is shown in Example~\ref{fig:cgi}. It is a Bourne Shell
+script.  The dispatch CGI first puts the current working directory into {\tt
+  cgi\_dir2} using pwd and the URL `file type' extension into {\tt
+  extension}. Note that the extension is stripped from {\tt cgi\_dir2} using
+{\tt sed}. The variable {\tt server\_pgm} contains the name of the data
+server filter program to run. It is the catenation of the CGI script name,
+and underscore and the URL's extension ({\tt SCRIPT\_NAME}, {\tt \_} and {\tt
+  extension}). For example, if the dispatch CGI received the URL {\em
+  http://machine/cgi\_bin/nc/data.das\/} the variable {\tt SCRIPT\_NAME}
+would contain {\em nc\/} and the variable {\tt extension} would contain {\em
+  das\/}; thus {\tt server\_pgm} is assigned {\em nc\_das\/}.  The last line
+of the script runs the program named by {\tt server\_pgm} with two arguments.
+
+The {\tt file\_name} and {\tt query} arguments to the filter program are
+built by extracting the path and query string from the URL. For example the
+URL {\em http://machine/cgi\_bin/nc/data/exp1.nc?var1.das\/} would result in
+{\em /data/exp1.nc\/} in {\tt file\_name} and {\em var1\/} in {\tt query}.
+
+\subsubsection{The DAS and DDS filter programs}
+
+The source code for the DAS filter program distributed with the NetCDF server
+software is shown in Listing~\ref{fig:das-filter}. The DAS and DDS filters
+are both very similar, so only the DAS filter will be discussed here. If
+there are important differences between the two, they will be pointed out.
+
+Each of the filter programs must create a \MIME\ document to hold its return
+value. The DAS and DDS filters return a text MIME document; they set up the
+\MIME\ headers (Content-Length, \ldots) using the utility function {\tt
+  set\_mime\_text}. 
+
+The DAS filter program takes only one argument, the data set or file name.
+This is passed in to the program in {\tt argv[1]}; the filter program's {\tt
+  main()} function calls {\tt read\_variables()} which does all the actual
+work of building the DAS structure. The DAS class contains a number of member
+functions that enable new variables to be added to the DAS ({\tt
+  DAS::add\_table}) as well as member functions to retrieve tables ({\tt
+  DAS::get\_table}) and traverse the collection of variables and their
+attribute tables. The class AttrTable contains the member functions necessary
+to build the attribute table for a single variable ({\tt
+  AttrTable::append\_attr}) and read name, type and value of an attribute.
+
+Once the data set has been read and the attribute table built, the DAS
+ancillary file is loaded. The example filter looks for a file with the same
+root name as the data set and an extension equal to {\tt .das}. If such a
+file exists, the it is read in using the DAS member function {\tt
+  DAS::parse} and the information it contains is merged with the DAS built
+from the data set. 
+
+Finally the DAS member function {\tt print} is used to send the textual
+representation of the DAS to the client. Note that the dispatch CGI's
+standard input and output are a socket connected to the client process (since
+the CGI is running in a child process of {\tt httpd}) because the filter is
+invoked by the CGI script, its output also goes to the client. Thus the
+DAS::print member function actually writes it output to standard output, but
+that happens to be connected to the client process. The {\tt print}
+member function contains several options which permit the output to be sent
+somewhere other than standard output.
+
+Note that the example filter does not use any caching. It is possible to
+build a more sophisticated filter program that saves the generated DAS to a
+text file and then uses that (without first interrogating the data set, thus
+saving on access) file. It is also possible to write a DAS by hand and {\em
+  always\/} use that if the data set does not contain any of the type of
+information that the DAS has.
+
+\begin{figure}
+\begin{code}{cb}
+extern bool read_variables(DAS &das, char *filename);
+
+int 
+main(int argc, char * argv[])
+{
+    set_mime_text();
+
+    if(argc < 2) {
+        ErrMsgT("Usage: nc_das <data set>");
+        exit(1);
+    }
+
+    // read the netCDF file attributes from dataset
+
+    DAS das;
+
+    if(!read_variables(das, argv[1])){
+        exit(1);
+    }
+
+    // read the ancillary DAS if it exists.
+
+    String ExtFile = (String)argv[1] + ".das";
+    FILE *in = fopen(ExtFile, "r");
+ 
+    if (in) {
+        int status = das.parse(in);
+
+        if(!status) {
+            String Msgt = (String)"Parse error in external file " + ExtFile;
+            ErrMsgT(Msgt);
+        }
+        fclose(in);
+    }
+
+    // send the DAS object (as text)
+
+    das.print();
+
+    exit(0);                    // exit success
+}
+\end{code}
+\caption{The DAS filter program.}
+\label{fig:das-filter}
+\end{figure}
+
+\subsubsection{The Data filter}
+
+The data filter program is structured similarly to both the DAS and DDS
+filters except that it returns a binary MIME document rather than text and
+that it takes two arguments instead of just one. In addition to the data set
+or file name (argument 1) it also takes the DODS constraint expression
+(argument 2, which was encoded in the URLs {\em query\/}).
+
+The filter first sets up the binary MIME document headers with the
+convenience function {\tt set\_mime\_binary}. Once done the data filter must
+get a copy of the data set's DDS. Currently no caching is used by the NetCDF
+filter so the data filter must do all of the steps that the DDS filter does:
+scan the data set and build the DDS, then look for an ancillary DDS file and
+merge it with the DDS just built. It would improve performance considerably
+to cache the DDS and not rebuild it via the data set.
+
+Once this is done the data filter must use the data set name and constraint
+expression (query) to find the correct file and select information from
+within that file. The class DDS supports a new member function called {\tt
+  send} that simplifies this process by evaluating the constraint expression
+(CE) and creating a new DDS containing only those variables described by the
+CE. That DDS is used to read the variable's values, complete any CE
+evaluation that remains and send the data if appropriate (see {\tt DDS:send}
+for more information).
+
+If for one reason or another you cannot use the send member function of DDS,
+then you must ensure that the the {\em read\/}, {\em CE evaluation\/} and the
+{\em serialize\/} operations are all carried out in the correct order.
+Furthermore, you must ensure that the return value of the data filter is a
+binary MIME document with a text prefix (currently, DODS does not use the
+multi-part MIME standard); that is a regular binary MIME document with a
+section at the start that is text. This text is the DDS generated after
+evaluating the projection clauses of the CE. The text part is separated from
+the data by the keyword ``Data:'' at the start of the line (and out the scope
+of the text DDS so it is possible to have the text {\em Data:\/} in the DDS).
+
+\subsection{Client Libraries}
+
+The goal of building a client-library is to provide a drop-in replacement for
+an existing API so that user programs written for that API can switch to the
+DODS version and access DODS data. The user programs should not require any
+modification to change over to the DODS client-library version of the
+API. However, the API will clearly need substantial changes to its current
+implementation. In the following subsections several different problem areas
+are discussed. 
+
+\subsubsection{Maintaining Virtual Connections}
+\label{tk:virtual-connections}
+
+The DODS \Dap\ is a connection-less protocol yet most data access APIs
+maintain state information about the files or data sets that the user program
+currently has open. Many client-server systems would implement the
+network-capable versions of these APIs by having the server maintain state
+information for a number of connections. However, since the DAP is a
+connections protocol, its servers cannot maintain any state information. To
+simulate an API's connection, the client-library for that API must create a
+{\em virtual connection\/} using information about the data set it has read
+from the server.
+
+The DAP data set attribute structure (DAS) and data set descriptor structure
+(DDS) are objects specifically designed to simplify this task. These objects
+contain information about the data set's logical organization, variable names
+and types and any additional information the data set author thought was
+important. 
+
+Most APIs used for storage of science data have one function call used to
+open a data set or file (e.g., NetCDF uses the function {\tt ncopen}). For
+the remainder of this document this will be referred to as the API's open
+call. When building a replacement for this API, the open call must be
+completely recoded (see \DDD\ for a description of the tasks the new function
+must complete) so that the DAS and DDS objects are requested from the data
+set's server and stored locally. There are several ways to store this
+information: the class Connect can be subclassed to that additional
+information can be stored with each Connect object, the DAS and DDS objects
+themselves can be used to store the information, or part of the original
+implementation of the API may be used. Of these three, the first option offers
+the best balance between simplicity and efficiency. Using the DAS and DDS
+objects may not efficient at all since some information may be obtained only
+by iterating through all the objects and using large pieces of the original
+API may mean using software intended for a very different type of system---it
+may not store much of the information that the DAS and DDS objects store,
+thus increasing accesses to the server.
+
+Figures~\ref{fig:open}~and~\ref{fig:NCConnect} show sample versions of the
+recoded open call in the DODS-NetCDF software and the subclass of Connect
+used to store information extracted from the DAS and DDS objects.
+
+The recoded open call of NetCDF has exactly the same type as the original
+implementation; it takes the same number and type of arguments and returns
+the same type. The first operation performed by the new open call is to
+create a {\tt Connect} object (actually an {\tt NCConnect} object \ldots)
+using the arguments passed to the open call.
+
+The constructor for {\tt NCConnect} is shown in
+Figure~\ref{fig:NCConnect-ctor}. Note that the constructor takes {\em mode\/}
+as a second argument, but never uses it. This is an artifact of the original
+design for the class; in a future version this may be removed. The
+constructor initializes several members and then clears its internal symbol
+table with the {\tt init\_list} private member function.
+
+After the open call creates the new {\tt NCConnect} object, it makes sure
+that the user is not trying to open the remote data set for writing and, if
+they are not, reads the DAS and DDS from the data set. Once read, the DAS and
+DDS objects are parsed using {\tt NCConnect}'s member functions {\tt
+  parse\_das\_loc} and {\tt parse\_dims}. These two member functions, along
+with the additional state variables in NCConnect, effectively create the
+virtual connection. Subsequent calls to the client-library for information
+about the variables (e.g., their size, names, etc.) will be answered using
+information stored in the symbol table in the {\tt NCConnect} object.
+
+\begin{figure}
+\begin{code}{cb}
+int
+ncopen(const char *path, int cmode)
+{
+    int id;
+    NCConnect *c = new NCConnect(path, cmode);
+
+    cdf_routine_name = "ncopen" ;
+
+    if(cmode != NC_NOWRITE) {    
+        NCadvise(NC_EPERM, "Error, read-only access over the network");
+        delete c;
+        return(-1);
+    }
+
+    if(!c->request_das()){
+        NCadvise(NC_EINVAL, "Error in getting DAS from \"%s\"",path);
+        delete c;
+        return(-1);
+    }
+
+    if(!c->request_dds()){
+        NCadvise(NC_EINVAL, "Error in getting DDS from \"%s\"",path);
+        delete c;
+        return(-1);
+    }
+
+    // we can extract dim. and attr. info into tables
+    c->parse_das_loc();
+    c->parse_dims();
+
+    return(conns.add_connect(c)) ;
+}
+\end{code}
+\caption{The recoded open call of NetCDF.}
+\label{fig:open}
+\end{figure}
+
+\begin{figure}
+\begin{code}{cb}
+class NCConnect: public Connect {
+private:
+    int _ncid;                  // used only if LOCAL is true, otherwise == -1
+    int _nvars;                 // Number of variables in this file
+    int _ndims;                 // Number of dimensions found
+    String _dim_name[MAX_NC_DIMS];
+    int _dim_size[MAX_NC_DIMS];
+    int _das_loc[MAX_NC_VARS];
+    void init_list(int i);
+    void parse_array_dims();
+    void parse_grid_dims();
+
+public:
+    NCConnect(const String &name, const int mode);
+    ~NCConnect();
+
+    int &ncid();
+    int &ndims();
+    int &nvars();
+    int &dim_size(const int dimid);
+    const String &dim_name(const int dimid);
+    int &das_loc(const int varid);
+    void parse_das_loc();
+    void parse_dims();
+};
+\end{code}
+\caption{The subclass of Connect used with the NetCDF client-library.}
+\label{fig:NCConnect}
+\end{figure}
+
+\begin{figure}
+\begin{code}{cb}
+NCConnect::NCConnect(const String &name, const int mode) : Connect(name, API)
+{
+    if(is_local()){
+        _ncid = -1;             // default value
+    }
+    else {
+        _ncid = -1;
+        _nvars = -1;
+        init_list(MAX_NC_VARS); // clear the look up table
+    }
+
+}       
+\end{code}
+\caption{The constructor for NCConnect.}
+\label{fig:NCConnect-ctor}
+\end{figure}
+
+\subsubsection{Requesting Data Values}
+\label{tk:requesting-data}
+
+When the user program requests data it typically does so be requesting that
+one or more variables be read from the data set. This request must be
+translated into a URL referencing the data set's variable or variables. This
+is done by appending the suffix {\tt .dods} to the data set's URL and then
+appending a constraint expression (CE) to the resulting URL. For example,
+suppose that a data set has the following URL: {\em
+  http://machine/cgi-bin/nc/data/exp1.nc}. To access the variable {\tt
+  var1} the client-library would create the URL: {\em
+  http://machine/cgi-bin/nc/data/exp1.nc.dods?var1\/}. Note that the Connect
+class contains a member function, {\tt request\_data} that performs this
+task; it takes three arguments: the CE to append, a flag which is used to
+request synchronous or asynchronous behavior and the suffix to use for
+requesting data. The last argument defaults to {\tt .dods} which all the DODS
+data servers expect, thus for most purposes this member function requires
+only two arguments (See Section~\ref{tk:using-constraints} for more
+information on using constraint expressions to access data).
+
+When a DODS data server sends a variable (i.e., when it sends the variable's
+value) the binary data is prefixed with a block of text that contains a DDS
+describing just the returned data (rather than the entire data set). The
+client-library should use this DDS object to {\em deserialize\/} the requested
+variable(s) and access their values. This is important because some variables
+may have been constrained is such a way that their types have changed. It is
+important to use the correct variable type when decoding the binary
+information. For example, suppose a user program provides a way for a user to
+select a two dimensional slice of a three dimensional object. When the API is
+used to get such a variable the user program will expect the API to only
+return two dimensions, not three. Furthermore, DODS CEs are powerful enough
+to limit the data sent over the network to only those dimensions requested
+(via the API) by the user program (i.e., you can use the CE mechanism to
+limit the request to two of three dimensions, among other things). However,
+when the variable is deserialized you must be sure that the type information
+used deserializes a two dimensional variable and not a three dimensional
+variable. That is why each data access is prefixed by a DDS which corresponds
+to the type(s) of variable(s) sent for that access. The {\tt request\_data}
+member function returns a DDS which matches the incoming data and can be used
+to deserialize it.
+
+Once the {\tt request\_data} member function has returned, the
+client-library must still call the deserialize member function (which is part
+of the DODS Type Hierarchy) for each variable in the return document. The
+client-library should use the variable objects contained in the DDS object
+returned by {\tt request\_data} to invoke the {\tt deserialize} member
+function. Once that is done, the data values are stored in the internal
+buffers of the variable objects in the new DDS. The client-library should
+store this new DDS, along with the CE passed to {\tt request\_data} so that
+future requests by the user program for the same information can be handled
+without accessing the remote data server.
+
+The data values of variables in a DDS are accessed using the {\tt buf2val}
+member function for the cardinal and vector types and by accessing the values
+of fields for constructor types.
+
+\subsection{Using Constraints}
+\label{tk:constraints}
+
+Constraint expressions (CE) are an important part of DODS because they
+provide a powerful way to control how data is accessed without forcing the
+\Dap\ to support a lot of different messages. CEs are used to select which
+variables will be extracted from a data set by both the user and by the
+client-library. In the preceding sections, the mechanism by which the
+client-library requests a single variable was described. However, it is
+possible to formulate complicated CEs in just the same way as it is possible
+to make CEs which request only a single variable. The difference, of course,
+is that the expression itself must be different; the process of building the
+URL, requesting the data it describes and decoding the resultant binary
+information is the same.
+
+\subsubsection{How Constraint Expressions are Evaluated}
+\label{tk:ce-evaluation}
+
+The server-side CEs are evaluated using a two step process. Every CE has
+two parts, the projection and the selection subexpressions (see ``\DAP''). The
+projection part of a CE tells which variables to include in any return
+document describing the data set (although they don't yet work for the DAS
+object) and the selection subexpression limits the returned data to variables
+with values that satisfy a set of relational expressions. The projection
+subexpression is evaluated when the entire constraint expression is parsed;
+at parse-time the server's copy of the data set's DDS is marked with the
+variables included in the projection. The selection subexpression, however,
+is not evaluated until values are read from the data set. One way to classify
+the projection and selection subexpressions is that projections depend solely
+on the logical structure of a data set, while selections depend on the values
+of particular variables within that data set.
+
+\subsubsection{Different Ways of Using Constraint Expressions}
+\label{tk:using-constraints}
+
+There are two different ways that CEs can be used. One is by the
+client-library and the other is by the user. When writing a client-library
+that has features for selecting variables or parts of variables, try to code
+the replacements to those calls so that they build up DODS CEs that will
+request only the data the user wants. Then read the data from the returned
+DDS and store it in the variable(s) passed to the API call by the user. This
+is a much better solution than requesting the entire variable from the data
+set and then throwing away parts of it.
+
+Suppose that the user program (via the APIs functional interface) asks for
+the data in variable {\em X\/}. The CE that will retrieve {\em X\/} is simply
+`{\em X\/}'. Suppose, given the following DDS:
+
+\begin{code}{cb}
+Dataset {
+    Int32 u[time_a = 16][lat = 17][lon = 21];
+    Int32 v[time_a = 16][lat = 17][lon = 21];
+    Float64 lat[lat = 17];
+    Float64 lon[lon = 21];
+    Float64 time[time = 16];
+} fnoc1;
+\end{code}
+
+\noindent\ that the user program requests the two variables {\em u\/}
+and {\em v\/} from the embedded structure. A CE that would project just those
+variables would be {\em fnoc1.u, fnoc1.v\/}. To restrict the arrays {\em u\/}
+and {\em v\/} to only the first two dimensions (time and lat), the projection
+subexpression would be: {\em fnoc1.u[1:16][1:17], fnoc1.v[1:16][1:17]\/}.
+Both of these CEs have null selection subexpressions. Note that the comma
+operator separates the two clauses of the projection subexpression. Also note
+that whitespace is ignored by the CE parser. See the grammar for CEs in the
+\Dap\ for more information about CE grammar and the kind of things that can
+be done with the projection subexpression.
+
+The user program may have an interface that provides the user with a way to
+request only certain values be returned. This is particularly true for APIs
+such as JGOFS that support access to relational data sets. Suppose the
+following DDS describes a relational data set:
+
+\begin{code}{cb}
+Dataset {
+    Sequence {
+        Int32 id;
+        Float64 lat;
+        Float64 lon;
+        Sequence {
+            Float64 depth;
+            Float64 temperature;
+        } xbt;
+    } site;
+} cruise;
+\end{code}
+
+\noindent\ If the user program requests data with a certain range of latitude
+and longitude values, then the selection subexpression would be used like
+this: $\&\ lat\ >=\ 10.0\ \&\ lat\ <=\ 20.0\ \&\ long\ >=\ 5.5\ \&\ long\ <=\
+7.5$.
+Note that each clause of the selection subexpression {\em begins\/} with a
+{\em \&\/} and that the clauses are combined using a boolean {\em and}.
+Finally, using the previous DDS, if a user requested only depth and
+temperature given the above lat and lon range (i.e., the user program
+requests that only the depth and temperature values be returned given a
+certain lat and lon range) the client-library would use the following CE:
+$site.xbt.depth,\ site.xbt.temp\ \&\ lat\ >=\ 10.0\ \&\ lat\ <=\ 20.0\ \&\
+long\ >=\ 5.5\ \&\ long\ <=\ 7.5$.
+
+A second way that CEs can be used is that users may specify an initial URL
+with a CE already attached. In this case the {\tt request\_data} member
+function will append the CE built by the client-library to the one supplied
+by the user. In effect the DDS returned by the user-constrained URL will be
+the DDS of a virtual data set; one that they have made using an existing data
+set and some constraints. Form the standpoint of a client-library (or a data
+server, for that matter) there is no difference between a URL supplied with
+an initial constraint and one supplied without one.
+
+\section{Linking User Programs}
+\label{tk:linking}
+
+When linking a user program to the DODS client-library version of an API
+library, several ne libraries must be substituted for the original library.
+These libraries are: the reimplemented API (or API for short), {\tt
+  libdap++}, {\tt libnetio} and {\tt liberrmsg}. Because the DAP library and
+the API have circular dependencies they must each be included on the linker
+command line twice. An example of this can be seen in the DODS-NetCDF
+Makefile; the value of {\em LIBS\/} is passed to the linker {\tt ld}. Note
+that the API library is listed first.
+
+\begin{code}{cb}
+LIBS = -lnc-dods -ldap++ -lnc-dods -ldap++ -lnetio -lerrmsg 
+\end{code}
+
+You should have users link their programs using {\tt gcc} or {\tt g++} since
+the libraries are all built using those tools. In particular, {\tt g++}
+includes libstdc++ and libg++ by default when it builds an executable program
+from object modules. If you use {\tt gcc} instead of {\tt g++} when you link,
+e sure to include these libraries as well after all the libraries listed
+above. If you don't use {\tt gcc}, but instead use the linker directly (i.e,
+you call {\tt ld} yourself) you are on your own - you can use {\tt gcc -V} to
+determine what flags and additional libraries it uses that are specific to your
+system and then experiment with those. We cannot tell you how to proceed
+since each UNIX variant requires different flags and libraries.
+
+\section{Conclusion}
+
+This document describes how to use the {\tt libdap++} and {\tt libnetio} to
+simplify building DODS data servers and client-libraries. Each of the two
+libraries contains a collection of \Cpp\ classes which can be used in the
+filter programs and client-library to simplify reading data from a server and
+returning it to a user program via a pre-existing API definition.
+
+It is possible to build only a data server or client-library and, since all
+data servers and client-libraries communicate using the same protocol, the
+resulting software will still be very useful. However, once you have gone to
+the trouble of sub-classing the DODS {\em Type Hierarchy\/} it is probably
+worth the extra effort to build both components.
+
+\newpage
+
+\addcontentsline{toc}{section}{Bibliography}
+\bibliographystyle{plain}
+\bibliography{../boiler/dods}
+
+\end{document}
+
+
+

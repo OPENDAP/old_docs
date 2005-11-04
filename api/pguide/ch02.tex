@@ -1,0 +1,157 @@
+% Chapter to the DODS Programmer's Guide
+%
+% $Id$
+%
+% $Log: ch02.tex,v $
+% Revision 1.5  2000/10/04 15:00:23  tom
+% changed \figureplace definition, cleaning up...
+%
+% Revision 1.4  1999/07/22 18:54:56  tom
+% fixed errors
+%
+% Revision 1.3  1999/02/04 17:46:05  tom
+% Modified for dods-book.cls and Hyperlatex
+%
+% Revision 1.2  1998/12/07 15:51:33  tom
+% updated for DODSv2.19
+%
+% Revision 1.1  1998/03/13 20:50:02  tom
+% created API manual from James's Toolkit document
+%
+%
+
+\chapter{Managing Connections}
+\label{pguide,connect}
+\label{tk,manage-conns}
+
+Because DODS uses a communication protocol (http) that does not
+maintain state information about the link between two processes, these
+connections are virtual, and all the information about them is
+maintainted by the client.  The toolkit contains two classes to help
+clients manage connections to one or more DODS servers.  One class,
+\class{Connect} stores information used when a connection is
+established. It also allows a program to provide local access to data
+(without a DODS data server).
+
+The second network class of the DODS Toolkit, \class{Connections},
+manages instances of the \class{Connect} class. It provides a
+mechanism for the client libraries to pass back to user programs the
+type of object (such as \lit{int}, opaque pointer, \ldots) they expect and
+then to use one of those objects to access the correct instance of
+\class{Connect}.  \class{Connections} is a template class. That is, a
+client library uses the \class{Connections} class to make an array of
+some sub-class of \class{Connect}.
+
+\section{Connect}
+
+\indc{Connect class}\indc{class!Connect}\indc{connection!managing}
+\indc{client-server connection}
+The \class{Connect} class manages one connection to either a remote
+data set, via a DODS data server, or a local access. For each data set
+or file that the user program opens, there must be exactly one
+instance of \class{Connect}. Because information needed for local
+access is stored in an instance of \class{Connect}, this class may
+also be used (sub-classed) for each client API that needs to maintain
+additional information about the connection.\footnote{For example, the 
+  subclasses \class{JGConnect} and \class{NCConnect} exist for JGOFS and
+  NetCDF, respectively.}. In the API-specific child of \class{Connect}
+additional members can be added to store state information that the
+client-library needs to maintain the virtual connection (See
+Section~\ref{tk,subclass-netio} for more information on making
+virtual connections).
+
+\figureplace{The Connect Class}{htb}
+{fig,connect-diagram}{Connect.ps}{Connect.gif}{}
+
+The \class{Connect} class is illustrated in
+\figureref{fig,connect-diagram}.  These objects contain the following
+information:
+
+\begin{description}
+
+\item[URL] The URL with which the client library opens the connection
+  with the DODS server.
+  
+\item[\class{DDS}] The \class{DDS} of the opened dataset.  This must
+  be retrieved from the dataset.
+  
+\item[\class{DAS}] The \class{DAS} of the opened dataset.  This must
+  be retrieved from the dataset.
+  
+\item[\class{Gui}] The \class{Gui} object indicates a graphical widget
+  on the client platform that displays information about the data
+  transfer in progress.
+  
+\item[\class{Error}] The \class{Error} object contains information
+  used to help the client process an error message from the server.
+
+%
+%\item[Constraint List] In the case of repeated accesses to the same
+%  URL, the \class{Connect} class can be used to contain information
+%  about the multiple connections.  Each object in this list contains a
+%  constraint expression string (as it is used in the submitted URL)
+%  and a constrained \class{DDS} that was its result.
+
+\end{description}
+
+The \class{Connect} class provides member functions to get the
+dataset's \class{DAS}, \class{DDS} and data. The instance of
+\class{Connect} (or a subclass of \class{Connect}) stores the URL as
+the user provides it.
+
+When the client library receives a URL via its ``open'' call (which
+will not actually be called \lit{open} but performs the function of
+opening a file or data set; e.g., NetCDF's \lit{ncopen}) it passes
+that URL to the \class{Connect} member functions like
+\lit{request\_das} and \lit{request\_dds}. These member functions
+append an appropriate extension (\lit{.das} and \lit{.dds}, for
+example) onto the URL and retrieve the resulting information from the
+server, the \class{DAS} or \class{DDS} for the dataset.
+
+%The \class{Connect} class also contains information about all of the
+%constraints used to access data so far. This information includes all
+%of the expressions as well as all of the resulting \class{DDS}s and
+%values they returned.  This is a powerful form of caching that can be
+%tricky to use. If the user program, via the API, has previously
+%requested the exact same data (i.e., the constraint expressions match
+%exactly for any two requests) then you can use the data already stored
+%by the \class{Connect} object rather than send for the data a second
+%time. The \class{Connect} class provides member functions to be used
+%to search the previously submitted constraint expressions.
+
+If you are re-implementing an API and must support function calls that
+modify how data is accessed (e.g., by creating array slices or by
+choosing one of a set of variables), then you will need to translate
+those requests into a DODS constraint expression. You would then pass
+these synthesized constraint expressions to the
+\lit{Connect::request\_data} member function.  (See
+\sectionref{tk,constraints} for more information about constraint
+expressions.)
+
+The specialized version of \class{Connect} is the place to put state
+information needed by a recoded API or other client.  This can be
+used, for example, to emulate an API that maintains a list of open
+files. 
+
+\section{Connections}
+
+\indc{Connections class}
+The class \class{Connections} is used to manage a set of instances of
+the class \class{Connect} by providing a means to map an index or
+opaque pointer to an instance of \class{Connect}.
+
+When a new instance of \class{Connect} (or a descendent of
+\class{Connect}; See Section~\ref{tk,subclass-netio}) is created, it
+is added to the \class{Connections} object using the \lit{add\_connect}
+member function. \lit{add\_connect} returns an integer that can be
+used to access that instance of Connect at any time. Similarly, when
+an instance of \class{Connect} is to be deleted, the object can be
+referred to via the \class{Connections} object and this index.
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../pguide.tex"
+%%% End: 

@@ -1,0 +1,67 @@
+From an email to John Caron:
+
+Well, Here's what I've finally settled on doing: First I freeze the
+code. That means no more new features. Then I make a bunch of release
+candidates (same as beta) and we work the bugs out. When there are no
+more bugs in the bug database that we're going to fix (i.e., the
+remaining bugs all require a new feature to fix), then it's done. The
+existing bugs should be documented in a KNOWN BUGS kind of a thing (but
+we've never done that...).
+
+So, to answer the question, should it be released, I'd say look at the
+bugs and ask yourself how those will/should be fixed. If they all will
+require a feature change, it's time to release.
+
+James
+
+Dan's comments on the non-code activities involved in releasing software
+(11/14/2002): 
+
+Other than issues in the implementation, what's required to make
+this an 'operational' element of the project?
+
+  - what's required to go from 'beta' to 'public'.
+      - is the documentation sufficient?
+      - is the web-site current?
+      - is support capable of answering questions
+         on the software? (install/use)
+      - does support understand the current limitations?
+      - is support aware of the impact of the Java-DAP
+         dds/das parser limitations with regard to this
+         software?
+      - is there software devel. resources available to
+         resolve problems with the AS when identified.
+
+   - should the current suite of client applications be
+       updated to start using AggServers when available?
+       - matlab GUI / ODC.
+       - does the Dataset List contain any references
+           AS installations?
+
+   - should we assist providers (JPL/USF/GSFC) with
+      installation/configuration?
+
+Dan
+
+From an email from Ethan:
+
+> Once the release branch builds:
+> 
+> 1) Release the source as 'Release candidate 1'
+     a) Declare CVS branch frozen
+     b) Tag the branch for RC1 release, e.g., "release-3-4-RC1"
+     c) Merge the branch back onto trunk
+     d) checkout RC1 release
+     e) Make source tar files
+     f) Place on ftp site
+     g) Make sure web site is updated
+     h) Announce "Release Candidate 1"
+> 2) Begin building binaries
+> 3) as binaries build, release, noting they are 'RC1'
+> 4) fix bugs, if no major bugs exist (my call ;-), goto 7
+> 5) generate new source
+> 6) goto 1 and increment the RC number.
+> 7) make a formal (non-beta) release
+
+I wrote #1-#7, Ethan added a-h.
+

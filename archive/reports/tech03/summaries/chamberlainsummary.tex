@@ -1,0 +1,55 @@
+The OPeNDAP Data Connector (ODC) provides a graphical user interface to search 
+for and retrieve datasets published by OPeNDAP data servers. OPeNDAP servers 
+(also known as DODS servers) located at major institutions around the world serve a 
+wide variety of data including: climatic data, satellite imagery, and ocean sensor 
+results. The ODC allows you to find these datasets, download them to your machine, 
+save them, and import them into client applications like IDL, Matlab, SPSS, Excel, or 
+into databases such as Access and Oracle. The ODC also has simple image viewing 
+and data plotting capabilities.
+
+(see presentation screenshots)
+
+Summary of discussion questions:
+
+\begin{enumerate}
+
+  \item Can the spatial-temporal panel be used separately?
+
+Yes, the code in the ODC is modular and some portions such as the Spatial-
+Temporal Panel can be taken out and used independently.
+
+  \item Can the user reconfigure the interface to hide certain panels?
+
+No. This feature may be added at some point in the future.
+
+  \item Can the ODC be tightly integrated with GrADS?
+
+No. This is because GrADS uses a closed command line interface with no 
+programmatic API.
+
+   \item How can other programs interoperate with the ODC?
+
+The ODC has a built-in command server (IPS) which allows other programs to give it 
+commands and receive responses. Currently there are clients written in Excel and 
+Matlab which can talk to the IPS. The ODC code base includes an example class 
+written in Java which illustrates a typical IPS client.
+
+
+\end{enumerate}
+
+
+% $Id$
+%
+% $Log: chamberlainsummary.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

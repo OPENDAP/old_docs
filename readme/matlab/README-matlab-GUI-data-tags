@@ -1,0 +1,13 @@
+
+$Id$
+
+This file contains information on the CVS tags in this directory and the
+various additions to the data population. 
+
+release-2-18: This revision was committed right before Deirdre cutoff adding
+datasets before the Dec. 1998 AGU meeting.
+
+release-2-18-KL: This contains additions and fixes from Kwoklin Lee. Added
+files are gom*, fsu* and *fronts*. Changed files are uriecat.m, htn.m, glk.m
+and prevu.m. This also contains the fix for ML 4 jplczcsurl.m
+

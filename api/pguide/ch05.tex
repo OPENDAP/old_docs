@@ -1,0 +1,59 @@
+% Chapter to the DODS Programmer's Guide
+%
+% $Id$
+%
+
+\chapter{Linking Your Program}
+\label{pguide,linking}
+\label{tk,linking}
+
+\indc{linking!application}\indc{application!linking}
+To link a user program to the DODS client-library version of a data
+access API library, you need only substitute the name of the
+reimplemented API library for the original, and add the DODS Data
+Access Protocol library (\lit{libdap++}) to the link list.
+
+Because the DAP library and the API have circular dependencies they
+must each be included on the linker command line twice. An example of
+this can be seen in the DODS-NetCDF Makefile; the value of \var{LIBS}
+is passed to the linker \lit{ld}. Note that the API library is listed
+first.
+\indc{object libraries}\indc{libraries!object}
+
+\begin{vcode}{ib}
+LIBS = -lnc-dods -ldap++ -lnc-dods -ldap++ 
+\end{vcode}
+
+You should have users link their programs using \lit{gcc} or \lit{g++}
+since the libraries are all built using those tools. In particular,
+\lit{g++} includes libstdc++ (and libg++) by default when it builds an
+executable program from object modules. If you use \lit{gcc} instead
+of \lit{g++} when you link, be sure to include these libraries as well
+after all the libraries listed above. If you don't use \lit{gcc}, but
+instead use the linker directly (i.e, you call \lit{ld} yourself) you
+are on your own - you can use \lit{gcc -V} to determine what flags and
+additional libraries it uses that are specific to your system and then
+experiment with those. We cannot tell you how to proceed since each
+UNIX variant requires different flags and libraries.
+
+% $Log: ch05.tex,v $
+% Revision 1.5  2004/04/24 21:37:22  jimg
+% I added every directory in preparation for adding everyting. This is
+% part of getting the opendap web pages going...
+%
+% Revision 1.4  1999/07/22 18:54:56  tom
+% fixed errors
+%
+% Revision 1.3  1999/02/04 17:46:05  tom
+% Modified for dods-book.cls and Hyperlatex
+%
+% Revision 1.2  1998/12/07 15:51:33  tom
+% updated for DODSv2.19
+%
+% Revision 1.1  1998/03/13 20:50:03  tom
+% created API manual from James's Toolkit document
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../pguide.tex"
+%%% End: 

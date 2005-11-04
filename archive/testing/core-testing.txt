@@ -1,0 +1,21 @@
+
+	$Id$
+
+The DODS core software contains several sets of automated tests. To run these
+test suites you must have several software development tools from the Free
+Software Foundation (FSF, aka GNU). These tool are: gcc/g++, libg++,
+libstdc++, make, flex, bison, gcov, dejagnu. The tool `dejagnu' is the test
+driver package.
+
+The following automated tests are part of the DODS core software: das, dds,
+expression evaluator, remote server access (one test suite for each of the
+following servers: netcdf, jgofs, dsp, hdf), coverage.
+
+The das, dds and expression evaluator test suites test those parts of the
+core software. The servers test suites test the core software *and* each of
+the listed servers when those servers are running on a remote machine. The
+coverage tests can be applied to any/all of the above test suites and
+determine how much of the software was exercised by the them.
+
+To use these tests, examine the Makefile that comes with the DODS core
+software. Each test may be run by using its name as a build target to `make'.

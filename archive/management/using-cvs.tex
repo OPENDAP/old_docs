@@ -1,0 +1,639 @@
+
+% Notes on using cvs.
+%
+% $Id$
+
+\documentclass{dods-paper} 
+
+\rcsInfo $Id$
+
+\T\setcounter{secnumdepth}{4}     % Put \paragraph in TOC
+\T\setcounter{tocdepth}{4}
+\T\setlength{\parindent}{0em}     % Amount of indentation
+\T\addtolength{\parskip}{1ex}     % Vertical separation
+
+\W\newcommand{\*}{*}
+
+\title{Using CVS}
+\author{James Gallagher\thanks{jgallagher@opendap.org}}
+\date{\rcsInfoDate, Revision: \rcsInfoRevision}
+\htmladdress{James Gallagher <jgallagher@gso.uri.edu>, 
+  \rcsInfoDate, Revision: \rcsInfoRevision}
+\htmldirectory{cvs-html}
+\htmlname{cvs}
+\figpath{.}
+
+% Change paragraph typesetting; eliminate indenting and add more space between
+% paragraphs.
+\begin{document}
+
+\maketitle
+
+\T\tableofcontents
+
+\section{Introduction}
+
+This is a summary of CVS tricks I've found useful. Some of this information
+is hard to find in the (few) books on CVS and some is specific to the OPeNDAP
+effort. This is \emph{not} a replacement for reading
+the CVS documentation. There's also some information on using CVS as part of
+the release process in ``OPeNDAP Software Release Process.''
+
+\section{Using CVS to get the OPeNDAP Software}
+
+To start the ball rolling, check out the OPeNDAP software module. Unless you
+are working on \lit{dodsdev.gso.uri.edu} you will be using CVS to access a
+remote repository. We used to use the \lit{pserver} method of login, but
+since June 2004 we've been using \lit{ssh}. Here's how to access the
+repository:
+
+\begin{itemize}
+\item Set \lit{CVS\_RSH} to \lit{ssh}
+\item Set \lit{CVSROOT} to
+  \lit{:ext:<user>@dodsdev.gso.uri.edu:/usr/local/cvs-repository} where
+  \lit{<user>} is your user name (or \lit{anoncvs} if you want
+  anonymous/read-only access. Instead of setting CVSROOT, you can use the CVS
+  option -d \lit{:ext:<user>@dodsdev.gso }\ldots Once you have checked out
+  directories, you can run CVS commands within them without setting CVSROOT
+  or using -d.
+\end{itemize}
+
+Make sure not to add a trailing \lit{/} to the repository name; some
+versions of CVS gag if you do.
+
+If you want to get the entire OPeNDAP source tree, use the command:.
+
+\begin{vcode}{it}
+cvs -d :ext:<user>@dodsdev.gso.uri.edu:/usr/local/cvs-repository co DODS
+\end{vcode}
+
+It should ask for your password. Unlike the \lit{pserver} access method,
+using \lit{ssh} will prompt you for your password \emph{every} time you run a
+CVS command that affects the remote repository. This can get old quickly;
+see Section~\ref{sec:automatic-login}. 
+
+This will check out the entire \lit{DODS} \emph{module} from CVS. If this is
+what you want, you're all set. To build the software you may need autoconf,
+GNU make, bison and flex in addition to a decent C++ compiler (we're building
+with gcc 3.2.1 and VC++ 6.0).
+
+In the past the DODS CVS module was much larger. To help people cope with
+that we used to advise that they check out only the part of the module in
+which they were interested. There's little need for this now, but in case
+someone finds the information useful, here's how to do it:
+
+\begin{quote}
+From now on I'm going to leave off the -d option and repository string.
+You'll need it unless you set CVSROOT or are working inside already checked
+out directories.
+\end{quote}
+
+\begin{vcode}{it}
+cvs co -l DODS
+\end{vcode}
+
+This will checkout the root directory without recurring through all the
+subdirectories (the \lit{-l} option suppresses recurring on all the
+subdirectories). You will have to select the subdirectories you want by hand.
+Unfortunately, there is no way to tell it to checkout everything except
+$<foo>$ (\lit{co} is an alias for \lit{checkout}).
+
+Once you have checked out the root directory you no longer need to feed CVS
+the \lit{-d <big long string>} thing; CVS remembers which repository to use.
+
+Use:
+
+\begin{vcode}{it}
+cvs co DODS/etc
+
+cvs co DODS/src/dap
+cvs co DODS/src/nc-dods
+\end{vcode}
+
+to get only the source directories for the DAP library and netCDF server, for
+example, or
+
+\begin{vcode}{it}
+cvs co DODS/src
+\end{vcode}
+
+to get all the source directories.
+
+Because it is not possible to get CVS to create the subdirectories of DODS without
+checking out the subdirectories contents (which would amount to the entire DODS
+module - it is very large) it is hard to know which subdirectories you might want.
+Here is a list of the subdirectories under DODS:
+
+\begin{vcode}{it}
+src     The source code.
+etc     Destination for servers and also some support scripts.
+bin     You must make this by hand.
+lib     You must make this by hand.
+include The include files installed by src/dap.
+\end{vcode}
+
+As with all software, there are dependencies that exist between these
+directories. If you get the \lit{src} directory, you will also need \lit{etc}
+and include before you can build any of the software. In addition, you must
+make the \lit{bin} and \lit{lib} directories.
+
+\section{Write Access and Automatic Logins}
+\label{sec:automatic-login}
+
+In the past write access to CVS used \lit{pserver}. We stopped supporting
+that and switched to \lit{ssh} in June of 2004. Using \lit{ssh} is more
+secure than \lit{pserver} since passwords are not sent over the network as
+plain text. However, to get write access to the repository, you'll now need a
+full-fledged account on \lit{dodsdev.gso.uri.edu}. Contact Mark Schneider
+\lit{<mschneider@gso.uri.edu>} or James Gallagher
+\lit{<jgallagher@opendap.org>} for a login.
+
+Once you have a login, you will likely soon tire of re-typing your password.
+Here's how to set up automatic \lit{ssh} login. This is particularly useful if
+you're access CVS code from within an IDE. 
+
+\emph{[Thanks to Rob Morris and Mark Schneider for the following. jhrg]}
+
+\subsection{Automatic login from Unix}
+
+Here's Unix instructions to \lit{ssh} to \lit{dodsdev.gso.uri.edu} without
+requiring logging in (tested under Red Hat and Mandrake Linux, Solaris, OSF and
+OS X).
+
+On the host machine you want to login from:
+\begin{enumerate}
+\item Generate a \lit{ssh} key\\
+\begin{vcode}{it}
+\% ssh-keygen -t dsa
+\end{vcode}
+
+Just hit return as the pass phrase.
+
+\item Copy the key generated to account on \lit{dodsdev}\\
+\begin{vcode}{it}
+\% scp .ssh/id_dsa.pub <user>@dodsdev.gso.uri.edu:.ssh/<unique filename>
+\end{vcode}
+
+Enter your dodsdev password when prompted.
+
+\item Repeat step one and two for each host. Use a different unique filename
+    for each iteration.
+
+\item Use \lit{ssh} to login to \lit{dodsdev.gso.uri.edu}. For each filename
+    that was copied in step two, use an editor to paste the keys in those
+    files into your \lit{\$(HOME)/.ssh/authorized\_keys} file. One key per
+    line.
+\end{enumerate}
+
+Your should now be able to \lit{ssh} to \lit{dodsdev.gso.uri.edu} without
+entering a password (use the \lit{ssh} option -l \lit{<user>} when your user
+name on a host differs from that on \lit{dodsdev}).
+
+To get CVS assess to dodsdev without a password from series
+of UNIX hosts:
+\begin{enumerate}
+\item Do the above steps to setup ssh for each unix host you
+    desire.
+\item Add the following variables to your environment for that
+    host
+    \begin{vcode}{it}
+      export CVS\_RSH=ssh
+      export CVSROOT=:ext:<user>@dodsdev.gso.uri.edu:/usr/local/cvs-repository
+    \end{vcode}
+\end{enumerate}
+
+\subsection{Automatic login from Win32}
+
+On the win32 host machine you want to login from:
+\begin{enumerate}
+\item Download \lit{putty.zip} from \lit{http://www.puttyssh.org/} and unzip
+    it into \lit{"C:$\backslash$Program Files"} (or a directory of your choice).
+\item Launch \lit{puttygen} and generate a ``1024 bit DSA key".
+\item Paste the public key genared into your
+    \lit{\$(HOME)/.ssh/authorized\_keys} 
+    file on dodsdev.
+\item Save the private key to disk (in your putty install directory
+    probably) to some file such as \lit{dodsdev\_private.ppk} or a
+    name of your choice.
+\item Create a short cut to \lit{pagent} and modify that shortcuts'
+    properties ``Target" field so that pagent takes a 1st arg
+    of the file saved in step number four.
+\item Put that shortcut in your startup folder and reboot
+    (or just run it).  Your private key should have been
+    loaded.
+\item You can now configure and run \lit{puttySSH} in a rather
+    straight-forward manner.
+\end{enumerate}
+
+Your should now be able to use \lit{ssh} to access \lit{dodsdev.gso.uri.edu}
+without entering a password.
+
+To get cvs assess to dodsdev from a win32 host:
+\begin{enumerate}
+\item Do the above steps to setup \lit{ssh} if necessary.
+\item Download and install to \lit{tortoiseCVS} from
+  \lit{http://tortoisecvs.sourceforge.net/}
+\item Add the following variables to your environment for that
+    host.
+    \begin{vcode}{it}
+    CVS_RSH      TortoisePlink.exe
+    CVSROOT      :ext:<user>@dodsdev.gso.uri.edu:/usr/local/cvs-repository
+
+    C:\> cd <some empty dir>
+    C:\> cvs co DODS -r release-3-4
+    \end{vcode}
+    Or just right click in windows explorer and select ``cvs checkout"
+    (very slick).
+\end{enumerate}
+
+To make it so that CVS doesn't require a password:
+\begin{enumerate}
+\item Create a short cut to \lit{pagent} and modify that shortcuts'
+    properties ``Target" field so that pagent takes a 1st arg
+    of the file saved in step number four of the ssh install instructions
+    above.
+\item Put that shortcut in your startup folder and reboot
+    (or just run it).  Your private key should always load
+    at login time (transparently).
+\end{enumerate}
+
+\section{Branching}
+
+If you have checked out code a want to check changes in on a branch instead
+of the main trunk, do the following:
+\begin{enumerate}
+\item Tag the branch point.
+\item Create the branch.
+\item Update your copy of the code so that it is associated with that branch.
+\item Check in the code.
+\end{enumerate}
+
+\begin{quote}
+If you want to make a branch off of a branch, these same steps will work.
+However, it is best to stick to the trunk-and-branch model and not bifurcate
+branches themselves since it can be very hard for other people to figure out
+just where a particular revision fits into the CVS module.
+\end{quote}
+
+Perform the following steps in the directory that contains the code you want
+to move to the new branch (which I'll call \lit{test-branch}):
+
+\begin{vcode}{it}
+cvs tag root-of-test-branch
+cvs tag -b test-branch
+\end{vcode}
+
+The first command marks the place just before the branch point. This is
+important if you later need to get the code as it was just before you
+branched. The \lit{test-branch} tag \emph{does not} provide a way to do that.
+In fact accessing that tag will get you the most recent code \emph{on the
+branch}. So, you need to create a plain tag to be able to refer to the code
+as it existed right before the branch was created.
+
+The second command creates the branch. The \lit{-b} option makes this tag a
+branch. The symbolic name \lit{test-branch} can be used to refer to the
+branch. Without a symbolic name, you'll be hosed.\footnote{In general, never
+  use the CVS revision numbers unless you have to. Symbolic names are the
+  most practical way to deal with groups of files. However, CVS does support
+  date-based access including dates like \lit{YESTERDAY}. This is a very
+  useful feature!}
+
+\begin{vcode}{it}
+cvs update -r test-branch
+\end{vcode}
+
+This updates the tag of the code in the current working directory to
+\lit{test-branch}. Since the tag is on a branch, now so is this code.
+
+\begin{vcode}{it}
+cvs ci -m "<some message>"
+\end{vcode}
+
+The code is now checked in on the branch.
+
+\begin{quote}
+Note that there's a test CVS module that can be checked out and played with.
+You cannot do anything too terrible to this since the `code' is just a couple
+of test files. Before doing anything that might cause the DODS repository to
+get hosed, try it out there. The name of the test module is \lit{cvs-test}.
+\end{quote}
+
+\section{Merging}
+\label{sec:merge}
+
+Suppose you create a branch and make several releases from it. All the while,
+other developers are adding changes to the trunk and changes/fixes to the
+released code. As each successive release is made, the changes associated
+with that release should be merged back into the trunk software. However, if
+the entire branch is merged back onto the trunk some changes/fixes will be
+lost --- they will be undone.\footnote{This is an odd quirk of CVS. It lets
+you remove changes made on a segment of a branch. It's important to
+\emph{not} do that by mistake since it's rarely what you want to do.} Here's
+how to work around that.
+
+\begin{verbatim}
+
+                   --------------------------------
+                  /       ^           ^           ^
+                 /        3-1-RC1   3-1-0       3-1-1
+                /
+     3-1       /
+       \      /
+        \--> /
+   -------------------------------------------------------
+                  Trunk -->
+\end{verbatim}
+
+Figure: The CVS trunk and several tags. The 3-1 tag defines the code that
+forms the basis for a release, 3-1-RC1 is the first release candidate for
+version 3.1, the tag 3-1 is the first code sent to users and 3-1-1 is first
+set of fixes for that code. (The tags in the figure don't include the word
+\lit{release} because that made it too crowded.)
+
+First, tag every release point. Second only merge revisions with tags --- this
+will keep things reasonably sane. Referring to the figure above, once the
+3-1-RC1 tag is created (but before any further work is done) the software
+could be diagrammed as:
+
+
+\begin{verbatim}
+                   --------
+                  /       ^
+                 /        3-1-RC1
+                /
+     3-1       /
+       \      /
+        \--> /
+   -------------------------------------------------------
+                  Trunk -->
+\end{verbatim}
+
+The command to merge the `3-1-RC1 changes' back onto the trunk is:
+
+\begin{vcode}{it}
+cvs update -j 3-1
+\end{vcode}
+
+This command is run in a directory that contains the trunk software.
+
+After a while more changes are made and the 3-1-0 tag is created. A diagram
+of the software now looks like:
+
+
+\begin{verbatim}
+                   --------------------
+                  /       ^           ^
+                 /        3-1-RC1   3-1-0
+                /
+     3-1       /
+       \      /
+        \--> /
+   -------------------------------------------------------
+                  Trunk -->
+\end{verbatim}
+
+To merge the changes made between the 3-1-RC1 and 3-1-0 tags, use:
+
+\begin{vcode}{it}
+cvs update -j 3-1-RC1 -j 3-1
+\end{vcode}
+
+this command merges the changes between the two tags without removing the
+changes between the start of the branch and the tag 3-1-RC1 (which have
+already been merged). Note that the 3-1-0 tag is not used in this command. It
+is, however, a good idea to make it before doing the merge to make sure that
+the tag is created since subsequent merges will depend on it.
+
+\section{Useful commands}
+
+\subsection{Shell macros}
+
+Here are some (Bourne) shell aliases I find useful:
+\begin{description}
+\item [\lit{cvss}] Show the status of any file that is not up to date in CVS.
+This is useful when you want to know which files have been changed.
+
+\begin{vcode}{it}
+alias cvss='cvs status 2>&1 | grep "'"^File\|Examining"'" | grep -v Up-to-date'
+\end{vcode}
+
+\item [\lit{cvsl}] This does the same thing as cvss, but for the current
+directory only.
+
+\begin{vcode}{it}
+alias cvsl='cvs status -l 2>&1 | grep "'"^File\|Examining"'" | grep -v Up-to-date'
+\end{vcode}
+
+
+\item [\lit{cvsu}] Show which files in the CWD are not in CVS. This is useful
+when you're adding files and you want to make sure that something has not
+been left out.
+
+\begin{vcode}{it}
+alias cvsu='cvs status -l 2>&1 | grep Unknown'
+\end{vcode}
+
+\item [\lit{cvsm}] Get the filename only of every file in the CWD that's
+changed since the last check in. You can use this with an editor to great
+advantage. For example:
+
+\begin{vcode}{it}
+     emacs `cvsm` 
+\end{vcode}
+
+Opens all the changed files. You can then use Emacs' CVS tools to look at the
+diffs, etc.
+
+\begin{vcode}{it}
+alias cvsm='cvsl | cut -f 2 -d " "'
+\end{vcode}
+
+\item [\lit{cvsc}] Which files in the CWD had conflicts on during the last
+merge operation? Note that this macro is also set up for use with an editor.
+
+\begin{vcode}{it}
+alias cvsc='cvsl | grep conflicts | cut -f 2 -d " "'
+\end{vcode}
+
+\end{description}
+
+\subsection{CVS logs}
+
+Looking at logs (the stuff you write into \lit{cvs commit}):
+
+\begin{vcode}{it}
+cvs log -N -l -d ">1999-05-19" | more
+\end{vcode}
+
+Lists all the logs changed on or after 5/19/1999 (use $<$ for only after).
+The \lit{-l} option suppresses recursive behavior and \lit{-N} suppresses
+listing the symbolic tag names (which can be a long list for each file). When
+you're making a source release this can be an easy way to update the
+\lit{ChangeLog} file.
+
+\subsection{Adding files to a module}
+
+Adding files:
+
+\begin{vcode}{it}
+cvs add <file>|<pattern>
+\end{vcode}
+
+Adds the file or files. You must run \lit{cvs commit} to actually add them to
+the repository.
+
+Binary file:
+
+\begin{vcode}{it}
+cvs add -kb <file>|<pattern>
+\end{vcode}
+
+The \lit{-kb} flag suppresses keyword expansion; in case binary files (data
+files, GIF images, ...) contain a sequence of bytes that just happens to be
+\lit{\$Id\$} or any of the other keywords recognized by CVS, using the
+\lit{-kb} flag will keep those bytes from being changed! If you already added
+a binary file you can use the \lit{cvs admin} command to turn of keyword
+expansion:
+
+\begin{vcode}{it}
+cvs admin -kb <file>|<pattern>
+\end{vcode}
+
+\subsection{Checking out code}
+
+Checking out everything before a certain date:
+
+\begin{vcode}{it}
+cvs checkout -D 1999-03-25 DODS/src/nc-dods
+\end{vcode}
+
+checks out all the sources in \lit{DODS/src/nc-dods} as they were \emph{on or
+before} 25 March 1999.
+
+Checking out tagged sources. See the CVS manual or info pages about tags. I
+use tags for \emph{all} the releases, so you need to look at this:
+
+\begin{vcode}{it}
+cvs checkout -r release-2-10 DODS/src/nc-dods
+\end{vcode}
+
+checks out all the sources tagged \lit{release-2-10}. Note that CVS does not
+allow dots (.) in tag names. Also note that if the tag is a branch point you
+now have a branch of the source tree to work in. Changes you make will be
+checked in on the branch, not the trunk (that's good). To move the changes
+over to the trunk see Section~\ref{sec:merge}.
+
+The checkout command does a complete checkout of a module or part of a
+module. If you want new sources inside an existing project tree, use
+\lit{update}. If the file or directory does not exist, use \lit{update -d}.
+In fact, it is best to use \lit{update -d} always unless you \emph{know} that
+no new files or directories have been added.\footnote{Also useful with
+\lit{update} is the \lit{-P} option which will prune any empty directories.
+CVS keeps the directory when files are removed because other revisions might
+need that directory. The \lit{-P} option removes that clutter when it's not
+necessary.} Here's examples of the two above operations using update instead
+of checkout:
+
+\begin{vcode}{it}
+cvs update -d -D 1999-03-25 nc-dods
+
+cvs update -d -r release-2-10 nc-dods
+\end{vcode}
+
+From within \lit{DODS/src/} will get the \lit{nc-dods} sources from on or
+before 25 march 1999 or tagged \lit{release-2-10}. The difference is that
+these commands are run from within an existing tree; the checkout is run
+above the tree.
+
+\subsection{Using the status command}
+
+Looking at information about the revisions of a source file:
+
+\begin{vcode}{it}
+cvs status -v ChangeLog
+\end{vcode}
+
+Here's the output for that file:
+
+\begin{vcode}{it}
+[dcz:/usr/local/ferret-DODS/src/nc-dods-2.19.2] cvs status -v ChangeLog
+===================================================================
+File: ChangeLog         Status: Up-to-date
+
+   Working revision:    1.3.4.2 Wed Apr 14 03:33:45 1999
+   Repository revision: 1.3.4.2 /usr/local/cvs-repository/DODS/src/nc-dods/ChangeLog,v
+   Sticky Tag:          ferret (branch: 1.3.4)
+   Sticky Date:         (none)
+   Sticky Options:      (none)
+
+   Existing Tags:
+	ferret                          (branch: 1.3.4)
+	release-2-18                    (branch: 1.3.2)
+	no-gnu                          (branch: 1.2.4)
+	release-2-17                    (branch: 1.2.2)
+\end{vcode}
+
+You can see that there are four tagged revisions (the tags are ferret,
+\lit{release-2-18}, \lit{no-gnu} and \lit{release-2-17}). The \lit{Sticky
+Tag} indicates that I'm using the revision tagged \lit{ferret}. Note that it
+is a tag on a branch and that I've made some changes. Here's the status of
+the same file in the development directory (i.e., on the trunk):
+
+\begin{vcode}{it}
+[dcz:/usr/local/DODS/src/nc-dods] cvs status -v ChangeLog
+===================================================================
+File: ChangeLog         Status: Up-to-date
+
+   Working revision:    1.3     Thu Jan 21 22:56:55 1999
+   Repository revision: 1.3     /usr/local/cvs-repository/DODS/src/nc-dods/ChangeLog,v
+   Sticky Tag:          (none)
+   Sticky Date:         (none)
+   Sticky Options:      (none)
+
+   Existing Tags:
+	ferret                          (branch: 1.3.4)
+	release-2-18                    (branch: 1.3.2)
+	no-gnu                          (branch: 1.2.4)
+	release-2-17                    (branch: 1.2.2)
+\end{vcode}
+
+Note that the same tags are listed but that the Stick Tag is none and the
+revision number of the working file is 1.3, not 1.3.4.2 as in the previous
+example.
+
+Aside: Don't confuse CVS' revision numbers with our version numbers.
+
+\appendix
+
+\section{ChangeLog}
+
+\begin{verbatim}
+$Log: using-cvs.tex,v $
+Revision 1.8  2004/06/23 19:52:28  jimg
+Added new CVS info for win32 from Rob.
+
+Revision 1.7  2004/06/22 23:30:27  jimg
+Fixed/replace Sectionref usage
+
+Revision 1.6  2004/06/22 20:45:18  jimg
+Updated with information about the new CVS access method (using ssh).
+
+Revision 1.5  2004/01/09 20:01:02  jimg
+Fixed some errors and made it less of a collection of old ASCII files and
+more of a single paper.
+
+Revision 1.4  2004/01/08 21:08:10  jimg
+Formatted to the end and removed some material that was better covered in
+"OPeNDAP Software Release Process."
+
+Revision 1.3  2004/01/08 19:15:16  jimg
+Started editing and formatting.
+
+Revision 1.2  2003/06/19 00:36:16  jimg
+Start at formatting...
+
+Revision 1.1  2003/06/19 00:12:33  jimg
+Initial version.
+\end{verbatim}
+
+\end{document}

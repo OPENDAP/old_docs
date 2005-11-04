@@ -1,0 +1,124 @@
+\input bibnames.sty \input path.sty
+\begin{thebibliography}{10}
+
+\bibitem[Normative References]{heading1}
+
+\bibitem{ANSI:US-ASCII}
+American National Standards Institute, 1430 Broadway, New York, NY 10018, USA.
+\newblock {\em Coded Character Set---7-bit American Standard Code for
+  Information Interchange. Standard {ANSI} X3.4-1986}, 1986.
+
+\bibitem{ANSI:c89}
+American National Standards Institute, 1430 Broadway, New York, NY 10018, USA.
+\newblock {\em American National Standard Programming Language C, {ANSI}
+  X3.159-1989}, December 14 1989.
+
+\bibitem{rfc2396}
+T.~Berners-Lee, R.~Fielding, and L.~Masinter.
+\newblock Uniform resource identifiers {(URI)}: Generic syntax.
+\newblock RFC 2396.
+
+\bibitem{rfc2119}
+S.~Bradner.
+\newblock Key words for use in rfcs to indicate requirement levels.
+\newblock RFC 2119.
+
+\bibitem{rfc822}
+David~H. Crocker.
+\newblock Standard for the format of arpa internet text messages.
+\newblock RFC 822.
+
+\bibitem{rfc2616}
+R.~Fielding, J.~Gettys, J.~C. Mogul, H.~Frystyk, L.~Masinter, P.~Leach, and
+  T.~Berners-Lee.
+\newblock Hypertext transfer protocol --- {HTTP/1.1}.
+\newblock RFC 2616.
+
+\bibitem{NCL}
+National~Center for Atmospheric~Research.
+\newblock {NCAR Command Language}.
+\newblock http://www.ncl.ucar.edu/Document/Language/.
+\newblock Retrieved 5 April 2005 from the World Wide Web.
+
+\bibitem{rfc2617}
+J.~Franks, P.~Hallam-Baker, J.~Hostetler, S.~Lawerence, P.~Leach, A.~Loutonen,
+  and L.Stewart.
+\newblock Http authentication: Basic and digest access authentication.
+\newblock RFC 2617.
+
+\bibitem{rfc2045}
+N.~Freed and N.~Borenstein.
+\newblock Multipurpose internet mail extensions {(MIME)} part one: Format of
+  internet message bodies.
+\newblock RFC 2045.
+
+\bibitem{rfc2046}
+N.~Freed and N.~Borenstein.
+\newblock Multipurpose internet mail extensions {(MIME)} part two: Media types.
+\newblock RFC 2046.
+
+\bibitem{IEEE:754}
+IEEE Computer Society, 345 E. 47th St, New York, NY 10017, USA.
+\newblock {\em IEEE Standard for Binary Floating-Point Arithmetic, IEEE Std
+  754-1985}, 1985.
+
+\bibitem{xdr}
+Sun Microsystems, Mountain View, California.
+\newblock {\em XDR}.
+\newblock Version 4.
+
+\bibitem[Informative References]{heading2}
+
+\bibitem{Arnold:Java}
+Ken Arnold and James Gosling.
+\newblock {\em The Java Programming Language}.
+\newblock Addision Wesley, Reading, Massachusetts, 1996.
+
+\bibitem{cornillon03}
+Peter Cornillon, James Gallagher, and Tom Sgouros.
+\newblock Opendap: Accessing data in a distributed, heterogeneous environment.
+\newblock {\em CODATA Data Science Journal}, 2:164--174, 2003.
+\newblock Online 5 November, 2003:
+  http://journals.eecs.qub.ac.uk/codata/Journal/contents/2\_03/2\_03pdfs/DS247%
+.pdf.
+
+\bibitem{date:DBMS}
+{C}.{J}. Date.
+\newblock {\em An Introduction to Database Systems}.
+\newblock Addison Wesley, Reading, Massachusetts, 2000.
+
+\bibitem{gallagher:dods}
+James Gallagher and George Milkowski.
+\newblock Data transport within the distributed oceanographic data system.
+\newblock In {\em World Wide Web Journal: Fourth International World Wide Web
+  Conference Proceedings}, pages 691--702, 1995.
+
+\bibitem{NCSA:HDF4}
+{NCSA}.
+\newblock {HDF} 4.1r3 user's guide.
+\newblock http://hdf.ncsa.uiuc.edu/UG41r3\_html/, 1999.
+\newblock Retrieved from the World Wide Web 13 October 2003.
+
+\bibitem{NCSA:HDF5}
+{NCSA}.
+\newblock {HDF5} - a new generation of {HDF}.
+\newblock http://hdf.ncsa.uiuc.edu/HDF5/, 2001.
+\newblock Retrieved from the World Wide Web 15 December 2002.
+
+\bibitem{netcdf}
+Russ Rew, Glenn Davis, and Steve Emmerson.
+\newblock {\em NetCDF User's Guide}.
+\newblock Unidata Program Center, Boulder, Colorado, April 1993.
+\newblock Version 2.3.
+
+\bibitem{steele:clisp}
+Guy~L. {Steele Jr.}
+\newblock {\em Common Lisp: The Language}.
+\newblock Digital Press, Bedford, Massachusetts, 1984.
+
+\bibitem{stevens:unp}
+W.~Richard Stevens.
+\newblock {\em {UNIX} Network Programming}.
+\newblock {Prentice-Hall, Inc.}, 2d edition, 1999.
+
+\end{thebibliography}

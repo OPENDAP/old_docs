@@ -1,0 +1,132 @@
+
+	$Id$
+
+The Prototype Ancillary Information Service (AIS) is included in software on
+or after the release-3-4 branch of the DODS/OPeNDAP software CVS repository.
+The prototype AIS is limited to processing only attributes. It works merging
+into the DAS object read from a data source some new attributes that we call
+'ancillary attributes.' These are stored in ancillary attribute files. The
+most important feature of the AIS is that the ancillary DAS files don't have
+to be on the same machine as the data or the client (although they can be in
+those places). The ancillary DAS files can be anywhere on the net so long as
+an HTTP daemon can make them accessible.
+
+There are two ways to use the prototype Ancillary Information Service (AIS).
+The first is to configure a client so that it merges AIS resources when asked
+to get data from a given URL. The second is to configure a special AIS server
+so that it will act as a proxy server performing the AIS merge.
+
+How the AIS software works
+
+The AIS works using a database, encoded in XML, that matches DAP URLs to
+Ancillary DAS files. Here's a sample AIS Database:
+
+  <?xml version="1.0" encoding="US-ASCII" standalone="no"?>
+  <!DOCTYPE ais SYSTEM "http://www.opendap.org/ais/ais_database.dtd">
+
+  <ais xmlns="http://xml.opendap.org/ais">
+  <entry>
+  <primary url="http://localhost/dods-test/nph-dods/data/nc/fnoc1.nc"/>
+  <ancillary url="http://localhost/ais/fnoc1.nc.das"/>
+  </entry>
+
+  <entry>
+  <primary url="http://localhost/dods-test/nph-dods/data/nc/fnoc2.nc"/>
+  <ancillary rule="replace" url="ais_testsuite/fnoc2_replace.das"/>
+  </entry>
+
+  <entry>
+  <primary regexp="http://localhost/dods-test/nph-dods/data/nc/[0-9]+.*\.nc"/>
+  <ancillary url="ais_testsuite/starts_with_number.das"/>
+  </entry>
+  </ais>
+
+This is a shortened version of a sample that can be found in
+DODS/src/dap/ais_testsuite/ais_database.xml. The database consists of a set
+of entries, where the 'primary' elements are the data set URLs and the
+'ancillary' elements are the matched Ancillary DAS files. Note that the
+ancillary DAS file may be remote (specified as a URL) or local (specified as
+a file). Also note that the data set URL may be given literally or as a
+regular expression.
+
+The DTD for the AIS database can be found in DODS/src/dap/ais_database.dtd.
+
+There are several different ways ancillary DAS files can be merged with with
+DAS objects. The 'rule=' part of the ancillary element is used to choose
+between different algorithms. By default, the AIS uses the 'overwrite' rule.
+Individual attributes from the ancillary DAS are merged with values from the
+Ancillary DAS file overwriting values from the DAS object. The 'replace' rule
+replaces the attributes in the DAS object with those from the Ancillary DAS
+file. The 'fallback' rule uses the Ancillary DAS file only if the DAS object
+is empty.
+
+Writing Ancillary DAS files
+
+We've documented the Ancillary DAS files used by a regular DODS server in the
+User's Guide (Section 6). See that guide for information since these are the
+very same Ancillary DAS files.
+
+Client-side AIS
+
+Note: For the remainder of this file, I'm going to talk about reads, objects
+files, et c., and not always say DAS. Since this is the prototype AIS and it
+works only for DAS objects, it seems redundant to keep repeating that. Where
+I think there might be confusion, I'll try to be explicit.
+
+A block diagram of the client-side AIS is present in
+DODS-doc/archive/design/AIS/Client_database.png. 
+
+A client side AIS is configured by first writing an AIS database that forms
+the association between data set URLs and Ancillary DAS files. The client
+must then replace calls to the Connect class with calls to the AISConnect
+class. The geturl test client (DODS/src/dap/geturl.cc) has already been
+modified as has the netCDF client-library. that means that any client which
+uses the DAP directory will need to change the way it makes virtual
+connections to a data source so that it uses the AISConnect class in place of
+Connect. However, programs which use the netCDF client library will not since
+the netCDF CL handles making the connection.
+
+The AISConnect class does exactly the same operations as Connect (but note
+that Connect has undergone some substantial changes lately), so it's a
+drop-in replacement with some extra features. However, to activate those
+extra features *users* need to add a line to their .dodsrc files that names
+the AIS database. Here's my .dodsrc:
+
+	# DODS client configuration file. See the DODS
+	# users guide for information.
+	USE_CACHE=0
+	MAX_CACHE_SIZE=20
+	MAX_CACHED_OBJ=5
+	IGNORE_EXPIRES=0
+	CACHE_ROOT=/home/jimg/.dods_cache/
+	DEFAULT_EXPIRES=86400
+	ALWAYS_VALIDATE=0
+	# Request servers compress responses if possible?
+	# 1 (yes) or 0 (false).
+	DEFLATE=0
+	# Proxy configuration:
+	# PROXY_SERVER=<protocol>,<host[:port]>
+	# PROXY_SERVER=,
+	# PROXY_FOR=<regex>,<host[:port]>
+	# PROXY_FOR=,
+	# NO_PROXY_FOR=<protocol>,<host|domain>
+	# NO_PROXY_FOR=,
+	# AIS_DATABASE=<file or url>
+
+Uncomment the last line and make AIS_DATABASE point to the AIS Database file.
+[I'm not sure if the url option works, not that it would be hard to
+implement. 06/24/03 jhrg]. When the client starts up it'll read the database. 
+
+You can test out the AIS using the code in DODS/src/dap/ais_testsuite and the
+geturl client.
+
+You can see a UML diagram of the AIS in
+DODS-doc/archive/design/AIS/AIS_initial.png.
+
+Server-side AIS.
+
+I'll try to document this. If I cannot get to it before I leave, the code is
+in DODS/src/tools/ais_tool. There are two parts to it, nph-ais which is a
+Perl CGI script and ais_tool which is the C++ program that does the work. The
+ais_tool program is basically a client. You set it up the same way except
+that the AIS database is hardwired in the nph-ais script.

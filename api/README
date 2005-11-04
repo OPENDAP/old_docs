@@ -1,0 +1,20 @@
+$Id$
+
+What's here
+
+javaDocs: Holds the HTML documentation for the Java code. These docs have a
+fairly complex directory structure, so they need to be generated. If we put
+them in CVS it'll not work for long because the directories move around so
+much. Bummer... This is partly in CVS, but don't trust that.
+
+pguide: The programmer's guide
+
+pref-html: Holds the HTML documentation for the C++ code. This has a flat
+directory structure, so it's in CVS.
+
+wc-html, writing_client.tex: How to write a client tutorial
+
+ws-html, writing_server.tex: How to write a server tutorial
+
+Makefile: Should work, but you'll need to have DODS-3.4 and Java-DODS checked
+out, too. You can substitute anything reasonable for DODS-3.4.

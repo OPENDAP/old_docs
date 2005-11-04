@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Type Constructor Variables</TITLE>
+<META NAME="description" CONTENT="Type Constructor Variables">
+<META NAME="keywords" CONTENT="api">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="api.css">
+
+<LINK REL="next" HREF="node10.html">
+<LINK REL="previous" HREF="node8.html">
+<LINK REL="up" HREF="node7.html">
+<LINK REL="next" HREF="node10.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html188"
+  HREF="node10.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html184"
+  HREF="node7.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html178"
+  HREF="node8.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html186"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html189"
+  HREF="node10.html">Operators</A>
+<B> Up:</B> <A NAME="tex2html185"
+  HREF="node7.html">The Data Model</A>
+<B> Previous:</B> <A NAME="tex2html179"
+  HREF="node8.html">Base-Type Variables</A>
+ &nbsp; <B>  <A NAME="tex2html187"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION00052200000000000000">
+Type Constructor Variables</A>
+</H3> 
+
+<P>
+Type constructor variables describe the grouping of one or more variables
+within a data set. These classes are used to describe different types of
+relations between the variables that comprise the data set. This information
+can be useful to people who would like to understand more about the data set
+than can be conveyed with implicit relations. It is also designed to be
+useful to other programs/processes in the data access chain.  There are six
+classes of type constructor variables defined by the DAP: lists, arrays,
+structures, sequences, functions, and grids. The type constructor classes
+besides structure provide information that is used in the translation of
+subsetting operations (hyperslabbing or selections and projections in netCDF
+or JGOFS parlance, respectively). The types are defined as:
+
+<P>
+<DL>
+<DT><STRONG>List</STRONG></DT>
+<DD>The <B>List</B> type constructor is used to hold lists of 0 or
+  more items of one type. Lists of <TT>int32</TT>, ..., <TT>grid</TT> are
+  specified using the keyword <TT>list</TT> before the variable's class. Access
+  to an element of a list is possible using one of the five operators given
+  in Table&nbsp;<A HREF="node10.html#api:tab:class-ops"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A>.
+
+<P>
+</DD>
+<DT><STRONG>Array</STRONG></DT>
+<DD>An <B>Array</B> is a one dimensional indexed data structure as
+  defined by ANSI C. Multidimensional arrays are defined as arrays of arrays.
+  In addition to element access using subscripts enclosed in brackets (), an array may be accessed using only its name to return the entire
+  array or using a hyperslab operator to return a rectangular section of the
+  array. In the later case, the hyperslab is defined for each dimension by a
+  starting index, and ending index, and a stride value.  Specifying a stride
+  <IMG
+ WIDTH="103" HEIGHT="12" ALIGN="MIDDLE" BORDER="0"
+ SRC="img2.png"
+ ALT="$&gt;$"> 1 will cause the dimension to be subsampled by the stride value.
+  Table&nbsp;<A HREF="node10.html#api:tab:class-ops"><IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> shows the syntax for array accesses including
+  hyperslabs.
+
+<P>
+In addition to its magnitude, every dimension of an array may also have a
+  name. It is possible to find the name for any given dimension (e.g., the
+  <IMG
+ WIDTH="16" HEIGHT="29" ALIGN="BOTTOM" BORDER="0"
+ SRC="img3.png"
+ ALT="$i^{th}$"> dimension) and thus write software which access the <IMG
+ WIDTH="23" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
+ SRC="img4.png"
+ ALT="$3^{rd}$">
+  element of the dimension <EM>cast</EM> (See <A NAME="tex2html14"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html">DODS--Client and Server Toolkit</A>).
+
+<P>
+</DD>
+<DT><STRONG>Structures</STRONG></DT>
+<DD>A structure is a class that conveys no relational
+  information and may contain several variables of different classes. It is
+  used to supply information to other parts of the data access and
+  translation system that may be useful in optimizing the access or
+  translation operations. The structure type can also be used to group a set
+  of unrelated variables together into a single data set.
+
+<P>
+</DD>
+<DT><STRONG>Sequences</STRONG></DT>
+<DD>A sequence is an ordered set of <IMG
+ WIDTH="26" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
+ SRC="img5.png"
+ ALT="$N$"> variables which has
+  several instantiations (or values). Variables in a sequence may be of
+  differing classes.  Each instance of a sequence is one instantiation of the
+  variables. Thus a sequence can be represented as:
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+\begin{array}{ccc}
+  s_{0 0} & \cdots & s_{0 n} \\
+  \vdots & \ddots & \vdots \\
+  s_{i 0} & \cdots & s_{i n}
+\end{array}
+\end{displaymath}
+ -->
+
+<IMG
+ WIDTH="14" HEIGHT="16" BORDER="0"
+ SRC="img6.png"
+ ALT="\begin{displaymath}
+\begin{array}{ccc}
+s_{0 0} &amp; \cdots &amp; s_{0 n} \\
+\vdots &amp; \ddots &amp; \vdots \\
+s_{i 0} &amp; \cdots &amp; s_{i n}
+\end{array}\end{displaymath}">
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+
+<P>
+Every instance of sequence <IMG
+ WIDTH="326" HEIGHT="74" ALIGN="BOTTOM" BORDER="0"
+ SRC="img7.png"
+ ALT="$S$"> has the same number, order, and
+class of variables. A sequence implies that each of the variables is
+related to each other in some logical way. A sequence is different from a
+structure because its constituent variables have several instances while a
+structure's variables have only one instance (or value). Because a sequence has
+several values for each of its variables it has an implied <EM>state</EM>, in
+addition to those values.
+
+<P>
+</DD>
+<DT><STRONG>Functions</STRONG></DT>
+<DD>Functions are a subclass of Sequences and are used to
+  indicate that one set of variables has a functional relation to a second
+  set of variables. Variables in a function may be of differing classes. The
+  mathematical description of this functional relation is not
+  specified. Instead the function type is used to indicate that one of the
+  two sets constitute the independent variables and the other the dependent
+  variables.  Typically, the variables defined by a function have more than
+  one instance--functions are similar to sequences but have additional
+  information about the functional dependency of variables.
+
+<P>
+</DD>
+<DT><STRONG>Grid</STRONG></DT>
+<DD>A grid is an association of an <IMG
+ WIDTH="26" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
+ SRC="img5.png"
+ ALT="$N$"> dimensional array with <IMG
+ WIDTH="26" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
+ SRC="img5.png"
+ ALT="$N$">
+  named vectors, each of which has the same number of elements as the
+  corresponding dimension of the array. Each vector is used to map indices of
+  one of the array's dimensions to a set of values which are normally
+  non-integral (e.g., floating point values). The <IMG
+ WIDTH="26" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
+ SRC="img5.png"
+ ALT="$N$"> (map) vectors may be
+  members of different classes. Grids are similar to arrays of base type
+  variables, but add named dimensions and maps for each of those dimensions.
+  <A NAME="page:grids"></A> 
+
+<P>
+</DD>
+</DL>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html188"
+  HREF="node10.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html184"
+  HREF="node7.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html178"
+  HREF="node8.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html186"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html189"
+  HREF="node10.html">Operators</A>
+<B> Up:</B> <A NAME="tex2html185"
+  HREF="node7.html">The Data Model</A>
+<B> Previous:</B> <A NAME="tex2html179"
+  HREF="node8.html">Base-Type Variables</A>
+ &nbsp; <B>  <A NAME="tex2html187"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

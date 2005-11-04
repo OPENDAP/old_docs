@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Basic Requirements for the Data Servers</TITLE>
+<META NAME="description" CONTENT="Basic Requirements for the Data Servers">
+<META NAME="keywords" CONTENT="data-delivery-design">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-design.css">
+
+<LINK REL="next" HREF="node7.html">
+<LINK REL="previous" HREF="node5.html">
+<LINK REL="up" HREF="node5.html">
+<LINK REL="next" HREF="node7.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html184"
+  HREF="node7.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html180"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html174"
+  HREF="node5.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html182"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html185"
+  HREF="node7.html">Construction of the Data</A>
+<B> Up:</B> <A NAME="tex2html181"
+  HREF="node5.html">Data Servers</A>
+<B> Previous:</B> <A NAME="tex2html175"
+  HREF="node5.html">Data Servers</A>
+ &nbsp; <B>  <A NAME="tex2html183"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00031000000000000000">
+Basic Requirements for the Data Servers</A>
+</H2>
+
+<P>
+The data servers must satisfy two requirements: they must provide access to
+data via the DAP and they must use on-line data without requiring its
+modification. 
+
+<P>
+Providing access to data using the DAP is necessary because that is how the
+DODS architecture provides interoperability between different APIs. Because
+the data servers translate accesses to a data set from the DAP into either
+an API (e.g., <A NAME="tex2html38"
+  HREF="http://www.unidata.ucar.edu/packages/netcdf/guide.txn_toc.html">NetCDF</A> if the data set is stored using that API) or a special
+format (e.g., GRIB), any (client) process that uses the DAP can access the
+data. The underlying access mechanism is hidden from the client. 
+
+<P>
+In the current design of DODS, meeting this requirement means that for
+each API or format in which data is stored, a new DODS data server must be
+built<A NAME="tex2html37"
+  HREF="footnode.html#foot505"><SUP>5</SUP></A>.
+
+<P>
+The other requirement which each server must satisfy is that data, however it
+is stored, should not require modification to be served by a DODS data
+server. This is important because many data sets are large and thus very
+expensive to modify. It is a poor practice to force data providers to modify
+their data to suit the needs of a system. Rather, DODS data servers must be
+able to translate access via the DAP into the local storage mechanism
+without changing that local storage mechanism.
+
+<P>
+This requirement limits DODS to those APIs and formats which are, to some
+extent, self-describing. Because the DAP bases access on reading a named
+variable, it must be possible, for each data set, to define the set of
+variables and to `read' those variables from the data set. However some data
+sets do not contain enough information to make remote access a
+reality. Instead, additional information, not in the data set itself, is
+needed. This information can be stored in ancillary data files which
+accompany the data set. Note that these files are separate from the data
+set, they are not added to the data set and do not require any modification
+of the data set. 
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html184"
+  HREF="node7.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html180"
+  HREF="node5.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html174"
+  HREF="node5.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html182"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html185"
+  HREF="node7.html">Construction of the Data</A>
+<B> Up:</B> <A NAME="tex2html181"
+  HREF="node5.html">Data Servers</A>
+<B> Previous:</B> <A NAME="tex2html175"
+  HREF="node5.html">Data Servers</A>
+ &nbsp; <B>  <A NAME="tex2html183"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

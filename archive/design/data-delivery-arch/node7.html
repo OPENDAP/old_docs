@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Data Model</TITLE>
+<META NAME="description" CONTENT="Data Model">
+<META NAME="keywords" CONTENT="data-delivery-arch">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="data-delivery-arch.css">
+
+<LINK REL="next" HREF="node8.html">
+<LINK REL="previous" HREF="node6.html">
+<LINK REL="up" HREF="node3.html">
+<LINK REL="next" HREF="node8.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html150"
+  HREF="node8.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html146"
+  HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html140"
+  HREF="node6.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html148"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html151"
+  HREF="node8.html">Data Format</A>
+<B> Up:</B> <A NAME="tex2html147"
+  HREF="node3.html">Important Terms and Technologies</A>
+<B> Previous:</B> <A NAME="tex2html141"
+  HREF="node6.html">HyperText Transfer Protocol HTTP</A>
+ &nbsp; <B>  <A NAME="tex2html149"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00034000000000000000"></A>
+<A NAME="data-models"></A>
+<BR>
+Data Model
+</H2>
+
+<P>
+A data model describes the organization of data. It is composed of a defined
+set of elements and structures along with valid operations which can be
+performed on those elements and structures. All programming languages
+incorporate a data model in their design. For example the C programming
+language defines a set of types which can be used to build programs (int,
+double, ...); that set of types and their associated operations is the
+data model for C programs.  Similarly, while not full-fledged programming
+languages, APIs define a data model for the resources to which they provide
+access by defining a set of functions (which are analogous to operators in a
+programming language) and defining types which are passed to, or returned
+from, those functions.
+
+<P>
+Data models are important because they provide a way to describe the types of
+information that can (or cannot) be described using a given programming
+language or API. Thus a data model can be used to compare the applicability
+of two such systems to a particular problem. In addition, if a single data
+model is supported by two APIs then it is possible to translate information
+represented using that data model from one API to an equivalent
+representation in the other API. Knowing which data model or models are
+supported by a set of APIs enables a scientist to choose the API best suited
+to a given type of information. It also provides a means for programmers to
+build translators for certain types of data represented using those APIs.
+
+<P>
+As is often the case with semantic descriptions, a formal description of a
+data model is hard to produce for many existing systems. This is true because
+many APIs do not rigorously define their operators. Instead they rely on
+conventions with ill specified boundary conditions. Thus the exact semantics
+of many data types are hard to formalize.
+
+<P>
+The lack of formal data model semantics is further complicated when new types
+are added (ad hoc) to an API. The `data type' exists only in so much as users
+of the API agree to be bound by convention. A user may abuse the convention
+or they may ignore, out of ignorance, a widely used convention. Either case
+creates data that is hard to use. This problem create special difficulties
+for people writing data translators since important conventions have not been
+followed. For this reason, it is impossible to write perfect translators even
+for a subset of data types.
+
+<P>
+Lack of formal data model semantics makes it hard to build translators to or
+from an API or programming language even for a small set of well defined
+objects.  Thus for many APIs, while it is possible to build translators for
+data represented using a core set of data models common to those APIs, it is
+not in general possible to build translators for any arbitrary object
+represented in one API to every other API<A NAME="tex2html20"
+  HREF="footnode.html#foot474"><SUP>4</SUP></A>.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html150"
+  HREF="node8.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html146"
+  HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html140"
+  HREF="node6.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html148"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html151"
+  HREF="node8.html">Data Format</A>
+<B> Up:</B> <A NAME="tex2html147"
+  HREF="node3.html">Important Terms and Technologies</A>
+<B> Previous:</B> <A NAME="tex2html141"
+  HREF="node6.html">HyperText Transfer Protocol HTTP</A>
+ &nbsp; <B>  <A NAME="tex2html149"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

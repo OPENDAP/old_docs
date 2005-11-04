@@ -1,0 +1,133 @@
+%
+% Documentation for the DAP. Intended to be like an RFC document.
+%
+
+\documentclass[justify]{dods-paper}
+\usepackage{longtable}
+\usepackage{acronym}
+\usepackage{xspace}
+\usepackage{gloss}
+\usepackage{changebar}
+\rcsInfo $Id$
+
+\include{dap_boiler}
+
+% Note: to get the glossary to work, run bibtex on the *.gls.aux file,
+% then latex the file, then bibtex *.gls, then latex again. Also, make
+% sure to set your BST and BIBINPUTS environment variables so that the
+% BST and BIB files will be found.
+% \makegloss
+
+\title{THINGS WE HAVE TO DO}
+\author{Nathan Potter, James Gallagher}
+
+\begin{document}
+
+\maketitle
+
+\section{Questions}
+\begin{itemize}
+\item Should we switch URI for URL?
+
+\item Should we have a section about clients that cannot handle certain
+  types? What should they do? What about servers that gag on something? We do
+  have a quasi-standard way to handle errors in attributes implemented by the
+  HDF4 server\ldots
+  
+\item Limit types, the way types can be combined, or keep the spec completely
+  general? For example, will any client be able to process an Array of
+  Sequences? Sure, we could write one, but will anybody else?
+  
+\item Supported relational expressions for the String type are limited to
+  equality, inequality and regular expression match. The less than operations
+  are just too wierd in real life.
+  
+\item We need to find that reference for Out of Band data (from the W3C).
+
+\item Are we going to Base64 encode Attributes.
+
+\item [DONE] Should the XML syntax for \Grid be changed to eliminate
+the \Target element? We could do this by adding a \lit{role} attribute
+to the \Alias element and specifying that the allowable values for
+\lit{role} are \lit{array} and \lit{map}. The \lit{role} attribute
+would only be allowed in \Aliases that are member variables of a
+\Grid.\\ ANSWER: YES!
+
+\item Should the XML syntax for \Constraint be changed to make the
+\NoAttributes element (which is a really a simple switch) into an XML
+attribute of \Constraint?  This might look like an option Xml
+attribute called \lit{Attributes} whose value could be set to
+\lit{yes} or \lit{no} with it defaulting to \lit{yes} if the attribute
+was missing.\\ANSWER: Probably not...
+
+\item In the section on the Blob we may need to be more exact about
+  how lengths are sent fro Arrays.
+
+\item in subsubsection Constructor variable names, I think the []
+  notation is out of place. It would be better to adopt a
+  syntax-neutral notation.
+
+\item The sentence ``In essence all variable members variables of a
+constructor variable act as \Attribute structures within the
+constructor variable.'' from label{sec-FQN} is really hard to
+understand.
+
+\item In subsection Processing Attributes, we should explain how the
+  origin facet of a variable can form a linkage with a modifier
+  attribute.
+
+\item We will need to spec out just what a regular expression
+  is. Probably in an Appendix.
+
+\end{itemize}
+
+\section{Important Points}
+\begin{itemize}
+\item Grids now may have $N$ dimensional maps.
+\item We're introducing some new atomic types: Boolean, Enumeration, Int64,
+  UInt64, and Time.
+\end{itemize}
+
+\section{Dap Objects TODO}
+ 
+\begin{description}
+\item Uppercase MUST, MAY NOT, etc.\\[1mm]
+[DONE] MUST \\[1mm]
+[DONE] MAY \\[1mm]
+[DONE] MAY NOT \\[1mm]
+others?
+ 
+\item [DONE] Add origin attribute to Dataset?
+
+\item [DONE] Add (and name) an \Attribute free \DDX. FIX: Added tag to \CE 
+that does the trick.
+ 
+\item [DONE] There are significant conflicts in general discussion of Grid; in Variables section, Responses (DDX XML Elements) section, and in examples. 
+In particular:\\[2mm]
+$\bullet$ [DONE] The Maps cannot yet be Aliases. (FIX: allow aliases)\\
+$\bullet$ [DONE] The discussion of the way MAP is related to a dimension in the ARRAY is ambiguous and contradictory (both, can you believe it?): Is it by dimension name? OR is it by the name of the MAP element? What about multiple dimension MAP elements? (FIX: Assign by dimension name.\emph{This is a show stopper for releasing this document.}
+ 
+\item [DONE] Fully qualified names vs partial names in projection and selection. FIX: Make all fully qualified. (Can we start with slash and skip dataset name?)
+
+ 
+\item [DONE] Sequence variables poorly defined in DDX XML Elements. Consider adding:\\[2mm] $\bullet$ Alias may not point to a member of Sequences.\\
+$\bullet$ Sequences cannot contain Aliases that point outside the Sequence.
+FIX: Make it so. Provide some justification. Implicit relation argument.
+
+\item [DONE] Can you have \Arrays of \Enums? FIX: No.
+
+\item [DONE] What about allowing selection based on Attribute content? Say, all variables with origin="helena"? All variables with a attributed named "units"? All variables with an Attribute named "units" whose value is "cm"? FIX: Yes, think about it at length. Add note to that affect
+
+\item [DONE] dap objects document needs page numbers.
+dap objects document has formatting issues (it's too long on my pages when I print it out.) FIX: Ask Tom S.
+
+\item [DONE] Why do we restrict Attributes to being homogeneous? Why not both values and child Attributes? FIX: That's just the way it is. "Because"
+
+\item [DONE] Naming rules, encoding rules, and length specification might all go in a separate section? What about discussing partial implementations? Example netcdf lib doesn't do sequences. FIX: Added sub-section to Responses Section.
+
+\item Add FAQ/release notes/new features
+
+\end{description}
+
+
+\end{document}

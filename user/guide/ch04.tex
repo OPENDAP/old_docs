@@ -1,0 +1,580 @@
+% Chapter two to the OPeNDAP User Guide
+%
+% $Id$
+%
+
+
+\chapter{The \opendap Server}
+\label{opd-server}
+
+See the \opendap Server installation guide for most of this information.
+
+
+\tbd{Erase the rest of this chapter to avoid redundancy.}
+
+
+There are two separate pieces to the task of installing an \opendap data
+server: installing and configuring the server itself, and telling the
+universe of possible users about it.\footnote{The second step is, of
+  course, optional.} Only the first will be considered in this
+chapter.  \opendap provides avenues for doing the second, including a
+Catalog Service indexing \opendap datasets, and cooperation with the
+Global Change Master Directory, but these are still under
+construction.
+
+An \opendap server is nothing more than a World Wide Web server
+(\lit{httpd}) equipped with Common Gateway Interface (CGI) programs
+that enable it to respond to requests for data from \opendap client
+programs.  Web servers and CGI programs are standard parts of the Web,
+and the details of their operation and installation are beyond the
+scope of this guide. For further information about these, consult one
+of the many World Wide Web references now available. For the purposes
+of understanding the \opendap architecture, a user need only understand
+the following:
+
+\begin{itemize}
+
+\item A Web server is a process that runs on a computer (the host
+machine) connected to the Internet. When it receives a URL from some
+Web client, such as a user somewhere operating Netscape or Mosaic, it
+packages and returns the data specified by the URL to that client. The
+data can be text, as in a web page, but it may also be images, sounds,
+a program to be executed on the client machine, or some other data.
+
+\item A properly specified URL can cause a Web server to invoke a 
+CGI program on its host machine, accepting the input that would have
+gone to the httpd, and  returning the output of that program
+to the client who sent the URL in the first place. The CGI is executed
+on the server. The \opendap server relies on this facility. 
+
+\end{itemize}
+
+\section{Server Architecture}
+\label{opd-server,arch}
+
+\indc{architecture!server} \indc{server!architecture} A request for
+data made to the client \opendap library will result in three different
+requests for data to an \opendap server. The user simply enters a single
+URL, as described in \sectionref{opd-client,url}. The core \opendap
+software then modifies the URL into three slightly different forms,
+and makes three requests for data to the server. The first request is
+for the ``shape'' of the data, and consists of the dataset descriptor
+structure, described on \pagexref{data,dds}. The second request is for
+the attributes of the data types described in the DDS. This structure
+is described on \pagexref{data,das}. The last request is actually for
+the data.
+
+The response to the DDS and DAS request URLs is text formatted using
+the grammars in \tableref{data,tab,DAS} and \tableref{data,tab,DDS}.
+This text can then be parsed by the caller to determine the structure
+of the dataset, types and sizes of each of its components and their
+attributes. Depending on the data access API used to access the data,
+these structures may be derived either from information contained in
+the dataset or from ancillary information supplied by the dataset
+maintainers in separate text files, or both.  The data in these
+structures (which can be thought of as data about the real data) may
+be cached by the client system.
+
+The \opendap DAP is a stateless protocol. The protocol \new{entry points}
+may be thought of as the different messages to which an \opendap server
+will respond. (A message is just a URL specifying a request.)  Each of
+the protocol entry points does a single isolated job and they can be
+issued in any order. Of course, it may not make sense to the user to
+ask for the data before asking for the data description structure, but
+that is not the server's problem. This separability allows the user to
+cache data locally if need be, so that future accesses to the same
+dataset can skip the retrieval of these structures.
+
+To understand the operation of the \opendap server, it is useful to follow
+the actions taken to reply to a data request. The diagram in
+\figureref{opd-server,fig,server-design} lays out the relationship
+between the various entities. Consider an \opendap URL such as the
+following:
+
+\begin{vcode}{sib}
+http://dods.gso.uri.edu/cgi-bin/nph-nc/data/fnoc43.nc
+\end{vcode}
+
+When this URL is submitted to an \opendap client, it will contact the Web
+server (httpd) running on the platform, \lit{dods.gso.uri.edu}. When
+the connection has been established, the client will forward to the
+server the remaining parts of the URL:
+\lit{/cgi-bin/nph-nc/data/fnoc43.nc}. As the server parses this
+string, it will notice that \lit{cgi-bin} corresponds to the name of
+the directory where it keeps its CGI programs. (The actual directory
+name is specific to the particular web server used, and the details of
+its installation.  Typically, the web server documnetation might call
+it the \lit{ScriptAlias} directory, and it might refer to something
+like \lit{/usr/local/etc/httpd/cgi-bin}.) It looks in that directory
+to see whether there exists a CGI program called \lit{nph-nc}, which
+is the name of the netCDF \opendap server packaged with \opendap.  Finally,
+the server executes that program, specifying the rest of the URL
+(\lit{data/fnoc43.nc} in this case) for an argument.  The standard
+output of the CGI program is redirected to the output of the
+\lit{httpd}, so the client will receive the program output as the
+reply to its request.
+
+\figureplace{The Architecture of an \opendap Data Server.}{htbp}
+{opd-server,fig,server-design}{arch.ps}{arch.gif}{}
+
+For APIs that are designed to read and write files, such as netCDF,
+the CGI program will be executed with the working directory specified
+by the \lit{httpd} configuration. On the \lit{dods.gso.uri.edu}
+server, for example, all CGI programs are executed native to the
+directory \lit{/usr/local/spool/http}. The last section of the URL,
+then, specifies the file \lit{fnoc43.nc} in the directory:
+
+\begin{vcode}{ib}
+/usr/local/spool/http/data.
+\end{vcode}
+
+Several existing data APIs, such as JGOFS, are not designed with file
+access as their fundamental paradigm. The JGOFS system, for example,
+uses an arrangement of ``dictionaries'' that define the location and
+method of access for specified data ``objects.'' A URL addressing a
+JGOFS object may appear to represent a file, like the netCDF URL
+above. 
+
+\begin{vcode}{ib}
+http://dods.gso.uri.edu/cgi-bin/nph-jg/station43
+\end{vcode}
+
+\indc{data dictionary!JGOFS} \indc{JGOFS!data dictionary}
+However, the identifier (\lit{station43}) after the CGI program name
+(\lit{nph-jg}) represents, not a file, but an entry in the JGOFS data
+dictionary. The entry will, in turn, identify a file or a database
+index entry (possibly on yet another system) and a method to access
+the data indicated. (The \lit{httpd} server must be a valid JGOFS user to
+have access to the dictionary.)
+
+Note that the name and location of the \lit{cgi-bin} directory, as
+well as the name and location of the working directory used by the CGI
+programs, are local configuration details of the particular web server
+in use. The location of the JGOFS data dictionary is a configuration
+issue of the JGOFS installation. That is to say these details will
+probably be different on different machines.
+
+\subsection{Service Programs}
+\label{opd-server,service}
+
+\indc{server!services}\indc{\opendap services}
+\indc{services!helper programs} 
+At this point, the request for data, encoded in a URL, has caused the
+\lit{httpd} server to execute the CGI program that represents the \opendap
+server. The \opendap server, in turn, executes one of several different
+\ind{service} programs, and returns the result of that execution to
+the client.  Though there may be others available on a given machine,
+five of the services constitute the core functionality of the \opendap
+server:
+
+\begin{itemize}
+\item Data Attribute
+\item Data Description
+\item Data
+\item ASCII Data
+\item Information
+\end{itemize}
+
+\note{There are other important \opendap services.  For a description of
+  all the \opendap services, see \sectionref{opd-client,services}.}
+
+The \opendap server is structured as a dispatch function, invoking
+ancillary helper programs to provide its services.  Installing an \opendap
+server involves making sure that each of the required helper programs
+is available to the server software.  Here is a table of the helper
+programs required for each of the \opendap services for the netCDF 
+server.  For another \opendap server, the names of some of the helper
+programs would have a different root (e.g. \lit{ff\_} for the FreeForm
+server, \lit{jg\_} for JGOFS, etc.).
+
+%
+% Updates to this list should also be reflected in ch02.tex.
+\begin{table}[htbp]
+\caption{\opendap Services, with their suffixes and helper programs\@.}
+\label{opd-server,tab,suffixes}
+\begin{center}
+\begin{tabular}{|p{0.75in}|p{0.75in}|p{2in}|} \hline
+\tblhd{Service} & \tblhd{Suffix} & \tblhd{Helper Program} \\ \hline \hline
+Data Attribute & \lit{.das} & \lit{nc\_das} \\ \hline
+Data Descriptor & \lit{.dds} & \lit{nc\_dds} \\ \hline
+\opendap Data & \lit{.dods} & \lit{nc\_dods} \\ \hline
+ASCII Data & \lit{.asc} or \lit{.ascii} & \lit{asciival} \\ \hline
+Information & \lit{.info} & \lit{usage}, see
+\sectionref{sec,document-data} for configuration information.
+ \\ \hline
+\ifh & \lit{.html} & None \\ \hline
+Version & \lit{.ver} & None \\ \hline
+Help & Anything else & None \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+The service programs are started by the CGI depending on the extension
+given with the URL. If the URL ends with `.das' then the DAS service
+program is started. Similarly, the extension `.dds' will cause the DDS
+service to run and so on. The CGI program (the ``dispatch'' script),
+which serves to dispatch the request to one of the three service
+programs, can be very simple.  In the servers distributed with \opendap,
+the CGI is simply a shell script that takes its own name and catenates
+the enclosed URL suffix. The services, being more complex programs,
+will generally be written in C or \Cpp .
+
+On the client side, the user may never see the `.das,'
+`.dds,' or `.dds' URL extensions. Nor will the user necessarily be
+aware that each URL given to the \opendap client produces three different
+requests for information. These manipulations happen within the client
+library, and the user need never be aware of them.  \tbd{(Refer to
+  Section ?? for more information about how and where this
+  substitution takes place)}
+
+There may be more than five service programs for a given server
+implementation.\footnote{A couple of services, such as the version and
+  help services, are built into the server software, and need no
+  configuration.} A server may provide other ``services,'' such as the
+catalog service, or a service specific to a particular data
+implementation. The three data services, however, constitute the
+minimum configuration for a functional server. All three services are
+involved in data requests, as the client program will use the output
+from the \lit{\_dds} and \lit{\_dds} services to allocate memory and
+define parameters for the output of the \lit{\_dods} service, which is
+the actual data requested.  The remaining two services, the ASCII and
+information services, are primarily intended for interactive use, as
+they make dataset and service information directly available to a
+browser client, such as Netscape.
+
+\section{Installing an \opendap Server}
+\label{opd-server,install}
+
+\indc{server!installing}\indc{installing!server}
+Most of the task of installing an \opendap server consists of getting the
+required Web server installed and running. The intricacies of this
+task, and the variety of available Web servers make this task beyond
+the scope of this guide. Proceed with the following steps only after 
+the Web server itself is operational.
+
+%See \appref{web-server} for hints about installing an \lit{http}
+%daemon (web server).
+
+Installing the \opendap CGI programs and the data to be served is a
+\label{opd-server,cgi-install} relatively simple operation. After
+installing the \opendap source tree and building the software, (See
+\appref{install}), the user need only copy the CGI program from the
+\lit{etc} directory in the \opendap source tree (\lit{\$(DODS\_ROOT)/etc})
+to one of the directories where the Web server expects to find its CGI
+programs. The exact name of this directory is an implementation detail
+of the Web server itself.
+
+The service programs used by the CGI are generally kept in the same
+directory as the CGI itself, although this can be changed by modifying
+the \opendap CGI dispatch script. 
+
+\note{The server programs come with release notes and installation
+  notes, in files \lit{README} and \lit{INSTALL}, among others.  These
+  will be found in the distribution directories for the particular
+  server.  For example, the documentation for the JGOFS server will be
+  found in \lit{\$DODS\_ROOT/src/http/jg-dods}.  See \OPDapi\ for
+  additional information about server documentation.}
+
+After installing the CGI program and the services, the data to be
+provided must be put in some location where it may be served to
+clients. Again, the location of the data depends on the configuration
+of the Web server and the API used by the CGI services. Most often,
+data that is served by a Web server is kept in the \lit{htdocs}
+directory, the exact pathname of which is specified in the
+\lit{httpd}.configuration file. A server may also be enabled to search
+a user's home directory tree or may follow links from the \lit{htdocs}
+directory (if the server is enabled to follow symbolic links). There
+may be yet other options provided by the specific server used in a
+particular installation, so there is really no way to avoid consulting
+the configuration instructions of the Web server.
+
+As noted, the location of the data depends not only on the
+configuration of the Web server, but also on the API used to access
+the data requested.  For example, the netCDF server simply
+stores data in a path relative to the working directory of the CGI
+program, \lit{htdocs}, while the JGOFS server uses its data
+dictionary to specify the location of its data. Refer to the specific
+installation notes for each API for more information about the
+location of the data.
+
+\subsection{Configuring the Server}
+
+\indc{server!configuration}\indc{configuration!server}
+The issues of server configuration depend to a large extent on the
+particular server in question.  The \opendap server for JGOFS data is
+configured differently than the \opendap server for netCDF data.  Each
+server comes with its own installation and configuration instructions.
+These can be found in a file called \lit{INSTALL} in the distribution
+directory for the server.  The server distribution directories are in
+\lit{\$DODS\_ROOT/src}.  Here is a checklist of items that need to be
+attended in order to install any \opendap server: \tbd{Is this list
+  complete?}  \indc{server!configuration} \indc{configuration!server}
+\indc{installation!server}
+
+\begin{itemize}
+\item Is the \lit{httpd} server configured to execute CGI programs?
+  
+\item Are the main CGI and subsidiary CGI programs installed in the
+  server's CGI directory?  For the netCDF API, these will be called
+  \lit{nph-nc}, and \lit{nc\_das}, \lit{nc\_dds}, and so on.  The
+  server CGI's for other API's will have comparable names.
+  
+\item Is the \lit{gzip} program installed in the \lit{PATH} of the
+  \lit{httpd} server?  This is used to compress data messages returned
+  to the client.
+
+\end{itemize}
+
+\subsection{Constructing the URL}
+
+After a dataset has been installed, and the server programs installed,
+you need to know what its address is.  \sectionref{opd-client,url}
+contains an explanation of the various parts of the \opendap URL,
+including a diagram in \figureref{opd-client,fig,url-parts}.  Refer
+to this section, with a copy of the Web server configuration data
+readily available.  Using the configuration data, you should be able
+to determine the appropriate URL for the data you are serving.
+
+Remember that the web server will have its own definition of the root
+directory for data, and another definition for CGI programs, depending
+on the configuration.  
+
+
+\subsection{Documenting Your Data}
+\label{sec,document-data}
+
+\indc{documenting data}\indc{data!documenting}
+\indc{service!info}\indc{info!service}
+\opendap contains provisions for supplying documentation to users about a
+server, and also about the data that server provides.  When a server
+receives an information request (through the \lit{info} service that
+invokes the \lit{usage} program), it
+returns to the client an HTML document created from the DAS and DDS of
+the referenced data.  It may also return information about the server,
+and more detail about the dataset.
+
+If you would like to provide more information about a dataset than is
+contained in the DAS and DDS, simply create an HTML document (without
+the \lit{<html>} and \lit{<body>} tags, which are supplied by the
+\lit{info} service), and store it in the same directory as the
+dataset, with a name corresponding to the dataset filename.  For
+example, the datasets \lit{fnoc1.nc}, \lit{fnoc2.nc}, and
+\lit{fnoc3.nc} might be documented with a file called \lit{fnoc.html}.
+
+You may prefer to override this method of creating documentation and
+simply provide a single, complete HTML document that contains general
+information for the server or for a group of datasets.  For example,
+to force the info server to return a particular HTML document for all
+its datasets, you would create a complete HTML document and give it
+the name \var{dataset}\lit{.ovr}, where \var{dataset} is the dataset
+name.
+
+More information about providing user information, including sample
+HTML files, and a complete description of the search procedure for
+finding the dataset documentation, is to be found in \OPDapi .
+
+\subsection{Testing the Installation}
+
+\indc{server!testing}\indc{testing an \opendap server}
+It is possible to test the \opendap server to see whether an installation
+has been properly done.  The easiest way to test the installation is
+with a simple Web client like Netscape or Mosaic. (A simple Web client
+called \lit{\ind{geturl}} is provided in the \opendap core software which
+can retrieve text from Web servers.  Look for it in the
+\lit{\$(DODS\_ROOT)/etc} directory.)
+
+The simplest test is simply to ask for the version of the server, or
+the help message.  The \opendap server uses helper programs to return the
+DAS, DDS, and data.  If you want to test the server itself, and not
+the configuration of the helper programs, the version, help, or info
+services will suffice.  Issuing a URL with \lit{.ver} on the end will
+return the version information for this server, appending \lit{.info}
+will return the info message, and issuing a URL with a nonsense suffix
+or \lit{.help} will return a help message:
+
+\begin{vcode}{ib}
+> geturl http://dods.gso.uri.edu/cgi-bin/nph-nc/data/test.nc.ver
+> geturl http://dods.gso.uri.edu/cgi-bin/nph-nc/data/test.nc.info
+> geturl http://dods.gso.uri.edu/cgi-bin/nph-nc/data/test.nc.help
+\end{vcode}
+
+To return the data attribute structure of a dataset, use a URL such as
+the following:\footnote{The \lit{geturl} program knows about the \opendap
+  protocols, so you can also omit the \lit{.das} suffix, and use the
+  \lit{-a} option to the \lit{geturl} command.  This tells
+  \lit{geturl} to append \lit{.das} for you.}
+
+\begin{vcode}{ib}
+> geturl http://dods.gso.uri.edu/cgi-bin/nph-nc/data/test.nc.das
+\end{vcode}
+
+Refer to \sectionref{data,das} for a description of a data attribute
+structure. You can compare the description against what is returned by
+the above URL to test the operation of the \opendap server.
+
+You can use your web client to test the \opendap server by using it to
+submit URLs that address specific services of the client.  See
+\sectionref{opd-client,services} for information about how to request
+individual services.  If any of the services fail, you can check the
+list of helper programs in \sectionref{opd-server,service} to find
+out which is missing.  From the web browser, you can access all the
+\opendap services, except the (binary) data service.  However, if all the
+others work, you can be relatively assured that one will, too.
+
+Using the \lit{.html} suffix produces the \ind{\ifh}, providing a
+forms-based interface with which a user can query the dataset using a
+simple web browser.  There's more about the \ifh\ in
+\chapterref{opd-client}. 
+
+\section{Displaying Information to the \opendap User}
+\label{opd-server,display}
+
+\indc{GUI|see{graphic user interface}} \opendap contains a system that
+allows an \opendap server a degree of control over the user's graphic user
+interface (GUI). \indc{graphic user interface} This system runs the
+system progress indicator, that displays to the user the status of a
+pending data request. However, a server may also use the GUI interface
+to display messages to the user, such as error messages, and even to
+query the user for information.
+
+\subsection{GUI Architecture}
+\label{opd-server,gui}
+
+\indc{graphic user interface!architecture} \indc{progress indicator}
+Since \opendap is built inside a data access API, and since the
+application program that has become the \opendap client was presumably not
+built with network I/O in mind, an \opendap client will typically not do
+any processing at all while it awaits a return message from a data
+request. Any communication that must happen between the \opendap software
+and the user must occur without the involvement of the application
+program that has invoked the \opendap software. To avoid this limitation,
+\opendap starts up a \new{GUI manager} sub-process. This sub-process can
+receive data from the \opendap core software, and can operate the user's
+graphical user interface.  \indc{manager!GUI} \indc{Tcl!interpreter
+  subprocess} \indc{wish inter@\lit{wish} interpreter subprocess}
+
+The operation of the GUI manager is illustrated in
+\figureref{opd-server,fig,gui}.  As seen in the figure, the client
+application can usually control the user's screen, but during a data
+request, this communication is suspended. Until the request returns
+control to the client application, messages returned from the \opendap
+server can be displayed to the user by passing them to the GUI manager
+sub-process, who can display them in a window to the user.
+
+\figureplace{The Architecture of an \opendap Client GUI.}{htbp}
+{opd-server,fig,gui}{wish.ps}{wish.gif}{}
+
+The GUI manager in \OPDversion uses a Tcl/Tk interpreter (the
+\lit{wish} program is the default) to interpret messages from the
+server. These messages usually contain Tcl programs to display
+information to the user. However, the \lit{wish} interpreter can also
+be sent programs to query the user for more information, or draw
+little rabbits on the screen or any other graphic function the server
+needs to have displayed to the user. See Tcl and the Tk
+Toolkit~\citel{osterhout:tcl} for more information about Tcl.
+
+By default, the GUI manager initializes by running the Tcl programs in
+the files \lit{dods\_gui.tcl}, \lit{error.tcl} and \lit{progress.tcl}.
+(These are stored in \lit{\$DODS\_ROOT/etc}.) Server commands to the
+GUI manager can use the functions defined in these files. Note also
+that the user may be using a ``safe'' Tcl interpreter, with a
+restricted subset of the usual array of Tcl commands available to it.
+The user can control these features of the operation of the GUI by
+changing several environment variables.  These are described in
+\sectionref{opd-client,environment}. 
+
+\indc{graphic user interface!error system} \indc{error system}
+\indc{message!error}
+
+A server will use the features of the GUI manager to display error
+messages to the user. A server may also use the GUI to query a user to
+correct whatever condition caused the error. For example, if a user has
+misspelled some part of a constraint expression in a URL submitted to a
+server, the server can send the constraint expression back to the user in
+an edit window, with instructions to fix it. The user can edit the
+expression, and send it back, allowing the server to proceed without
+submitting a new request. Consult the client and server toolkit manual
+for more information about the \class{Error} object on this subject.
+
+\section{Building \opendap Data Servers}
+\label{opd-server,building}
+
+Though servers are included in the \opendap core software, some
+users may wish to write their own \opendap data servers. The architecture
+of the \lit{httpd} server and the \opendap core software make this a
+relatively simple task.  
+
+A user may wish to write his or her own \opendap server for any or all of
+the following reasons:
+
+\begin{itemize}
+  
+\item The data to be served may be stored in a format not compatible
+  with one of the existing \opendap servers.
+  
+\item The data may be arranged in a fashion that allows a user to
+  optimize the access of those data by rewriting the service programs.
+  
+\item The user may wish to provide ancillary data to \opendap clients not
+  anticipated by the writers of the servers available.
+
+\end{itemize}
+
+The design of the \opendap library make the task a relatively simple one
+for a programmer already familiar with the data access API to be used.
+Also, though the servers provided with the \opendap core software are
+written in C++, they may be written in any language from which the
+\opendap libraries may be called.
+
+Once it is invoked, a CGI program scoops up whatever input is going to
+the standard input stream of the Web server (\lit{httpd}) that invoked it.
+Further, the standard output of the CGI is piped directly to the WWW
+library, which sends it directly back to the requesting client. This means
+that the CGI program itself need only read its input from standard input
+and write its output to standard output.
+
+Most of the task of writing a server, then, consists of reading the data
+with the data access API and loading it into the \opendap classes. Method
+functions defined for each class make it simple to output the data so that
+it may be sent back to the requesting client.
+
+Refer to \OPDapi\ for specific information about the classes and the
+facilities of the \opendap core software, and instructions about how to
+write a new server.
+
+
+
+
+% $Log: ch04.tex,v $
+% Revision 1.11  2003/09/04 19:42:06  tom
+% DODS->OPeNDAP
+%
+% Revision 1.10  2000/12/18 18:53:32  tom
+% anticipate creation of server installation guide
+%
+% Revision 1.9  2000/10/04 15:02:14  tom
+% changed \figureplace definition, misc other cleaning
+%
+% Revision 1.8  2000/03/23 18:26:14  tom
+% misc. updates
+%
+% Revision 1.7  1999/10/18 21:39:44  tom
+% updated for new services, fixed server test section, add ifh intro.
+%
+% Revision 1.6  1999/08/30 14:19:28  tom
+% updates prior to DODS release 3.0
+%
+% Revision 1.5  1999/02/04 17:42:13  tom
+% modified to use dods-book.cls and Hyperlatex
+%
+%
+%
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "~/DODS/doc/user/guide"
+%%% End: 

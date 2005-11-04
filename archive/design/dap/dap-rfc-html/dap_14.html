@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:10 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- URL Syntax</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_15.html"><img alt="Constraint expressions" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_13.html"><img alt="Requests" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_13.html"><img alt="Requests" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>URL Syntax</b></td></tr></table>
+<h2>URL Syntax</h2>
+
+A DAP URL is essentially an HTTP URL&nbsp;<a HREF="dap_43.html#rfc2616">[4]</a> with
+additional restrictions placed on the <tt>abs&#95;path</tt> component.
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+DAP&#95;URL </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "http:" "//" host [ ":" port ] [ abs&#95;path ] </td></tr>
+<tr><td colspan="1" align="LEFT">
+abs&#95;path </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> server&#95;path dataset&#95;id "." ext [ "?" query ] </td></tr>
+<tr><td colspan="1" align="LEFT">
+server&#95;path </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> </td></tr>
+<tr><td colspan="1" align="LEFT">
+dataset&#95;id </td><td colspan="1" align="LEFT">= </td><td colspan="1" align="LEFT"> </td></tr>
+<tr><td colspan="1" align="LEFT">
+ext </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "das" | "dds" | "dods" | "ver" | "html" | "info" | "asc" </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<p>The DAP uses HTTP as its session protocol&nbsp;<a HREF="dap_43.html#7">[7]</a>(need a
+better reference), so every DAP URL starts with the scheme
+<tt>http:</tt>. The <tt>host</tt> and optional <tt>port</tt> name a host and
+TCP port of an HTTP server that will handle the session. The
+<tt>host</tt> may also contain authentication information as described in RFC
+2617&nbsp;<a HREF="dap_43.html#rfc2617">[5]</a>.
+<p>The <tt>abs&#95;path</tt> portion of the <tt>DAP&#95;URL</tt> is composed of four
+parts:
+<dl><dt><b>server&#95;path</b><dd> A pathname which identifies the DAP server to
+  handle the request. The servers may be implemented as Common Gateway Interface (CGI) programs or
+  they may use another equivalent scheme (e.g., the Apache HTTP daemon's
+  module system).
+<dt><b>dataset&#95;id</b><dd> A string passed to the server named by
+  <tt>server&#95;path</tt> that uniquely identifies the source of data on
+  <tt>host</tt>. The <tt>dataset&#95;id</tt> may take the form of a pathname
+  within the HTTP server's document root directory, or it may name the
+  data source in some other way (e.g., the DAP server might maintain a
+  table of names mapped to tables in a relational database).
+<p>  Two special <tt>dataset&#95;id</tt>s SHOULD be recognized by a DAP
+  server. They are <tt>version</tt> and <tt>help</tt>. When a DAP server
+  receives the <tt>dataset&#95;id</tt> <tt>version</tt> it SHOULD respond
+  with version information (see Section&nbsp;<a HREF="dap_36.html">*</a>). When a DAP
+  server receives the <tt>dataset&#95;id</tt> <tt>help</tt> it SHOULD respond
+  with a help message (see Section&nbsp;<a HREF="dap_40.html">*</a>).
+<dt><b>ext</b><dd> The <tt>ext</tt> part of the <tt>abs&#95;path</tt> tells the
+  DAP server which type of response to return. Each response has a three
+  letter string that is used by the requester. See
+  Section&nbsp;<a HREF="dap_21.html">*</a> for a description of the responses and the
+  <tt>ext</tt> strings used to request them.
+<dt><b>query</b><dd> The optional <tt>query</tt> part of the <tt>abs&#95;path</tt> is
+  used with ASCII and binary data requests to limit those requests to
+  specific variables or values within the data source. See
+  Section&nbsp;<a HREF="dap_15.html">*</a>.
+</dl>
+<menu>
+<li><a HREF="dap_15.html">Constraint expressions</a>
+</menu>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_15.html"><img alt="Constraint expressions" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_13.html"><img alt="Requests" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_13.html"><img alt="Requests" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>URL Syntax</b></td></tr></table></body></html>

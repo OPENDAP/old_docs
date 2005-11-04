@@ -1,0 +1,465 @@
+
+	$Id$
+
+DODS Catalog Preliminary Design
+
+Abstract
+
+The DODS catalog provides a way for users of DODS to find out which datasets
+contain various types of data and, for datasets which are composed of several
+files, which of those files contain certain types or ranges of data. The
+catalog will be designed and implemented in several stages. This document may
+touch on several of them, but only the first stage will be described in
+detail.
+
+Introduction
+
+The DODS catalog services provide three distinct functions. The catalog:
+1) provides a way to choose individual URLs from datasets which contain many
+URLs, 2) provides a standard namespace for datasets and 3) maps queries
+stated in scientific terms into data storage terms. While the catalog
+services adress each of these three areas, each is treated as a separate
+problem to be solved. 
+
+The three problems addressed by the catalog are unified by the fact that they
+all relate to making datasets more generic and abstract. Thus it make s sense
+to think of solving them with a single service within DODS. However, each
+problem will be addressed separately so that users of DODS may choose to use
+any, all or none of the catalog's services.
+
+DODS considers each dataset to be contained in a file or something that can
+be referred to using only the protocol, machine and file parts of a URL. This
+means that single datasets (to people) which are composed of many files, look
+like many datasets to DODS. The first part of the DODS catalog service is
+intended to provide a mechanism that can be used to choose one or more files
+from a multi-file dataset without knowing the way those files are physically
+stored. 
+
+The initial solution to the first problem addressed by the catalog services
+will be replaced by a more universal service which can map queries not only
+among files which comprise one logical dataset, but also among several
+distinct datasets. The second gneration solution to this problem will be able
+to find datasets which meet certain critieria and combine results from several
+datasets into a single response.
+
+DODS' guiding philosophy is that creators of datasets know best how to
+organize those data. Thus DODS does not impose a name standard requiring, for
+example, that time be represented a certain way. The down side of this is
+that it makes comparison between datasets hard and requires users to learn
+something about the internal conceptual organization of each dataset they
+want to use. The second part of the catalog services provides a standard
+namespace which may be layered over a dataset's existing names. Thus creators
+of datasets (or people who install DODS servers after the fact) may choose to
+provide a mapping betweenthe names used in a given dataset and one of the
+DODS namspaces.
+
+The third part of the catalog services will map queries expressed in
+scientific terms to correct syntax and namespace of a particular dataset. For
+most queries this will work only when basic DODS servers use the catalog
+services, particular the standard names service.
+
+Development of the catalog services will procede by first building servers
+that solve problems one and two. That is, we will build servers that can map
+queries of multi-file datasets onto a list of URLs into that dataset and we
+will provide a simple, standard, name space for oceanographic data. Once
+these parts are complete we will procede to the third problem and
+generalization of the first problem.
+
+Building the `file server'
+
+The file server is the solution to the first problem tackled by the catalog
+services. 
+
+1. Primitive file servers
+
+The simplest file server maps date and time onto URLs. For example, the
+following is a simple file server for the JPL Pathfinder dataset. It is
+primitive because no attempt is made to hide the internal organization of
+time. The client must understand how time is represented by the server and
+must be able to use that representation. In this example, date is expressed
+using year (four digits) and day number (three digits). 
+
+  [dcz:/usr/local/DODS/src/jg-dods-2.16] jpl=http://dcz/test/nph-jg/pathfinder
+  [dcz:/usr/local/DODS/src/jg-dods-2.16] geturl -d $jpl
+  Dataset {
+      Sequence {
+	  String year;
+	  Sequence {
+	      String day;
+	      String hours;
+	      String minutes;
+	      String seconds;
+	      String DODS_URL;
+	  } Level_1;
+      } Level_0;
+  } pathfinder;
+  [dcz:/usr/local/DODS/src/jg-dods-2.16] geturl "${jpl}.asc?day,hours,DODS_URL&year=1985&day>0&day<10"
+  day, hours, DODS_URL
+  004, 12, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/ascending/09km/1985/1985004h09da-gdm.hdf.Z
+  004, 00, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/descending/09km/1985/1985004h09dd-gdm.hdf.Z
+  005, 12, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/ascending/09km/1985/1985005h09da-gdm.hdf.Z
+  005, 00, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/descending/09km/1985/1985005h09dd-gdm.hdf.Z
+  006, 12, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/ascending/09km/1985/1985006h09da-gdm.hdf.Z
+  006, 00, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/descending/09km/1985/1985006h09dd-gdm.hdf.Z
+  007, 12, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/ascending/09km/1985/1985007h09da-gdm.hdf.Z
+  007, 00, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/descending/09km/1985/1985007h09dd-gdm.hdf.Z
+  008, 12, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/ascending/09km/1985/1985008h09da-gdm.hdf.Z
+  008, 00, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/descending/09km/1985/1985008h09dd-gdm.hdf.Z
+  009, 12, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/ascending/09km/1985/1985009h09da-gdm.hdf.Z
+  009, 00, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/descending/09km/1985/1985009h09dd-gdm.hdf.Z
+  [dcz:/usr/local/DODS/src/jg-dods-2.16] 
+
+The constraint says `send the day, hours and DODS_URL variables for the
+sequence elements which have year == 1985 and 0 < day < 10'. 
+
+2. Hiding data organization
+
+To make file servers more uniform I propose that we hide certain types of
+common queries behind functional interfaces. The `primitive' access method
+would still work; these functions serve to agument those methods, not replace
+them. 
+
+I think that we should define various sets of functions which could be used
+to query *any* DODS server. Since the file servers will be DODS servers, they
+will work with file servers. However, it would be a mistake to limit these
+functions to just those types of DODS servers.
+
+There are three classes of functions for which I can see an immediate need:
+date/time, geospatial and parameter. Since this is a working paper and since
+I can see the most immediate need for time-base queries, I'll describe only
+the time and date functions and how they might be used.
+
+For date and time queries two functions will be defined, one for time (hours,
+minutes, seconds) and one for date and time (years, months, days, hours,
+...). Each function will take either one or two arguments. If one argument is
+given then the function returns true in a CE for all times (dates and times)
+equal to the argument given. If two arguments are given then the function
+returns true for all times (dates and times) between the two arguments.
+
+	time(arg): time == arg
+	date(arg): date == arg
+	time(arg1, arg2): arg1 <= time <= arg2
+	date(arg1, arg2): arg1 <= date <= arg2
+
+All the arguments will passed as strings unless we go with the function for
+return values as described below. In that case the parser wil have to be
+modified to recognize these yyyy/mm/dd and hh:mm:ss character sequences. Of
+course it could done without that and have the interior double quotes
+escaped, but that gets too messy.
+
+The constraint above would be written:
+
+    day,hours,DODS_URL&date("1985/1/1", "1985/1/10")
+
+Note that this does not affect how time is encoded in the returned sequence.
+Thus this is only half a solution. The client does not need to understand how
+time (date and time) in encoded in the dataset to *make* a query, but it
+*does* need to know when interpreting the results of that query! 
+
+We can define a second function To get time (date and time) *back* in a
+standard way that's independent of the dataset's storage of that information.
+
+    Brief Digression: there are two syntactical forms for DODS constraints:
+    <projections><selections> (where each selection clause is introduced by
+    `&') and <function>. The <selection> clause of the first form may be zero
+    or more relational expressions intermixed with zero or more
+    boolean-function calls. Functions used in the selection part of a CE
+    *must* return a boolean value (just like a relational expression). The
+    second form of a CE is <function>. However, these functions don't return
+    booleans, they return DODS variables. For example, you could define a
+    function average() that would return in a float64 variable the average of
+    a bunch of DODS variables.
+
+What I propose to do is add functions time_expr() and date_expr() that will
+each take two arguments: a list of variables to return (effectively a
+projection) and a list of selection criteria. The above constraint would look
+like:
+
+    date_expr("DODS_URL", "date(1985/1/1, 1985/1/10)")
+
+The function time_expr would return *by definition* all those variables
+listed in the first argument *and* time in a standard form. 
+
+This constraint would return not day, hours and DODS_URL but `standard date'
+and DODS_URL. E.G.:
+
+  DODS_Time, DODS_URL
+  1985/1/4:00:00:00, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/ascending/09km/1985/1985004h09da-gdm.hdf.Z
+  1985/1/4:12:00:00, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/descending/09km/1985/1985004h09dd-gdm.hdf.Z
+  1985/1/5:00:00:00, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/ascending/09km/1985/1985005h09da-gdm.hdf.Z
+  1985/1/5:12:00:00, http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/descending/09km/1985/1985005h09dd-gdm.hdf.Z
+
+Where I'm using yyyy/mm/dd:hh:mm:ss as the DODS representation. 
+
+Note: An alternative to using the function is to bless certain return variable
+names so that when a server sees `DODS_Date' in the projection part of a CE
+then it knows what to do. I don't like that much because I'll see the end of
+it...
+
+Note: What about using the variable name as a function?
+
+3. Discovering a server's interfaces
+
+One problem with all of this is that there is a need to support multiple
+levels of datasets within DODS. One level, the lowest, have nothing added to
+them. They provide, via the DAS, DDS and Data objects, exactly what was
+encoded with the data. In the case of some APIs (e.g., NetCDF) that *may* be
+a lot while in the case of others (e.g., Matlab) it will be next to nothing.
+At the other end of the spectrum will be servers which had extensive amounts
+of additional information about the dataset. We should not plan on accessing
+this information using a functional interface because, by default, DODS
+servers have *no* functions. They are added on a per server basis. 
+
+However, the DAS object was specifically designed to hold additional
+information about the dataset and its variables *and* to be extensible
+(without changing the underlying data one bit). 
+
+To provide a way for clients to learn about various interfaces available from
+a given server, we can describe those interfaces in an attribute called
+`DODS_interfaces'. Each interface will have a standard set of functions which
+will be listed in an appendix of this paper. For example, one interface
+already described is the date/time interface. The DODS_interfaces attribute
+would only need to name the interface, not list all of its functions, etc. It
+will be up to the clients to know which interfaces do what. 
+
+4. A Plan
+
+To add the date/time interface to a real DODS server, several things will
+have to be done. First the appropriate server will have to be selected. As of
+8/18/98 it looks like the best all-around choice will be the FreeForm server
+(which is still being debugged) but for some large collections of data a
+server based on SQL (using MySQL?) might be better. (Note that Mark Abbott is
+funded to develop servers for data he holds in databases accessible via SQL). 
+
+Once that choice is made, the server-side function themselves will have to be
+written. See the DODS programmer's Guide for information about this. 
+
+It is likely that we will find bugs in the constraint expression (CE)
+evaluator when we start using these functions. There is one outstanding bug
+report concerning CE functions. In addition, it is likely that getting the
+full date/time functional interface working will require some modifications
+ot the scanner and parser so that `odd' character sequences can be passed
+without quoting. This will keep us from requiring lots of escaped double
+quotes or an archaic quoting regime.
+
+
+5. Going Furthur
+
+2) Extend the catalog server so that it can use attributes of subordinate
+   datasets as variables in its own dataset. For example, suppose that a
+   catalog for the AVHRR dataset lists Date, Time and URL. Each file in the
+   dataset is referenced by one URL and the Date and Time columns of the
+   catalog provide a way to choose a URL based on date and time. Now suppose
+   that in each file (which is also a dataset) there is a variable called
+   `lon' with DODS:Minimum and DODS:Maximum attributes. The `lon' variable
+   from the files could be promoted to the catalog and, in the catalog, it
+   would assume the values given by the Minimum and Maximum attributes.
+
+   Note: I have yet to figure out how this would work.
+
+   In order to promote an attribute up from a dataset to a catalog for that
+   dataset, the attribute must be marked promotable. For a multifile dataset,
+   an attribute is promotable if it is preset and has the same value in all
+   files. All attributes in single file datasets are promotable.
+
+   Attributes promoted would be the DODS standard ones and the DODS:Name
+   attribute of a dataset would be used to name the variable in the catalog. 
+
+   This catalog would return a Sequence of values which would include a URL.
+   It would contain at least as much information as the Sequence from the
+   catalog in #1.
+
+3) Extend the catalog so that it can dereference URLs automatically and
+   return complex objects.
+
+ >   I'm not sure what to ask Lynn in regards to 'standard names',
+ > maybe because I'm not sure of where they'll be used the most,
+ > or the problem they're most important to.  
+
+I don't think we know where they will be used the most; that's what makes it
+hard to get started. It seems they certainly will be used by interfaces, but
+my guess is that thye will be used in more places. 
+
+Here are my assumptions about how we are going to solve this problem - at
+least initially (this is stuff you already know, but I need to say it to make
+sure we [you, Lynn and I] are all on the same wavelength):
+
+1) Every dataset has a DDS and DAS. The DDS describes the data types
+contained by the dataset, the DAS holds various pieces of information about
+those variables (other than the variable's values).
+
+2) We can use an `ancillary DAS' (which is a text file) to augment the DAS
+object for any given dataset. That is, we can put extra information about
+each variable in the ancially DAS. Included in this should be some sort of
+standrd name for the variable. That is, for each variable in a blessed
+dataset (one where we actually have added this ancillary DAS object) there
+should be attribute information that gives the standard name for that
+variable. 
+
+3) Clients will use this information by requesting it. That's it for now. It
+will be up to the client to know to look for standard names, substitute the
+real name of the variable for the standard name, etc. In the future we can
+address these other problems.
+
+ >   I guess I see these pieces of the catalog function as replacing
+ > the information in the archive.m files, which most likely will
+ > be functionally replicated in most systems trying to accomplish
+ > that same things as the GUI is now.  To that end, what do you think
+
+Yes. 
+
+ > of these suggestions:
+
+ >   Present very generic terms to the GCMD via Lynn, such as:
+ >     - Longitude
+ >     - Latitude
+ >     - Depth
+ >     - Time
+ >     - Temperature
+ >     - Pressure
+ >     - Specific Humidity
+ >     - Vector_Winds
+ >     - Vector_Wind_Stress
+
+I would give her some more concrete things. For example, list the DDS and DAS
+of the data sets and add in the new attributes. I'd add not only the names
+but other information we think should be present for each variable (max, min,
+...). The question(s) she should answer are: 1) Are these names something
+that the GCMD can work with? If not, how should they be changed? 2) Are there
+many things in our set of proposed `standards' that won't fit at all in the
+GCMD?
+
+Here are some (possibly half baked) examples:
+
+[dcz:/usr/local/DODS/src/jg-dods-2.16] img="http://podaac.jpl.nasa.gov/dods-bin/nph-hdf/dods/pathfinder/data_v4/best_sst/daily/descending/09km/1985/1985009h09dd-gdm.hdf.Z"
+
+[dcz:/usr/local/DODS/src/jg-dods-2.16] geturl -d $img
+Dataset {
+    Int32 Sea%20Surface%20Temperature[Longitude = 4096][Latitude = 2048];
+    Int32 Number%20of%20Observations%20per%20Bin[fakeDim2 = 4096][fakeDim3 = 2048];
+    Byte Raster%20Image%20%230[Raster%20Image%20%230__Y = 2048][Raster%20Image%20%230__X = 4096];
+    Byte Raster%20Image%20%231[Raster%20Image%20%231__Y = 2048][Raster%20Image%20%231__X = 4096];
+} usr.www.doc.dods.pathfinder.data_v4.best_sst.daily.descending.09km.1985.1985009h09dd-gdm.hdf;
+
+[dcz:/usr/local/DODS/src/jg-dods-2.16] geturl -a $imgAttributes {
+    Number%20of%20Observations%20per%20Bin_dim_0 {
+        String name "fakeDim2";
+    }
+    Number%20of%20Observations%20per%20Bin_dim_1 {
+        String name "fakeDim3";
+    }
+    HDF_GLOBAL {
+        String Title "AVHRR Oceans Pathfinder Equal Angle";
+        String Data%20Center "NASA/PO.DAAC AVHRR Oceans Pathfinder";
+        String Station "NOAA/NESDIS";
+        String Mission "AVHRR Oceans Pathfinder";
+        String Mission%20Characteristics "NOAA/NASA AVHRR Oceans Pathfinder";
+        String Sensor "NOAA polar orbiter data";
+        String Sensor%20Characteristics "National Oceanic and Atmospheric Administration Polar Orbiter";
+        String Product%20name "Equal Angle Map HDF";
+        String Quality%20type "Best SST";
+        String Binning%20period "DAILY";
+        String Pass "Descending";
+        String Processing%20control "Algorithm: V4.0 pathfinder flagtree 26aug96";
+        String Data%20start%20time "1/9/1985 00:00:00";
+        String Data%20end%20time "1/9/1985 23:59:59";
+        String Data%20processing%20time "Sun Mar 23 08:47:20 1997";
+        Int32 Start%20year 1985;
+        Int32 End%20year 1985;
+        Int32 Start%20day 9;
+        Int32 End%20day 9;
+        Int32 Start%20millisec 175739;
+        Int32 End%20millisec 175739;
+        Int32 Number%20of%20rows 2048;
+        Int32 Number%20of%20columns 4096;
+        String Map%20projection "Equirectangular projection";
+        String Parameter%20name "Sea Surface Temperature";
+        Float64 Orbit 399;
+        Float64 Maximum%20Latitude 89.9561;
+        Float64 Minimum%20Latitude -89.9561;
+        Float64 Maximum%20Longitude 179.956;
+        Float64 Minimum%20Longitude -179.956;
+    }
+    Number%20of%20Observations%20per%20Bin {
+        String Band%20Name "Number of Observations per Bin";
+    }
+    Sea%20Surface%20Temperature_dim_0 {
+        String name "Longitude";
+    }
+    Sea%20Surface%20Temperature_dim_1 {
+        String name "Latitude";
+    }
+    Raster%20Image%20%230 {
+        Byte hdf_palette_0 255, 255, 255, 80, 80, 80, 81, 81, 81, 82, 82, 82, 83, 83, 83, 42, 0, 42, 49, 0, 49, 56, 0, 56, 63, 0, 63, 70, 0, 70, 77, 0, 77, 84, 0, 84, 91, 0, 91, 98, 0, 98, 105, 0, 105, 112, 0, 112, 119, 0, 119, 126, 0, 126, 133, 0, 133, 140, 0, 140, 147, 0, 147, 154, 0, 154, 161, 0, 161, 168, 0, 168, 175, 0, 175, 182, 0, 182, 189, 0, 189, 196, 0, 196, 203, 0, 203, 210, 0, 210, 217, 0, 217, 224, 0, 224, 231, 0, 231, 238, 0, 238, 245, 0, 245, 252, 0, 252, 245, 0, 252, 238, 0, 252, 231, 0, 252, 224, 0, 252, 217, 0, 252, 210, 0, 252, 203, 0, 252, 196, 0, 252, 189, 0, 252, 182, 0, 252, 175, 0, 252, 168, 0, 252, 161, 0, 252, 154, 0, 252, 147, 0, 252, 140, 0, 252, 133, 0, 252, 126, 0, 252, 119, 0, 252, 112, 0, 252, 105, 0, 252, 98, 0, 252, 91, 0, 252, 84, 0, 252, 77, 0, 252, 70, 0, 252, 63, 0, 252, 56, 0, 252, 49, 0, 252, 42, 0, 252, 35, 0, 252, 28, 0, 252, 21, 0, 252, 14, 0, 252, 7, 0, 252, 0, 0, 252, 0, 7, 252, 0, 14, 252, 0, 21, 252, 0, 28, 252, 0, 35, 252, 0, 42, 252, 0, 49, 252, 0, 56, 252, 0, 63, 252, 0, 70, 252, 0, 77, 252, 0, 84, 252, 0, 91, 252, 0, 98, 252, 0, 105, 252, 0, 112, 252, 0, 119, 252, 0, 126, 252, 0, 133, 252, 0, 140, 252, 0, 147, 252, 0, 154, 252, 0, 161, 252, 0, 168, 252, 0, 175, 252, 0, 182, 252, 0, 189, 252, 0, 196, 252, 0, 203, 252, 0, 210, 252, 0, 217, 252, 0, 224, 252, 0, 231, 252, 0, 238, 252, 0, 245, 252, 0, 252, 252, 0, 252, 245, 0, 252, 238, 0, 252, 231, 0, 252, 224, 0, 252, 217, 0, 252, 210, 0, 252, 203, 0, 252, 196, 0, 252, 189, 0, 252, 182, 0, 252, 175, 0, 252, 168, 0, 252, 161, 0, 252, 154, 0, 252, 147, 0, 252, 140, 0, 252, 133, 0, 252, 126, 0, 252, 119, 0, 252, 112, 0, 252, 105, 0, 252, 98, 0, 252, 91, 0, 252, 84, 0, 252, 77, 0, 252, 70, 0, 252, 63, 0, 252, 56, 0, 252, 49, 0, 252, 42, 0, 252, 35, 0, 252, 28, 0, 252, 21, 0, 252, 14, 0, 252, 7, 0, 252, 0, 7, 252, 0, 14, 252, 0, 21, 252, 0, 28, 252, 0, 35, 252, 0, 42, 252, 0, 49, 252, 0, 56, 252, 0, 63, 252, 0, 70, 252, 0, 77, 252, 0, 84, 252, 0, 91, 252, 0, 98, 252, 0, 105, 252, 0, 112, 252, 0, 119, 252, 0, 126, 252, 0, 133, 252, 0, 140, 252, 0, 147, 252, 0, 154, 252, 0, 161, 252, 0, 168, 252, 0, 175, 252, 0, 182, 252, 0, 189, 252, 0, 196, 252, 0, 203, 252, 0, 210, 252, 0, 217, 252, 0, 224, 252, 0, 231, 252, 0, 238, 252, 0, 245, 252, 0, 252, 252, 0, 252, 245, 0, 252, 238, 0, 252, 231, 0, 252, 224, 0, 252, 217, 0, 252, 210, 0, 252, 203, 0, 252, 196, 0, 252, 189, 0, 252, 182, 0, 252, 175, 0, 252, 168, 0, 252, 161, 0, 252, 154, 0, 252, 147, 0, 252, 140, 0, 252, 133, 0, 252, 126, 0, 252, 119, 0, 252, 112, 0, 252, 105, 0, 252, 98, 0, 252, 91, 0, 252, 84, 0, 252, 77, 0, 252, 70, 0, 252, 63, 0, 252, 56, 0, 252, 49, 0, 252, 42, 0, 252, 35, 0, 252, 28, 0, 252, 21, 0, 252, 14, 0, 252, 7, 0, 252, 0, 0, 248, 0, 0, 244, 1, 1, 240, 2, 1, 236, 3, 2, 232, 4, 2, 228, 5, 3, 224, 6, 3, 220, 7, 4, 216, 8, 4, 212, 9, 5, 208, 9, 5, 204, 10, 6, 200, 11, 6, 196, 12, 7, 192, 13, 7, 188, 14, 8, 184, 15, 8, 180, 16, 9, 176, 17, 9, 172, 17, 10, 168, 18, 10, 164, 19, 11, 160, 20, 11, 156, 21, 12, 152, 22, 12, 148, 23, 13, 144, 24, 13, 140, 25, 14, 136, 26, 14, 132, 26, 15, 128, 27, 15, 124, 28, 16, 120, 29, 16, 116, 30, 17, 112, 31, 17, 108, 32, 18, 104, 33, 18, 100, 34, 19, 96, 35, 19, 0, 0, 0;
+        Int32 hdf_palette_0_ncomps 3;
+    }
+    Sea%20Surface%20Temperature {
+        Float64 scale_factor 0.15;
+        Float64 scale_factor_err 0;
+        Float64 add_offset -3;
+        Float64 add_offset_err 0;
+        Int32 calibrated_nt 20;
+        Float64 Slope 0.15;
+        Float64 Intercept -3;
+        String Unit "Degree in Celsius";
+        String Equation "SST (Celsius) = DN * .15 - 3.0";
+    }
+    Raster%20Image%20%231 {
+        Byte hdf_palette_0 255, 255, 255, 7, 0, 252, 252, 189, 0, 252, 0, 0, 83, 83, 83, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 7, 0, 252, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 189, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 252, 0, 0, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 255, 0, 255, 0, 0, 0;
+        Int32 hdf_palette_0_ncomps 3;
+    }
+}
+
+
+[dcz:/usr/local/DODS/src/jg-dods-2.16] geturl -d $jpl
+Dataset {
+    Sequence {
+        String year;
+        Sequence {
+            String day;
+            String hours;
+            String minutes;
+            String seconds;
+            String DODS_URL;
+        } Level_1;
+    } Level_0;
+} pathfinder;
+
+[dcz:/usr/local/DODS/src/jg-dods-2.16] geturl -a $jpl
+Attributes {
+    minutes {
+    }
+    year {
+    }
+    seconds {
+    }
+    day {
+    }
+    DODS_URL {
+    }
+    hours {
+    }
+}
+
+ >   And then ask the GCMD to use their database (I assume their system
+ >   is DB driven) to cross reference these terms against something, like
+ >   the DIFs or whatever else they use to maintain this information.  Just
+ >   to see what they would come up with.  I realize that these terms are
+ >   extremely generic, and even ambiguous in some respects but it seems
+ >   it would be useful to know how ambiguous or generic these terms are 
+ >   with respect to the GCMD data itself.  They may feel this is a waste
+ >   of time, and they may have other suggestions to initiate solving
+ >   this problem but a) it shouldn't be too large a task for them to
+ >   do, and b) it might give them insight into the very basic problem 
+ >   we need to solve (which they probably already have).
+
+ >   From this we might get an idea on how to proceed to map our generic
+ >   terms to more specific GCMD representations without having to start
+ >   down the 'standards' (FGDC) route.
+
+ >   Any suggestions?  What is Lynn's status, how much can she work
+ >   on this?
+
+ > Dan
+    
+

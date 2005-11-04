@@ -1,0 +1,52 @@
+time ncdump test.cdf > /dev/null
+3.7u 0.1s 0:04 97% 0+348k 3+0io 8pf+0w
+3.7u 0.1s 0:03 97% 0+344k 0+0io 0pf+0w
+
+time list "/d5/synop/contrib/netcdf/mynh(test.cdf)" /dev/null
+3.8u 0.9s 1:35 5% 0+308k 3+0io 12pf+0w
+3.5u 1.3s 1:36 5% 0+332k 15+0io 33pf+0w
+
+time list test.def /dev/null
+5.9u 1.2s 0:16 44% 0+316k 0+0io 1pf+0w
+5.9u 1.4s 0:18 39% 0+332k 2+0io 15pf+0w
+5.9u 1.3s 0:15 46% 0+328k 5+0io 12pf+0w
+
+time listj ../test.def /dev/null
+4.6u 0.2s 0:05 95% 0+260k 48+0io 48pf+0w
+4.6u 0.1s 0:05 89% 0+260k 0+0io 0pf+0w
+
+time list "nh(../s.cdf,n_rec)" /dev/null
+5.3u 1.5s 0:16 41% 0+320k 0+0io 0pf+0w
+5.1u 1.3s 0:15 42% 0+316k 4+0io 5pf+0w
+
+get test.def
+406930 bytes received in 5.6 seconds (71 Kbytes/s)
+406930 bytes received in 5.1 seconds (78 Kbytes/s)
+
+time list "18.38.0.201::def(/d3/glenn/gofs/test.def)"
+        9.8 real         5.0 user         1.0 sys
+        9.1 real         4.9 user         1.2 sys
+       16.4 real         4.7 user         1.3 sys
+
+time ./ncdump dods://lake.mit.edu//d3/glenn/gofs/s.cdf > /dev/null
+       22.4 real        12.7 user         0.3 sys
+       21.4 real        12.7 user         0.3 sys
+
+time t1 dods://lake.mit.edu//d3/glenn/gofs/test.def /dev/null
+      284.4 real         7.4 user         4.9 sys
+
+time rd ../test.def [floats]
+8.7u 1.3s 0:18 53% 0+388k 1+0io 9pf+0w
+8.9u 1.2s 0:17 58% 0+376k 0+0io 1pf+0w
+
+time rd ../test.def [strings]
+4.4u 1.1s 0:15 35% 0+328k 1+0io 6pf+0w
+4.4u 1.0s 0:13 39% 0+352k 1+0io 3pf+0w
+
+time rdd ../test.def [strings]
+2.5u 0.1s 0:02 98% 0+236k 1+0io 2pf+0w
+2.5u 0.1s 0:02 95% 0+236k 0+0io 0pf+0w
+
+time rdd ../test.def [floats]
+7.8u 0.2s 0:08 95% 0+288k 30+0io 36pf+0w
+7.7u 0.1s 0:08 98% 0+280k 0+0io 1pf+0w

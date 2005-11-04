@@ -1,0 +1,41 @@
+
+% The abstract for the DODS data delivery poster which was accepted by TOS
+% for presentation at their 1995 biannual conference.
+%
+% $Id$
+
+\documentstyle[12pt,margins]{article}
+
+\begin{document}
+
+\begin{abstract}
+
+This poster describes the design of the HTTP-based data servers for
+the Distributed Oceanographic Data System (DODS), and the clients that access
+them. The data servers are built by assembling three programs which read
+parameters passed from National Center for Supercomputing Applications's
+HTTPD to the programs via the Common Gateway Interface (CGI) interface. In
+the design, HTTPD is used as a network I/O management tool which simplifies
+setup and maintenance of the data server. The programs which comprise a data
+server return Multipurpose Internet Mail Extensions (MIME) documents as query
+results. Two of the programs return information about the content of data set
+(variable names, types, attributes) while the third program returns the
+values of one of the variables in the data set.  This poster also describes
+the DODS client libraries which use the information provided by data servers
+to mimic the responses produced by various data-access Application Programmer
+Interfaces (API) when they are used to read data files or data sets. For any
+particular API, the DODS client library presents the same link-time interface
+as the original library implementing that API. However, the DODS client
+library replaces the local file I/O calls in the library with HTTP messages
+to a DODS data server.  While the construction of the data servers is
+typically straight forward, building the surrogate library for a particular
+API can be very complicated. This complexity is the result of the need to
+translate from the DODS Data Access Protocol (DAP) representation of
+information to the representation used by the API. Although hard to
+implement, this system has the advantage of providing for interoperability
+between several different APIs supported by DODS. As new APIs are added the
+set of interoperable APIs will further expand.
+
+\end{abstract}
+
+\end{document}

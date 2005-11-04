@@ -1,0 +1,679 @@
+% Chapter to the DODS Programmer's Guide
+%
+% $Id$
+%
+% $Log: ch01.tex,v $
+% Revision 1.7  2004/02/18 06:38:48  jimg
+% Various changes, mostly for the DODS --> OPD macros.
+%
+% Revision 1.6  2000/10/04 15:00:23  tom
+% changed \figureplace definition, cleaning up...
+%
+% Revision 1.5  2000/03/21 22:04:33  tom
+% added server spec appendixes, fixed xref tags
+%
+% Revision 1.4  1999/07/22 18:54:56  tom
+% fixed errors
+%
+% Revision 1.3  1999/02/04 17:46:05  tom
+% Modified for dods-book.cls and Hyperlatex
+%
+% Revision 1.2  1998/12/07 15:51:33  tom
+% updated for DODSv2.19
+%
+% Revision 1.1  1998/03/13 20:50:02  tom
+% created API manual from James's Toolkit document
+%
+%
+
+\chapter{The DODS Client and Server Toolkit}
+\label{tk,overview}
+
+The Distributed Oceanographic Data System (DODS) is a system used to
+facilitate access to scientific data on the internet.  Using DODS, you
+can turn any data analysis program that uses one of several data
+access APIs into a powerful, internet-friendly data browser.  For basic
+information about the structure of DODS and its components, please see
+\OPDuser. 
+
+The DODS Toolkit software consists of a collection of \Cpp\ classes used
+to build DODS data servers and clients:
+\indc{toolkit!contents}\indc{DODS!toolkit contents}
+
+\begin{description}
+\item[Type classes] A complete implementation of the DODS data access
+  protocol (DAP).  This consists of a set of virtual classes for
+  different types of data, which must be sub-classed to use.
+  
+\item[Data classes] This is a set of classes, including both the Data
+  Descriptor Structure (\class{DDS}) and the Data Attribute Structure
+  (\class{DAS}), designed to contain information about a dataset's
+  data.
+
+\item[Connect classes] These classes are used by a DODS client to
+  mimic a durable connection to a DODS server.
+
+\item[\class{DODSFilter}] This class consists of several utility
+  functions useful for writing DODS servers.
+
+\item[CGI Utilities] The file \lit{cgi\_util.h} describes a small
+  number of other common functions needed by DODS servers.
+
+\end{description}
+
+The DAP toolkit contains three class hierarchies: one for each of the
+\class{DAS} and \class{DDS} objects, rooted in classes with those names,
+and one for the variables, rooted at the class \class{BaseType}. The
+following sections present an overview of these class hierarchies and
+describe, in general terms, how they are used to build the
+client-library and data server. See \sectionref{tk,das-dds-objects}
+for information about the \class{DDS} and \class{DAS} classes.
+To use the type classes, they must be subclassed.
+\chapterref{tk,subclassing} provides a detailed description of this
+process.
+
+Detailed information about the \class{DAS} and \class{DDS} themselves
+is available in the \OPDuser.  Descriptions of the classes and their
+member functions are in the reference material
+\texorhtml{, \chapterref{tk,classref}}{, \OPDapiref}.
+
+The DODS toolkit also contains two classes used by DODS clients to
+manage network connections between themselves and a server. The
+\class{Connect} object manages a single connection with some DODS
+server, and the \class{Connections} object manages a group of
+\class{Connect} objects.  The Connect class is meant to be subclassed
+when used by a real client library. See \chapterref{tk,manage-conns}.
+
+\section{The \class{DAS} and \class{DDS} Objects}
+\label{tk,das-dds-objects}
+
+\indc{DAS class}\indc{DDS class}\indc{attribute data}\indc{data
+  attributes} \indc{data model}\indc{data description} The dataset
+attribute structure (DAS\texonly{:~\pagexref{tk,das}}) and dataset
+descriptor structure (DDS\texonly{:~\pagexref{tk,dds}}) objects are
+used to store information about a data set's variables. These objects
+are used on both the client and server sides, although there are class
+features that only pertain to one or another of the roles.  They can
+be thought of as metadata objects.  In this book, however, we will
+avoid the term \emph{metadata} because often this is \emph{data} to
+many users.
+
+It might be said that neither the \class{DAS} nor the \class{DDS}
+contain actual science data --- the \class{DAS} contains attribute
+information from the data set while the \class{DDS} contains
+structural information about the data set and variables in the data
+set.  Since the boundary between data and metadata (or data
+attributes) is often a blurry one, this is not a distinction we will
+insist on. 
+
+To build both the \class{DAS} and \class{DDS}, the server either reads
+information directly from the dataset or from DODS-specific
+\new{ancillary data} files, depending on the capabilities of the data
+access API used to access the data.  The \class{DAS} and \class{DDS}
+server \new{filter} programs do this and then transmit the resulting
+object to the client.
+
+On the client side, the DODS client\footnote{Whatever it is.  The DODS
+  client can be another server, a user application linked with a
+  DODS-compliant API, or a standalone program using the DODS data
+  access protocl API.  In any case, the use of the class libraries
+  described in this document is identical.} uses information in the
+DAS and DDS to satisfy API calls issued by the user program requesting
+information about variables, their type, shape, and attributes.  The
+client requests both of these objects when it first contacts
+the remote data set. The \class{DAS} and \class{DDS} objects are then
+stored as part of a \new{virtual connection} to that data set and can
+be used repeatedly by the client library without retransmission.
+
+\indc{Data Attribute Structure|see(DAS)}
+\indc{Data Description Structure|see(DDS)}
+\indc{DAS!internal vs. external representation}
+\indc{DDS!internal vs. external representation}
+The \class{DAS} and \class{DDS} objects have both an internal and an
+external representation. Internal to the DODS client or server, these
+structures are stored as \Cpp\ objects, while their external
+representation is as text. The object is sent from the server to the
+client using this text representation. Each of the two classes
+contains a parser which can read the text representation and recreate
+the object's internal representation. In addition, it is possible to
+write the text representation for either object (using a text editor)
+and then use the parser to create the internal, \Cpp, object.
+Furthermore, the text representation is a type of persistence and can
+be used to build a flexible object caching mechanism.
+\indc{persistence!object}\indc{object persistence}
+\indc{caching}\indc{performance improvement}
+
+One possible use for this caching mechanism is to store the \class{DAS} and
+\class{DDS} for a dataset and use the stored versions in place of opening the
+data set and reading information about it and its contents. For large
+data sets with many variables this can result in a significant
+performance improvement, and several of the packaged DODS servers use
+it.  
+
+The caching mechanism may also be used on the server-side to
+store extra information about the data set---information that is not
+present in the data set proper, but which the data provider would like
+included when people access the data set via DODS.  In this scenario,
+the data server first integrates the data set file(s) using the API
+and builds the \class{DAS} and \class{DDS}. Once an initial version of
+the \class{DAS} and \class{DDS} are resident in memory, the parser is
+used to read an external text file which contains additions to, or
+corrections of, the information extracted from the data file. This
+information is the ancillary data introduced above. Several of the
+DODS servers use this mechanism. 
+
+\subsection{The \class{DAS} Object}
+\label{tk,das}
+
+\indc{DAS object}\indc{object!DAS}\indc{attribute information}
+The \class{DAS} contains attribute information that is generally
+\emph{not} used by software when processing the variables; this object
+is specifically designed to hold all the information in a data set
+that has no where else to go.  Each variable can have an unlimited
+number of attributes. There are also `global' attributes that apply to
+the dataset as a whole. Each attribute is a set of three elements: the
+attribute name, type and value. The supported types for an attribute
+are: Byte, Int32, Float64, String and URL, and vectors of these types.
+These types have the same range of values as the corresponding types
+in the \dap.
+
+\indc{global attribute}
+A variable's attributes can be any qualities that are not part of the
+\class{DDS}.  Thus, the type and shape of a variable are \emph{not}
+attributes; they are characteristics of the variable and are part of
+the \class{DDS} (see Section~\ref{tk,dds}). However, users may
+store any other information as attributes\footnote{Actually, there is
+no reason that type, etc. cannot be stored as an attribute; however,
+it must be in the \class{DDS} regardless}, including paragraphs of
+text, vectors of integers and floating point values, and so on. There
+are some standard attributes required by the DODS standard.  The
+system \emph{could} work without these attributes, but they are
+required anyway to make other aspects of the systems work better.
+
+Many APIs support the concept of information in the data set that is
+not structured, and provide function calls to access that information.
+The \class{DAS} object provides a place for all that information. The
+data server can interrogate the data set and build the \class{DAS} and
+the client-library can use the \class{DAS} object to satisfy many of
+the API calls requesting information about the variables in a data
+set.
+
+Figure~\ref{fig,das-object-diagram} is a diagram of the \class{DAS}
+object. The \class{DAS} consists of the following components:
+\indc{DAS!diagram}
+
+\begin{itemize}
+
+\item A list of attribute tables, each of which is a list of
+  attributes for a particular data variable.  Since data variables can
+  contain other data variables (as with a compound data type, for
+  example), an attribute table can contain other attribute tables.
+
+\item A parser and scanner to read a text version of the
+  \class{DAS} object and create the corresponding \Cpp\ (binary)
+  representation in memory.
+
+\item A printer with which you can create a text version of the
+  \class{DAS} object.
+
+\end{itemize}
+
+\figureplace{A \class{DAS} Object}{htb}
+{fig,das-object-diagram}{DAS.ps}{DAS.gif}{}
+
+The \class{DAS} printer (\lit{DAS::print()}) is used to create a
+textual representation of the \Cpp object.  The object is transmitted
+from server to client using this representation.  The scanner and
+parser (\lit{DAS::parse()}) reads the printed representation and
+creates a \Cpp object to match this specification.  This object method
+can be used to read the text version from a disk or from a network
+connection, depending on the input stream identified for it.
+\indc{DAS!transmission}
+
+The third part of the \class{DAS}, the attribute table list, points to
+a series of \new{attribute tables}.  An attribute table is a list of
+name-type-value triples used to describe a data variable.  Each
+attribute describes some aspect of the data variable.  The example
+list in figure~\ref{fig,attr-table-diagram} shows what a table might
+look like for one of the data variables in
+figure~\ref{fig,das-object-diagram}. (The types have been left out of
+the diagrams for clarity.)
+
+\figureplace{An Attribute Table}{hptb}%
+{fig,attr-table-diagram}{attrtable.ps}%
+{attrtable.gif}{}
+
+The \class{DAS} object contains member functions to add or retrieve
+\class{AttrTable} objects as well as individual attributes based on a
+variable name. In addition, the \class{AttrTable} object may be
+traversed using a \class{Pix}\footnote{A \class{Pix} is a %libg++
+``pseudoindex'' object. See the libstdc++ documentation for more
+information.}.
+\indc{AttrTable class}\indc{attribute!table}
+
+The value of an attribute can itself be another attribute table.  So,
+for example, an aggregate variable that contains other
+variables, such as a Structure, might have an attribute table for each
+of its member variables.  In figure~\ref{fig,nest-attr-table-diagram},
+you can see illustrated the attributes of an aggregate data variable.
+The first three attributes apply to the collection of data (it was
+taken with a CTD instrument, from the good ship R/V Endeavour, and so
+on), while the next three attributes reveal attributes of the
+constituent data variables.  Each of the values of these attributes is
+itself an attribute table, containing attribute data about that data
+type. 
+
+\figureplace{A Nested Attribute Table}{hptb}%
+{fig,nest-attr-table-diagram}{nest-attrtable.ps}%
+{nest-attrtable.gif}{}
+
+DODS attribute tables are modelled with the \class{AttrTable} class.
+Each \class{AttrTable} object contains a doubly-linked list of
+attribute triples, of a structure named \lit{entry}. Each entry object
+contains a Name, Type and vector of values.  \class{AttrTable}
+provides methods for reading, writing, and modifying the attribute
+table.
+
+The DODS definition of dataset attributes contains a ``Global''
+attribute.  This has nothing to do with the data structure of the
+\class{DAS} object, but with its use in DODS.  Global attributes apply
+to all the variables in the dataset.  They can also be thought of as
+being attributes of the dataset itself.
+
+\pagebreak
+\tbd{pagebreak command here.}
+\subsection{The \class{DDS} Object}
+\label{tk,dds}
+
+\indc{DDS object}\indc{object!DDS}
+The \class{DDS} is used to store information about the organization of
+the data set and its variables. It contains information about the type
+and shape of variables. While the \class{DDS} is similar to the
+\class{DAS} in that it is used to store information about the data
+set, it is used quite differently by both the client and
+server components of DODS. The \class{DAS} is a stand-alone object and
+is used solely for the purpose of storing attributes of variables and
+the dataset. The \class{DDS}, however, stores type information about
+a data set's variables by storing actual instances of those variables.
+
+The DODS \dap\ variable objects have methods that can be used to read
+values from a data set or transfer the variable's value over the
+network.  This makes it convenient to use the \class{DDS} object
+itself to hold data, and on the server side, the \class{DDS} object is
+used by both the \class{DDS} filter program and the data filter
+program.  (See \sectionref{tk,servers} for more information about the
+structure of the DODS server.)
+\indc{DDS object!diagram}
+
+\figureplace{The \class{DDS} Object}{htb}
+{fig,dds-diagram}{DDS.ps}{DDS.gif}{}
+
+Figure~\ref{fig,dds-diagram} shows the structure of the \class{DDS}
+class objects. The \class{DDS} consists of the following components:
+
+\begin{itemize}
+  
+\item A \class{String} object used to store the name of the dataset to
+  which this \class{DDS} refers.
+
+\item A singly-linked list to store the variables in the data set.
+  Each variable is stored in an instance of one of the
+  \class{BaseType} class's descendants, and can be a simple or
+  compound data type.
+
+\item A ``printer'' method to create a textual representation of the
+  \class{DDS}. Among other uses, this is used to transmit the
+  \class{DDS} from server to client.
+  
+\item A parser and scanner to read a text \class{DDS} and convert it
+  into its \Cpp form.  This is used to read \class{DDS} information
+  from a disk, and also to receive it over the network.
+  
+\item A singly-linked list of parsed constraint expression clauses.
+  The clauses wait here to be evaluated.
+  
+\item A constraint expression parser and scanner to extract constraint
+  expression clauses from the input constraint expression.  This
+  component is responsible for creating the list of constraint
+  expression clauses.
+
+\end{itemize}
+
+The \class{DDS} object provides methods to access and operate each of
+these components.  The two lists can be traversed with a g++
+\class{Pix} object.
+
+The \class{DDS} is `lexically scoped' so that two \class{Structure}
+variables may have components with the same names; each component will
+be referred to using the \class{Structure} name and the dot operator.
+So for example, if a \class{DDS} called \lit{ralph} contains two
+structures, \lit{vitals} and \lit{new\_hip}, and each structure
+contains a variable called \lit{age}, you can differentiate the two by
+referring to one as \lit{ralph.vitals.age} and the other as
+\lit{ralph.new\_hip.age}.
+
+\section{The Type Hierarchy}
+\label{tk,type-hier}
+
+\indc{DODS types}\indc{data types!DODS}
+The \new{Type Hierarchy} is the set of classes that form the hierarchy
+used to build objects that contain data. These classes comprise the
+data model for DODS. They contain \new{simple} data types such as
+integer and floating point values as well as \new{compound} types like
+structure and sequence.  Each type is embodied by a \Cpp class, and
+the classes are arranged in a class hierarchy, with a \class{BaseType}
+defining properties inherited by all the type classes.
+
+This section contains a brief description of the different types,
+their relation to one another, and how they are used in an application
+program.  For detailed descriptions of the characteristics of each
+type, including inheritance diagrams, please see
+\texorhtml{\chapterref{tk,classref}}{the \OPDapiref}.
+
+The DODS types can be divided into four categories:
+
+\begin{itemize}
+\item \class{BaseType}
+
+\item Simple Types
+
+\begin{tabular}{lllllllll}
+  \class{Byte} & \class{Int16} & \class{UInt16} & \class{Int32} & \class{UInt32} 
+  & \class{Float32} & \class{Float64} & \class{Str} & \class{Url} \\
+\end{tabular} 
+
+\item Vector Types
+
+  \begin{tabular}{ll}
+  \class{List} & \class{Array}
+  \end{tabular}
+
+\item Compound Types
+
+  \begin{tabular}{llll}
+  \class{Structure}
+  & \class{Sequence}
+  & \class{Grid}
+  \end{tabular}
+
+\end{itemize}
+
+
+Unlike the other classes in the DODS toolkit, the type classes are abstract
+classes---in order to be used by a program, you must subclass the hierarchy
+and create concrete classes to instantiate.
+
+\subsection{Common Ancestor: BaseType}
+
+\indc{BaseType class}\indc{class!BaseType}
+The root of the type hierarchy is the abstract class \class{BaseType}.
+This class, because it is abstract, is never instantiated itself.
+\class{BaseType} is used as the base class for all of the different
+types of variables, and contains common member functions used by all
+the other type classes. For simple variables such as \class{Int32},
+only the abstract virtual functions in \class{BaseType} need to be
+added to complete the class definition. Compound types like
+\class{Structure} usually require more. A compound type contains one
+or more instances of \class{BaseType}, and requires methods to access,
+add and remove these member variables.
+
+\subsection{Simple Types}
+
+\indc{data types!simple}\indc{DODS types!simple}
+\indc{Byte class}\indc{class!Byte}
+\indc{Int32 class}\indc{class!Int16}
+\indc{UInt32 class}\indc{class!UInt16}
+\indc{Float64 class}\indc{class!Float32}
+\indc{Int32 class}\indc{class!Int32}
+\indc{UInt32 class}\indc{class!UInt32}
+\indc{Float64 class}\indc{class!Float64}
+\indc{Str class}\indc{class!Str}\indc{URL class}\indc{class!URL}
+The DODS simple data types consist of \class{Byte}, \class{Int16},
+\class{UInt16}, \class{Int32}, \class{UInt32}, \class{Float32},
+\class{Float64}, \class{Str} and \class{Url}. These data types match
+very closely the corresponding types in C or Fortran.  Note
+that---internally---each of these types uses either the C or \Cpp\ 
+representation to hold the value of the object.
+
+These abstract classes are direct descendents of \class{BaseType}
+which contain only their definitions for \class{BaseType}'s abstract
+member functions and a single constructor.
+
+\begin{description}
+
+\item [Byte] Variables which store bytes. Equivalent to unsigned
+char on most UNIX workstations.
+
+\item [Int16] Variables which store integer values as 16-bit
+twos-complement  signed integers. Equivalent to \lit{int} on
+most 16-bit UNIX workstations.
+
+\item [UInt16] Unsigned integer.  A 16-bit unsigned integer value.
+
+\item [Int32] Variables which store integer values as 32-bit
+twos-complement  signed integers. Equivalent to \lit{int} on
+most 32-bit UNIX workstations.
+
+\item [UInt32] Unsigned integer.  A 32-bit unsigned integer value.
+
+\item [Float32] Variables which store floating point data.
+Defined as the  IEEE 32-bit floating point data type, equivalent
+to a \lit{float} in ANSI  C.
+
+\item [Float64] Variables which store floating point data.
+Defined as the  IEEE 64-bit floating point data type, equivalent
+to a \lit{double} in ANSI  C.
+
+\item [Str] Variables which store string information. A DODS string is
+\emph{not} a sequence of characters referenced using a pointer (as it is in
+C), it is represented using a \Cpp\ object of the class \class{String}. 
+
+\item [Url] Variables which store references to network
+resources. This is a sub-class of \class{Str}.
+
+\end{description}
+
+\subsection{Vector Types: Array, List}
+
+\indc{Vector class}\indc{class!Vector}
+\indc{Array class}\indc{class!Array}
+\indc{data types!vector}\indc{DODS types!vector}
+The vector data types are \class{Array} and \class{List}. A
+ \class{List} is a simple ordering of elements of a single type.  An
+ \class{Array} arranges the elements so that they can be easily
+ accessed with one or more indices.  
+
+\begin{description}
+  
+\item[Array] Instances of \class{Array} have different semantics than
+  arrays in C.  They are multi-dimensional data structures which
+  contain \emph{N} instances of some data type. Each instance in the
+  array can be referred to by an integer index between \emph{0 and
+    N-1}. Multidimensional arrays are declared using C's syntax of a
+  sequence of bracketed integer values: \lit{Int32 a[10][20]} declares
+  an array of 10 arrays of 20 integers. However, unlike C arrays, the
+  \class{Array} class supports named dimensions. In the preceding
+  example, the array could have been declared: \lit{Int32 a[row =
+    10][col = 20]} where \lit{row} and \lit{col} are the names of the
+  first and second dimension, respectively. You can use the
+  \lit{dimension\_name} and \lit{dimension\_size} member functions of
+  the \class{Array} class to determine the name and size for the
+  $i^{th}$ dimension.
+  
+  \class{Array}, like all of the compound types, contains a reference to a
+  component variable. In the preceding example, the instance of \class{Array}
+  would contain information about the dimensions of the array (10 by 20), but
+  not the type of the elements (Int32). The element type information is
+  stored in the component variable which the instance of \class{Array}
+  references.
+  
+  When creating an array, the dimension sizes (and optionally their
+  names) must be set.  Regardless of the shape of the array, it is
+  always stored as a vector.  In order to access the element of a
+  multidimensional array it is necessary to calculate the offset for a
+  given element.
+  
+\indc{List class}\indc{class!List}
+\item[List] A \class{List} is an ordered collection of elements of
+  unknown length.  This is in contrast to the \class{Array}, whose
+  size is always known in advance. When a List type is declared no
+  size information is supplied, but in order to transmit a
+  \class{List} object the length of that list must be known.  Thus,
+  internally the number of elements in the current value \emph{is}
+  stored.
+
+\end{description}
+
+\subsection{Compound Types: Structure, Sequence, Function, Grid}
+
+\indc{data types!compound}\indc{DODS types!compound}
+The compound data types are used to build new types as aggregates of
+other types, including other compound types. (Note that \class{List}
+and \class{Array} are compound types, as well, but contain only a
+single type of data.) \class{Structure}, \class{Sequence} and
+\class{Function} all contain a list of \class{BaseType} objects.
+However, they have different semantics; a Structure is a simple
+aggregate; nothing other than aggregation is implied, while Sequence
+and Function define templates for relational objects. A Grid combines
+several \class{Array} objects so that nonlinear values may be applied
+to the indices of an array.
+
+\begin{description}
+  
+\indc{Structure class}\indc{class!Structure}
+\item[Structure] A Structure is an ordered collection of variables
+  that conveys no relational information other than grouping. The
+  variables that are members of a Structure may be of different types.
+  In addition to the (possible) benefit of added organization,
+  Structure may be used to supply information to the system that may
+  be useful in optimizing the access or translation operations.
+
+\indc{Sequence class}\indc{class!Sequence}  
+\item[Sequence] A \class{Sequence} is similar to a \class{Structure}
+  in that it consists of an ordered collection of variables which may
+  be of different types.  However, where an instance of a
+  \class{Structure} object describes a single set of data variables,
+  an instance of a \class{Sequence} object describes a set of data
+  variables, each of which is an entry in an ordered series of similar
+  data variables.
+
+  Consider a \class{Sequence} named \emph{S}, where each instance is
+  called \emph{s}:
+
+\begin{displaymath} 
+\begin{array}{cccc}  
+        s_{0 0} & s_{0 1} & \cdots & s_{0 n} \\  
+        s_{1 0} & s_{1 1} & \cdots & s_{0 n} \\  
+        \vdots  & \vdots  & \cdots & \vdots \\  
+        s_{i 0} & s_{i 1} & \cdots & s_{i n} \\
+        \vdots  & \vdots  &        & \vdots   
+\end{array} 
+\end{displaymath}
+
+Every instance $s_{i}$ of \emph{S} has the same number, order, and
+class of variables. A \class{Sequence} implies that each of the
+\emph{n} variables is related to each other in some logical way.
+Because a \class{Sequence} has several values for each of its
+variables it has an implied \new{state}, or position in the sequence,
+in addition to the instance data values.
+
+\begin{table}[ht]
+\caption{Table of relational data.}
+\label{toolkit,seq2} 
+\begin{center} 
+\begin{tabular}{|c|c|c|} \hline 
+\tblhd{Name} & \tblhd{Age} & \tblhd{Weight} \\ \hline 
+James & 32 & 165 \\ 
+Charlie & 7 & 65.4 \\ 
+Bob & 10 & 80 \\ \hline
+\end{tabular} 
+\end{center} 
+\end{table}
+
+For example given the the information in Table~\ref{toolkit,seq2},
+$s_{0}$ is \lit{James}, \lit{32}, \lit{165}, $s_{1}$ is \lit{Charlie},
+\lit{7}, \lit{65.4}, \ldots. The data in the table might have the
+following Sequence declaration:
+
+\begin{vcode}{ib}
+Sequence {
+    Str name;
+    Int32 age;
+    Float64 weight;
+} people;
+\end{vcode}
+
+%\indc{Function class}\indc{class!Function}
+%\item[Function] A \class{Function} is a special case of a
+%  \class{Sequence} that separates its variables into two categories:
+%  \emph{independent} and \emph{dependent} corresponding to the
+%  independent and dependent variables in an experiment. Variables in a
+%  \class{Function} may be of differing classes. The mathematical
+%  description of this functional relation is not specified.  Instead
+%  the \class{Function} type is used to indicate that one of the two
+%  sets constitute the independent variables and the other the
+%  dependent variables.
+  
+\indc{Grid class}\indc{class!Grid}
+\item[Grid] A \class{Grid} is an association of an \emph{N}
+  dimensional \class{Array} with \emph{N} named vectors (\new{map
+    vectors}), each of which has the same number of elements as the
+  corresponding dimension of the \class{Array}. Each vector is used to
+  map indices of one of the \class{Array}'s dimensions to a set of
+  values which are normally non-integral (e.g., floating point
+  values). Two map vectors may be members of different classes.
+
+
+\begin{figure}[ht]
+\W\label{toolkit,grid} 
+\begin{center} 
+\begin{ifhtml}
+Grid =
+\begin{tabular}{|c|c|c|c|c|c|} \hline 
+32.0 & 31.5 & 31.1 & 30.8 & 29.2 \\ \hline
+32.3 & 31.8 & 31.4 & 30.9 & 29.8 \\ \hline
+32.9 & 32.3 & 31.8 & 29.7 & 30.2 \\ \hline
+32.3 & 31.8 & 31.5 & 30.7 & 29.9 \\ \hline
+\end{tabular} 
+\\ \strut \\ M =
+\begin{tabular}{|c|c|c|c|c|} \hline
+1.2 & 1.4 & 1.8 & 3.9 & 4.5 \\ \hline
+\end{tabular}
+\\ \strut \\ N =
+\begin{tabular}{|c|c|c|c|} \hline
+67.8 & 68.7 & 92.3 & 95.2 \\ \hline
+\end{tabular}
+\end{ifhtml}
+\begin{iftex}
+\begin{tabular}{r|c|c|c|c|c|c|c|} \cline{2-6} 
+M =    & 1.2 & 1.4 & 1.8 & 3.9 & 4.5 & \multicolumn{2}{c}{}\\ \cline{2-6}
+\multicolumn{8}{r}{N=}\\ \cline{2-6}\cline{8-8}
+Grid = & 32.0 & 31.5 & 31.1 & 30.8 & 29.2 & & 67.8 \\ \cline{2-6}\cline{8-8}
+       & 32.3 & 31.8 & 31.4 & 30.9 & 29.8 & & 68.7 \\ \cline{2-6}\cline{8-8}
+       & 32.9 & 32.3 & 31.8 & 29.7 & 30.2 & & 92.3 \\ \cline{2-6}\cline{8-8}
+       & 32.3 & 31.8 & 31.5 & 30.7 & 29.9 & & 95.2 \\ \cline{2-6}\cline{8-8}
+\end{tabular} 
+\end{iftex}
+\end{center} 
+\caption{A sample Grid.}
+\T\label{toolkit,grid} 
+\end{figure}
+
+In \figureref{toolkit,grid}, the grid element indicated by
+\lit{Grid[2][3]} corresponds to \lit{N[2]} and \lit{M[3]}, or $N =
+92.3$ and $M = 3.9$ respectively.  The element has a value of 29.7.
+
+\end{description}
+
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../pguide.tex"
+%%% End: 
+
+
+
+

@@ -1,0 +1,30 @@
+We assume the following tools are available for the development environment.
+For supported machines, using these guarantees that you will be able to
+build DODS software. On unsupportted machines these tools improve your
+chances, but do not guarantee anything. Most of the software listed here is
+developed and maintained by others. Even though DODS will make them
+available on the same ftp site as DODS software, we won't try to maintain
+them. We will, however, try to keep up with the latest releases of these
+packages. 
+
+gnu gcc 2.5.8   	C and C++
+gnu tar 11.1		File archiving
+gnu gzip		File compression
+gnu make 3.62		Program assembly
+cextract		Generate function prototypes (Used within makefiles)
+
+Libraries:
+
+dbmalloc    	    	Debugging memory allocator (for testing)
+mdbxdr 4.0		XDR compiled for dbmalloc (for testing)
+
+Libraries developed in-house:
+
+url		    	Parses WWW URLs (using source code from CERN)
+errmsg			Error reporting library
+
+
+Data access libraries:
+
+netCDF 2.3.2	    	Access to gridded data
+JGOFS			Access to relational data

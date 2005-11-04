@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:09 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- Simple Variables</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_7.html"><img alt="Constructor Variables" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_5.html"><img alt="Characterization of a Dataset" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_5.html"><img alt="Characterization of a Dataset" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Simple Variables</b></td></tr></table>
+<h2>Simple Variables</h2>
+
+<p>Variables in the DAP have two forms. They are either base types or type
+constructors. Base type, or simple, variables are similar to predefined
+variables in procedural programming languages like C or Fortran (e.g.,
+<tt>int</tt> or <tt>integer*4</tt>).
+<dl><dt><b>byte</b><dd> an 8-bit byte;unsigned char in ANSI C.
+<dt><b>int16</b><dd> a 16-bit signed integer.
+<dt><b>uint16</b><dd> a 16-bit unsigned integer.
+<dt><b>int32</b><dd> a 32-bit signed integer.
+<dt><b>uint32</b><dd> a 32-bit unsigned integer.
+<dt><b>float32</b><dd> the IEEE 32-bit floating point datatype (ANSI C's
+  <tt>float</tt>). 
+<dt><b>float64</b><dd> the IEEE 64-bit floating point datatype (ANSI C's
+  <tt>double</tt>) .
+<dt><b>string</b><dd> a sequence of bytes terminated by a null character.
+<dt><b>URL</b><dd> represented as a string, but may be dereferenced in a Constraint Expression (CE);
+  see Section&nbsp;<a HREF="dap_15.html">*</a>.
+</dl>
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+simple-decl </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> simple-type id ";" </td></tr>
+<tr><td colspan="1" align="LEFT">
+simple-type </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "byte"| "int16" | "uint16" | "int32" | "uint32" </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> </td><td colspan="1" align="LEFT"> | "float32" | "float64" | "string" | "url" </td></tr>
+<tr><td colspan="1" align="LEFT">
+id </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> (ALPHA | "&#95;" | "&#37;" | ".") </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> </td><td colspan="1" align="LEFT"> *(ALPHA | DIGIT | "/" | "&#95;" | "&#37;" | ".") </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_7.html"><img alt="Constructor Variables" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_5.html"><img alt="Characterization of a Dataset" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_5.html"><img alt="Characterization of a Dataset" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>Simple Variables</b></td></tr></table></body></html>

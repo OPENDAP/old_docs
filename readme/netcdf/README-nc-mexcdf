@@ -1,0 +1,108 @@
+/pub/mexcdf/README
+available via anonymous ftp from crusty.er.usgs.gov (128.128.40.19)
+
+
+  MEXCDF is a mex-file interface between netCDF and MATLAB 
+  that invokes the complete C-Language netCDF interface,
+  as described in the NetCDF Users Guide.   This allows MATLAB 
+  users to read, write, and manipulate netCDF data files in an
+  efficient manner.
+
+  What you should do:
+
+1. Get the binary mexcdf mex-file.  
+
+   If you have any of the following platforms running Matlab 4.0 or
+   above, you should be able to grab the appropriate file:
+
+   /pub/mexcdf/bin:
+      ms-win31.mex       PC  MS-Windows
+      mexcdf.mex.hqx   Mac (BinHexed) 
+      sgi_irix_4.tar.Z     SGI compiled with IRIX 4.0.5
+      sgi_irix_5.tar.Z     SGI compiled with IRIX 5.2
+      dec_osf_2.tar.Z      DEC AXP compiled with OSF1/v2.1
+      dec_ultrix_4.tar.Z   DECstation compiled with Ultrix 4.3
+      sun_sunos_4.tar.Z    SUN compiled with SunOS 4.1.3
+      sun_solaris_2.tar.Z  SUN compiled with Solaris 2
+
+   Use binary mode when you get these files, EXCEPT for 
+   .hqx files, which should be transfered as ASCII.  mexcdf.sit.hqx
+   should be un-binhexed using binhex4.0 or higher and then unstuffed
+   using un-stuffit. Compressed tar (.tar.Z) files can be expanded by
+   typing "zcat dec_osf_2.tar.Z | tar xvf -".  The reason I tarred and
+   compressed the executables was to hopefully keep people from renaming
+   the mex-file binaries.
+   
+   NOTE: DON'T rename the mexcdf binary.  MATLAB expects MEX files to have
+   platform-specific file extentions (mex4 on Sun4, mexds on DECstation, etc.)
+
+   Also get mexcdf.m, which describes the usage of mexcdf and 
+   will allow you to use "help mexcdf" from within matlab.  
+
+   If you need to compile the source code for mexcdf, grab
+   the files in /pub/mexcdf/src.  Note that mexcdf.c must 
+   be compiled with an ANSI C compiler (e.g. gcc).
+
+2. Get the usage of mexcdf by typing "mexcdf" in Matlab, or check
+   out the file mexcdf.m.  
+
+3. Optional.  mget everything in the /pub/mexcdf/tools directory 
+   (all the m-files and flux.dat) and check out
+   some applications that use mexcdf.
+
+   Note to DOS-Users: 
+   Some of the m-files have file names that are longer than 8 characters, 
+   and may have to be modified to work on the PC.
+
+   The function getcdf.m is an interactive routine written by Jim Mansbridge
+   that leads you through the extraction of data from netCDF files.
+
+   The function mcvgt.m is a noninteractive routine that returns netCDF data
+   when you already know the name of the variable you want and the
+   indices of the data slab you wish to return.
+
+   The function make_ts.m creates a netCDF time series file using file using 
+   NOAA PMEL's EPIC conventions.  This allows the created file to
+   be interfaced directly to Don Denbo's PlotPlus program.
+
+   The function getts.m gets time series data from netCDF files using 
+   EPIC conventions (e.g. files written by create_ts.m).  The user specifies 
+   the variable and the start and stop time and is returned the data
+   variable and a Julian time variable.
+
+   The script cdf_demo.m demonstrates the use of make_ts.m and getts.m by 
+   creating a netcdf time series file of heat flux from Matlab, then 
+   reading selected data back into Matlab.
+
+   The functions read_gmt.m and write_gmt.m reads GMT style netCDF grid 
+   files (GMT is Paul Wessel and Walter Smith's freely available plotting and 
+   analysis package).
+
+History of mexcdf: Chuck Denham (cdenham@nobska.er.usgs.gov) 
+  wrote the first netCDF/Matlab interface using m-files
+  that called stand-alone C-programs to implement the interface.  For each
+  netCDF operation, netCDF files were opened and closed, and netCDF data
+  were written to matlab .mat files which were then "loaded" into Matlab.  
+  The result was useful, but inefficient.   To increase the efficiency, 
+  Jim Mansbridge of CSIRO (mansbrid@flood.ml.csiro.au) combined many operations
+  into a single FORTRAN mex-file, called xnetcdf.f.  Realizing the utility
+  of this method, Julie Allen of WHOI (jallen@whoi.edu) rewrote xnetcdf.f
+  in C, implemented additional operations (including operations relating to
+  creation of netCDF files from Matlab), and named the mexfile mexcdf.c.
+  The mexcdf.c code was rewritten by Chuck Denham to allow more flexibility
+  in the way the netCDF operations are invoked, and to streamline the code
+  to work on Macintosh and IBM PCs.
+ 
+
+EXAMPLE ftp session: 
+   ftp crusty.er.usgs.gov
+   user anonymous
+   passwd <your e-mail address>
+   cd pub/mexcdf/bin
+   binary
+   get mexcdf.mex4    (for Sun Sparc)
+   ascii
+   cd pub/mexcdf/tools
+   mget *
+   bye
+ 

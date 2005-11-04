@@ -1,0 +1,42 @@
+
+Metarule: Adopt the style of the code in which you are working.
+
+Source code should be indented using K&R style (which boils down to 4 spaces
+of indent except for case labels which get indented two spaces inside their
+switch stmt and braces on the same line as the if, while, et cetera). 
+
+Here's the emacs lisp that sets up K&R indentation. M-C-\ On a region will
+re-indent it.
+
+(defun my-c-modes ()			; set block comments for c-mode
+    (auto-fill-mode 1)
+    (abbrev-mode 1)
+    (if window-system
+	 (turn-on-font-lock))
+    (my-source-code-modes)
+    (setq c-basic-offset 4)
+    (c-set-offset 'case-label 2)
+    (c-set-offset 'statement-case-intro 2))
+
+(add-hook 'c-mode-common-hook 'my-c-modes)
+
+For functions/methods, layout should be like:
+
+void
+function(args)
+{
+}
+
+Unless they are in a class declaration (C++ header, struct or Java) in which
+case they should look like:
+
+void function(args) {
+}
+
+Why? Because there's a bunch of source code tools that expect this. And
+because we should all use the same basic style.
+
+Always put $Log: coding_guidelines.txt,v $
+Always put Revision 1.1  2004/06/22 23:40:48  jimg
+Always put Added
+Always put at the end of each source file.

@@ -1,0 +1,636 @@
+%CHAPTER 13     
+%
+% $Id$
+%
+
+\chapter{Query Syntax}
+\label{ff,query}
+
+This appendix lists the operators, symbols, and functions you can use
+to construct queries. The lists are followed by definitions, rules for
+combining elements to form equations and queries, and brief usage
+explanations.
+
+\section{Symbols and Operators}
+
+Operators cause the indicated operation to be performed on two values
+(string or numeric) with a third value resulting. The format for using
+operators is as follows:
+
+\begin{example}
+\var{value1 operator value2}
+\end{example}
+
+\subsection{Arithmetic Operators}
+
+Arithmetic operators cannot be used with string variables or string
+constants.
+
+\begin{center}
+\begin{tabular}{|l|l|p{2in}|} \hline
+\tblhd{Symbol} & \tblhd{Meaning} &
+\tblhd{Explanation} \\ \hline   
+\circflex & exponentiation & Raises \var{value1} to the \var{value2}
+power. Generates a domain error if \var{value1} is negative and
+\var{value2} is not an integer.\\ \hline  
+\% & modulus & Returns the remainder when \var{value1} is divided by
+\var{value2.} If \var{value1} = \var{value2} * \var{a} + \var{R},
+where \var{a} is an integer and \var{R} is less than \var{value2}, the
+modulus operator returns \var{R}. Generates a domain error if
+\var{value2} is 0.\\ \hline  
+* & multiplication & Multiplies \var{value1} by \var{value2}.\\ \hline  
+/ & division & Divides \var{value1} by \var{value2}. Generates a
+domain error if \var{value2} is 0.\\ \hline  
++ & addition & Adds \var{value1} and \var{value2}.\\ \hline 
+- & subtraction & Subtracts \var{value2} from \var{value1}.\\ \hline 
+\end{tabular}
+\end{center}
+
+\subsection{Logical Operators}
+
+Inputs to the logical operators are evaluated to FALSE if they are
+equal to 0. Any value other than 0 evaluates to TRUE. Outputs of the
+logical operators are 0 for FALSE, 1 for TRUE.
+
+Some of the logical operators have a ``word'' which is synonymous with
+their symbol (C language compatible), or multiple acceptable symbols.
+There is no advantage in speed to using any one of these alternate
+names, but the equation may be more human-readable in one form than in
+another. For example, the following equations, which evaluate to TRUE
+(i.e., 1) if the variables x and y are TRUE, are all equivalent:
+
+\begin{example}
+[x] & [y]
+[x] && [y]
+[x] and [y]
+\end{example}
+
+\begin{longtable}{|p{0.5in}|p{1in}|p{3in}|} 
+\caption{Functions}
+\T\\ \hline
+\tblhd{Symbol} & \tblhd{Meaning} &
+\tblhd{Explanation}\\ \hline   
+\endfirsthead
+\& & logical AND & TRUE if \var{value1} and \var{value2} are both TRUE\\  
+\&\& & & \\
+and & & \\ 
+& & Logical AND accepts only
+    numeric arguments. Here is the truth table for logical AND:
+\begin{center}
+\begin{tabular}{ccc} 
+\var{value1} & \var{value2} & \var{output} \\ 
+FALSE &  FALSE &  FALSE \\
+FALSE &  TRUE  &  FALSE \\
+TRUE  &  FALSE &  FALSE \\
+TRUE  &  TRUE  &  TRUE \\
+\end{tabular} \end{center}
+\\ \hline
+
+$|$ & logical OR & TRUE if \var{value1} or \var{value2} are TRUE\\ 
+$||$ & & \\
+or & & \\
+
+& & Logical OR accepts only numeric arguments. 
+
+Truth table for logical OR: 
+
+\begin{center}
+\begin{tabular}{ccc}
+\var{value1} & \var{value2} & \var{output} \\
+FALSE &  FALSE &  FALSE \\
+FALSE &  TRUE  &  TRUE \\
+TRUE  &  FALSE &  TRUE \\
+TRUE  &  TRUE  &  TRUE \\ 
+\end{tabular} 
+\end{center}
+\\ \hline
+
+x$|$ & logical exclusive or (XOR) & TRUE if \var{value1} or \var{value2} are TRUE, but not both\\  
+xor & & \\
+
+& & Logical XOR accepts only numeric arguments 
+
+Truth table for logical XOR: 
+
+\begin{center}
+\begin{tabular}{ccc}
+\var{value1} & \var{value2} & output \\
+FALSE &  FALSE &  FALSE \\
+FALSE &  TRUE  &  TRUE \\
+TRUE  &  FALSE &  TRUE \\
+TRUE  & TRUE  &  FALSE \\
+\end{tabular}
+\end{center}
+\\ \hline  
+
+= & equal to  & TRUE if \var{value1} is equal to \var{value2} \\ 
+== & & \\
+
+& & This operator can be used with both numeric and string values as long
+as \var{value1} and \var{value2} are both of the same type.\\ \hline  
+
+$<$ & less than & TRUE if \var{value1} is less than \var{value2}
+
+This operator can be used with both numeric and string values, as long
+as \var{value1} and \var{value2} are both of the same type.\\ \hline 
+
+$>$ & greater than & TRUE if \var{value1} is greater than \var{value2}
+
+This operator can be used with both numeric and string values, as long
+as \var{value1} and \var{value2} are both of the same type.\\ \hline 
+
+!= & not equal to & TRUE if \var{value1} is not equal to
+\var{value2}\\ 
+
+$<>$ & & \\
+
+$><$ & & \\
+
+& &This operator my be used with both numeric and string values, as long
+as \var{value1}  and \var{value2} are both of the same type.\\ \hline  
+
+$<$= & less than or equal to & TRUE if \var{value1} is less than or
+equal to \var{value2} 
+
+This operator can be used with both numeric and string values, as long
+as \var{value1} and \var{value2} are both of the same type.\\ \hline  
+
+$>$= & greater than or equal to & This operator can be used with both
+numeric and string values, as long as \var{value1} and \var{value2}
+are both of the same type.\\ \hline   
+
+! & logical NOT & TRUE if \var{value} is FALSE, FALSE if \var{value}
+is TRUE\\ 
+
+not & & \\
+
+& & Logical NOT accepts only numeric arguments. 
+
+The logical NOT operator, unlike all other logical operators, takes
+only 1 argument. Thus, the format for a logical NOT statement is one
+of the following:
+
+\begin{example}
+! \var{value}
+not \var{value}
+\end{example}\\  \hline  
+\end{longtable}
+
+\subsection{Special Symbols}
+
+\begin{center}
+\begin{tabular}{|l|l|} \hline
+\tblhd{Rep.} & \tblhd{Meaning}\\ \hline 
+\texorhtml{~}{\htmlsym{##126}} & negative sign\\ \hline 
+( ) & indicate order in which expressions are evaluated\\ \hline 
+[ ] & enclose variables\\ \hline 
+"" & enclose string constants\\ \hline 
+\end{tabular}
+\end{center}
+
+\section{Function Definitions}
+
+The functions take only a single argument, in the following manner:
+
+\begin{example}
+name(\var{value}) 
+\end{example}
+
+The parentheses shown above are not necessary
+unless the function is evaluating a complex argument. In the
+definitions given below, the \var{value} is represented as x. Function
+definitions which require functions themselves are given in a manner
+compliant with the equation evaluator.
+
+\begin{longtable}{|l|p{1.3in}|p{2.5in}|} 
+\caption{Functions}
+\\ \hline
+\tblhd{Name} & \tblhd{Meaning} & \tblhd{Explanation} \\ \hline 
+\endfirsthead
+\caption{Functions (continued)}
+\\ \hline
+\endhead
+acosh & inverse hyperbolic cosine & $\ln{(x + \sqrt{x^{2} - 1})}$ 
+Domain error if $x < 1$.\\ \hline 
+asinh & inverse hyperbolic sine & $\ln{(x + \sqrt{x^{2} + 1})}$\\ \hline 
+atanh & inverse hyperbolic tangent & $\frac{\ln{(\frac{1 + x}{1 - x})}}{2}$ 
+Domain error if $x \geq 1$ or $x \leq -1$ \\ \hline 
+asech & inverse hyperbolic secant & $\ln{(\frac{1 + \sqrt{1 - x^{2}}}{x})}$
+Domain error if $x \leq 0$ or $x > 1$ \\ \hline 
+acsch & inverse hyperbolic cosecant & 
+$\ln{(\frac{\frac{1}{x} + \sqrt{1 + x^{2}}}{|x|})}$ 
+Domain error if $x = 0$\\ \hline 
+acoth & inverse hyperbolic cotangent & $\frac{\ln{(\frac{x + 1}{x -1})}}{2}$ 
+Domain error if $-1 \leq x \leq 1$ \\ \hline 
+acos & inverse cosine (radians) & Domain error if $x < -1$ or $x > 1$\\ \hline 
+asin & inverse sine (radians) & Domain error if $x < -1$ or $x > 1$\\ \hline 
+atan & inverse tangent (radians) & \\ \hline 
+asec & inverse secant (radians) & Domain error if $-1 < x < 1$ \\ \hline 
+acsc & inverse cosecant (radians) & Domain error if $-1 < x < 1$ \\ \hline 
+acot & inverse cotangent (radians) & Domain error if $x = 0$ \\ \hline 
+cosh & hyperbolic cosine & \\ \hline 
+sinh & hyperbolic sine & \\ \hline 
+tanh & hyperbolic tangent & \\ \hline 
+sech & hyperbolic secant & \\ \hline 
+csch & hyperbolic cosecant & \\ \hline 
+coth & hyperbolic cotangent & \\ \hline 
+sqrt & square root & Domain error if $x < 0$ \\ \hline 
+sign & sign of argument & Evaluates to 1 if $x > 0$, 0 if $x = 0$, 
+and -1 if $x < 0$ \\ \hline 
+cos & cosine (radians) & \\ \hline 
+sin & sine (radians) & \\ \hline 
+tan & tangent (radians) & \\ \hline 
+sec & secant (radians) & \\ \hline 
+csc & cosecant (radians) & \\ \hline 
+cot & cotangent (radians) & \\ \hline 
+abs & absolute value & \\ \hline 
+exp & e to the power &  $e^x$\\ \hline 
+ln & logarithm base e & Domain error if $x \leq 0$\\ \hline 
+log & logarithm base 10 & Domain error if $x \leq 0$\\ \hline 
+fac & factorial & Domain error if $x <= 0$ 
+x is rounded to nearest smaller integer before factorial is calculated.\\ \hline 
+deg & radians to degrees & $180 x /\pi$ \\ \hline 
+rad & degrees to radians & $x\times\pi /180$ \\ \hline 
+rup & round to nearest larger integer & \\ \hline 
+rdn & round to nearest smaller integer & \\ \hline 
+rnd & round to nearest integer & \\ \hline 
+sqr & square & $x^2$\\ \hline 
+ten & ten to the power & $10^x$\\ \hline 
+not & logical not & This is the same as the logical NOT operator, but
+is included here because of its function-like behavior. Evaluates to 1
+if $x = 0$, 0 otherwise.\\ \hline 
+\end{longtable}
+
+%\subsection{Arithmetic Operators}
+
+%\begin{center}
+%\begin{tabular}{|l|l|} \hline
+%\tblhd{Rep.} & \tblhd{Meaning} \\ \hline 
+%\circflex & exponentiation\\ \hline 
+%\% & modulus\\ \hline 
+%* & multiplication\\ \hline 
+%/ & division\\ \hline 
+%+ & addition\\ \hline 
+%- & subtraction\\ \hline 
+%\end{tabular}
+%\end{center}
+
+%\subsection{Logical Operators}
+
+%\begin{center}
+%\begin{tabular}{|l|l|} \hline
+%\tblhd{Rep.} & \tblhd{Meaning}\\ \hline 
+%! & logical not (takes only 1 argument)\\ \hline 
+%not & logical not (takes only 1 argument)\\ \hline 
+%\& & logical and\\ \hline 
+%\&\& & logical and\\ \hline 
+%and & logical and\\ \hline 
+%| & logical or\\ \hline 
+%|| & logical or\\ \hline 
+%or & logical or\\ \hline 
+%x| & logical exclusive or\\ \hline 
+%xor & logical exclusive or\\ \hline 
+%= & equal to\\ \hline 
+%== & equal to\\ \hline 
+%< & less than\\ \hline 
+%> & greater than\\ \hline 
+%!= & not equal to\\ \hline 
+%< > & not equal to\\ \hline 
+%> < & not equal to\\ \hline 
+%< = & less than or equal to\\ \hline 
+%> = & greater than or equal to\\ \hline 
+%\end{tabular}
+%\end{center}
+
+%\subsection{Special Symbols}
+
+%\begin{center}
+%\begin{tabular}{|l|l|} \hline
+%\tblhd{Rep.} & \tblhd{Meaning}\\ \hline 
+%\texorhtml{~}{\htmlsym{##126}} & negative sign\\ \hline 
+%( ) & indicate order in which expressions are evaluated\\ \hline 
+%[ ] & enclose variables\\ \hline 
+%"" & enclose string constants\\ \hline 
+%\end{tabular}
+%\end{center}
+
+%\section{Functions}
+
+%\begin{longtable}{|p{0.5in}|p{2in}|}
+%\caption{Functions}
+%\T\\ \hline
+%\tblhd{Name} & \tblhd{Meaning}\\ \hline 
+%\endfirsthead
+%\caption{Functions (continued)}
+%\\ \hline
+%\tblhd{Name} & \tblhd{Meaning}\\ \hline 
+%\endhead
+%acosh & inverse hyperbolic cosine\\ \hline 
+%asinh & inverse hyperbolic sine\\ \hline 
+%atanh & inverse hyperbolic tangent\\ \hline 
+%asech & inverse hyperbolic secant\\ \hline 
+%acsch & inverse hyperbolic cosecant\\ \hline 
+%acoth & inverse hyperbolic cotangent\\ \hline 
+%acos & inverse cosine (radians)\\ \hline 
+%asin & inverse sine (radians)\\ \hline 
+%atan & inverse tangent (radians)\\ \hline 
+%asec & inverse secant (radians)\\ \hline 
+%acsc & inverse cosecant (radians)\\ \hline 
+%acot & inverse cotangent (radians)\\ \hline 
+%cosh & hyperbolic cosine\\ \hline 
+%sinh & hyperbolic sine\\ \hline 
+%tanh & hyperbolic tangent\\ \hline 
+%sech & hyperbolic secant\\ \hline 
+%csch & hyperbolic cosecant\\ \hline 
+%coth & hyperbolic cotangent\\ \hline 
+%sqrt & square root\\ \hline 
+%sign & sign of argument (1 if pos, -1 if neg, 0 if 0)\\ \hline 
+%cos & cosine (radians)\\ \hline 
+%sin & sine (radians)\\ \hline 
+%tan & tangent (radians)\\ \hline 
+%sec & secant (radians)\\ \hline 
+%csc & cosecant (radians)\\ \hline 
+%cot & cotangent (radians)\\ \hline 
+%abs & absolute value\\ \hline 
+%exp & e to the power\\ \hline 
+%log & logarithm base 10\\ \hline 
+%fac & factorial\\ \hline 
+%deg & radians to degrees\\ \hline 
+%rad & degrees to radians\\ \hline 
+%rup & round to nearest larger integer\\ \hline 
+%rdn & round to nearest smaller integer\\ \hline 
+%rnd & round to nearest integer\\ \hline 
+%sqr & square\\ \hline 
+%ten & ten to the power\\ \hline 
+%not & logical not\\ \hline 
+%ln & logarithm base e\\ \hline 
+%\end{longtable}
+
+\section{Definitions of Terms}
+\label{glossary}
+
+\begin{description}
+\item[Constant]
+  
+  A number whose value is explicitly stated in the query.
+
+\item[Predefined Constant]
+  
+  A number whose value is known explicitly by the equation
+  interpreter, but is not stated in the equation. The two predefined
+  constants, with names preceded by a colon, are :e (2.71828182846)
+  and :pi (3.14159265359).
+
+\item[String Constant]
+  
+  A character string whose value is explicitly stated in the equation.
+
+\item[Variable]
+  
+  A number which is referenced by a unique name in the equation, but
+  whose value is not stated in the equation.
+
+\item[String Variable]
+  
+  A character string which is referenced by a unique name in the
+  equation, but whose value is not stated in the equation.
+
+\item[Domain Error]
+  
+  A problem which arises when a function or operation is undefined for
+  certain input values, such as division by 0. If a domain error is
+  generated, the equation is evaluated to 0.
+\end{description}
+
+\section{Rules}
+
+Equations or queries are formed by combining variables and constant
+values with operators or functions in a meaningful way. The following
+set of rules applies to creating an equation.
+
+\begin{itemize}
+\item Variable names must be enclosed in [ ] (square brackets).
+  
+  For instance, finding the sum of a variable named height and another
+  variable named altitude is expressed as:
+
+\begin{example}
+[height] + [altitude] 
+\end{example}
+
+\item String constants must be surrounded by " " (quotation marks).
+  
+  For instance, a query to see if a string variable latitude is equal
+  to the string north is expressed as:
+
+\begin{example}
+[latitude] = "north" 
+\end{example}
+
+\item Constants with negative values must be proceeded by ~ (tilde).
+  
+  For instance, multiplying the variable altitude by a negative four
+  is expressed as:
+
+\begin{example}
+[altitude] * ~4 
+\end{example}
+
+\item At least one variable (numeric or string) must be referenced in
+  the equation.
+  
+\item Variable names cannot contain \lit{"} (quotation marks), or [ ]
+  (square brackets).
+  
+\item Spaces are ignored in equations (except inside string constants
+  and variable names), so you can use spaces to separate the parts of
+  your equation and make it more readable.
+\end{itemize}
+
+\section{Pre-defined Constants}
+
+The names of the two predefined constants e and pi are preceded by a
+colon to differentiate them from a function name or variable name.
+
+The following equation:
+
+\begin{example}
+[degrees] * :e + :pi 
+\end{example}
+
+multiplies the variable \lit{degrees} by \emph{e} (2.718) and adds $\pi$
+(3.141).
+
+\section{Order of Operations}
+
+An equation is evaluated in the following order: 
+
+\begin{enumerate}
+\item anything inside parentheses (left to right, sub-parentheses
+  given precedence)
+  
+\item functions (no explicit order to function evaluation)
+  
+\item exponentiation (left to right)
+
+\item multiplication, division, and modulus (left to right) 
+
+\item addition and subtraction (left to right) 
+  
+\item logical operators (no explicit order to logical operator
+  evaluation)
+\end{enumerate}
+
+For instance, the equation
+
+\begin{example}
+4 + (cos[x] - [y] \circflex\ 3) * (([y] + 4) / 7) + ([x] > 1)
+\end{example}
+
+is evaluated as follows: ([x] = 3.14159265359, [y] = 3, bold is
+changed value)
+
+\begin{example}
+4 + (\textbf{~1} - [y] \circflex\ 3) * (([y] + 4) / 7) + ([x] > 1)
+4 + (~1 - \textbf{27}) * (([y] + 4) / 7) + ([x] > 1)
+4 + \textbf{~28} * (([y] + 4) / 7) + ([x] > 1)
+4 + ~28 * (\textbf{7} / 7) + ([x] > 1)
+4 + ~28 * \textbf{1} + ([x] > 1)
+4 + ~28 * 1 + \textbf{1}
+4 + \textbf{~28} + 1
+\textbf{~24} + 1
+\textbf{~23}
+\end{example}
+
+The similar equation 
+
+\begin{example}
+4 + (cos[x] - [y] \circflex\ 3) * (([y] + 4) / 7) + [x] > 1 
+\end{example}
+
+is evaluated as follows: (with the same values for [x] and [y]) 
+
+\begin{example}
+4 + (\textbf{~1} - [y] \circflex\ 3) * (([y] + 4) / 7) + [x] > 1
+4 + (~1 - \textbf{27}) * (([y] + 4) / 7) + [x] > 1
+4 + \textbf{~28} * (([y] + 4) / 7) + [x] > 1
+4 + ~28 * (\textbf{7} / 7) + [x] > 1
+4 + ~28 * \textbf{1} + [x] > 1
+4 + \textbf{~28} + [x] > 1
+\textbf{~24} + [x] > 1
+\textbf{~20.8584073464} > 1
+\textbf{0} 
+\end{example}
+
+\section{General Suggestions}
+
+It is best to use the supported operators and functions in order to
+reduce the number of items to be evaluated. This reduces the time it
+takes to evaluate the equation, perhaps negligible for each
+evaluation, but with repeated evaluation, the time savings can be
+substantial. For instance, the equation:
+
+\begin{example}
+ln(((1 / [x]) + (sqrt(1 + ([x] \circflex\ 2))) / abs([x]))) 
+\end{example}
+
+is equivalent to: 
+
+\begin{example}
+acsch[x] 
+\end{example}
+
+but the first equation takes much longer to evaluate than the second.
+There are a few cases where there are various ways to state the same
+equation, such as:
+
+\begin{example}
+[x] * [x]
+[x] \circflex\ 2
+sqr[x] 
+\end{example}
+
+All three equations above square the variable x. All three require
+only one evaluation each, and therefore require almost exactly the
+same amount of time to evaluate. The equations below are also
+completely equivalent:
+
+\begin{example}
+[x] * [x] * [x]
+[x] \circflex\ 3 
+\end{example}
+
+In this case, the first equation requires two evaluations ([x] * [x],
+and then the result of that * [x]), while the second equation requires
+only one evaluation. The evaluation of the second equation will
+therefore be approximately 2 times faster.
+
+Avoid causing unnecessary evaluations. For instance, the following
+equation:
+
+\begin{example}
+(1 / 2) * [base] * [height] 
+\end{example}
+
+is faster if expressed as: 
+
+\begin{example}
+[base] * [height] / 2 
+\end{example}
+
+\subsection{Examples}
+
+\subsubsection{Absolute Latitude}
+
+The following equation takes the variable \lit{abs\_latitude} and
+multiplies it by -1 if the value of \lit{latitude\_n\_or\_s} is S,
+\lit{abs\_latitude} is multiplied by 1 otherwise.
+
+\begin{vcode}{xib}
+[abs_latitude] * (([latitude_n_or_s] != "S") + ~1 * ([latitude_n_or_s] = "S")) 
+\end{vcode}
+
+\subsubsection{Distance Between Points}
+
+The following equation computes the distance between the points given
+by x1, y1, x2 and y2 (assuming all points lie on a plane).
+
+\begin{vcode}{ib}
+sqrt(sqr([x2] - [x1]) + sqr([y2] - [y1])) 
+\end{vcode}
+
+\subsubsection{Quadratic Solution}
+
+The following equation computes one of the solutions to the quadratic
+formula:
+
+\begin{vcode}{sib}
+(~1 * [b] + sqrt([b] \circflex\ 2 - 4 * [a] * [c])) / (2 * [a]) 
+\end{vcode}
+
+\subsubsection{Sine of Angle}
+
+The following 3 equations are all roughly equivalent, finding the sine
+of angle deg (which is measured in degrees). The first equation is not
+recommended, because the value used for pi is not as accurate as the
+value given by the pre-defined constant :pi. The second equation is
+better, but requires more time to be evaluated than the third.
+
+\begin{example}
+sin(3.141592 * [deg] / 180)
+sin(:pi * [deg] / 180)
+sin(rad[deg]) 
+\end{example}
+
+\subsubsection{Volume of Sphere}
+
+The following equation finds the volume of a sphere: 
+
+\begin{example}
+4 * :pi * [radius] \circflex\ 3 / 3 
+\end{example}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

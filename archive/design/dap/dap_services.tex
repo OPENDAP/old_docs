@@ -1,0 +1,322 @@
+%
+% Specification for the miscellaneous HTTP services that have to do
+% with the server itself (and all the data it serves) rather than with
+% any particular data set.
+%
+\documentclass[justify]{dods-paper}
+\usepackage{acronym}
+\usepackage{xspace}
+\usepackage{gloss}
+\rcsInfo $Id$
+
+\include{dap_boiler}
+\figpath{dap_figs}
+
+\title{\DAPServicesTitle\\ DRAFT}
+\htmltitle{\DAPServicesTitle\ -- DRAFT}
+\author{James Gallagher\thanks{The University of Rhode Island,
+    jgallagher@gso.uri.edu}, Tom Sgouros}
+\date{Printed \today \\ Revision \rcsInfoRevision}
+\htmladdress{James Gallagher <jgallagher@gso.uri.edu>, 
+  \rcsInfoDate, Revision: \rcsInfoRevision}
+\htmldirectory{html}
+\htmlname{daps}
+
+\begin{document}
+
+\bibliographystyle{plain}
+
+\maketitle
+\T\tableofcontents
+
+\section{HTTP Services}
+
+
+\section{Requests}
+
+\subsection{Responses}
+\label{sec-resp-bodies}
+
+
+The \INFO, \HTML or \DIR services all return HTML or plain
+text documents. The \TEXT service returns data in a plain text document so
+that it may be easily read into a spreadsheet or similar program. The \INFO
+service formats information contained in the \DDS and \DAS objects
+using HTML so that it may be displayed in a WWW browser. The \HTML
+service returns a dynamic WWW form that can be used to request specific
+variables from the data source. This service provides a low-level user
+interface to a data source. The \DIR service provides a rudimentary form
+of navigation for data sources which are composed of multiple files.
+
+\subsubsection{\INFO}
+\label{sec-info}
+
+The \INFO response MUST present the user with an HTML document that
+contains the dataset-specific information in the \DAX, as well as the
+server-specific information in the \VER response and the \CapX.  This
+intent is to present this information in a way that can be rendered by
+a WWW browser.  Structural information about the dataset SHOULD be
+preserved so that users can build \DAP URLs by hand.
+
+The \INFO response MAY also return other information. If server
+installers and/or dataset maintainers add HTML which describes the
+dataset or the server, this information MUST be merged into the HTML
+document returned in response to the \INFO request.
+
+The purpose of the \INFO response is to supply information about the
+dataset in a form that is easy for people to read. It should be
+structured so that after only a little experience people can easily
+assess a dataset using the document. In addition, the \INFO response
+may be used in creating various user interfaces which access data
+using \DAP servers.
+
+The \INFO response should provide:
+
+\begin{enumerate}
+\item The hierarchical relation of container variables.
+\item Each variable's datatype.
+\item Each variable's attributes.
+\item Any global attributes that the dataset contains.
+\item Extra information supplied by the dataset creator/maintainer.
+\item \CE functions available on this server.
+\item The information from the \VER response.
+\end{enumerate}
+
+One implementation of the \INFO response uses HTML text in files
+corresponding to each dataset served by a server, as well as HTML
+documenting the server as a whole.  These documents are merged on the
+fly to create the \INFO response, providing information both about the
+server and the specific datasets in question.  
+
+The \INFO response is triggered by a client using \lit{.info} as the
+URL suffix.
+
+\begin{textoutput}{Required Headers:}
+XDODS-Server: dods/4.0\\
+Content-Type: text/html\\
+Date: \emph{date}
+\end{textoutput}
+
+
+\subsubsection{\HELP}
+\label{sec-help}
+
+The \HELP response MUST be returned when the server receives a URL
+whose Dataset ID portion is \lit{help}.  It MAY reply with the \HELP
+response when it receives a URL with no extension (i.e., a URL with no
+Dataset ID at all).  This second option can interfere with the \DIR
+response (see \Sectionref{sec-dir}) if your server keeps datasets in
+the root-level directory.  In this case, the \DIR response MUST be
+returned instead of the \HELP response in reply to a URL without a
+Dataset ID.
+
+\begin{ttfamily}
+\begin{center}
+\begin{tabular}{lll}
+abs\_path & = & server\_path dataset\_id "." ext [ "?" query ] \\
+server\_path & = & <name of DAP server> \\
+dataset\_id & = & "help" \\
+ext & = & "" \\
+\end{tabular}
+\end{center}
+\end{ttfamily}
+
+The \HELP response MUST return an HTML document which lists
+the extensions recognized by the server. The response MAY return other
+information as well.
+
+\begin{textoutput}{Required Headers:}
+XDODS-Server: dods/4.0\\
+Content-Type: text/html\\
+Date: \emph{date}
+\end{textoutput}
+
+
+%\printgloss{dods-glossary}
+
+\T\addcontentsline{toc}{section}{References}
+\T\raggedright
+\bibliography{../../../boiler/dods}
+
+\appendix
+
+\section{Notational Conventions and Generic Grammar}
+\label{app:grammar}
+\input{../../../boiler/bnf-grammar.tex}
+
+\section{Acronyms and Abbreviations}
+\begin{acronym}
+\input{../../../boiler/acronyms.tex}
+\end{acronym}
+
+\section{Change log}
+
+\begin{verbatim}
+$Log: dap_services.tex,v $
+Revision 1.8  2003/07/24 22:32:12  tom
+excised dap_services document references
+
+Revision 1.7  2003/07/16 01:06:08  tom
+progress on comments, fixed titles
+
+Revision 1.6  2003/05/23 21:50:52  tom
+progress made
+
+Revision 1.5  2003/05/23 19:27:42  tom
+new files, rearranging DAP spec into separate documents
+
+Revision 1.4  2003/03/19 21:58:53  tom
+loosened auth requirements
+
+Revision 1.3  2003/03/19 21:48:06  tom
+progress made, ready for the March 03 DODS mtg
+
+Revision 1.2  2003/03/17 17:45:10  tom
+progress made.  draft for discussion 3/18/03
+
+Revision 1.1  2003/01/14 19:55:31  jimg
+Added.
+
+\end{verbatim}
+
+\end{document}
+
+% \section{Encoding Values}
+% \label{sec-rep-of-values}
+
+% \emph{[Describe different types of variables as three groups: scalar, vector
+%   and aggregate]}
+
+% The \DAP uses Sun Microsystems' XDR protocol~\cite{xdr} for the external
+% representation of all of the base type variables. Table~\ref{tab-base-xdr}
+% shows the XDR types used to represent the various base type
+% variables.
+
+% \begin{table}
+% \caption{The XDR data types used by the DAP as the external representations
+%   of base-type variables}
+% \label{tab-base-xdr}
+% \begin{center}
+% \begin{tabular}{|l|l|} \hline
+% \multicolumn{1}{|c}{\textsc{Base Type}} & \multicolumn{1}{c|}{\textsc{XDR Type}} \\
+% \hline \hline
+% \lit{byte} & \lit{xdr byte} \\ \hline
+% \lit{int16} & \lit{xdr short} \\ \hline
+% \lit{uint16} & \lit{xdr unsigned short} \\ \hline
+% \lit{int32} & \lit{xdr long} \\ \hline
+% \lit{uint32} & \lit{xdr unsigned long} \\ \hline
+% \lit{float32} & \lit{xdr float} \\ \hline
+% \lit{float64} & \lit{xdr double} \\ \hline
+% \lit{string} & \lit{xdr string} \\ \hline
+% \lit{URL} & \lit{xdr string} \\ \hline
+% \end{tabular}
+% \end{center}
+% \end{table}
+
+% In order to transmit constructor type variables, the \DAP defines how the
+% various base type variables, which comprise the constructor type variable,
+% are transmitted. Any constructor type variable may be subject to a constraint
+% expression which changes the amount of data transmitted for the variable (see
+% Section~\ref{sec-ce}). For each of the six constructor types these
+% definitions are:
+
+% \begin{description}
+  
+% \item [Array] An array id first sent by sending the number of elements in the
+%   array twice.\footnote{This is an artifact of the first implementation of
+%     the DAP and XDR. The DAP software needed length information to allocate
+%     memory for the array so it sent the array length. However, XDR also sends
+%     the array length for its own purposes. This could be fixed but it is more
+%     of an annoyance than anything else.} The array lengths are 32-bit
+%   integers encoded using \lit{xdr\_long}.
+
+%   Following the length information, each array element is encoded in
+%   succession. Arrays of bytes are handled differently than other arrays:
+% \begin{enumerate}
+% \item An array of bytes: These are encoded as is and are padded to a
+%   four-byte boundary. Thus an array of five bytes will be encoded as eight
+%   bytes.
+  
+% \item One dimensional arrays of all other types are encoded by encoding each
+%   element of the array in the order they appear.
+
+% \item Multi0dimensional arrays are encoded by encoding the elements using
+%   row-major ordering.
+% \end{enumerate}
+
+% \begin{ttfamily}
+% \begin{center}
+% \begin{tabular}{lll}
+% Array & = & length length values \\
+% length & = & <32-bit integer, signed, big endian> \\
+% values & = & bytes | other-values \\
+% bytes & = & <8-bit bytes padded to a four-byte boundary> \\
+% other-values & = & numeric-values | strings | aggregates \\
+% \end{tabular}
+% \end{center}
+% \end{ttfamily}
+
+% \item [List] A list is sent as if it were an array. Even though the length of
+%   a list is not declared, at the time the list's value(s) are to be sent, its
+%   length must be known. Thus it is possible to think of a list as a vector of
+%   values and hence use the same encoding for those values as would be used
+%   for an equivalent array.
+
+% \item [Structure] A structure is sent by encoding each field in the order
+%   those fields are declared in the structure. For example, the structure:
+
+% \begin{vcode}{it}
+% Structure {
+%     int32 x;
+%     float64 y;
+% } a;
+% \end{vcode}
+
+% Would be sent by encoding the int32 \lit{x} and then the float64
+% \lit{y}. 
+
+% Nested structures are sent by encoding their `leaf nodes' as visited in a
+% depth first traversal. For example:
+
+% \begin{vcode}{it}
+% Structure {
+%     int32 x;
+%     Structure {
+%         String name;
+%         Byte image[512][512];
+%     } picture;
+%     float64 y;
+% } a;
+% \end{vcode}
+
+% Would be sent by encoding \lit{x}, then \lit{name}, \lit{image} and
+%   finally \lit{y}.
+
+% \item [Sequence] A Sequence is transmitted by encoding each instance as for a
+%   structure and sending one after the other, in the order of their occurrence
+%   in the data set. The entire sequence is sent, subject to the constraint
+%   expression. In other words, if no constraint expression is supplied then
+%   the entire sequence is sent. However, if a constraint expression is given
+%   all the records in the sequence that satisfy the expression are
+%   sent
+
+%   Because a sequence does \emph{not} have a length count, each instance
+%   is prefixed by a \lit{start of sequence} marker. Also, to accommodate
+%   nested sequences, then end of each sequence as a whole is marked by a
+%   \lit{end of sequence} marker.
+
+% \begin{ttfamily}
+% \begin{center}
+% \begin{tabular}{lll}
+% sequence & = & instances end-of-seq \\
+% instances & = & start-of-inst instance-values \\
+% end-of-seq & = & <byte value 0xA5> \\
+% start-of-inst & = & <byte value 0x5A> \\
+% \end{tabular}
+% \end{center}
+% \end{ttfamily}
+
+% \item [Grid] A grid is encoded as if it is a Structure (one component
+%   after the other, in the order of their declaration).
+
+% \end{description}

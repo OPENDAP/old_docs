@@ -1,0 +1,55 @@
+\sffamily 
+\contentsline {chapter}{Preface}{iii}
+\contentsline {section}{\numberline {0.1}Tasks Illustrated in this Guide}{iv}
+\contentsline {section}{\numberline {0.2}Who is this Guide for?}{iv}
+\contentsline {section}{\numberline {0.3}Organization of this Document}{v}
+\contentsline {section}{\numberline {0.4}Conventions}{v}
+\contentsline {chapter}{\numberline {1}The DODS Matlab Graphical User Interface}{1}
+\contentsline {section}{\numberline {1.1}Quick Start}{2}
+\contentsline {section}{\numberline {1.2}What is the DODS Matlab GUI?}{2}
+\contentsline {subsection}{\numberline {1.2.1}Setting up a data request}{3}
+\contentsline {subsection}{\numberline {1.2.2}Querying a Dataset}{4}
+\contentsline {subsection}{\numberline {1.2.3}Issuing a Data Request}{4}
+\contentsline {subsection}{\numberline {1.2.4}Displaying the Data}{5}
+\contentsline {section}{\numberline {1.3}Example Sessions}{6}
+\contentsline {subsection}{\numberline {1.3.1}Drawing a Simple Picture}{7}
+\contentsline {subsubsection}{A Short But Edifying Digression About the Internet}{9}
+\contentsline {subsection}{\numberline {1.3.2}Creating a Time Series}{11}
+\contentsline {section}{\numberline {1.4}Updating the Dataset List}{14}
+\contentsline {section}{\numberline {1.5}Editing Bookmarks}{15}
+\contentsline {chapter}{\numberline {2}The DODS GUI Menu Reference}{19}
+\contentsline {section}{\numberline {2.1}The Buttons}{19}
+\contentsline {section}{\numberline {2.2}The Menus}{21}
+\contentsline {subsection}{\numberline {2.2.1}Data}{21}
+\contentsline {subsubsection}{Show Data Bookmarks}{21}
+\contentsline {subsubsection}{Edit Bookmarks}{22}
+\contentsline {subsubsection}{Clear Rxx_ from workspace}{22}
+\contentsline {subsubsection}{Update Bookmarks}{22}
+\contentsline {subsection}{\numberline {2.2.2}Resolution}{22}
+\contentsline {subsection}{\numberline {2.2.3}Display}{23}
+\contentsline {subsection}{\numberline {2.2.4}Preferences}{24}
+\contentsline {subsection}{\numberline {2.2.5}DODS Help}{28}
+\contentsline {subsection}{\numberline {2.2.6}Display Data}{29}
+\contentsline {subsubsection}{Edit}{29}
+\contentsline {subsubsection}{Apply to All}{30}
+\contentsline {subsection}{\numberline {2.2.7}Bookmarks}{30}
+\contentsline {subsubsection}{File}{30}
+\contentsline {subsubsection}{Edit}{31}
+\contentsline {subsubsection}{View}{31}
+\contentsline {section}{\numberline {2.3}Browser Preferences}{32}
+\contentsline {chapter}{\numberline {3}Adding Your Own Datasets to the DODS Matlab GUI}{35}
+\contentsline {section}{\numberline {3.1}The Archive Function}{36}
+\contentsline {section}{\numberline {3.2}The ``Get'' Function}{40}
+\contentsline {subsection}{\numberline {3.2.1}{\em Get} Function Modes}{41}
+\contentsline {subsubsection}{Catalog mode}{41}
+\contentsline {subsubsection}{Datasize Mode}{43}
+\contentsline {subsubsection}{Get Mode}{43}
+\contentsline {subsection}{\numberline {3.2.2}{\em Get} Function Tools}{45}
+\contentsline {subsubsection}{The {\tt loaddods} Function}{45}
+\contentsline {subsubsection}{Utility Functions}{48}
+\contentsline {section}{\numberline {3.3}Using a New Dataset}{49}
+\contentsline {chapter}{\numberline {A}Getting Started with the DODS Matlab GUI\ Software}{51}
+\contentsline {section}{\numberline {A.1}Getting the DODS Matlab GUI\ Software}{52}
+\contentsline {section}{\numberline {A.2}Unpacking the DODS Matlab GUI\ Software}{53}
+\contentsline {section}{\numberline {A.3}Installing the DODS Matlab GUI\ Software}{54}
+\contentsline {section}{\numberline {A.4}The Archive Files}{54}

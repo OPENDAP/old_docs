@@ -1,0 +1,33 @@
+
+	$Id$
+
+If you have checked out code a want to check changes in on a branch instead
+of the main trunk, do the following:
+
+1) Tag the code so that the branch has a name.
+2) Update your copy of the code so that it is associated with that branch.
+3) Check in the code.
+
+Here's an example:
+
+	cvs tag -b test-branch
+
+-b makes this tag a branch off of the main trunk. The symbolic name
+ `test-branch' can be used to refer to the branch. Without a symbolic name,
+ you'll be hosed.
+
+	cvs update -r test-branch
+
+This updates the tag of the code in the current working directory to
+`test-branch'. Since the tag is on a branch, now so is this code.
+
+	cvs ci -m "<some message>
+
+The code is now checked in on the branch.
+
+Note that there's a test CVS module that can be checked out and played with.
+You cannot do anything too terrible to this since the `code' is just a couple
+of test files. Before doing anything that might cause the DODS repository to
+get hosed, try it out there. The name of the test module is `cvs-test'.
+
+James

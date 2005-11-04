@@ -1,0 +1,53 @@
+Yingshuo Shen presented the work of a consortium of Japanese and
+Hawaiian investigators in which they performed some benchmark
+tests on access times for data served locally vs the same data
+served via the aggregation server at \ac{PMEL}.  The data used
+were NCEP reanalysis daily air temperature and pressure from
+1948 to 2002.  The server systems were described.  In general,
+local data access were faster than remote accesses, although
+in some cases the acess times were comparable.  Access to 
+data locally served via OPeNDAP was significantly faster than
+access to data remotely served via OPeNDAP.
+
+Conclusions and wish list for the developers:
+
+\begin{itemize}
+\item Improve access speed to frequently used data while keeping the
+  complete dataset in service and reducing the burden of storage.
+  
+\item The file access method does a better job than the OPeNDAP
+  method.  But the file method is only limited to \ac{NetCDF} type.
+  It would be nice if the aggregation server could also do the same
+  job for \ac{HDF} files, or at least via the \ac{HDF}- \ac{OPeNDAP}
+  Server.
+\item Dynamic configuration - Frontier and \ac{APDRC} are considering
+  improving the combination (local/remote or fast/slow) accesses by
+  using dynamic configuration - a routine check of log file to adjust
+  the data configuration.
+\item Handle the Earth Simulator's model outputs (binary form) - also
+  aggregating via OPeNDAP free format?
+\item Note: this testing involves only 1-2 Mb data volume.  The result
+  can be very different if the data volume reaches Giga- or Terabyte
+  volumes.  More testing is needed.
+\end{itemize}
+
+From the discussion after the paper, the source of the difference
+in access times was not known to result more from processing
+times at the servers or internet access times.  Several
+more detailed tests were indicated by the discussion.
+
+% $Id$
+%
+% $Log: yingshuosummary.tex,v $
+% Revision 1.2  2003/05/05 16:40:45  tom
+% edited, LaTeX-ized
+%
+% Revision 1.1  2003/04/29 14:09:01  paul
+% Starting OPeNDAP Technical Working Conference 2003 Report
+%
+%
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

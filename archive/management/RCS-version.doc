@@ -1,0 +1,178 @@
+
+Using RCS to Maintain Multiple Versions/Revisions of Software
+
+From: phjm@fairfax.fairfax.com (Phillip Merrick)
+Subject: Re: CVS-RCS (long...)
+Date: 5 Jun 91 01:23:35 GMT
+Organization: Fairfax Software Corp., Fairfax VA
+
+In article <1991May23.201749.20336@dds4.uucp> wolfe@dds4.uucp (Peter Wolfe) writes:
+>This is a topic worth doing some surveys on.  Come on folks - how do you
+>take care of multiple derviations of common source using CVS/RCS/SCCS (I
+>know that you can throw money at Configuration Management vendors to do
+>this).
+
+[Disclaimer: I know little about CVS - it may be that CVS can do all the stuff
+I'm describing already.]
+
+For several years now I have been handling multiple versions/releases of
+source files with the following configuration management model imposed
+over RCS. With some help from colleagues, I originally put this in place
+on a moderately large (~ 650 KLOC) project at the point at which we made
+our first release (where new development and release maintenance diverge).
+The model and the tools supporting it have been deployed on several
+other projects since then.
+
+The primary aim of the model is to support this (very common) scenario:
+
+        - Version X has been released
+        - New development proceeds
+        - We need to fix version X, and re-release it
+        - We want to merge the fix forward into development
+
+The basis of the model is the use of an RCS branch for each version of the
+software in question, and the replication of the same branching structure
+across all the project RCS files. Establishing new branches uniformly across
+files is achieved with 'bogus' check-ins. These bogus check-ins are assigned
+revision numbers ending in '.0' to distinguish them from real revisions to
+the source file.
+
+An RCS symbolic name (the version name) is assigned to each branch, in every
+file. By assigning symbolic names to entire branches (e.g. VER1 --> 1.0.0) it
+becomes very easy to access the most recent revision along a particular
+branch (e.g. co -rVER1). An 'rlog -rVER1' will show only revisions made
+to that branch.
+
+The trunk is where new development takes place. When it comes time to make
+a new major release, we check out the latest trunk revisions and check them
+in on a new branch, to which we assign a suitable RCS symbolic name.
+
+The RCS files conceptually look something like this:
+
+0.0--0.X-->1.0------1.X---> "DEV"- - - - - - - --->2.0--------2.X-----> "DEV"
+            |                                       |
+            |                                       |
+          1.0.0.0---1.0.0.X--> "VER1"            2.0.0.0------2.0.0.X--> "VER2"
+
+This shows two major releases ("VER1" and "VER2"), with new development
+continuing along "DEV". Note that the files are intially created at "0.0" -
+purely to free up "1.0" as a suitable branch point for the first major
+release. Note also that further derivations from (say) 1.0 are possible,
+and would be represented as additional branches numbered 1.0.1.X, etc.
+
+Now, assume that a bug occurs in VER2. The programmer checks out the most
+recent revision to VER2, makes the fix, and checks it back into VER2.
+The programmer then locks DEV, does an rcsmerge of the fix from VER2,
+and (after conflict resolution and verification) checks back into DEV.
+Of course, the bug could easily have been detected and fixed in VER1, then
+merged forward into VER2 and DEV. This becomes particularly convenient
+when a fix spans several files.
+
+Minor 'maintenance' releases of bug fixes are made by taking a snapshot
+of the version in question. For the RCS files, this just entails tagging
+the most recent revision (e.g. 1.0.1.5) with an appropriate RCS symbolic
+name (eg. "VER1.a").
+
+This model is used in conjunction with parallel directory trees of checked
+out source files. The RCS files live in their own tree, with checked out
+source files in parallel source trees. In the filesystem, it looks
+something like this:
+
+                             projdir
+                                |
+          +---------------+--------------+---------------+
+          |               |              |               |
+        VER1            VER2            DEV             RCS
+       /  |  \         /  |  \         / | \             |
+    src  bin  lib   src  bin  lib   src  bin  lib       src
+
+The src subdirectory can be an arbitrarily deep directory hierarchy. It is
+consistent across each version tree. Each branch in the RCS files "feeds"
+the src subdirectory of the corresponding version tree. Each version tree
+holds the most current source for that version. Past maintenance releases
+(or 'snapshots') can also be checked out into their own parallel tree,
+when necessary,
+
+Programmer's work directories can be organised along similar lines to
+the version trees (but generally will be a subdirectory of src). 
+
+This model is basically derived from ideas gleaned from Andy Glew's excellent 
+"Boxes, Links and Parallel Trees" paper in the proceedings of the April
+'89 Usenix Software Management Workshop.
+
+Needless to say, managing all of the above requires a fairly high degree of
+automation. Hence I have developed my own obligatory 'wrappers over RCS'.
+These wrappers have gradually evolved into something approaching a full
+configuration management toolset (written in C and shell scripts). It 
+bears the name 'FCMtools' and in addition to implementing the
+model described above can also provide:
+
+        + Management reporting: e.g. tell me all the changes to
+          version X since 1/6/91; show me the configuration for
+          release M.n. The reports include the obvious things plus
+          the RCS log comments entered at check-in time. Another report
+          makes it easy to track down who has what files locked.
+
+        + Name lookup: an RCS file locator mechanism allows the user
+          to simply provide enough of the pathname to uniquely identify
+          a source file. (eg. fcmout file.c, or fcmout dir/file.c).
+          This works in conjunction with an environment variable that
+          specifies a target hierarchy for the checked out file.
+          Name transformation is almost mandatory given the parallel
+          trees layout, unless you like typing long pathnames. 
+
+        + Tools to manage the parallel version trees. A tool named
+          'fcmcollect' can update a version tree with all the changed
+          revisions from the corresponding RCS branch. This allows
+          easy integration with make (just run fcmcollect as the first
+          step in the build). 'fcmcollect' only checks-out new revisions:
+          it doesn't get triggered by changes in the modification date
+          or by RCS lock operations. 'fcmcollect' also knows how to
+          mirror the RCS hierarchy by creating new directories as they
+          appear, deleting obsoleted files, etc.
+
+        + Ability to setup a programmer's work area (usually some subtree
+          of the whole src hierarchy) with one command (fcmcollect, again).
+
+        + Simplified merging. Amongst other things, overlaps can be flagged
+          with the version names (instead of the revision numbers).
+
+        + Administrator functions: versions can be individually protected
+          against one or more of check-in, check-out with lock, or selection
+          for a merge operation. This helps during release preparation.
+          A per-project setup file is used for specifying file location,
+          RCS file structure and characteristics of the various source file
+          types.
+
+        + An RCS file creation utility. You can use it to install
+          new files into one or more versions - it will set up the
+          branches and symbolic names as necessary. It keys
+          into the setup file on the source file suffix to
+          determine how to initialise the RCS file.  Also, it will
+          insert a predefined file header (can vary by file type)
+          containing a standard set of comments (e.g. copyright notices)
+          and RCS macros ($Date$, $Revision$, $Log: RCS-version.doc,v $
+          and RCS macros ($Date$, $Revision$, Revision 1.1  1998/02/11 19:03:21  tom
+          and RCS macros ($Date$, $Revision$, moved to archive branch
+          and RCS macros ($Date$, $Revision$,
+          and RCS macros ($Date$, $Revision$, Revision 1.2  1997/03/25 22:59:32  jimg
+          and RCS macros ($Date$, $Revision$, *** empty log message ***
+          and RCS macros ($Date$, $Revision$,
+# Revision 1.1  1993/12/17  18:44:02  jimg
+# Software Engineering and management docs for the DODS
+#
+# Revision 1.1.1.1  1993/09/16  15:11:24  jimg
+# Initial copy of documents for DODS development.
+#, etc.)
+
+
+If you have persisted this far, you might be wondering if I'm planning on
+making FCMtools generally available. The package needs a minor clean-up and
+(more importantly) improved documentation. I also need to get a hold
+of RCS 5.5 and verify that it all still works! When I get that done  - I'm
+guessing 4-5  weeks from now, real work permitting -  I'll post to alt.sources. 
+If you are really eager, send me email and we can take it from there. Oh,
+it currently runs on several Sys V.3 boxes - but it started life on a BSD
+based system and has acquired only a couple of Sys-Visms along the way.
+
+Hope this helps somebody!

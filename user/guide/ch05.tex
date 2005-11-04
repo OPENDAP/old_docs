@@ -1,0 +1,233 @@
+
+% $Id$
+
+\chapter{Making Your Data Available}
+\labl{register}
+
+%\section{Why Register Your DODS Data Server}
+\labl{register:service}
+
+The DODS data registration scheme is currently undergoing revision. Once
+revised the new scheme will be documented here.
+
+%In order for the DODS data locator to work, data providers must
+%register their data archives in a place where the locator can find
+%it. Of course, there is no mandated central authority over DODS data
+%sets. This registration is done entirely at the data provider's
+%discretion. In this respect, the DODS hierarchy mirrors the structure
+%of the Web itself.
+
+%However, also like the Web itself, if DODS data are not registered in
+%a central location, data users may never find them except by accident.
+%The DODS Dataset Registration Service allows data set providers to
+%document and register their data with the Global Change Master
+%Directory, GCMD, one component of the DODS Locator Service. The
+%registration service includes a user interface that aids data set
+%providers in the creation of a Directory Interchange Format (DIF) data
+%structure, the input format used to load directory level information
+%into the GCMD.
+
+%Because DODS is a system which will support many distributed data
+%resources it is necessary to provide a data location service for users
+%that allows them to determine quickly what data sets are available
+%from DODS servers. The DODS Data Location Service uses the NASA Global
+%Change Master Directory to provide directory level information on DODS
+%data sets as well as the URL of their DODS servers.  The GCMD is an
+%on-line directory of Earth science data sets that supports
+%multi-parameter searching on its relational database management system.
+%Data providers who have installed DODS servers and intend to allow
+%others access to their on-line data sets via DODS should register
+%their data sets with the GCMD. The DODS Registration Service is
+%intended to aid data providers in providing the data set and server
+%information required to create a reference in the GCMD.
+
+%\subsection{DIF Data Structure}
+
+%The standard input data structure for the GCMD is called the Directory
+%Interchange Format or DIF.  A DIF is a complex data structure that
+%contains information used to support both relational and text based
+%searching within the GCMD.  The types of information contained in a
+%DIF include: data set attributes; archive and data provider
+%descriptions; and general summary information.  The documentation on
+%the DIF standard is available at {\tt
+%http://gcmd.gsfc.nasa.gov/docs.html}.
+
+%The DODS registration service generates a data set DIF based on
+%information supplied interactively by the data provider and
+%information extracted automatically from DODS servers of the data sets
+%being registered.  The data provider reviews, modifies and submits the
+%registration service DIF controlling when the DIF is registered and
+%its content.
+
+%\subsection{Registration Service Component Architecture}
+
+%The Registration service components and their architecture are
+%depicted in Figure~\refl{register:fig:service}.  The components are
+%the Data Provider Input form, a DIF generation CGI, a DIF review and
+%modification form and a DIF uploader CGI that submits the completed
+%DIF to the GCMD.  Each is described below.
+
+%\begin{figure}[htbp]
+%\centerline{\psfig{figure=DRS_fig1.ps}}
+%\caption{Registration Service Components}
+%\label{register:fig:service}
+%\end{figure}
+
+%\subsubsection{Data Provider Input Form}
+
+%When a data provider wants to register a data set he or she pulls up
+%the Data Provider Input form, shown in
+%Figure~\refl{register:fig:input}.  
+%This form is stored at:
+
+%\begin{center}
+%{\tt \$DODS\_ROOT/etc/dataset\_registration.html}
+%\end{center}
+
+%Use a web browser like Netscape to open the form.  (For Netscape, use the
+%Open File option on the File menu.)
+%This form takes as its input the
+%name of the data set being registered, the address of the DODS server
+%that accesses the data set, the names and location of the DODS CGIs
+%that describe that data set and the email address of the data provider.
+%In addition the data provider can submit the name of a file containing
+%descriptive information on the data set.  Once the information has been
+%filled in the data provider hits the ``Create DIF'' button to post the
+%form to the DIF generation CGI.  The following input fields and the
+%information required are in the Data Provider Input form:
+
+%\begin{figure}[tbp]
+%\centerline{\psfig{figure=DRS_fig2gs.ps}}
+%\caption{Registration Input Form}
+%\label{register:fig:input}
+%\end{figure}
+
+%\begin{description}
+
+%\item{\bf DODS Server Address:}  This field requires the URL address of the
+%  machine where the DODS server is installed, such as {\tt
+%  http://dods.gso.uri.edu}.
+
+%\item{\bf DDS CGI Name and Location:} This is the specification of the DDS CGI
+%  that access the data set being registered.  The location is relative
+%  to the httpd home directory defined at the time the httpd
+%  server is configured (e.g., ScriptAlias - /cgi-bin/ =
+%  /usr/local/etc/httpd/cgi-bin/).  An example of a DDS specification,
+%  /cgi-bin/DODS-cgi/ctd$\_$DDS.
+ 
+%\item{\bf DAS CGI Name and Location:} Equivalent to the DDS only for the DAS
+%  CGI.
+  
+%\item{\bf Data Set name} The name of the data set.  This name can be a
+%  discrete filename or a reference name.  The actual value will depend on the
+%  CGI filters that access the data set.  For example, in the JGOFS system
+%  data set names actually reference JGOFS objects.  The DODS CGIs use a JGOFS
+%  object lookup table to reference the actual JGOFS data file and its access
+%  methods.  For a NetCDF implementation the data set name must include the
+%  directory location of the data file being accessed.  The directory location
+%  can be either relative to the document root of the httpd server (such as
+%  {\tt /usr/local/spool/data/DODS/fnoc1.nc}) or an alias that is defined when
+%  the httpd server is configured.
+  
+%\item{\bf Contact EMAIL} The email address of the person registering the data
+%  set is requested.
+
+%\item{\bf Other Dataset Description Information}  The name of a file that
+%  contains summary information.  This function is not implemented at
+%  present.  In the future it will allow the data provider to specify a
+%  text file to also be used to help generate the DIF valids for the
+%  data set.
+
+%\end{description}
+
+%\subsubsection{DIF Generation CGI}
+
+%This CGI reads the input data from the Data Provider Input form.
+%Using the DODS server URL, the CGI names and the data set name it next
+%accesses the CGIs of the data set being registered and reads in its DDS
+%and DAS.  The DDS and DAS structures are parsed into words and each
+%word is submitted to a DIF thesaurus which matches input words with
+%words found in the complete set of DIF valids.  The DIF thesaurus
+%outputs a set of DIF valids based on the words in the DAS and DDS that
+%are separated DIF attribute categories, Sensor, Source, Parameter,
+%Discipline and Location. Figure~\refl{register:fig:dif} is a data flow
+%diagram for the DIF generator CGI.  The output from the DIF thesaurus
+%along with the information from the Data Provider Input form are then
+%used to create the DIF Review and Modification form.
+
+%\begin{figure}[htbp]
+%\centerline{\psfig{figure=DRS_fig3.ps}}
+%\caption{DIF Generator Data Flow}
+%\label{register:fig:dif}
+%\end{figure}
+
+%\subsubsection{DIF Review and Modification Form}
+
+%This html form (Figures~\refl{register:fig:review} and
+%\refl{register:fig:modify} allows the data provider an opportunity to review
+%and modify the DIF valids that describe the data set being registered.  The
+%most critical information is that in the DIF Valids Generated from Dataset
+%Descriptor Files section of this form.  The data provider must select all
+%appropriate DIF valids from the lists provided under each of the DIF
+%categories in the form (Sensor, Source, Parameter, Discipline and Location).
+%The form permits the specification of multiple values for any of the
+%categories by simply clicking on the value.  In cases where no DIF valids
+%were generated from the DIF thesaurus for a particular DIF category, a
+%default list of all valid DIF values for that category is provided.
+
+%Once the data provider has reviewed the form he or she may then submit
+%the completed DIF to the GCMD for uploading by hitting the Submit DIF button.
+
+%\begin{figure}[htbp]
+%\centerline{\psfig{figure=DRS_fig4a.ps}}
+%\caption{DIF Review Form}
+%\label{register:fig:review}
+%\end{figure}
+
+%\begin{figure}[htbp]
+%\centerline{\psfig{figure=DRS_fig4b.ps}}
+%\caption{DIF Modify Form}
+%\label{register:fig:modify}
+%\end{figure}
+
+%\subsubsection{DIF Upload CGI}
+
+%This CGI accepts input from the DIF Review and Modification Form and constructs
+%a valid GCMD DIF for uploading.  The DIF is then evaluated for 
+%completeness and either accepted or rejected for uploading into the GCMD.
+%In either case an acknowledgment and copy of the submitted DIF is returned
+%to the data provider along with an indication of whether the DIF was accepted
+%or rejected.
+%\tbd{How is it returned?}
+
+%\section{Creating the Data Catalog}
+%\labl{register:catalog}
+
+%\tbd{Where does the data go?  What does it look like?} The data catalog is
+%simply a text (or html) file, generally called \emph{API}{\tt
+%  \_catalog\_data} (where API is the name of the DODS server, for example
+%{\tt jg\_catalog\_data}), that contains the catalog of data served by this
+%host.  The file must be created with any text editor, and is stored in the
+%hypertext document root directory.
+
+%A user may examine the data catalog for some server with a standard web browser
+%like Netscape. There is a catalog at the DODS home server, that may be accessed
+%with the following URL:
+
+%{\tt http://dods.gso.uri.edu/cgi-bin/jg/catalog}
+
+%\tbd{Finish this section. Finish the software that it documents. Are they using
+%the usage service thing?  What about constraint expressions?}
+
+%\section{The Boolean Service}
+%\indc{Boolean Service} \indc{Service!Boolean}
+
+%The Boolean Service CGI filter program takes a single dataset name and the
+%optional constraint expression as its input.  The output indicates the status
+%of the dataset.  It returns a result that indicates one of two possible
+%conditions:
+
+%Note that this result is meant to be read by a program, not a person.  The
+%Boolean Service is designed to be part of a URL in another URL's constraint
+%expression, for example.  No output that may be displayed by a standard web
+%browser will be output from this service.

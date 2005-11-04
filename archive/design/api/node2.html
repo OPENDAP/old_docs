@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Introduction</TITLE>
+<META NAME="description" CONTENT="Introduction">
+<META NAME="keywords" CONTENT="api">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="api.css">
+
+<LINK REL="next" HREF="node3.html">
+<LINK REL="previous" HREF="node1.html">
+<LINK REL="up" HREF="api.html">
+<LINK REL="next" HREF="node3.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html92"
+  HREF="node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html88"
+  HREF="api.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html82"
+  HREF="node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html90"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html93"
+  HREF="node3.html">Rationale</A>
+<B> Up:</B> <A NAME="tex2html89"
+  HREF="api.html">DODS Data Access Protocol</A>
+<B> Previous:</B> <A NAME="tex2html83"
+  HREF="node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html91"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00020000000000000000"></A>
+<A NAME="introduction"></A>
+<BR>
+Introduction
+</H1>
+
+<P>
+The <A NAME="tex2html5"
+  HREF="http://www.unidata.ucar.edu/packages/dods/">Distributed Oceanographic Data System</A> (DODS) Data Access Protocol (DAP) is a <EM>lingua franca</EM> for
+reading earth science data sets. It is used as an intermediate representation
+for data which are nominally accessed using an established third-party
+Application Programmer Interface (API) (e.g., netCDF). Because, in addition
+to a method for data access, the DAP defines the content of ancillary
+information about data sets, it provides the means to access data sets
+through a single protocol using any of the DODS supported APIs. Because the
+<A NAME="tex2html6"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">data access protocol</A> serves as an intermediate representation for several different APIs, it
+can be used to translate between any two of those APIs.
+
+<P>
+In <A NAME="tex2html7"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-arch/data-delivery-arch.html">DODS--Data Delivery Architecture</A>, an architecture is described that uses third party APIs to access
+data stored on remote computers. In that document, it is assumed that users
+of those data write programs in which those data are accessed using an API.
+For DODS, this assumption is advantageous because it limits the class of
+programs which DODS must address to those which use a formally defined
+interface for data access. For the user, it is advantageous to use an API
+because the storage format of the data is both hidden from the user and
+separated from the user program source code, resulting in programs which take
+less time to write and modify and which are more likely to be correct.
+
+<P>
+Most data access APIs do not provide direct access to distributed
+data<A NAME="tex2html4"
+  HREF="footnode.html#foot854"><SUP>1</SUP></A>. The DODS data delivery
+architecture describes how such a capability can be added to an API.
+Reimplementing an API using the DODS software <A NAME="tex2html8"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/implementation/toolkits/toolkits.html">client and server toolkit</A> provides the
+necessary bridge between the API's function calls and the network
+communication infrastructure necessary to allow the API to access distributed
+data sets.
+
+<P>
+Once users have the power to access remotely stored data they realize that
+not all data are available using the API that they use. In fact, many data
+sets' storage formats are incompatible with third party APIs altogether
+because they are stored using conventions independently developed at the site
+where the data were first analyzed, collected, or archived. While those in
+charge of the data at a remote site may be very willing to provide remote
+access, they will probably not be willing to reformat their data for most
+off-site users.  How do users access remote data when it is not stored in a
+format or data model their programs understand?
+
+<P>
+The DODS Data Access Protocol provides a means to access data sets using any
+one of a set of supported APIs by defining an intermediate representation for
+data sets, and components of data sets, that is API and format independent.
+Using the DODS DAP as an intermediate representation, software components can
+be built which translate a user program's API calls into DAP calls. Data
+servers can be built which accept DAP calls and, either by translating
+into a third-party API or using data set-local access methods, read the data.
+Thus software which uses any one of a set of APIs can be used to read data so
+long as a DODS server for that data exists--even if the data is stored in an
+API different from the one used by the display or analysis software.
+
+<P>
+<DIV ALIGN="CENTER">
+<B>Note</B>
+
+<BLOCKQUOTE>
+In a previous design, the DODS data delivery system contained
+reimplementations of the supported APIs which used the API entry points as
+the remote access interface definition; the set of calls to which a remote
+data server responds. However, this design did not facilitate multi API
+access (i.e., API translation) to data sets.
+
+</BLOCKQUOTE>
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html92"
+  HREF="node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html88"
+  HREF="api.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html82"
+  HREF="node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html90"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html93"
+  HREF="node3.html">Rationale</A>
+<B> Up:</B> <A NAME="tex2html89"
+  HREF="api.html">DODS Data Access Protocol</A>
+<B> Previous:</B> <A NAME="tex2html83"
+  HREF="node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html91"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

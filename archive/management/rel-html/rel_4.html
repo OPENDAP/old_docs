@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- XML file produced from file: release-process.tex
+     using Hyperlatex v 2.6 (c) Otfried Cheong
+     on Emacs 21.3.1, Tue Jun 22 17:33:20 2004 -->
+<head>
+<title>OPeNDAP Software Release Process -- 4 Version Numbers</title>
+
+<style type="text/css">
+.maketitle { align : center }
+div.abstract { margin-left: 20%; margin-right: 10%; }
+h3.abstract  { align : center }
+div.verse, div.quote, div.quotation {
+  margin-left : 10%; 
+  margin-right : 10%;
+}
+</style>
+
+<link rel=stylesheet
+        href="http://unidata.ucar.edu/packages/dods/css/dods-paper.css" type="text/css">
+</head>
+<body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="rel_5.html"><img border="0" alt="5 Version Numbers and CVS Tags" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="rel.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="rel_3.html"><img border="0" alt="3.2 Tag and merge the branch" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>4 Version Numbers</b></td></tr></table>
+<h1>4 Version Numbers</h1>
+
+<p>Version/revision numbers in DODS are formed from two or three numbers
+separated by a dot. Here's how to interpret the version numbers:
+<div class="quote"><p>
+  x.y.z
+</p></div>
+<p>where 
+<ul><li>x: This is the major version number. Two different major versions are
+  almost certain to be incompatible. This is used to indicate a big
+  change in the way the software works.
+<li>y: This is the minor version number. This indicates an important change
+  in the software. Two different minor versions maybe incompatible in some
+  ways but mostly work together.
+<p>  Each minor version has a corresponding tag in CVS <em>that is a branch</em>.
+    That is, you can checkout/update using <tt>-r release-x-y</tt> and get
+    the latest code for that <CODE class="literal">major.minor</CODE> release number. Fixes for the
+    release should get checked in on the appropriate branch.
+<li>z: This is the sub-minor version number. These are used to indicate
+  that problems with a particular version of the software have been
+  found and fixed. Different sub-minor versions should work together
+  except that a problem fixed might cause slightly different behavior.
+</ul>
+<hr /><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, 
+  2004/01/09, Revision: 1.18</address><br />
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="rel_5.html"><img border="0" alt="5 Version Numbers and CVS Tags" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="rel.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="rel_3.html"><img border="0" alt="3.2 Tag and merge the branch" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>4 Version Numbers</b></td></tr></table></body></html>

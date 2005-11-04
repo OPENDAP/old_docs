@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002-2-1 (1.70) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002-2-1 (1.70),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Syntax of the DODS URL</TITLE>
+<META NAME="description" CONTENT="Syntax of the DODS URL">
+<META NAME="keywords" CONTENT="urls">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002-2-1 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="urls.css">
+
+<LINK REL="next" HREF="node5.html">
+<LINK REL="previous" HREF="node3.html">
+<LINK REL="up" HREF="node3.html">
+<LINK REL="next" HREF="node5.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html101"
+  HREF="node5.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html97"
+  HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html91"
+  HREF="node3.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html99"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html102"
+  HREF="node5.html">Characteristics of DODS and</A>
+<B> Up:</B> <A NAME="tex2html98"
+  HREF="node3.html">Structure and Interpretation of</A>
+<B> Previous:</B> <A NAME="tex2html92"
+  HREF="node3.html">Structure and Interpretation of</A>
+ &nbsp; <B>  <A NAME="tex2html100"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00031000000000000000">
+Syntax of the DODS URL</A>
+</H2>
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER">
+
+<A NAME="url:tab:url"></A>
+<DIV ALIGN="CENTER">
+<A NAME="441"></A>
+<TABLE CELLPADDING=3 BORDER="1">
+<CAPTION><STRONG>Table:</STRONG>
+DODS URL Syntax</CAPTION>
+<TR><TD ALIGN="LEFT"><EM>DODS URL</EM></TD>
+<TD ALIGN="LEFT"><EM>Access</EM> <TT>://</TT> <EM>Host</EM> <TT>/</TT> <EM>CGI</EM>
+<TT>/</TT> <EM>Args</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><EM>Access</EM></TD>
+<TD ALIGN="LEFT"><TT>http</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><EM>Host</EM></TD>
+<TD ALIGN="LEFT"><EM>Domain name</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><EM>CGI</EM></TD>
+<TD ALIGN="LEFT"><EM>CGI-directory</EM> <TT>/</TT> <EM>String</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><EM>Args</EM></TD>
+<TD ALIGN="LEFT"><EM>Pathname</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><EM>Pathname</EM> <EM>Constraint</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT"><TT>(</TT> <EM>DODS URL</EM> <TT>)</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><EM>Constraint</EM></TD>
+<TD ALIGN="LEFT"><TT>?</TT> <EM>Expression</EM></TD>
+</TR>
+</TABLE>
+</DIV>
+</DIV>
+<BR>
+
+<P>
+<DL>
+<DT><STRONG>Access</STRONG></DT>
+<DD>The access component of a DODS URL is always the literal
+  string <TT>http</TT>. The DODS data delivery architecture described in <A NAME="tex2html14"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/data-delivery-arch/data-delivery-arch.html">DODS--Data Delivery Architecture</A>
+uses the World Wide Web <A NAME="tex2html15"
+  HREF="http://hoohoo.ncsa.uiuc.edu/docs/Overview.html">HTTPD</A> server developed by NCSA to transport
+
+data. Note that just about any WWW server will work for DODS as long as it
+  supports the CGI mechanism.
+
+<P>
+</DD>
+<DT><STRONG>Host</STRONG></DT>
+<DD>The host component is an Internet-style host name that
+  can be resolved to an Internet address.
+
+<P>
+</DD>
+<DT><STRONG>CGI</STRONG></DT>
+<DD>The CGI directory is the directory where CGI programs are kept.
+  This varies from machine to machine but many UNIX computer use <TT>    cgi-bin</TT>. In addition, it is possible to configure <TT>httpd</TT> to search
+  several directories for CGI programs; the DODS dispatch CGI may reside in
+  any of these directories. The string is the name of the DODS dispatch
+  CGI. In the software distributed by URI/MIT this is an abbreviation for
+  the API (e.g., the dispatch CGI for NetCDF is <TT>nc</TT>). However, server
+  implementors are free to choose any name they want. In addition, data
+  providers may rename this script if they want to.
+
+<P>
+</DD>
+<DT><STRONG>Args</STRONG></DT>
+<DD>The URL components named <EM>Args</EM> contains a pathname used
+  by the CGI to locate the data set. This may or may not be an actual path on
+  the remote machine. In some cases the DODS server may be an interface to a
+  DBMS. In this case the pathname is used (probably in conjunction with
+  other information) by the CGI to formulate a query to the DBMS. The
+  pathname may have a constraint expression appended to it. This is used
+  either by the filter program or the CGI to limit the data access beyond the
+  pathname. It provides additional flexibility in the way data is accessed
+  through the server. The arguments may also be a second URL. In this case
+  the <EM>Access</EM> and <EM>Host</EM> components of the outermost URL (called
+  an <EM>envelope</EM>) specify the target process (server) which should
+  receive the embedded DODS URL. The source process (client) does not
+  interpret this embedded URL at all--only the target process attempts to
+  evaluate it.  Embedded URLs may be nested to any depth.
+
+<P>
+</DD>
+<DT><STRONG>Constraint</STRONG></DT>
+<DD>The constraint is a boolean expression used to constrain
+  access to a variable. Different classes of variables can have different
+  types of constraints. See&nbsp;<A NAME="tex2html16"
+  HREF="http://www.unidata.ucar.edu/packages/dods/archive/design/api/api.html">DODS--Data Access Protocol</A><A HREF="#tab:expr">
+<IMG  ALIGN="BOTTOM" BORDER="1" ALT="[*]"
+ SRC="file:/usr/share/latex2html/icons/crossref.png"></A> for a more complete
+
+discussion of constraints.
+
+<P>
+</DD>
+</DL>
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER">
+
+<A NAME="url:tab:examples"></A>
+<DIV ALIGN="CENTER"><A NAME="487"></A>
+<TABLE CELLPADDING=3 BORDER="1">
+<CAPTION><STRONG>Table:</STRONG>
+Sample URLs which name resources; sometimes there is more than one
+  acceptable way to name a single resource.</CAPTION>
+<TR><TD ALIGN="CENTER" COLSPAN=1><FONT SIZE="-1">
+URL</FONT></TD>
+<TD ALIGN="CENTER" COLSPAN=1><FONT SIZE="-1"> R<SMALL>EFERENCES</SMALL></FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><TT>http://gso.uri.edu/cgi-bin/nc/data/fnoc1.nc</TT> 
+</FONT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=142><FONT SIZE="-1"> the entire data set </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><TT>http://gso.uri.edu/cgi-bin/nc/data/fnoc1.nc?u</TT> 
+</FONT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=142><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>u</TT> from the data set </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><TT>http://gso.uri.edu/cgi-bin/nc/data/fnoc1.nc/u</TT> 
+</FONT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=142><FONT SIZE="-1"> </FONT><FONT SIZE="-1"><TT>u</TT> using the virtual file system syntax </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><TT>http://gso.uri.edu/cgi-bin/nc/data/fnoc1.nc?u&lt;10</TT> 
+</FONT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=142><FONT SIZE="-1"> all variables given that </FONT><FONT SIZE="-1"><TT>u</TT> is <IMG
+ WIDTH="320" HEIGHT="18" ALIGN="MIDDLE" BORDER="0"
+ SRC="img1.png"
+ ALT="$&lt;$"> 10 
+(Makes sense for sequence data only) </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><TT>http://lake.mit.edu/cgi-bin/jg/bloom/level1</TT>
+</FONT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=142><FONT SIZE="-1"> all variables in </FONT><FONT SIZE="-1"><TT>level1</TT> </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"><TT>http://lake.mit.edu/cgi-bin/jg/bloom/level1/temp</TT> 
+</FONT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=142><FONT SIZE="-1"> only </FONT><FONT SIZE="-1"><TT>temp</TT> in </FONT><FONT SIZE="-1"><TT>level1</TT> </FONT></TD>
+</TR>
+</TABLE></DIV>
+</DIV>
+<BR>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html101"
+  HREF="node5.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/share/latex2html/icons/next.png"></A> 
+<A NAME="tex2html97"
+  HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/share/latex2html/icons/up.png"></A> 
+<A NAME="tex2html91"
+  HREF="node3.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/share/latex2html/icons/prev.png"></A> 
+<A NAME="tex2html99"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents"
+ SRC="file:/usr/share/latex2html/icons/contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html102"
+  HREF="node5.html">Characteristics of DODS and</A>
+<B> Up:</B> <A NAME="tex2html98"
+  HREF="node3.html">Structure and Interpretation of</A>
+<B> Previous:</B> <A NAME="tex2html92"
+  HREF="node3.html">Structure and Interpretation of</A>
+ &nbsp; <B>  <A NAME="tex2html100"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+James Gallagher
+2004-04-21
+</ADDRESS>
+</BODY>
+</HTML>

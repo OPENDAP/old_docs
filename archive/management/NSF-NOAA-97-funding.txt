@@ -1,0 +1,95 @@
+
+	$Id$
+
+TASKS:
+
+I made up the following table of tasks and funding. Is anything missing? 
+
+#	Task						Source
+-----------------------------------------------------------------------
+1	Populate system with data			NSF/NOAA
+2	Install (custom) data servers			NSF/NOAA
+
+3	Support more UNIX platforms			NOAA
+4	Support PC (e.g., via Java)			NOAA
+5	Web data browser/extractor			NOAA
+6	Specialized Web interfaces for key datasets*	NOAA
+7	Support for API/analysis packages (e.g., IDL)	NOAA
+
+8	User support					NOAA**
+9	Documentation					NOAA**
+
+10	Servers for GRIB and BUFR			NSF
+11	Server development tools			NSF
+12	IDL interface					NSF	
+13	Browser						NSF
+14	Better metadata					NSF
+15	Better translation				NSF
+
+Notes: * Hmm. just what does this mean?
+       ** But none called for in the NSF proposal?
+
+Tasks that can be combined:
+
+5 & 13
+
+7 & 12
+
+Also, we are currently working on 7, 14, 15. There should be significant
+progress on them by Nov of this year.
+
+Revised tasks: 
+#	Task						Source
+-----------------------------------------------------------------------
+1	Populate system with data			NSF/NOAA
+2	Install (custom) data servers			NSF/NOAA
+
+3	Support more UNIX platforms			NOAA
+4	Support PC (e.g., via Java)			NOAA
+5	Web data browser/extractor			NOAA/NSF
+6	Specialized Web interfaces for key datasets*	NOAA
+7	Support for API/analysis packages (e.g., IDL)	NOAA/NSF
+
+8	User support					NOAA**
+9	Documentation					NOAA**
+
+10	Servers for GRIB and BUFR			NSF
+11	Server development tools			NSF
+14	Better metadata					NSF
+15	Better translation				NSF
+
+Some dependencies exist between these tasks:
+
+`Server Development tools' (11) will have an impact on Populate and Install
+(1, 2). Its not required that #11 be done before those start, but the sooner
+11 finished the sooner 1 and 2 can make use of those tools.
+
+`Data Browser/extractor' (5) depends on Java at some level (4). I think that
+PC support is too broad a goal to hold up the browser(s). We could develop a
+simple Java library to start with (even less than a port of the client-side
+DAP [C++] code) and then proceed with the two tasks in parallel. 
+
+`Servers for GRIB and BUFR' (we have been talking about these for years)
+could be had using the FreeForm server Reza is going to finish ASAP (less
+than a month). We could also code them from scratch. There may be a
+dependency here on task 11.
+
+FUNDING:
+		Year 1		Year 2		Year 3
+Position &     ----------------------------------------
+Level (FTE yrs)	
+
+	NSF
+		User Sup 1/2	User Sup 1/4	-
+		Prog 3/4	Prog 3/4	Prog 3/4
+
+	NOAA
+		Prog 2		Prog 2
+		Data 3/4	Data 3/4
+		Tech 1/2	Tech 1/2
+
+		Web Site 1/4*	Web Site 1/4*
+		Digitize 3/4*	Digitize 3/4*
+
+* I don't think we have to handle these.
+

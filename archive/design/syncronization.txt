@@ -1,0 +1,14 @@
+$Id$
+
+We have developed a model of the DODS where clients communicate with one or
+more servers to handle a single query. This causes no particular problems
+with consistency as long as the data at those servers does not change during
+the access. However, in our model, the servers may also communicate with each
+other while the clients are making connections. This may introduce
+consistency problems with the data held at those servers. There may be other
+problems with resource locking that this causes.
+
+Possible solution candidates are using spin locks on the servers for certain
+resources or using Lamport's notion of time as periods of synchronization.
+
+See Dec 1993/Jan 1994 ACM article on this.

@@ -1,0 +1,119 @@
+- Move the Time interfaces into the DAP from the FreeForm server.
+
+The FreeForm server provide a way to select data (from a Sequence) using one
+of several representations of time. The requester can also ask for the
+results to be returned using one of several representations. This uses DODS'
+server-side functions. It also pushes on DODS constraints making them closer
+to a functional programming language (but still not quite).
+
+This can only be used with the FF server. If we move this to the DAP (which
+is what I mean by `core'), the HDF and JGOFS servers can also use these.
+
+- Develop Lat/Lon interfaces similar to the Time interface.
+
+I'm not sure about this one, but it got added to the list because someone
+suggested it. The Time functions work only with sequences for now and I'm not
+sure how many datasets will have lat/lon in sequences. Something we can
+discuss...
+
+- Compete the grid() server side function.
+
+The grid() Server function can be used to *select* from a Grid. Suppose a
+Grid called `sst' has to map vectors called `lat' and `lon'. The constraint
+`grid(sst, 10<lat<40, -70<lon<-50)' will return the part of stt within the
+given lat and lon box. The function is broken in its current implementation,
+but it's not far from working. And yes you can say `10<lat, 40>lat' in
+addition to `10<lat<40'.
+
+- Develop an ESML-based server for ASCII data to replace the FreeForm server
+
+This or fix up the FF server. The FF server is brittle when data themselves
+must be parsed. It looks like the ESML server could address some of the
+problems. I guess the real point is that the FF server needs more attention
+than it's getting and that might come in the form of replacing it or it might
+be to fix what's broken.
+
+- Build file out tools. DataDDS --> {NetCDF,HDF,MAT,SAV}
+
+The idea here is to support reading a DODS DataDDS object in its persistent
+state (e.g., a file) and to spit out various types of files. This could be
+used to add those `get as NetCDF', etc. buttons to the DODS HTML interface.
+It could also be used by people who save DODS data objects (DataDDS) to read
+them later. We would probably add an option to read DataDDS objects from a
+file to various other client-side pieces like the NetCDF CL, ... As a final
+note, if the HTML form interface contains an option like `Send in a .mat
+file' and people set up their browser so that Matlab is the helper
+application for those files, then the response from the HTML form should be
+routed directly into Matlab (without anything on the client side).
+
+- Add a top-level directory page to the server.
+
+The directory service is hog-tied because the top level of most web servers
+has an index.html file. If server installers (or the server itself?)
+generated a page of HTML Links which point to the tops of all the servers on
+that machine, the directory service will work a whole lot better. This
+improvement will be for both people and crawlers. In principle this is so
+simple I don't know why we're not doing it.
+
+- Describe the DAP in an RFC-like document
+
+The idea here is to support people who want to develop their own
+implementation of the DAP (e.g., Benno) as well as to make DODS more of an
+open source project. The key to an open source project is that giving the
+source code away is necessary but not sufficient. People also must understand
+the underlying design (in the software sense) of the system. (As an aside, I
+think the other thing required by an open source system is that the design be
+highly modular at the process/executable level. YMMV).
+
+- Complete translation
+
+We've had this around for too long. Partly because it kept getting shelved
+because it seemed less important than X, where X was today's newest thing. My
+fault. We need to understand that there are things in the DAP and not
+developing those cuts off a whole level of capabilities from everyone who
+uses DODS. Also, translation is pretty complicated when you start thinking
+about how it will be used by the netCDF CL, for example.
+
+- Build metrics gathering into our servers.
+
+The HTTPd log files are OK, but we need a way to read that information, at
+least from places where people say it's OK with them. We cannot do the thing
+of asking for the log files. It has not worked. We need stats to write papers
+about DODS and to send on to our funders. And it is pretty simple stuff.
+
+- support a swath datatype (I've called this NGrid sometimes).
+
+Hmm. A new datatype. A new bottle of asprin :-) We're doing this already by
+using structures of arrays. If we making it official that should help some
+clients. However, a bigger problem is Sequences with swaths in them since
+each swath is potentially a different size. This will break our current
+definition of a Sequence.
+
+Other items (from Steve Hankin):
+
+   * core frameworks for improved metadata handling
+        o a topic (like the top level server page) that does not seem absolutely
+          critical now, but will become a show-stopper in the near future if not
+          addressed
+        o client-side ancillary DAS
+        o (3rd party ancillary DAS service)
+        o extended ancillary DAS functionality to handle multiple named sets of
+          conventions (e.g. the same data set to appear as "COARDS", or "GDT" or
+          "EPIC"  ..."
+   * aggregation
+        o are there changes to the core that could simplify/enable aggregation?
+   * interruptibility
+        o as a practical matter it will be a common mistake to request a
+          too-large chunk of data from DODS. Interruptibility is needed from
+          interactive applications.
+   * XML version of DAP
+   * error handling
+        o the current error handling methodology is not compatible with standard
+          API's such as netCDF.
+   * HDF API
+        o I know this doesn't exactly belong on this list, but wanted to mention
+          it to keep it on the burner. An initial activity would be to compile a
+          list of applications (esp. from NASA!) that could be DODS-enabled if
+          this piece existed. This will help us to determine just how "strategic"
+          an HDF API would be.
+

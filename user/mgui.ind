@@ -1,0 +1,292 @@
+\begin{theindex}
+{\Huge\bfseries\sffamily\hskip-2pt A}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Acknowledgements
+    \subitem button, 20
+  \item Add New Plot
+    \subitem button, 29
+  \item Apply and Close
+    \subitem button, 30
+  \item Apply to All
+    \subitem menu, 30
+  \item Apply to GUI
+    \subitem button, 30
+  \item archive M-files, 14
+  \item {\tt  avhrr.pal}
+    \subitem changing, 26
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt B}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item bookmark list
+    \subitem updating, 22
+    \subitem updating local, 22
+  \item Bookmarks
+    \subitem menu, 30
+  \item bookmarks, 14
+    \subitem editing, 15
+  \item button
+    \subitem Acknowledgements, 20
+    \subitem Add New Plot, 29
+    \subitem Apply and Close, 30
+    \subitem Apply to GUI, 30
+    \subitem Cancel, 30
+    \subitem Clear Display, 23
+    \subitem Clear Selection, 20
+    \subitem Color, 25
+    \subitem Copy, 31
+    \subitem Cut, 31
+    \subitem Data Display, 24
+    \subitem Delete All Plots, 29
+    \subitem Delete Plot, 29
+    \subitem Fontsize, 25
+    \subitem Get Data, 20
+    \subitem Get Data Threshold, 24
+    \subitem Get Details, 20
+    \subitem Insert New, 31
+    \subitem Load File, 28
+    \subitem Load Palette, 25
+    \subitem Messages, 24
+    \subitem Open Bookmarks File, 30
+    \subitem Paste, 31
+    \subitem Properties, 31
+    \subitem Quit, 21
+    \subitem Reset to Master List, 30
+    \subitem Save, 25
+    \subitem Save As, 30
+    \subitem Select All, 31
+    \subitem Set Data Range, 19
+    \subitem Set GUI Server, 27
+    \subitem Start Longitude, 24
+    \subitem Time, 24
+    \subitem Undo, 31
+    \subitem Use Defaults, 28
+    \subitem View Plot, 20
+    \subitem View Text, 20
+    \subitem Zoom, 19
+    \subitem Zoom Out, 23
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt C}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Cancel
+    \subitem button, 30
+  \item catalog mode, \emph{41}
+  \item Clear Display
+    \subitem button, 23
+  \item Clear Rxx_ from workspace
+    \subitem menu, 22
+  \item Clear Selection
+    \subitem button, 20
+  \item Color
+    \subitem button, 25
+  \item colormap
+    \subitem changing default, 26
+  \item Copy
+    \subitem button, 31
+  \item Cut
+    \subitem button, 31
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt D}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Data
+    \subitem menu, 21
+  \item data
+    \subitem saving, 13
+  \item Data Display
+    \subitem button, 24
+  \item dataset list
+    \subitem updating, 14, 22
+    \subitem updating local, 22, 49
+  \item datasize mode, \emph{43}
+  \item Delete All Plots
+    \subitem button, 29
+  \item Delete Plot
+    \subitem button, 29
+  \item dialog
+    \subitem Data Display, 24
+  \item Display
+    \subitem menu, 23
+  \item Display Data
+    \subitem menu, 29
+  \item DODS Help
+    \subitem menu, 28
+  \item DODS Software
+    \subitem Where to get, 52
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt E}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Edit
+    \subitem menu, 31
+  \item Edit Bookmarks
+    \subitem menu, 22
+  \item editing
+    \subitem bookmarks, 15
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt F}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item File
+    \subitem menu, 30
+  \item Fontsize
+    \subitem button, 25
+  \item {\tt  ftp}
+    \subitem Where to get DODS software, 52
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt G}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Get Data
+    \subitem button, 20
+  \item Get Data Threshold
+    \subitem button, 24
+  \item Get Details
+    \subitem button, 20
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt I}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Insert New
+    \subitem button, 31
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt L}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Load File
+    \subitem button, 28
+  \item Load Palette
+    \subitem button, 25
+  \item loaddods
+    \subitem pitfalls, 13
+  \item {\tt  loaddods}, 9
+  \item local bookmark list
+    \subitem updating, 22
+  \item local dataset list
+    \subitem updating, 22, 49
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt M}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item {\tt  MANIFEST}, 22
+  \item {\tt  MANIFEST.lcl}, 49
+  \item menu
+    \subitem Apply to All, 30
+    \subitem Bookmarks, 30
+    \subitem Clear Rxx_ from workspace, 22
+    \subitem Data, 21
+    \subitem Display, 23
+    \subitem Display Data, 29
+    \subitem DODS Help, 28
+    \subitem Edit, 31
+    \subitem Edit Bookmarks, 22
+    \subitem File, 30
+    \subitem Preferences, 24
+    \subitem Resolution, 22
+    \subitem Show Data Bookmarks, 21
+    \subitem Update Bookmarks, 22
+    \subitem View, 31
+  \item Messages
+    \subitem button, 24
+  \item metadata, 14
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt O}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Open Bookmarks File
+    \subitem button, 30
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt P}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Paste
+    \subitem button, 31
+  \item Preferences
+    \subitem menu, 24
+  \item Properties
+    \subitem button, 31
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt Q}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Quit
+    \subitem button, 21
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt R}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Reset to Master List
+    \subitem button, 30
+  \item Resolution
+    \subitem menu, 22
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt S}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Save
+    \subitem button, 25
+  \item Save As
+    \subitem button, 30
+  \item saving your data, 13
+  \item Select All
+    \subitem button, 31
+  \item Set Data Range
+    \subitem button, 19
+  \item Set GUI Server
+    \subitem button, 27
+  \item Show Data Bookmarks
+    \subitem menu, 21
+  \item Start Longitude
+    \subitem button, 24
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt T}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Time
+    \subitem button, 24
+  \item typographic conventions, v
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt U}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Undo
+    \subitem button, 31
+  \item Update Bookmarks
+    \subitem menu, 22
+  \item updating
+    \subitem bookmark list, 22
+    \subitem dataset list, 14, 22
+    \subitem local bookmark list, 22
+    \subitem local dataset list, 22, 49
+  \item URL M-file, \emph{38}
+  \item Use Defaults
+    \subitem button, 28
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt V}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item View
+    \subitem menu, 31
+  \item View Plot
+    \subitem button, 20
+  \item View Text
+    \subitem button, 20
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt W}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item window
+    \subitem Data Display, 24
+
+  \indexspace
+{\Huge\bfseries\sffamily\hskip-2pt Z}\nopagebreak\vskip 3pt\hrule height2pt
+                 \nopagebreak\vskip 4pt
+  \item Zoom
+    \subitem button, 19
+  \item zoom
+    \subitem usage, 8, 19
+  \item Zoom Out
+    \subitem button, 23
+
+\end{theindex}

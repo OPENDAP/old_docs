@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- XML file produced from file: using-cvs.tex
+     using Hyperlatex v 2.6 (c) Otfried Cheong
+     on Emacs 21.3.1, Wed Jun 23 13:54:09 2004 -->
+<head>
+<title>Using CVS -- 3 Write Access and Automatic Logins</title>
+
+<style type="text/css">
+.maketitle { align : center }
+div.abstract { margin-left: 20%; margin-right: 10%; }
+h3.abstract  { align : center }
+div.verse, div.quote, div.quotation {
+  margin-left : 10%; 
+  margin-right : 10%;
+}
+</style>
+
+<link rel=stylesheet
+        href="http://unidata.ucar.edu/packages/dods/css/dods-paper.css" type="text/css">
+</head>
+<body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="cvs_4.html"><img border="0" alt="4 Branching" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="cvs.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="cvs_2.html"><img border="0" alt="2 Using CVS to get the OPeNDAP Software" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>3 Write Access and Automatic Logins</b></td></tr></table>
+<h1>3 Write Access and Automatic Logins</h1>
+
+<p>In the past write access to CVS used <CODE class="literal">pserver</CODE>. We stopped supporting
+that and switched to <CODE class="literal">ssh</CODE> in June of 2004. Using <CODE class="literal">ssh</CODE> is more
+secure than <CODE class="literal">pserver</CODE> since passwords are not sent over the network as
+plain text. However, to get write access to the repository, you'll now need a
+full-fledged account on <CODE class="literal">dodsdev.gso.uri.edu</CODE>. Contact Mark Schneider
+<CODE class="literal">&lt;mschneider@gso.uri.edu&gt;</CODE> or James Gallagher
+<CODE class="literal">&lt;jgallagher@opendap.org&gt;</CODE> for a login.
+<p>Once you have a login, you will likely soon tire of re-typing your password.
+Here's how to set up automatic <CODE class="literal">ssh</CODE> login. This is particularly useful if
+you're access CVS code from within an IDE. 
+<p><em>[Thanks to Rob Morris and Mark Schneider for the following. jhrg]</em>
+
+<h2><a name="id1">3.1 Automatic login from Unix</a></h2>
+<p>Here's Unix instructions to <CODE class="literal">ssh</CODE> to <CODE class="literal">dodsdev.gso.uri.edu</CODE> without
+requiring logging in (tested under Red Hat and Mandrake Linux, Solaris, OSF and
+OS X).
+<p>On the host machine you want to login from:
+<ol><li>Generate a <CODE class="literal">ssh</CODE> key<br /><pre class="it">
+\% ssh-keygen -t dsa
+</pre>
+<p>Just hit return as the pass phrase.
+<li>Copy the key generated to account on <CODE class="literal">dodsdev</CODE><br /><pre class="it">
+\% scp .ssh/id_dsa.pub &lt;user&gt;@dodsdev.gso.uri.edu:.ssh/&lt;unique filename&gt;
+</pre>
+<p>Enter your dodsdev password when prompted.
+<li>Repeat step one and two for each host. Use a different unique filename
+    for each iteration.
+<li>Use <CODE class="literal">ssh</CODE> to login to <CODE class="literal">dodsdev.gso.uri.edu</CODE>. For each filename
+    that was copied in step two, use an editor to paste the keys in those
+    files into your <CODE class="literal">&#36;(HOME)/.ssh/authorized&#95;keys</CODE> file. One key per
+    line.
+</ol>
+<p>Your should now be able to <CODE class="literal">ssh</CODE> to <CODE class="literal">dodsdev.gso.uri.edu</CODE> without
+entering a password (use the <CODE class="literal">ssh</CODE> option -l <CODE class="literal">&lt;user&gt;</CODE> when your user
+name on a host differs from that on <CODE class="literal">dodsdev</CODE>).
+<p>To get CVS assess to dodsdev without a password from series
+of UNIX hosts:
+<ol><li>Do the above steps to setup ssh for each unix host you
+    desire.
+<li>Add the following variables to your environment for that
+    host
+    <pre class="it">
+      export CVS\_RSH=ssh
+      export CVSROOT=:ext:&lt;user&gt;@dodsdev.gso.uri.edu:/usr/local/cvs-repository
+    </pre>
+</ol>
+
+<h2><a name="id2">3.2 Automatic login from Win32</a></h2>
+<p>On the win32 host machine you want to login from:
+<ol><li>Download <CODE class="literal">putty.zip</CODE> from <CODE class="literal">http://www.puttyssh.org/</CODE> and unzip
+    it into <CODE class="literal">"C:<i>&#92;</i>Program Files"</CODE> (or a directory of your choice).
+<li>Launch <CODE class="literal">puttygen</CODE> and generate a "1024 bit DSA key".
+<li>Paste the public key genared into your
+    <CODE class="literal">&#36;(HOME)/.ssh/authorized&#95;keys</CODE> 
+    file on dodsdev.
+<li>Save the private key to disk (in your putty install directory
+    probably) to some file such as <CODE class="literal">dodsdev&#95;private.ppk</CODE> or a
+    name of your choice.
+<li>Create a short cut to <CODE class="literal">pagent</CODE> and modify that shortcuts'
+    properties "Target" field so that pagent takes a 1st arg
+    of the file saved in step number four.
+<li>Put that shortcut in your startup folder and reboot
+    (or just run it).  Your private key should have been
+    loaded.
+<li>You can now configure and run <CODE class="literal">puttySSH</CODE> in a rather
+    straight-forward manner.
+</ol>
+<p>Your should now be able to use <CODE class="literal">ssh</CODE> to access <CODE class="literal">dodsdev.gso.uri.edu</CODE>
+without entering a password.
+<p>To get cvs assess to dodsdev from a win32 host:
+<ol><li>Do the above steps to setup <CODE class="literal">ssh</CODE> if necessary.
+<li>Download and install to <CODE class="literal">tortoiseCVS</CODE> from
+  <CODE class="literal">http://tortoisecvs.sourceforge.net/</CODE>
+<li>Add the following variables to your environment for that
+    host.
+    <pre class="it">
+    CVS_RSH      TortoisePlink.exe
+    CVSROOT      :ext:&lt;user&gt;@dodsdev.gso.uri.edu:/usr/local/cvs-repository
+
+    C:\&gt; cd &lt;some empty dir&gt;
+    C:\&gt; cvs co DODS -r release-3-4
+    </pre>
+    Or just right click in windows explorer and select "cvs checkout"
+    (very slick).
+</ol>
+<p>To make it so that CVS doesn't require a password:
+<ol><li>Create a short cut to <CODE class="literal">pagent</CODE> and modify that shortcuts'
+    properties "Target" field so that pagent takes a 1st arg
+    of the file saved in step number four of the ssh install instructions
+    above.
+<li>Put that shortcut in your startup folder and reboot
+    (or just run it).  Your private key should always load
+    at login time (transparently).
+</ol>
+<hr /><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, 
+  2004/06/23, Revision: 1.8</address><br />
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="cvs_4.html"><img border="0" alt="4 Branching" src="http://unidata.ucar.edu/packages/dods/icons/next.gif"></a></td><td bgcolor="#99ccff"><a href="cvs.html"><img border="0" alt="Top" src="http://unidata.ucar.edu/packages/dods/icons/up.gif"></a></td><td bgcolor="#99ccff"><a href="cvs_2.html"><img border="0" alt="2 Using CVS to get the OPeNDAP Software" src="http://unidata.ucar.edu/packages/dods/icons/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>3 Write Access and Automatic Logins</b></td></tr></table></body></html>

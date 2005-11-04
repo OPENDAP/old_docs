@@ -1,0 +1,52 @@
+
+	$Id$
+
+This is a checklist of things to look for when testing the 1999-4 release of
+DODS.
+
+Look for #if 0 ... #endif or #if NEVER ... #endif and determine if the
+bracketed code should be removed. I generally let the code stick around for
+one revision but after that it just adds noise.
+
+Make sure the copyright statement is correct. In the past we misspelled
+copyright (leaving off the `T') so that a file of that name would fit in
+Windoze. MS has woken up so we no longer need to do that. Copyright should be
+spelled correctly. In addition, make sure the *dates* are correct and make
+sure that at least one person is named as the author.
+
+In the past odd typedefs crept into the code. Remove these, recompile, fix.
+
+Check for C++ headers (iostream, string, ...) that are included using the .h
+suffix. On unix this is OK but some *other* environments break because
+#include <iostream> and #include <iostream.h> are two different files
+(Arrgh). Pay particular attention to <string> and <string.h> There *really
+is* a string.h (its the ANSI C string header where strcmp(), etc. live) and
+there *really is* a <string> (its the ANSI C++ string header where class
+string is defined). Some of our files might *correctly* include both (for
+example, code that interfaces our C++ libraries to a C-based system).
+
+Check the TODO lists. Have things on then been done but not marked? Are there
+pending tasks that are not listed there? Make sure to use dates!
+
+Check for strstream use. This is a tricky one and I'm not sure how to handle
+it. strstream is a GNU class that appears to mimic the ANSI stringstream
+class in all but two respects: its name and memory management. The GNU class
+must call <object>.freeze(0) after accessing the string. The ANSI class does
+not. 
+
+Check for use of string::data(). Chances are high the code should be using
+string::c_str() instead. data() returns a pointer to the characters *without
+a terminator*, c_str() returns a pointer to the chars terminated by a null.
+Use c_str() when passing to functions that expect a C-style string.
+
+Check the README and INSTALL files.
+
+When a bug is fixed, add a test that exercises that part of the code. That
+way we can be sure that the fix is not undone at a later date.
+
+Check that the we say `using namespace std;' in the C++ files that use the
+standard C++ library stuff (like string). [I've not done this in the core yet
+5/6/99 jhrg] 
+
+
+

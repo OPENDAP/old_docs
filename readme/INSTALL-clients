@@ -1,0 +1,87 @@
+
+	$Id$
+
+PREFACE
+
+This is a guide to installing DODS client software. This guide provides
+general help that applies to all DODS clients. Some clients might require
+additional steps; if that is the case there should be an INSTALL-<name> file
+for that client either in this directory or in the source code directory (if
+you down-loaded the source code) that provides any special information you
+need.
+
+-----------------------------------------------------------------------------
+
+CONTENTS
+
+ QUICK INSTRUCTIONS
+
+ INSTALLATION
+
+ QUESTIONS
+
+-----------------------------------------------------------------------------
+
+QUICK INSTRUCTIONS
+
+Define a new environment variable DODS_ROOT to be the place where you
+untarred the executables. Add the DODS_ROOT/bin directory to your PATH
+environment variable.
+
+-----------------------------------------------------------------------------
+
+INSTALLATION
+
+DODS client programs are regular Unix executables and can be installed in any
+directory that is on your PATH environment variable. In addition you can run
+the clients from you current working directory. DODS clients currently
+require that a copy of the program `gzip' (GNU's freely available
+compression/decompression program) be one your system and in a directory on
+your PATH environment variable. Many systems already have this program; in
+addition there is an option on both the DODS binary and source distribution
+pages to get a copy. If you system does not have this program (you can test
+for it by typing `which gzip' to see if it is in a directory on your PATH)
+get a copy and put it in DODS_ROOT/etc or one of your system's directories.
+Note that it won;t hurt to get an extra copy (the program is free and very
+small) and put it in DODS_ROOT/etc even if another copy exists elsewhere on
+your machine.
+
+DODS clients also use some additional files for progress and status/error
+messages. These files are located in the `DODS_ROOT/etc' directory created
+when you unpacked the tar file and have the extension `.tcl'. In addition
+you'll need a copy of `wish', the program that runs the Tcl files. Many
+systems already have wish, to find out if your's does type `which wish'. If
+your system does not have wish you can get a copy from the DODS binary
+down-load page. Copy the wish executable into the DODS_ROOT/etc directory or
+any directory on your PATH. As with gzip above, getting an extra copy of wish
+won't break anything. 
+
+NOTE: Always set the DODS_ROOT environment variable to the point to the root
+of the DODS tree. If you unpacked the tar file in /usr/local, then set
+DODS_ROOT to /usr/local/DODS. If you don't set DODS_ROOT, the software will
+use the default value for DODS_ROOT which was set when the software was
+built. 
+
+To complete the installation the Tcl files and wish interpreter, define an
+environment variable named DODS_ROOT to point to the directory created when
+you unpacked the tar file (e.g., if you just down-loaded binaries for
+DODS-2.13 and unpacked the tar file in /usr/local/, set DODS_ROOT to
+/usr/local/DODS-2.13).
+
+TIP: If you don't install the Tcl files and wish interpreter the DODS client
+will still run, it simply won't use the popup status and message display
+system. 
+
+-----------------------------------------------------------------------------
+
+QUESTIONS
+
+There are several sources of information about DODS:
+The DODS home page: http://dods/gso.uri.edu/DODS
+The DODS user's manual: Available at the home page.
+DODS User support: email George Milkowski (gmilkowski@gso.uri.edu).
+
+-----------------------------------------------------------------------------
+
+James Gallagher
+jgallagher@gso.uri.edu

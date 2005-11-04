@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<!-- XML file produced from file: dap_rfc.tex --
+ -- using Hyperlatex v 2.5 (c) Otfried Cheong--
+ -- on Emacs 20.7.1, Wed Oct 10 09:54:12 2001 -->
+<head>
+<title>DODS DAP 2.0 -- DRAFT -- ERROR</title>
+
+</head><body>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_36.html"><img alt="Version" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_34.html"><img alt="Encoding Values" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>ERROR</b></td></tr></table>
+<h3>ERROR</h3>
+
+When a server encounters an error, either in its software or in the users
+request, it MUST return an error response. The body of the response contains
+an error code along with text that provides a description of the problem
+encountered. Server writers are encouraged to provide text that describes the
+problem with enough information to enable a user to correct the problem or
+submit a meaningful bug report to the server's maintainer.
+<p><em>[Error objects can, in theory, contain a short Java or TCL/Tk program
+  to help users resubmit URLs, et cetera. However, we've never used this
+  feature]</em>
+<p><tt>
+<div align="center">
+<table><tr><td colspan="1" align="LEFT">
+
+Error </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> "Error" "&#123;" "code=" error-code ";" </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td><td colspan="1" align="LEFT"> </td><td colspan="1" align="LEFT"> "message=" error-msg ";" "&#125;" </td></tr>
+<tr><td colspan="1" align="LEFT">
+error-code </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> 1*DIGIT </td></tr>
+<tr><td colspan="1" align="LEFT">
+error-msg </td><td colspan="1" align="LEFT"> = </td><td colspan="1" align="LEFT"> quoted-string </td></tr>
+<tr><td colspan="1" align="LEFT">
+</td></tr></table>
+
+</div>
+</tt>
+<HR ><address>James Gallagher &lt;jgallagher@gso.uri.edu&gt;, <i>Date: 2001/09/18 18:28:50 </i>, <i>Revision: 1.18 </i></address><br>
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+  <td bgcolor="#99ccff"><a HREF="dap_36.html"><img alt="Version" border=0 src="http://test.dods.org/images/next.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_31.html"><img alt="Response Bodies" border=0 src="http://test.dods.org/images/up.gif"></a></td><td bgcolor="#99ccff"><a HREF="dap_34.html"><img alt="Encoding Values" border=0 src="http://test.dods.org/images/previous.gif"></a></td><td align="center" bgcolor="#99ccff" width="100%"><b>ERROR</b></td></tr></table></body></html>
