@@ -116,36 +116,12 @@ in \ffbook .
 The \ffs\ includes the following programs:
 
 \begin{description}
-\item[\lit{nph-ff}] The \ffs\ \new{dispatch script}.  This Perl script
-  (requires Perl version 5 or greater) receives the data request from
-  the client, and dispatches it to one of several filter programs.
-  For definitions of dispatch script and filter programs, and other
-  details of the implementation of a DAP2 server, see \DODSuser .
-  
-\item[\lit{ff-dods}] This filter program reads a \ffnd\ format
-  description, and then reads data from the specified source, packs it
-  into the transmission format, and sends it back to the client.
-  
-\item[\lit{ff-dds}] In order to process the data stream correctly, the
-  client first asks the server for a description of the data it will
-  send.  This description, called the Data Description Structure (DDS)
-  is created and sent by this filter program.
-  
-\item[\lit{ff-das}] Other metadata that may be useful to the user of
-  this data may be sent to the client in the Data Attribute Structure
-  (DAS), created and sent by this program.  \sectionref{ff,das}
-  contains information about how to include metadata in this
-  structure.
-  
-\item[\lit{asciival}] This filter program allows data to be sent back
-  to the user in ASCII format.  This allows a wide variety of clients
-  to access this data, including simple web browsers, such as Netscape
-  Navigator.
-  
-\item[\lit{usage}] This filter provides a way to get information about
-  the data and about the server itself to a curious user.  See
-  \sectionref{ff,usage} for information about what can be sent and how
-  to set it up.
+\item[\lit{dap_ff_handler}] The \ffs\ \new{data handler}. This program
+  is run by the OPeNDAP server to handle the parts of any requests
+  that require knowledge specifically about FreeForm. This program is
+  run by the main server 'dispatch' software. That software is
+  described in the Server Installation Guide (\OPDinstallUrl),
+  available on the \DODShome .
 \end{description}
 
 The \ffs\ distribution also includes the following \ffnd\ utilities.
