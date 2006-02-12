@@ -15,8 +15,9 @@ writing format descriptions and serving test datasets.
 To get going with the \ffs , follow these steps:
 
 \begin{enumerate}
-\item Obtain and install the core DODS distribution and the \ffs\
-  distribution.  (You can get these files from the \DODShome .)
+\item Obtain and install the OPeNDAP data server distribution and the
+  \ffs\ format handler distribution. (You can get these files from the
+  \DODShome .)
   
 \item Install the \ffs . (See the instructions in the INSTALL file
   accompanying the server.)  
@@ -69,7 +70,7 @@ For complete information about writing format descriptions, see
 
 Here is a data file, containing a sequence of four data types.  (This
 data file and several of the other examples in this chapter are
-available \xlink*{here}[under ``Documentation'' on the DODS web page
+available \xlink*{here}[under ``Documentation'' on the OPeNDAP web page
 (\DODShomeUrl)]{\DODShomeUrl/examples}.)
 
 Here is the data file, called
@@ -205,7 +206,7 @@ http://dods.gso.uri.edu/cgi-bin/nph-ff/data/ffsimple.dat.dds
 \end{vcode}
 
 This will show a description of the dataset structure (See \DODSuser\ 
-for a detailed description of the DODS ``Dataset Description
+for a detailed description of the DAP2 ``Dataset Description
 Structure,'' or DDS.):
 
 \begin{vcode}{ib}
@@ -267,7 +268,7 @@ index 1 7 ARRAY["line" 1 to 10] OF float 0
 The output section is not essential for the \ffs , but is included so
 you can check out the data with the \lit{newform} command.
 
-Download the files from the DODS web site, and try typing:
+Download the files from the OPeNDAP web site, and try typing:
 
 \begin{example}
 > newform ffarr1.dat
