@@ -7,13 +7,17 @@
 \chapter{Introduction}
 \label{ff,dintro}
 
-The \ffs\ is a DODS server that uses \ffnd\ software to serve data
-from files in almost any format.  The FreeForm ND Data Access System
-is a flexible system for specifying data formats to facilitate data
-access, management, and use.  Since DODS allows data to be translated
-over the internet and read by a client regardless of the storage
-format of the data, the combination allows several format restrictions
-to be overcome.
+The \ffs\ is a DAP2\footnote{The Data Access Protocol, version 2, was
+  originally developed for the DODS project, then used by NVODS. In
+  2000 the principals from the DODS project formed OPeNDAP, Inc., a
+  not-for-profit corporation, tocontinue the development of the
+  protocol and the associated software.}-compliant server that uses
+\ffnd\ software to serve data from files in almost any format. The
+FreeForm ND Data Access System is a flexible system for specifying
+data formats to facilitate data access, management, and use. Since
+DAP2 allows data to be translated over the internet and read by a
+client regardless of the storage format of the data, the combination
+allows several format restrictions to be overcome.
 
 The large variety of data formats is a primary obstacle in the way of
 creating flexible data management and analysis software. FreeForm ND
@@ -22,13 +26,13 @@ Data Center (NGDC) to alleviate the problems that occur when you need
 to use data sets with varying native formats or to write
 format-independent applications.
 
-DODS was originally conceived as a way to move large amounts of
+DAP2 was originally conceived as a way to move large amounts of
 scientific data over the internet.  As a consequence of establishing a
-flexible data transmission format, DODS also allows substantial
+flexible data transmission format, DAP2 also allows substantial
 independence from the storage format of the original data.  Up to now,
-however, DODS servers have been limited to data in a few widely used
+however, DAP2 servers have been limited to data in a few widely used
 formats.  Using the \ffs , many more datasets can be made available
-through DODS.
+through DAP2.
 
 %\section{The Format Problem}
 
@@ -75,25 +79,25 @@ of one or more data files.  This descriptor file is a simple text file
 that can be created with a text editor, describing the structure of
 your data files.  
 
-A traditional DODS server, illustrated in \figureref{fig,regular},
-receives a request for data from a DODS client who may be at some
-remote computer\footnote{The request comes via http.  The DODS server is, in
-reality, an ordinary http server, equipped with a set of CGI programs
-to process requests from DODS clients. See \sectionref{ff,install} and
-\DODSuser\ for more information.}.  The data served by this server
-must be stored in one of the data formats supported by DODS (such as
-netCDF, HDF, or JGOFS), and the server uses specialized software to
-read this data from disk.
+A traditional DAP2 server, illustrated in \figureref{fig,regular},
+receives a request for data from a DAP2 client who may be at some
+remote computer\footnote{The request comes via http. The DAP2 server
+  is, in reality, an ordinary http server, equipped with a set of CGI
+  programs to process requests from DAP2 clients.
+  See \sectionref{ff,install} and \DODSuser\ for more information.}.
+The data served by this server must be stored in one of the data
+formats supported by the OPeNDAP server (such as netCDF, HDF, or
+JGOFS), and the server uses specialized software to read this data
+from disk.
 
-When it receives a request, the server reads the requested data from its
-archive, reformats the data into the DODS transmission format (also
-called the DODS Data Access Protocol, or DAP), and sends the data back
-to the client.
+When it receives a request, the server reads the requested data from
+its archive, reformats the data into the DAP2 transmission format and
+sends the data back to the client.
 
-\figureplace{A Traditional DODS Server}{htb}{fig,regular}
+\figureplace{A Traditional DAP2 Server}{htb}{fig,regular}
 {regular.ps}{regular.gif}{}
 
-The \ffs\ works in a similar fashion to a traditional DODS server, but
+The \ffs\ works in a similar fashion to a traditional DAP2 server, but
 before the server reads the data from the archive, it first reads the
 data format descriptor to determine how it should read the data.  Only
 after it has absorbed the details of the data storage format does it
@@ -116,7 +120,7 @@ The \ffs\ includes the following programs:
   (requires Perl version 5 or greater) receives the data request from
   the client, and dispatches it to one of several filter programs.
   For definitions of dispatch script and filter programs, and other
-  details of the implementation of a DODS server, see \DODSuser .
+  details of the implementation of a DAP2 server, see \DODSuser .
   
 \item[\lit{ff-dods}] This filter program reads a \ffnd\ format
   description, and then reads data from the specified source, packs it
@@ -186,56 +190,18 @@ send an http request to your own machine.  \DODSuser\ contains some
 hints about installing a web server.
 
 When you are sure a web server is properly installed and running,
-unpack the archive file you downloaded from the \DODShome .  You will
-find a directory called \lit{DODS}, containing \lit{etc} and
-\lit{bin}.
+unpack the archive file you downloaded from the \DODShome . Binaries
+are available for Solaris, IRIX, Linux, et cetera. Folow the
+instructions that come with each, as they all have their own
+idiosyncrasies. After unpacking the server will, by default install
+some exectuable programs in /usr/local/bin and some other files in
+both /usr/local/share/dap-server and /usr/local/share/dap-server-cgi.
 
-\begin{enumerate}
-\item Copy all the files in the \lit{etc} directory into your web
-  server's CGI directory (see \DODSuser\ for tips on how to find this
-  directory)
-  
-\item Make sure the permissions of those files will allow the web
-  server to execute them.  Typically you might type use a command
-  like:
-
-\begin{example}
-> chmod 555 cgi-bin/*    
-\end{example}
-
-\item While you are here, copy the files in the \lit{bin} directory to
-  somewhere in your command \lit{PATH}, or modify your command
-  \lit{PATH} to include the DODS \lit{bin} directory.  This is not
-  strictly necessary to use the server, but will allow you to use the
-  \ffnd\ tools that come with the \ffs\ distribution\footnote{There is
-    a utility called \lit{newform} that comes as part of the Solaris
-    OS.  This conflicts with the \ffnd\ utility of the same name.
-    When installing this package on Solaris, make sure to put the
-    \lit{bin} directory before the \lit{/usr/bin} directory in your
-    \lit{PATH}, or change the name of the \ffnd\ \lit{newform} program.}.
-
-\end{enumerate}
-
-The \ffs\ is now installed.  You can confirm the installation with a
-web client like Netscape.  Enter a URL containing your machine
-address, the CGI directory name, and then \lit{nph-ff}, like this:
-
-\begin{vcode}{ib}
-http://dods.gso.uri.edu/cgi-bin/nph-ff
-\end{vcode}
-
-This is not a complete DODS URL, so you will get some kind of error
-message\footnote{The example is from a working DODS server.  Try this
-  example and compare it with the result from your own server.}.  If
-the message you see mentions DODS, however, you have successfully
-installed the server.  If it doesn't, and says something like ``The
-requested URL was not found on this server,'' than you need to
-re-check your installation.  (Check the permissions first, then make
-sure all the files from the \lit{etc} directory were copied, then
-check the installation of the web server.  Remember that the
-\lit{nph-ff} program requires Perl v5.0 or greater; this is a common
-problem.  There is a FAQ list at \DODShome\ that may have useful
-suggestions.)
+Follow the instructions on configuring the OPeNDAP server. This
+generally involves configuring a web server (e.g., Apache) to run the
+\lit{nh-dods} CGI script and editing the dap-server.rc configuration
+file. Both reside in /usr/local/share/dap-server-cgi (assuming that
+you have chosen the default location for installation).
 
 Now that the \ffs is installed, \chapterref{ff,ff-server} will explain
 how to use it to serve your data.  It may be a good idea to
@@ -246,53 +212,27 @@ which will explain how to specify your data's format.
 
 If the computer and operating system combination you use is not one of
 the ones we own, you will have to compile the \ffs\ from its source.
-Go to the ``Download Source'' page, and click on the ``Core'' button,
-the ``FreeForm Server'' button, and the ``Packages'' button.
+Go to the OPeNDAP home page (www.opendap.org) and follow the menu item
+to the downloads page. From there you will need the libdap, dap-server
+and FreeForm handler software source distributions. Get each of these
+and perform the following steps:
 
-When you have downloaded the source archive (it may be quite large),
-unpack it by typing:
+\begin{enumerate}
+\item Expand the distribution (e.g., \lit{tar -xzf
+    libdap-3.5.3.tar.gz})
+\item Change to the newly created directory (\lit{cd libdap-3.5.3})
+\item Run the configure script (\lit{./configure})
+\item Run make (\lit{make})
+\item Install the software (\lit{make install} or \lit{sudo make
+    install})
+\end{enumerate}
 
-\begin{example}
-> tar xf DODS-3993.tar
-\end{example}
-
-This archive file is made up of several other compressed archive
-files, so after this step you will need to unpack each of those files
-individually: 
-
-\begin{example}
-> gzip -dc DODS-dap-2.22.tar.gz | tar xf -
-> gzip -dc DODS-ff-dods-2.22.tar.gz | tar xf -
-\end{example}
-
-and so on.
-
-When all the archive files are unpacked, move to the
-\lit{DODS/packages/src} directory, and type:
-
-\begin{example}
-> ./configure
-> make World
-> make install
-\end{example}
-
-Each of these packages has a \lit{README} and \lit{INSTALL} file
-containing directions in case of any trouble.
-
-After the packages have been installed, go to the top DODS directory
-(wherever you have installed it), and type:
-
-\begin{example}
-> ./configure
-> make World
-\end{example}
-
-Then see \sectionref{ff,install-dods} for instructions on the final
+Each source distribution contains more detailed build instructions;
+see the \lit{README}, \lit{INSTALL} and \lit{NEWS} files for the most
+up-to-date information.
+dquick
+See \sectionref{ff,install-dods} for instructions on the final
 installation. 
-
-
-
-
 
 %%% Local Variables: 
 %%% mode: latex

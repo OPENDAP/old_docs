@@ -21,21 +21,21 @@
 \chapter{The \ffs}
 \label{ff,ff-server}
 
-The \ffs\ is a DODS server that uses \ffnd\ to convert and serve data
+The \ffs\ is a OPeNDAP server add-on that uses \ffnd\ to convert and serve data
 in formats that are not directly supported by DODS servers.  Bringing
-\ffnd 's data conversion capacity into the DODS world widens data
-access for DODS clients, since any format that can be described in
-\ffnd\ can now be served by DODS.
+\ffnd 's data conversion capacity into the OPeNDAP world widens data
+access for DAP2 clients, since any format that can be described in
+\ffnd\ can now be served by the OPeNDAP data server.
 
-Like all DODS servers, the \ffs\ responds to client requests for data
+Like all DAP2 servers, the \ffs\ responds to client requests for data
 by returning either data values or information about the data.  It
-differs from other DODS servers because it invokes \ffnd\ to read the
+differs from other DAP2 servers because it invokes \ffnd\ to read the
 data from disk before serving it to the client.
 
 The following sequence of steps illustrates how the \ffs\ works:
 
 \begin{enumerate}
-\item A DODS client sends a request for data to a \ffs .  The request
+\item A DAP2 client sends a request for data to a \ffs .  The request
   must include the name of the file that contains the data, and may
   include a constraint expression to sample the data.
 \item The \ffs\ looks in its path for two files: a data file with the
@@ -47,7 +47,7 @@ The following sequence of steps illustrates how the \ffs\ works:
   instructions in the latter to convert the former into data which is
   then passed back to the \ffs .
 \item On receiving the converted data, the \ffs\ converts the data
-  into the DODS transmission format.  The conversion may involve some
+  into the DAP2 transmission format.  The conversion may involve some
   adjustment of data types; these are listed in
   \sectionref{sec,convert}.  The server also applies any constraint
   expressions the client sent along with the URL.
@@ -63,7 +63,8 @@ For information about how to write a \ffnd\ data description, refer to
 the \chapterref{ff,tblfmt} for sequence data and
 \chapterref{ff,arrayfmt} for array data. 
 
-For an introduction to DODS, please refer to \DODSuser . 
+For an introduction to DAP2 and to the OPeNDAP project, please refer
+to \DODSuser .
 
 %\section{About \ffnd\ }
 %\label{sec,about}
@@ -100,12 +101,12 @@ resulting software:
     receiving a client request for that data}, and not before.  Data
   served by the \ffs\ remains in its original format.
 \item The \ffs\ does not produce an output file containing the
-  converted data, but serves it directly over the network to the DODS
+  converted data, but serves it directly over the network to the DAP2
   client.  Therefore, the \ffs\ ignores the output section of the
   format definition file.
 \item To sample a data file, you do not write format definitions that
   cause the \ffnd\ engine to sample the data file.  Instead, you add a 
-  DODS ``constraint expression'' to the URL that the client sends to
+  DAP2 ``constraint expression'' to the URL that the client sends to
   the \ffs .
 \item The \ffs\ performs data conversion on the fly.  Conversion only
   takes place when the client sends a URL requesting data from the
@@ -120,14 +121,14 @@ resulting software:
 \label{sec,convert}
 
 The \ffs\ performs data conversions, based on the data it receives
-from the \ffnd\ engine.  Note that DODS does not recommend the use of
+from the \ffnd\ engine.  Note that OPeNDAP does not recommend the use of
 \lit{int64} and \lit{uint64} in the format definition file.
 
 \begin{table}[htb]
-  \caption{DODS Data Type Conversions}
+  \caption{DAP2 Data Type Conversions}
   \begin{center}
     \begin{tabular}{|l|l|}\hline
-      \textbf{\ffnd}  & \textbf{DODS} \\ \hline \hline
+      \textbf{\ffnd}  & \textbf{DAP2} \\ \hline \hline
       \lit{text} & \lit{String} \\ \hline
       \lit{int8} & \lit{Byte}  \\ \hline
       \lit{int16}, \lit{int32}, \lit{int64}        & \lit{Int32}  \\ \hline

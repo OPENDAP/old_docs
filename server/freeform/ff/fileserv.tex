@@ -1,15 +1,26 @@
 \chapter{File Servers}
 \label{fs}
 
-The DODS project uses the \ffs\ to present a catalog of data files to
-the world as a single dataset.  Normally, in the DODS argot, a
-``dataset'' is contained in a single file on a disk.  However, this
-paradigm is often broken by large datasets that may contain many
-thousands or tens of thousands of data files.  The DODS file server is
-a way to make these dicrete datasets appear to be a single large
-dataset. 
+\note{The DODS and OPenDAP projects have used the \ffs\ to present a catalog
+of data files to the world as a single dataset. In many ways this was
+a very successful system, providing catalogs for multi-granule
+datasets that could be searched by date and time. However, the OPeNDAP
+project has decided (winter 2006) to adopt the THREDDS xml-based
+catalog system developed at Unidata, Inc. The remainder of this
+chapter describes the 'file servers' that can be built using the
+FreeForm data handler. Even though we feel it's best to adopt the
+THREDDS catalogs, there are good reasons to keep existing catalog
+servers running and to build new catalogs as a stop-gap measure to
+support existing client software.} 
 
-The DODS file server is a DODS server that returns a URL or set of
+Normally, in the OPeNDAP
+argot, a ``dataset'' is contained in a single file on a disk. However,
+this paradigm is often broken by large datasets that may contain many
+thousands or tens of thousands of data files. The OPeNDAP file server is
+a way to make these dicrete datasets appear to be a single large
+dataset.
+
+The OPeNDAP file server is an OPeNDAP server that returns a URL or set of
 URLs in response to a query containing selection variables.  For
 example, a dataset organized by date and geographic location might
 provide a file server that allowed you to query the dataset with a
@@ -37,7 +48,7 @@ date\footnote{A serial date, with a year and the day of the
   year, expressed in an ordinal number from 1 to 365 or 366.}
 
 If you want data from the first week of January, 1998, it is fairly
-clear which files to request.  However, a basic DODS server provides
+clear which files to request.  However, the OPeNDAP server provides
 no way to request data from more than one file, so your request would
 have to be split into 7 different requests, from \lit{1998001.nc} to
 \lit{1998007.nc}.  This could be represented as a set of seven DODS
@@ -98,14 +109,15 @@ fact, be infinite, but it may seem that way to a scientist who is
 simply trying to find data.
 
 
-\section{The DODS Solution}
+\section{The OPeNDAP File Server Solution}
 \label{fs,solution}
 
 To create a system that allows data providers to assert a degree of
-uniformity over wildly variable dataset organizations, DODS provides
-for the installation of a DODS \new{file server}.  The file server is
-a DODS dataset, containing associations between the names of files
-within a dataset and some ``selectable'' data values.
+uniformity over wildly variable dataset organizations, OPeNDAP
+provides for the installation of an OPeNDAP \new{file server}. The
+file server is a server that provides access to a special dataset,
+containing associations between the names of files within a dataset
+and some ``selectable'' data values.
 
 
 \subsection{Selectable Data}
@@ -123,7 +135,7 @@ appropriate.  Model data, for example, which has no real location or
 time, might be arranged by the parameters that varied between runs.
 
 A comprehensive definition of selectable data has so far eluded the
-DODS group, but there are some guidelines, albeit fairly vague ones:
+OPeNDAP group, but there are some guidelines, albeit fairly vague ones:
 
 \begin{itemize}
 \item The selectable data is generally \emph{not} recorded within each
@@ -143,7 +155,7 @@ DODS group, but there are some guidelines, albeit fairly vague ones:
 Consider again the set of data files shown in \sectionref{fs,problem}.
 We could associate each one of these files with a date, and this would
 provide the rudiments of a file server if we then serve that data with
-a DODS server such as the \ffs .
+an OPeNDAP server such as the \ffs .
 
 
 \begin{vcode}{ib}
@@ -165,9 +177,9 @@ a DODS server such as the \ffs .
 1998/010 http://dods/cgi-bin/nph-nc/1998010.nc
 \end{vcode}
 
-This list represents a set of DODS URLs, each identified by a date,
+This list represents a set of DAP URLs, each identified by a date,
 given as a year and a serial day.  The files appear to be netCDF
-format files, served by a DODS netCDF server, but that is not
+format files, served by an OPeNDAP netCDF server, but that is not
 important for this discussion.
 
 To use the \ffs\ for your file server, you could use a format
@@ -558,7 +570,7 @@ directory on the same machine, but they need not be.
 \label{fs,example}
 
 Here is an example of building a file server for a large collection of
-data files, served by DODS.
+data files, served by an OPeNDAP server.
 \footnote{All the files mentioned in this section are available in the
   \lit{examples} directory on \DODShome .}
 
