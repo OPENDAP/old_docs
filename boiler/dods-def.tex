@@ -47,31 +47,31 @@
 % \newcommand{\OPDftpUrl}%
 %  {ftp://dods.gso.uri.edu/pub/dods}
 \newcommand{\OPDftpUrl}%
-  {ftp://ftp.opendap.org/pub/dods}
+  {ftp://ftp.unidata.ucar.edu/pub/opendap/}
 \newcommand{\OPDuserUrl}%
-  {\OPDDoc/user/guide-html/}
+  {\OPDhomeUrl/user/guide-html/}
 \newcommand{\OPDmguiUrl}%
-  {\OPDDoc/user/mgui-html/}
+  {\l/user/mgui-html/}
 \newcommand{\OPDapiUrl}%
-  {\OPDDoc/api/pguide-html/}
+  {\OPDhomeUrl/api/pguide-html/}
 \newcommand{\OPDapirefUrl}%
-  {\OPDDoc/api/pref-html/}
+  {\OPDhomeUrl/api/pref-html/}
 \newcommand{\OPDffUrl}%
-  {\OPDDoc/user/servers/dff-html/}
+  {\OPDhomeUrl/user/servers/dff-html/}
 \newcommand{\OPDquickUrl}%
-  {\OPDDoc/user/quick-html/}
+  {\OPDhomeUrl/user/quick-html/}
 \newcommand{\OPDinstallUrl}%
-  {\OPDDoc/server/install-html}%
+  {\OPDhomeUrl/server/install-html}%
 \newcommand{\OPDregexUrl}%
-  {\OPDDoc/user/regex-html}%
+  {\OPDhomeUrl/user/regex-html}%
 \newcommand{\OPDjavaUrl}%
-  {\OPDDoc/home/swJava1.1/}
+  {\OPDhomeUrl/home/swJava1.1/}
 \newcommand{\OPDwclientUrl}%
-  {\OPDDoc/api/wc-html/}
+  {\OPDhomeUrl/api/wc-html/}
 \newcommand{\OPDwserverUrl}%
-  {\OPDDoc/api/ws-html/}
+  {\OPDhomeUrl/api/ws-html/}
 \newcommand{\OPDaggUrl}%
-  {\OPDDoc/server/agg-html/}
+  {\OPDhomeUrl/server/agg-html/}
 
 \newcommand{\OPDhome}{\xlink{OPeNDAP Home page}{\OPDhomeUrl}}
 \newcommand{\OPDjava}{\xlink{OPeNDAP Java home page}{\OPDjavaUrl}}
@@ -148,19 +148,23 @@
 
 % Commands
 
-\newcommand{\pslink}[1]{\small
-\begin{quote}
-  A \xlink{PDF version}{#1} of this document is available.
-\end{quote}
-\normalsize
-}
+% Use pdflink instead. jhrg 8/4/2006
+% \newcommand{\pslink}[1]{\small
+% \begin{quote}
+%   A \xlink{PDF version}{#1} of this document is available.
+% \end{quote}
+% \normalsize
+% }
 
-\newcommand{\pdflink}[1]{\small
-\begin{quote}
-  A \xlink{PDF version}{#1} of this document is available.
-\end{quote}
-\normalsize
-}
+% Use the copy of this in dods-paper.hlx/cls or cut and paste this on
+% a document-by-document basis. This version conflicts with the
+% version in the class. jhrg 8/4/2006
+% \newcommand{\pdflink}[1]{\small
+% \begin{quote}
+%   A \xlink{PDF version}{#1} of this document is available.
+% \end{quote}
+% \normalsize
+% }
 
 %%%%%%%%%%%%%% DODS macros
 %
@@ -174,31 +178,31 @@
 % \newcommand{\OPDftpUrl}%
 %  {ftp://dods.gso.uri.edu/pub/dods}
 \newcommand{\DODSftpUrl}%
-  {ftp://ftp.opendap.org/pub/dods}
+  {ftp://ftp.unidata.ucar.edu/pub/opendap/}
 \newcommand{\DODSuserUrl}%
-  {\OPDDoc/user/guide-html/}
+  {\OPDhomeUrl/user/guide-html/}
 \newcommand{\DODSmguiUrl}%
-  {\OPDDoc/user/mgui-html/}
+  {\OPDhomeUrl/user/mgui-html/}
 \newcommand{\DODSapiUrl}%
-  {\OPDDoc/api/pguide-html/}
+  {\OPDhomeUrl/api/pguide-html/}
 \newcommand{\DODSapirefUrl}%
-  {\OPDDoc/api/pref-html/}
+  {\OPDhomeUrl/api/pref-html/}
 \newcommand{\DODSffUrl}%
-  {\OPDDoc/user/servers/dff-html/}
+  {\OPDhomeUrl/user/servers/dff-html/}
 \newcommand{\DODSquickUrl}%
-  {\OPDDoc/user/quick-html/}
+  {\OPDhomeUrl/user/quick-html/}
 \newcommand{\DODSinstallUrl}%
-  {\OPDDoc/server/install-html}%
+  {\OPDhomeUrl/server/install-html}%
 \newcommand{\DODSregexUrl}%
-  {\OPDDoc/user/regex-html}%
+  {\OPDhomeUrl/user/regex-html}%
 \newcommand{\DODSjavaUrl}%
-  {\OPDDoc/home/swJava1.1/}
+  {\OPDhomeUrl/home/swJava1.1/}
 \newcommand{\DODSwclientUrl}%
-  {\OPDDoc/api/wc-html/}
+  {\OPDhomeUrl/api/wc-html/}
 \newcommand{\DODSwserverUrl}%
-  {\OPDDoc/api/ws-html/}
+  {\OPDhomeUrl/api/ws-html/}
 \newcommand{\DODSaggUrl}%
-  {\OPDDoc/server/agg-html/}
+  {\OPDhomeUrl/server/agg-html/}
 
 \newcommand{\DODShome}{\xlink{OPeNDAP Home page}{\DODShomeUrl}}
 \newcommand{\DODSjava}{\xlink{OPeNDAP Java home page}{\DODSjavaUrl}}
