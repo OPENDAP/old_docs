@@ -148,7 +148,7 @@ can be used to generate temporary data sets.\footnote{For information about
 Anagram or the GDS and FDS servers, see the COLA web site.}
   
 The \opendap\ project provides both a
-\xlink{C++}{http://www.unidata.ucar.edu/packages/dods/api/pref-html/}
+\xlink{C++}{http://www.unidata.ucar.edu/packages/dods/api/pref/html/}
 and a
 \xlink{Java}{http://www.unidata.ucar.edu/packages/dods/api/javaDocs/}
 implementation of the DAP. Each library includes both the classes that
@@ -226,7 +226,7 @@ documents to transfer information. However, for a programmer who intends to
 write a DAP server, exactly what gets written into those headers and how it
 gets written is not important. Both the C++ and Java class libraries will
 handle these tasks for you (look at the \xlink{DODSFilter
-class}{http://www.unidata.ucar.edu/packages/dods/api/pref-html/DODSFilter.html}
+class}{http://www.unidata.ucar.edu/packages/dods/api/pref/html/DODSFilter.html}
 to see how). It's important to know about, however, because if you decide not
 to use the libraries, or the parts that automate generating the correct MIME
 documents, then your server will have to generate the correct headers itself.
@@ -268,7 +268,7 @@ Catalog of AVHRR Files &
 The DAP models all datasets as collections of
 \xlink{variables}{http://www.unidata.ucar.edu/packages/dods/api/pguide-html/pguide\_9.html}.
 The \xlink{DDS and
-DataDDS}{http://www.unidata.ucar.edu/packages/dods/api/pref-html/DDS.html}
+DataDDS}{http://www.unidata.ucar.edu/packages/dods/api/pref/html/DDS.html}
 objects are containers for those variables. How you represent your dataset
 using the three objects and the DAP's data type hierarchy is covered in
 section~\ref{server-tut,implementing}.
@@ -754,9 +754,9 @@ third line binds the \lit{Float64} object to the new \lit{Array} object,
 making the array an array of \lit{Float64}s. The last two lines set the sizes
 of the Array's dimensions.  Because instances of Array occur frequently, it
 is a good idea to be familiar with the \xlink{\lit{
-    Array}}{http://www.unidata.ucar.edu/packages/dods/api/pref-html/Array.html}
+    Array}}{http://www.unidata.ucar.edu/packages/dods/api/pref/html/Array.html}
 and \xlink{\lit{
-    Vector}}{http://www.unidata.ucar.edu/packages/dods/api/pref-html/Vector.html}
+    Vector}}{http://www.unidata.ucar.edu/packages/dods/api/pref/html/Vector.html}
 classes (\lit{Vector} is the parent of both \lit{Array} and \lit{List}).
 
 Finally, the last line of the function,
@@ -853,9 +853,9 @@ object. An attribute table (AttrTable) is similar to a structure in
 that it holds other things which may be attributes (typed name-value
 pairs) or other attribute tables. The DAS is a container for AttrTable
 objects. Take a look at the documentation for the
-\xlink{AttrTable}{http://www.unidata.ucar.edu/packages/dods/api/pref-html/AttrTable.html}
+\xlink{AttrTable}{http://www.unidata.ucar.edu/packages/dods/api/pref/html/AttrTable.html}
 and \xlink{DAS}{
-  http://www.unidata.ucar.edu/packages/dods/api/pref-html/DAS.html}
+  http://www.unidata.ucar.edu/packages/dods/api/pref/html/DAS.html}
 classes in the Programmer's Reference Guide.
 
 \begin{vcode}{sib}
@@ -942,9 +942,9 @@ values. To understand how the \lit{read()} method will be used, it's
 instructive to look at the code that calls it. In the DAP data type classes,
 each of the scalar, vector and constructor types has a method called
 \lit{serialize()}. Below is shown
-\xlink{Byte's}{http://www.unidata.ucar.edu/packages/dods/api/pref-html/Byte.html}
+\xlink{Byte's}{http://www.unidata.ucar.edu/packages/dods/api/pref/html/Byte.html}
 version of this method (Look at the code for
-\xlink{DDS}{http://www.unidata.ucar.edu/packages/dods/api/pref-html/DDS.html}
+\xlink{DDS}{http://www.unidata.ucar.edu/packages/dods/api/pref/html/DDS.html}
 if you'd like to see how \lit{serialize()} is used and pay particular
 attention to \lit{DDS::send\_data()}).
 
