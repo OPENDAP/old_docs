@@ -9,12 +9,14 @@ much. Bummer... This is partly in CVS, but don't trust that.
 
 pguide: The programmer's guide
 
-pref-html: Holds the HTML documentation for the C++ code. This has a flat
-directory structure, so it's in CVS.
-
 wc-html, writing_client.tex: How to write a client tutorial
 
 ws-html, writing_server.tex: How to write a server tutorial
 
 Makefile: Should work, but you'll need to have DODS-3.4 and Java-DODS checked
 out, too. You can substitute anything reasonable for DODS-3.4.
+
+pref-html: Removed. This is a generated file; use svn to get the libdap
+project, run the docs target in the Makefile. The resulting tar.gz file is
+moved to the web-site project where it is in svn. The individual web pages
+are not in svn anymore.
