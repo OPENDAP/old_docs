@@ -1641,7 +1641,10 @@ The FreeForm server has its own documentation: see \DODSffbook .  You
 will find a complete description of the server, as well as
 instructions on how to write a format file for your data.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % jhrg 9/27/05
 
@@ -1722,7 +1725,10 @@ distribution from the \DODShome or the \DODSjava.  For a basic
 installation, you want the file called \lit{dods.war}.  To install the
 server, put this entire file into the ``webapps'' directory of your
 servlet engine (e.g. Tomcat).  When you restart the servlet engine, it
-will unpack the archive into the directory \lit{webapps/dods}.
+will unpack the archive into the directory \lit{webapps/dods}. If you have
+installed version 1.1.7 or newer, then the DODS Test Servlet (DTS) should
+be running after you get your servlet engine restarted. 
+You should be able to access it at: \lit{http://yourserver:port/dods/dts/}
 
 To configure the servlets, you'll need to edit the file
 \lit{webapps/dods/WEB-INF/web.xml}.   This is described in the next
@@ -1730,7 +1736,10 @@ two sections.  After you finish editing the configuration file,
 restart the servlet engine again, and the server should be running.
 \indc{web.xml}
 
-\section{Test Server}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{General Servlet Configuration}
 
 \indc{DTS!Java test server}\indc{test server!Java}\indc{configuring
   DRDS}\indc{DRDS!configuring} When installing a server, it's useful
@@ -1738,169 +1747,465 @@ to isolate the steps so you're not trying to tune several parameters
 at the same time. To assist here, the DRDS comes with a test server
 that invents data to return to a client requesting data. You can use
 it to test your servlet engine and the servlet installation, without
-taxing the JDBC drivers or your DBMS. \subj{Use the test server to
+taxing the JDBC drivers or your DBMS. We'll get to that in a moment, 
+first let's review some aspects of the Servlet configuration that are 
+common to all DODS servlets.
+
+\subj{Use the test server to
   test your installation}
+The OPeNDAP servlets get their configuration from the servlet's \lit{web.xml}
+ file. The default location of the \lit{web.xml} file is (at least in Tomcat 4.1) in 
+ \lit{\$TOMCAT_HOME/webapps/dods/WEB-INF} (Obviously if the dods directory 
+ gets renamed then things change accordingly.)
 
+Each instance of a servlet running in the opendap servlet area needs an entry in 
+the \lit{web.xml} file. Multiple instances of a servlet and/or several different servlets 
+can be configured in the one \lit{web.xml} file. For instance you can have a DTS 
+and 2 instances of the DRDS configured through one \lit{web.xml} file.
 
-Edit the file \lit{webapps/dods/WEB-INF/web.xml}.  In the
-\lit{ContextManager} element, add this text:
+Each instance of a servlet needs a unique name which is specified inside a 
+\lit{<servlet>} element in the \lit{web.xml} file using the \lit{<servlet-name>} tag. 
+This is a name of convenience, for example if you where serving data from an 
+ARGOS satellite you might call that servlet argos.
+
+Additionally each instance of a \lit{<servlet>} must specify which Java class 
+contains the actual servlet to run. This is done in the \lit{<servlet-class>} 
+element. For example the DRDS's class name is \lit{opendap.servers.sql.drds}
+
+Here is a syntax example combining the two previous example values:
 
 \begin{vcode}{ib}
-<Context path="/dods"
-    docBase="webapps/dods"
-    crossContext="false"
-    debug="0"
-    reloadable="true" >
-</Context>
-\end{vcode}                                  
-
-\indc{servlet declaration}\indc{declaration!servlet}
-In the \lit{web-app} section, you'll want a servlet declaration like
-the following:
-
-\begin{vcode}{sib}
-<!-- DODS test server (DTS) setup -->
 <servlet>
-    <servlet-name>
-        dts
-    </servlet-name>
-    <servlet-class>
-        dods.servers.test.dts
-    </servlet-class>
-    <init-param>
-        <param-name>iniFilePath</param-name>
-        <param-value>/home/user/dodsServer/dts</param-value>
-    </init-param>
-    <init-param>
-        <param-name>iniFileName</param-name>
-        <param-value>dods.ini</param-value>
-    </init-param>
+    <servlet-name>argos</servlet-name>
+    <servlet-class>opendap.servers.sql.drds</servlet-name>
+    .
+    .
+    .
 </servlet>
-<servlet-mapping>
-    <servlet-name>dts</servlet-name>
-    <url-pattern>/dts</url-pattern>
-</servlet-mapping>
-<servlet-mapping>
-    <servlet-name>dts</servlet-name>
-    <url-pattern>/dts/*</url-pattern>
-</servlet-mapping>
-<!-- End - DODS test server (DTS) setup -->
 \end{vcode}
 
-The servlet engine is now configured with information that will allow
-it to run the DTS servlet. Now we need to configure the DTS servlet
-itself. The \lit{web.xml} file indicates a file containing
-initialization information for the DTS servlet. In the above, we've
-called it \lit{dods.ini} (Look at the \lit{init-param} elements named
-\lit{iniFilePath} and \lit{iniFileName} parameters). For the test
-server, we can use the following for the text of this file:
-\indc{dods.ini}\indc{DTS configuration file}\indc{configuration
-  file!DTS}
-
-\begin{vcode}{sib}
-[Server]
-info_dir      = /home/user/dodsServer/dts/info/
-dds_cache_dir = /home/user/dodsServer/dts/dds/
-das_cache_dir = /home/user/dodsServer/dts/das/
-\end{vcode}
-
-\indc{DDS cache!DTS}\indc{DTS!DDS cache}
-\indc{DAS cache!DTS}\indc{DTS!DDS cache}
-These declarations tell the test server where to find the DDS and DAS
-files necessary for serving data.
-
-\subj{Describe the imaginary datasets with the DDS and DAS.}
-For each dataset you want to test, you will need to describe the
-dataset in terms of the DDS, DAS, and ``info'' responses you would get
-from the DODS dataset.  These are text files containing data about the
-data to be served.  The \DODSuser\ has more information about each
-of these data structures.  This will require the creation of two files
-with the same name.  One should contain the DDS information and one
-the DAS.  (You can ignore the \lit{info} data for now.)
-
-\indc{DDS!DRDS sample}
-Here's a sample DDS:
+This servlet could then be accessed as:
 
 \begin{vcode}{ib}
-Dataset {
-  Sequence {
-    String dou;
-    Float64 mcd_id;
-    String month_id;
-    String ship;
-    String cruiseid;
-    UInt32 year_id;
-    String crdate_begin;
-    String crdate_end;
-  } CRUISES;
-} GLOBEC;
+http://hostname/opendap/servlet/argos
 \end{vcode}
 
-Here's a DAS that can go with this DDS:
-\indc{DAS!DRDS sample}
+You may also add to the end of the web.xml file a set of \lit{<servlet-mapping>} 
+elements. These allow you to abbreviate the URL or the servlet. By placing the 
+servlet mappings:
 
 \begin{vcode}{ib}
-Attributes {
-  CRUISES {
-    dou {
-    }
-    mcd_id {
-      String long_name "MCD_ID";
-    }
-    month_id {
-    }
-    ship {
-    }
-    cruiseid {
-      String long_name "CRUISEID";
-    }
-    year_id {
-    }
-    crdate_begin {
-    }
-    crdate_end {
-    }
-  }
-}
+ <servlet-mapping>
+    <servlet-name>argos</servlet-name>
+    <url-pattern>/argos</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+    <servlet-name>argos</servlet-name>
+    <url-pattern>/argos/*</url-pattern>
+</servlet-mapping>
 \end{vcode}
 
-Note that according to the DAP2 RFC, every variable in a DDS must have
-a corresponding container in the DAS, even if that container is empty.
+At the end of the web.xml file our previous example changes it's URL to:
 
-Put these files in the directories indicated by the \lit{dds\_cache\_dir}
-and \lit{das\_cache\_dir} lines in the \lit{dods.ini} file.  Give them
-the same name, say \lit{RALPH}, and you're
-ready to test the server.  Restart the servlet to read the
-configuration files, and try a URL like this in a web browser:
-
-\begin{vcode}{sib}
-http://localhost:8080/dods/dts
+\begin{vcode}{ib}
+http://hostname/opendap/argos
 \end{vcode}
 
-The machine and port name are specific to the servlet engine you are
-using.  The above is the default if you're using Tomcat as a
-standalone server.  The ``dods'' in the URL is from the subdirectory
-of the \lit{webapps} directory, and the ``dts'' is from the
-\lit{servlet-mapping} section of the \lit{web.xml} file.  This URL
-should bring up a list of datasets you can select from, which should
-include your fake dataset ``RALPH.''
+Eliminating the need for the word servlet in the URL. For more on the 
+\lit{<servlet-mapping>} element see the Jakarta-Tomcat documentation.
 
-\section{Serve Real Data}
-\label{server,drds,real-data}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{ \lit{<}init-param\lit{>} Elements}
 
-To install the real data in your servlet engine, you will have to
-complete the installation of JDBC, make sure your DBMS is correctly
-configured, and reconfigure the DRDS to use the JDBC library to find
-your data.  Before starting this part, make sure that the JDBC drivers
-are properly installed.
 
-\subj{Now that the test server works, attach the DRDS to real data.}
-\indc{web.xml}\indc{servlet!configuration file}\indc{configuration file!servlet}
-To begin, edit the \lit{web.xml} file to include the real DRDS
-information.  Here's an example:
+The OPeNDAP servlets use \lit{<init-param>} elements inside of each 
+\lit{<servlet>} element to get specific configuration information.
 
-\begin{vcode}{sib}
-<!-- DODS SQL server (DRDS) setup -->
+\lit{<init-param>}'s common to all OPeNDAP servlets are:
+
+
+\begin{itemize}
+
+\item \lit{DebugOn} - This controls output to the terminal from which the servlet 
+engine was launched. The value is a list of flags that turn on debugging 
+instrumentation in different parts of the code. Common values are: \lit{showRequest}, 
+\lit{showResponse}, \lit{showException}, and \lit{probeRequest}. 
+Other debugging values that are specific to each servlet should be documented 
+in each servlets javadoc documentation. 
+
+Example:
+\begin{vcode}{ib}
+    <init-param>
+        <param-name>DebugOn</param-name>
+         <param-value>showRequest showResponse</param-value>
+    </init-param>
+\end{vcode}
+  
+\emph{Default}: If this parameter is not set, or the value field is empty then 
+debugging instrumentation is not turned on.
+
+
+\item \lit{DDScache} - This is should be set to the directory containing the DDS 
+files for the data sets used by the servlet. Some servlets have been developed 
+that do not use DDS's that are cached on the disk, however the default behavior 
+is for the servlet to load DDS images from disk. 
+Example:
+\begin{vcode}{ib}
+    <init-param>
+        <param-name>DDScache</param-name>
+        <param-value>/usr/OPeNDAP/sdds-testsuite/dds/</param-value>
+    </init-param>
+\end{vcode}
+
+\emph{Default}: If this parameter is not set (does not appear in as an \lit{<init-param>}) 
+then it is set to \lit{\$TOMCATHOME/webapps/opendap/datasets/servlet-name/dds} 
+(where servlet-name is the same as the name specified in the \lit{<servlet-name>} 
+element of the servlet configuration)
+
+\item \lit{DAScache} - This is should be set to the directory containing the DAS files 
+for the data sets used by the servlet. Some servlets have been developed that do 
+not use DAS's that are cached on the disk, however the default behavior is for the 
+servlet to load DAS images from disk. 
+Example:
+\begin{vcode}{ib}
+    <init-param>
+        <param-name>DAScache</param-name>
+        <param-value>/usr/OPeNDAP/sdds-testsuite/das/</param-value>
+    </init-param>
+\end{vcode}
+
+\emph{Default}: If this parameter is not set (does not appear in as an \lit{<init-param>}) 
+then it is set to \lit{\$TOMCATHOME/webapps/opendap/datasets/servlet-name/das} 
+(where servlet-name is the same as the name specified in the \lit{<servlet-name>} 
+element of the servlet configuration) .
+
+\item \lit{INFOcache} - This is should be set to the directory containing the files used 
+by the ".info" service for the servlet. This directory should contain any data set specific 
+"over-ride" files (see below), any data set specific additional information files (see below), 
+and any servlet specific information files(see below). 
+Example:
+\begin{vcode}{ib}
+    <init-param>
+        <param-name>INFOcache</param-name>
+        <param-value>/usr/OPeNDAP/sdds-testsuite/info/</param-value>
+    </init-param>
+\end{vcode}
+
+\emph{Default}: If this parameter is not set (does not appear in as an \lit{<init-param>}) 
+then it is set to \lit{\$TOMCATHOME/webapps/opendap/datasets/servlet-name/info} 
+(where servlet-name is the same as the name specified in the \lit{<servlet-name>} element 
+of the servlet configuration) 
+
+
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{DODS Test Server (DTS)}
+
+\emph{classname}: \lit{dods.servers.test.dts}
+
+This servlet is primarily used to test the core code (in particular the DAP). This servlet 
+will take any DDS in it's \lit{DDScache} and populate it with invented data per client 
+request. This allows the testing of unusual DDS structures. By default the DTS will 
+look in these locations:
+
+\begin{vcode}{ib}
+$TOMCAT_HOME/webapps/dods/datasets/dts/dds
+$TOMCAT_HOME/webapps/dods/datasets/dts/das
+$TOMCAT_HOME/webapps/dods/datasets/dts/info
+\end{vcode}
+
+For files containing DDS, DAS, and ancillary information. These directories come full 
+of test dataset descriptions and metadata in the distribution (1.1.7 or higher). If the 
+\lit{web.xml} file entry for the DTS contains entries for any of the \lit{DDScache}, 
+\lit{DAScache}, or the \lit{INFOcache} directories then the DTS will look there 
+instead of in the defalut location(s).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection {DTS Configuration}
+
+The DTS comes configured to startup the first time the servlet's Web Archive File 
+(WAR file) is unpacked by Tomcat. You may wish to change the length of the 
+returned Sequences via the information below, but it is not neccessary.
+
+\lit{<init-param>}'s unique to the DTS:
+
+
+\begin{itemize}
+
+\item \lit{SequenceLength} - This \lit{<init-param>} sets the number of rows each 
+Sequence returned by the DTS will have. Common values are typically small 
+(5-100) for simple testing. If you are to testing client code against the DTS you 
+may wish to use a large value (\lit{>}50000) here to check the client's ability to 
+handle large Sequences. 
+
+Example:
+\begin{vcode}{ib}
+<init-param>
+	<param-name>SequenceLength</param-name>
+	<param-value>100</param-value>
+</init-param>
+\end{vcode}
+	
+\emph{Default}: Is set to 5 if this parameter is not set (does not appear in as an 
+\lit{<init-param>}). 
+
+\item \lit{DebugOn} - There are no DTS specific values for this \lit{<init-param>}.
+\end{itemize}
+
+
+Example of web.xml content:
+
+\begin{vcode}{ib}
+<servlet>
+	<servlet-name>
+		dts
+ 	</servlet-name>
+	<servlet-class>
+		dods.servers.test.dts
+	</servlet-class>
+	<init-param>
+		<param-name>DebugOn</param-name>
+		<param-value>showRequest showResponse </param-value>
+	</init-param>
+		<param-name>SequenceLength</param-name>
+		<param-value>100</param-value>
+	</init-param>
+</servlet> 
+\end{vcode}
+
+In this example SequenceLength gets set to 100.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{DODS Relational Database Server (DRDS)}
+
+\emph{classname}: \lit{dods.servers.sql.drds}
+
+This DODS server serves data from a relational database to DODS clients.
+
+The DRDS uses the JDBC interface to connect to the database. This means 
+that to use this server you will need to locate and install JDBC drivers for your 
+database system. (This requirement is for the server only, the DODS clients 
+that use the server need know nothing about JDBC or SQL). Here are some 
+links that should lead you to the JDBC support pages for some of the more 
+common RDBM's:
+
+\begin{enumerate}
+\item MySQL JConnector Site: \xlink{http://www.mysql.com/products/connector/j/index.html}
+{http://www.mysql.com/products/connector/j/index.html}
+\item PostgreSQL JDBC site: \xlink{http://jdbc.postgresql.org/}{http://jdbc.postgresql.org/}
+
+Additional PostgreSQL JDBC docs:
+\xlink{http://developer.postgresql.org/docs/postgres/jdbc.html}
+{http://developer.postgresql.org/docs/postgres/jdbc.html}
+\item Oracle's SQLJ, JDBC, \& JPublisher site: 
+\xlink{http://www.oracle.com/technology/tech/java/sqlj_jdbc/index.html}
+{http://www.oracle.com/technology/tech/java/sqlj_jdbc/index.html}
+\item Informix JDBC Drivers site: 
+\xlink{http://www-306.ibm.com/software/data/informix/tools/jdbc/}
+{http://www-306.ibm.com/software/data/informix/tools/jdbc/}
+\end{enumerate}
+
+
+Most modern database vendors usually provide JDBC drivers for their product. 
+The glaring exception has been Microsoft, which isn't surprising as they have 
+made no bones about wanting to kill Java. As of the release of MSSQL-Server 2000, 
+Microsoft appears to be offering a JDBC driver for Win2000/XP systems. I have 
+developed using MSSQL-Server for some time (still do actually.) and I have been 
+using a purchased set of drivers from DataDirect Technologies (formerly known as 
+Merant DataDirect). I am using their "SequeLink" product and it's been working great. 
+Find it, and the Microsoft stuff, at the following links:
+
+\begin{enumerate}
+\item Microsoft SQL-Server 2000 JDBC Drivers:
+\xlink{http://www.microsoft.com/downloads/details.aspx?FamilyID=86212d54-8488-481d-b46b-af29bb18e1e5\&DisplayLang=en}
+{http://www.microsoft.com/downloads/details.aspx?FamilyID=86212d54-8488-481d-b46b-af29bb18e1e5\&DisplayLang=en}
+\item Data Direct Technologies: 
+\xlink{http://www.datadirect.com/index.ssp}
+{http://www.datadirect.com/index.ssp}
+\end{enumerate}
+
+In this release the DRDS does not support SQL JOIN operations. Each database 
+table must appear as a DODS Sequence data type in its own DDS file. If your 
+data crosses multiple tables then you will need to make a "view" or a "virtual table" 
+in the database in order to serve the data with the DRDS. This situation will improve 
+in the next major revision. (I have an as yet un-implemented plan to allow the DRDS 
+to support SQL JOIN operations.)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{DRDS Datatype Translation}
+Since the DRDS is reading data from a relational database through a JDBC connection 
+it is important to note	that their are several layers of type translation happening in this:
+
+Database \lit{->} JDBC \lit{->} Java \lit{->} DAP2
+
+The Database types are the native types for the particular database that is being read from. 
+The translation from Database\lit{->}JDBC is handled before we get to the data (most likely 
+by the JDBC Drivers). Our mapping of JDBC type to DAP2 types (the intermediate Java 
+types happen in the process) can be seen in  \tableref{tab,jdbc-mapping}. The mappings
+are handled in the read() method for each of the corresponding DAP2 data types.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{DRDS Configuration}
+
+
+To install the real data in your servlet engine, you will have to complete the installation 
+of JDBC, make sure your DBMS is correctly configured, and reconfigure the DRDS 
+to use the JDBC library to find your data. Before starting this part, make sure that the 
+JDBC drivers are properly installed.
+
+Next modify your web.xml to include the <init-param> elements listed below. Look 
+carefully at the example web.xml section provided below.
+
+\lit{<init-param>}'s unique to the DRDS:
+
+\begin{itemize}
+
+\item \lit{JDBCdriver} - This must be set to the fully qualified Java class name of the 
+JDBC drivers that the servlet is to use to make the JDBC connection to the DBMS. 
+In my servlet that is using the Merant DataDirect JDBC drivers the class name of 
+the JDBC driver is com.merant.sequelink.jdbc.SequeLinkDriver
+
+Example:
+\begin{vcode}{ib}
+    <init-param>
+        <param-name>JDBCDriver</param-name>
+        <param-value>com.merant.sequelink.jdbc.SequeLinkDriver</param-value>
+    </init-param>
+\end{vcode}
+          
+\emph{Default}: This is a required \lit{<init-param>}, there is no default value. 
+
+
+
+\item \lit{JDBCconnectionURL} - This is the connection URL (aka the connection 
+string) that the DRDS is to use to connect to to the DBMS. This is usually defined 
+by the developers of the JDBC driver. Read the documentation for the JDBC driver
+that you are using. It is not always easy to ascertain for a particular installation. For 
+example, in my server that is using the Data Direct drivers the value is set to:
+
+\lit{    jdbc:sequelink://sugar.oce.orst.edu:19996} 
+
+If you are stumped get in touch with 
+me(ndp@coas.oregonstate.edu) and I'll try to help.
+
+Example:
+
+\begin{vcode}{ib}
+    <init-param>
+        <param-name>JDBCconnectionURL</param-name>
+        <param-value>jdbc:sequelink://foogoo.oce.orst.edu:18796</param-value>
+    </init-param>
+\end{vcode}
+          
+\emph{Default}: This is a required \lit{<init-param>}, there is no default value. 
+
+
+
+\item \lit{JDBCusername} - This is the user name for the DBMS that the JDBC connection 
+will be made under. This is often set to "guest".
+
+Example:
+
+\begin{vcode}{ib}
+    <init-param>
+        <param-name>JDBCusername</param-name>
+        <param-value>guest</param-value>
+    </init-param>
+\end{vcode}
+          
+\emph{Default}: This is a required \lit{<init-param>}, there is no default value. 
+
+
+
+\item \lit{JDBCpassword} - The password associated with the above username. This is 
+stored as simple text, so make sure that the JDBC user doesn't have any significant 
+privileges! If there is no password required, you must still set the this \lit{<init-param>}, 
+just leave the value element empty.
+
+Example:
+
+\begin{vcode}{ib}
+    <init-param>
+        <param-name>JDBCpassword</param-name>
+        <param-value>abracadabra</param-value>
+    </init-param>
+\end{vcode}
+          
+\emph{Default}: This is a required \lit{<init-param>}, there is no default value. 
+
+
+
+\item \lit{JDBCMaxResponseLength} - This limits the number of lines that the DRDS will for a 
+given client request. For debugging I use 300. For production I use 300000. Your
+ milage may vary depending on the amount of memory resources available. You may 
+ wish to perform some testing on your server to establish an appropriate value. 
+ \emph{Warning: Small values may lead to incomplete returns from queries.}
+
+Example:
+
+\begin{vcode}{ib}
+    <init-param>
+        <param-name>JDBCMaxResponseLength</param-name>
+        <param-value>50000</param-value>
+    </init-param>
+\end{vcode}
+          
+\emph{Default}: : If this parameter is not set (does not appear in as an  \lit{<init-param>}) 
+then it is set to 100.
+
+ 
+
+\item \lit{UseDatasetName} - This is a (probably temporary) hack. Some databases (in particular 
+MS-SQL Server 7.0) require that the database name and the owner of the database be 
+specified in every variable and table name. This is awkward for the current implementation 
+of the DRDS. The work around is to name the data set (in the DDS file) with the database 
+name and owner name of the table being served. For example in one data set that I server 
+the database name is "EOSDB" and the owner of the database is "DBO". I set the \lit{<init-param>} 
+UseDatasetName then I define the DDS as follows:
+
+\begin{vcode}{ib}
+    Dataset {
+        Sequence {
+            Float64 battery;
+            Float64 checksum;
+            Float64 data_age;
+        } Drifters;
+    } EOSDB.DBO; 
+\end{vcode}
+    
+Thus the hack is invoked. It doesn't matter if the value of this init-param is empty (although 
+if it's not you should set it to "true"), it simply needs to appear in the \lit{web.xml} file.If you don't 
+want to use this hack then DO NOT even included the init-param "UseDatasetName" in the 
+\lit{web.xml} entry for the DRDS. 
+
+Example:
+
+\begin{vcode}{ib}
+    <init-param>
+        <param-name>JDBCDriver</param-name>
+        <param-value>com.merant.sequelink.jdbc.SequeLinkDriver</param-value>
+    </init-param>
+\end{vcode}
+        
+\emph{Default}: If this  \lit{<init-param>} does not appear in the configuration then the hack is not invoked.. 
+
+\item \lit{DebugOn} - Values specific to the DRDS are: \lit{JDBC}
+\end{itemize}
+
+Example of web.xml content:
+
+\begin{vcode}{ib}
 <servlet>
     <servlet-name>
         drds
@@ -1909,45 +2214,49 @@ information.  Here's an example:
         dods.servers.sql.drds
     </servlet-class>
     <init-param>
-        <param-name>iniFilePath</param-name>
-        <param-value>/home/user/dodsServer/drds</param-value>
+        <param-name>JDBCdriver</param-name>
+        <param-value> com.merant.sequelink.jdbc.SequeLinkDriver</param-value>
     </init-param>
     <init-param>
-        <param-name>iniFileName</param-name>
-        <param-value>dods.ini</param-value>
+        <param-name>JDBCconnectionURL</param-name>
+        <param-value>jdbc:sequelink://sugar:19996</param-value>
+    </init-param>
+    <init-param>
+        <param-name>JDBCusername</param-name>
+        <param-value>guest</param-value>
+    </init-param>
+    <init-param>
+        <param-name>JDBCpassword</param-name>
+        <param-value></param-value>
+    </init-param>
+    <init-param>
+        <param-name>JDBCMaxResponseLength</param-name>
+        <param-value>300</param-value>
+    </init-param>
+    <init-param>
+        <param-name>UseDatasetName</param-name>
+        <param-value></param-value>
+    </init-param>
+    <init-param>
+        <param-name>INFOcache</param-name>
+        <param-value>/usr/Java-DODS/sdds-testsuite/info/</param-value>
+    </init-param>
+    <init-param>
+        <param-name>DDScache</param-name>
+        <param-value>/usr/Java-DODS/sdds-testsuite/dds/</param-value>
+    </init-param>
+    <init-param>
+        <param-name>DAScache</param-name>
+        <param-value>/usr/Java-DODS/sdds-testsuite/das/</param-value>
+    </init-param>
+    <init-param>
+        <param-name>DebugOn</param-name>
+        <param-value>showRequest showResponse JDBC</param-value>
     </init-param>
 </servlet>
-<servlet-mapping>
-    <servlet-name>drds</servlet-name>
-    <url-pattern>/drds</url-pattern>
-</servlet-mapping>
-<servlet-mapping>
-    <servlet-name>drds</servlet-name>
-    <url-pattern>/drds/*</url-pattern>
-</servlet-mapping>
-<!-- End - DODS SQL server (DRDS) setup -->
 \end{vcode}
 
-You can use the same initialization file as for the test server, if
-you add a section to it containing JDBC information, including the
-JDBC driver name, the Connection URL, and the username and password
-for the DBMS. \indc{connection URL!DRDS}\indc{DRDS!connection URL}
-\indc{configuration file!DRDS}\indc{DRDS!configuration file}
-
-\label{server,dodsini,example}
-\begin{vcode}{sib}
-[JDBC]
-Driver            = oracle.jdbc.driver.OracleDriver
-ConnectionURL     = **your-jdbc-connection-url**
-username          = **username**
-password          = **password**
-MaxResponseLength = 300
-
-[Server]
-info_dir      = /home/user/dodsServer/drds/info/
-dds_cache_dir = /home/user/dodsServer/drds/dds/
-das_cache_dir = /home/user/dodsServer/drds/das/
-\end{vcode}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Configure the Table Data Types}
 
@@ -1976,8 +2285,8 @@ this (using Oracle):
 First, determine the DAP data types that correspond with the JDBC
 data types (see the data type mapping in
 \tableref{tab,jdbc-mapping}). These mappings are used to
-create a DDS.  In the cache directories defined in the DRDS
-\lit{dods.ini} file, create the files \lit{dds/b31} (see the example
+create a DDS.  In the cache directories defined in the servlet's
+\lit{web.xml} file, create the files \lit{dds/b31} (see the example
 DDS below), \lit{das/b31} (see the example DAS below), and
 \lit{info/b31} (if desired).
 
@@ -2023,7 +2332,7 @@ DDS below), \lit{das/b31} (see the example DAS below), and
 \indc{DBMS!describing your data}\indc{table structure!DBMS}
 \indc{DBMS!table structure}
 In a file named for your table, in the directory nominated by the
-\lit{dds\_cache\_dir} directive in the \lit{dods.ini} file (see
+\lit{dds\_cache\_dir} directive in the \lit{web.xml} file (see
 \pageref{server,dodsini,example}), put a DDS for your table.  This
 must contains declarations for each of the data types you expect a
 user to ask for (or select over).  The fields you don't list are
@@ -2065,6 +2374,8 @@ Dataset {
 } b31;    # Dataset name
 \end{vcode}
  
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsubsection{Make a DAS}
 
 \indc{DAS!making for DRDS}\indc{DRDS!making a DAS}
@@ -2091,6 +2402,8 @@ Attributes {
 }
 \end{vcode}                  
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsubsection{Make an Info File}
 
 \indc{info files!DRDS}\indc{DRDS!info files}\indc{documenting your
@@ -2105,6 +2418,7 @@ files, it will be served to the user when they make an info request.
 See \DODSquick\ for information about the contents of the info
 response. 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{Done}
 \label{server,drds,done}
@@ -2118,6 +2432,10 @@ in the \lit{web.xml} file.  (See \sectionref{server,drds,real-data}.)
 This should bring up a list of datasets you can select from.
 
  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Constructing the URL}
 
 After a dataset has been installed, and the handler programs installed,
