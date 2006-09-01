@@ -1,3 +1,5 @@
+% -*- latex -*-
+%
 % \iffalse
 %
 %  Improved tools for DODS Documentation.
@@ -1920,6 +1922,7 @@ Copyright \copyright\ 2005 OPeNDAP, Inc.
 \newcommand{\degree}{$^\circ$}
 \newcommand{\circflex}{$^\wedge$}
 \newcommand{\showtime}{\the\time}
+\newcommand{\pdflink}[2][]{}
 %</cls>
 %    \end{macrocode}
 %
@@ -1930,6 +1933,9 @@ Copyright \copyright\ 2005 OPeNDAP, Inc.
 %
 %    \begin{macrocode}
 %<*hlx>
+\newcommand{\pdflink}[2][]{\xml{center}You may prefer reading
+  \xlink{#2}{#2}, a  pdf version of this article\EmptyP{#1}%
+  { or \xlink{#1}{#1}, a PostScript version}.\xml{/center}{}}
 \newcommand{\clearemptydoublepage}{}
 \newcommand{\pagenumbering}[1]{}
 \newcommand{\psfigurepath}[1]{}
