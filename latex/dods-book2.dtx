@@ -1691,22 +1691,25 @@ Copyright \copyright\ 2005 OPeNDAP, Inc.
 %    \end{macrocode}
 %
 %
-% \section{CVS Information}
+% \section{SVN Information}
 %
-%    Here are a bunch of RCS-ID-parsing macros, pinched from the
+%    Here are a bunch of SVN-ID-parsing macros, pinched from the
 %    rcsinfo.sty package, written by Dr. Juergen Vollmer,
 %    Viktoriastrasse 15, D-76133 Karlsruhe, Germany (email:
 %    Juergen.Vollmer@acm.org).  I have included these here instead of
 %    simply including the package because the package is both more and
 %    less than what we need.  More: it includes footer formatting that
-%    interferes with the format of the dods-book2 pages.  Less: it does
-%    not support Hyperlatex.
+%    interferes with the format of the dods-book pages.  Less: it does
+%    not support Hyperlatex. And then it was hacked (10/2005, jhrg) to
+%    support Subversion.
 %
 %    \begin{macro}{\rcsInfo}
 %    Use this package like this:
 %
 %    \begin{verbatim}
-%    \rcsInfo $id: dods-book2.dtx,v 1.5 1999/08/30 14:05:43 tom Exp $
+%    \rcsInfo $Id$
+%        ... the old way...
+%    \rcsInfo $id: dods-book.dtx,v 1.5 1999/08/30 14:05:43 tom Exp $
 %    \end{verbatim}
 %    \end{macro}
 %
@@ -1717,7 +1720,7 @@ Copyright \copyright\ 2005 OPeNDAP, Inc.
 %
 %    \begin{description}
 %    \item[{\tt \bck rcsInfoFile}]\DescribeMacro{\rcsInfoFile} The
-%      source file mentioned in the RCS string.  |dods-book2.dtx| in
+%      source file mentioned in the RCS string.  |dods-book.dtx| in
 %      the example above. 
 %    \item[{\tt \bck rcsInfoDate}]\DescribeMacro{\rcsInfoDate} The
 %      date string from the RCS ID string. |1999/08/30| in the
@@ -1730,11 +1733,6 @@ Copyright \copyright\ 2005 OPeNDAP, Inc.
 %      example. 
 %    \item[{\tt \bck rcsInfoOwner}]\DescribeMacro{\rcsInfoOwner} The
 %      owner mentioned in the RCS string. |tom| in the example. 
-%    \item[{\tt \bck rcsInfoStatus}]\DescribeMacro{\rcsInfoStatus} The
-%      file status from the RCS string.  |Exp| in the example.
-%    \item[{\tt \bck rcsInfoLocker}]\DescribeMacro{\rcsInfoLocker} If
-%      any, the identity of the locker from the RCS ID string.  Not
-%      present in the example.
 %    \end{description}
 %
 %    The code follows.  Again, this has been pinched nearly verbatim
@@ -1765,23 +1763,23 @@ Copyright \copyright\ 2005 OPeNDAP, Inc.
   \fi
   \@rcsInfoNext #1
 }
-\def\@rcsInfoCrackAndEat #1 #2 #3 #4 #5 #6 {
-  \@rcsInfoCrackString #1 #2 #3 #4 #5 #6
+\def\@rcsInfoCrackAndEat #1 #2 #3 #4 #5 #6 #7 {
+  \@rcsInfoCrackString #1 #2 #3 #4 #5 #6 #7
   \@rcsInfoNext
 }
 
-\def\@rcsInfoCrackString #1 #2 #3 #4 #5 #6 {
-  \def\rcsInfoFile{#1}
-  \def\rcsInfoRevision{#2}
-  \def\rcsInfoDate{#3}
-  \def\rcsInfoTime{#4}
-  \def\rcsInfoOwner{#5}
+\def\@rcsInfoCrackString #1 #2 #3 #4 #5 #6 #7 {
+  \def\rcsInfoFile{#2}
+  \def\rcsInfoRevision{#3}
+  \def\rcsInfoDate{#4}
+  \def\rcsInfoTime{#5}
+  \def\rcsInfoOwner{#6}
   \def\rcsInfoStatus{exp}
-  \if $#6
+  \if $#7
     \def\rcsInfoLocker{--not-locked--}
     \let \@rcsInfoNext = \relax
   \else
-    \def\rcsInfoLocker{#6}
+    \def\rcsInfoLocker{#7}
     \let \@rcsInfoNext = \@rcsInfoEat
   \fi
 }
@@ -1871,7 +1869,7 @@ Copyright \copyright\ 2005 OPeNDAP, Inc.
 (defun hyperlatex-ts-rcsinfo ()
   "Parses an RCS ID string into several pieces.  The ID string is
    surrounded by two dollar signs, and begins with Id.  It may have
-   six, seven, or no fields."
+   six, seven, or no fields. Hacked for Subversion by jhrg 10/13/05."
   (let ((start-id (search-forward "$Id"))
         (end-id   (save-excursion (search-forward "$"))))
     (if (> end-id (+ start-id 10))
@@ -1879,8 +1877,7 @@ Copyright \copyright\ 2005 OPeNDAP, Inc.
           (search-forward " " end-id)
           (setq hyperlatex-ts-rcs-file 
                 (buffer-substring (point) 
-                                  (- (search-forward ",v " end-id)
-                                     3)))
+                                  (1- (search-forward " " end-id))))
           (setq hyperlatex-ts-rcs-vsn
                 (buffer-substring (point)
                                   (1- (search-forward " " end-id))))
@@ -1893,9 +1890,7 @@ Copyright \copyright\ 2005 OPeNDAP, Inc.
           (setq hyperlatex-ts-rcs-own
                 (buffer-substring (point)
                                   (1- (search-forward " " end-id))))
-          (setq hyperlatex-ts-rcs-status
-                (buffer-substring (point)
-                                  (1- (search-forward " " end-id))))
+          (setq hyperlatex-ts-rcs-status "exp")
           (if (< (point) (1- end-id))
               (setq hyperlatex-ts-rcs-lock
                     (buffer-substring (point)
@@ -1934,7 +1929,7 @@ Copyright \copyright\ 2005 OPeNDAP, Inc.
 %    \begin{macrocode}
 %<*hlx>
 \newcommand{\pdflink}[2][]{\xml{center}You may prefer reading
-  \xlink{#2}{#2}, a  pdf version of this article\EmptyP{#1}%
+  \xlink{#2}{#2}, a  pdf version of this document\EmptyP{#1}%
   { or \xlink{#1}{#1}, a PostScript version}.\xml{/center}{}}
 \newcommand{\clearemptydoublepage}{}
 \newcommand{\pagenumbering}[1]{}
