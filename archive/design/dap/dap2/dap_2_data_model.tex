@@ -24,7 +24,7 @@
 \htmldirectory{html}
 \htmlname{dap2.0}
 
-\eseRfcnumber{004.0.08}
+\eseRfcnumber{004.0.09}
 \eseCategory{Draft Community Standard}
 \eseUpdates{None}
 \eseAuthor{Gallagher, Potter, Sgouros, Hankin, Flierl}
@@ -34,12 +34,21 @@
 \eseDistribution{Distribution of this Draft ESE Community Standard is
   unlimited.}
 
-\eseChange{004.0.09, 28 August 2007, Added missing double quotes to
-  grammar rules for \emph{array-dim} on
+\eseChange{{\bf 004.0.09}, 28 August 2007, Added missing double quotes to
+  grammar rules for \emph{array-dim} ) (now called
+  \emph{projection-array-dim}), corrected an error in the
+  grammar for a CE (although servers can accept an \emph{id} without an
+  projection-array-dim, the grammar did not make that explicit) and
+  corrected an error in the characters REQUIRED to ba accepted for an
+  \emph{id} (most servers accept more characters, but the required set
+  is fairly restricted) on
   pages~\pageref{grammar-fix-08.28.07}~and~\pageref{grammar-fix-08.28.07-1};
   In Section~\ref{sec-responses} (page~\pageref{sec-responses}) the
   footnote listed the values for carriage return and line feed in
-  reverse order; Added a note in Appendix A.2 regarding RFC 2616's
+  reverse order; Corrected the grammar for a DDS in
+  Section~\ref{DDS-grammar-fix-08.29.07}
+  (page~\pageref{DDS-grammar-fix-08.29.07}) 'data-source'
+  $\rightarrow$ 'dataset'; Added a note in Appendix A.2 regarding RFC 2616's
   suggestion that 'tolerant' applications ignore the CR and use only
   LF as a separator when they process a CRLF pair - we suggest not
   assuming HTTP software will follow this advice; In
@@ -64,11 +73,11 @@
   explicitly that CRLF pairs in the data portion of a data response
   will be treated as data values and not as a line terminator; Removed
   an errant \lit{<CRLF>} in the finale example of
-  Section~\ref{sec-examples} (page~\pageref{ex-last}). 
-  % These corrections were submitted by Bob Simons from NOAA Southwest
-  % Fisheries Science Center.
+  Section~\ref{sec-examples} (page~\pageref{ex-last}).\footnote{
+  These corrections were submitted by Bob Simons from NOAA Southwest
+  Fisheries Science Center.}
   \\
-  004.0.08, 27 October 2005, Added a note that the type names are
+  {\bf 004.0.08}, 27 October 2005, Added a note that the type names are
   case-insensitive on page~\ref{sec-atomic-int}; Clarified the typical
   use of XDR so that it's clear that the number of elements of an
   array is sent twice in the case of an array of atomic types (Byte,
@@ -77,13 +86,13 @@
   was discovered previously was left out of a previous revision.
   Sequences are limited to at most a single inner Sequence
   `per level.' See page~\ref{sequence-grammar}.\\
-  004.0.07, 3 May 2005, Corrected the description of the \lit{Host}
+  {\bf 004.0.07}, 3 May 2005, Corrected the description of the \lit{Host}
   header in Section~\ref{sec-host}. The header was incorrectly
   described as containing the DNS name or IP address of the client. In
   fact (and in conformance with HTTP/1.1) it contains the name/number
   of the
   \emph{server}.\\
-  004.0.06, 12 April 2005, Changed designation from `Proposed\ldots'
+  {\bf 004.0.06}, 12 April 2005, Changed designation from `Proposed\ldots'
   to `Draft Community Standard;' Added a clarification of `stride' in
   a hyperslab (Section~\ref{sec-ce-projections}); Corrected the
   grammar for \Attributes to indicate that they may have both scalar
@@ -91,11 +100,11 @@
   Conditional Requests (Section~\ref{sec:conditional-requests}); Added
   a description of the encoding of empty Sequence responses
   (Paragraph~\ref{par:sequence}); Added addresses for all authors.\\
-  004.0.05, 17 Jan 2005, Added a note about the Expires header to the
+  {\bf 004.0.05}, 17 Jan 2005, Added a note about the Expires header to the
   section on HTTP/1.1 caching (Section~\ref{sec-http-caching}); Added
   note about XDR encoding of the Start of Instance and End of
   Sequence markers (Paragraph~\ref{par:sequence}).\\
-  004.0.04, 20 Dec. 2004, Corrected the descriptions of the \Array,
+  {\bf 004.0.04}, 20 Dec. 2004, Corrected the descriptions of the \Array,
   \Grid and \Sequence types so that all use zero-based indexing and so
   that all explanatory and example text is consistent with row-major
   ordering of data (Sections~\ref{sec-constructor-grid},
@@ -106,19 +115,19 @@
   Added information on supporting HTTP/1.1 caching
   (Section~\ref{sec-http-caching}); Added information on the encoding
   of byte arrays (Paragraph~\ref{par:array})\\
-  004.0.03, 13 Sept. 2004, Editorial changes; Added a clarification of
+  {\bf 004.0.03}, 13 Sept. 2004, Editorial changes; Added a clarification of
   the terms `persistent representation' and `on-the-wire' to ``Data
   Representation'' (Section~\ref{sec:data-representation}); Added this
   ``Change Explanation'' section for conformance with ESE RFC 003 and
   made entries for the two previous versions using information from
   CVS; Adopted the new RFC version numbering system and set the number
   of this document at 004.0.03.\\
-  004.0.02, 6 Aug. 2004, Editorial changes; Added Steve Hankin and
+  {\bf 004.0.02}, 6 Aug. 2004, Editorial changes; Added Steve Hankin and
   Glenn Fleirl as authors; Marked as `Proposed Community Standard' as
   per ESE RFC 003; Added ``Motivation for Proposing Standardization''
   (Section~\ref{sec:motivation}); Added note about Error objects in
   ``Overall Operation'' (Section~\ref{sec-overall-operation}).\\
-  004.0.01, 28 June 2004, Added Authors section; Added Errata
+  {\bf 004.0.01}, 28 June 2004, Added Authors section; Added Errata
   section.}
 
 \eseAbstract{This document defines the OPeNDAP Data Access Protocol (DAP), a
@@ -254,7 +263,7 @@ server MAY support additional request-response pairs.
 The \DAP uses three responses to represent a
 data source. Two of these responses, the \ac{DDS} and
 \ac{DAS}, characterize the variables, their datatypes, names and
-atributes. The third response, the \ac{DataDDS}, holds
+attributes. The third response, the \ac{DataDDS}, holds
 data values along with name and datatype information.
 
 The \DAP returns error information using an Error response. If a request
@@ -312,7 +321,7 @@ consist of the relationships between those numbers, as when one number
 defines a time at which some quantity was measured.  
 
 % Paragraph edited based on comments by Raskin. jhrg 12/1/04
-The abstract, platonic existence of data is in contrast to its
+The abstract existence of data is in contrast to its
 concrete representation, which is how we manipulate and store it. Data
 can be stored as BCD numbers in a file on a disk, or as
 twos-complement integers in the memory of some computer, or as numbers
@@ -347,7 +356,7 @@ information in a variable and in an \Attribute is somewhat arbitrary.
 However, the intention is that \Attributes hold information that aids in the
 interpretation of data held in a variable.\footnote{\Attributes appear in
 many data storage systems such as netCDF\cite{netcdf}, HDF4\cite{NCSA:HDF4}
-and HDF5\cite{NCSA:HDF5}. They also appear under the moniker `property' in
+and HDF5\cite{NCSA:HDF5}. They also appear under the monicker `property' in
 Common Lisp\cite{steele:clisp}.} Variables, on the other hand, hold the
 primary content of a data source.
 
@@ -356,7 +365,7 @@ primary content of a data source.
 %% The \ac{DDS} response holds the name and datatype of each variable in the
 %% data source. It is essentially a declaration of the variables in the data
 %% source. Sections~\ref{simple-variables} and~\ref{sec-ctor-vars} describe the
-%% diffent types of variables in the \DAP.
+%% different types of variables in the \DAP.
 
 %% The \ac{DAS} response holds all of the attribute information for the data
 %% source. Attributes are a way to bind extra information to a variable and to
@@ -745,7 +754,7 @@ attributes (See \Sectionref{sec-das}).
 %% scalars and vectors; multi-dimensional arrays are not allowed. Furthermore,
 %% the organization of attributes is determined the organization of the
 %% variables. There must be a one-to-one correspondence between the hierarchy
-%% established by a data sources's constructor types (Structure, Sequence and
+%% established by a data source's constructor types (Structure, Sequence and
 %% Grid) and the hierarchy of attributes established by attribute structures.
 
 Each variable in a data source MAY have \Attributes associated with it
@@ -982,7 +991,7 @@ applied to the \Array, \Grid and \Sequence types in the following way:
     the source data. If not given, stride defaults to one (1) which
     causes all elements to be returned. If, for example, a stride of
     two (2) is given, then every other element would be returned.
-    Sampling starts at the starting index and procedes until the index of
+    Sampling starts at the starting index and proceeds until the index of
     the current element is less than or equal to the ending index.
     Thus a hyper slab such as $[0:2:5]$ would contain elements $0, 2,
     4$ from the source data. If a stride is included in the hyperslab
@@ -1062,10 +1071,10 @@ projection yields an \Array and the hyperslab is then applied to that
   not contain an explicit dimension size, the size $M$ is not known
   until the entire \Sequence is accessed.\footnote{For many \Sequence
     variables, it may never be the case that the entire \Sequence is
-    accessed since it may contain millons of instances.} A hyperslab
+    accessed since it may contain millions of instances.} A hyperslab
   projection can be used to ask for the first $m$ elements, the next
   $m$ elements, et c., which may be very useful for clients which need
-  to know the sizes of varaibles before accessing them. A hyperslab
+  to know the sizes of variables before accessing them. A hyperslab
   projection for a \Sequence $(i_{s}, i_{e})$ will return $m$
   instances of the \Sequence such that $m = \lfloor i_{e}, M-1 \rfloor
   - i_{s} + 1$ depending on whether $i_{e}$ is an index greater than
@@ -1081,11 +1090,11 @@ convention, projects all of every variable in a data source.
 \label{sec-ce-selections}
 
 % Describe the types of selection operations
-% Choosing parts based on relational expresssions
+% Choosing parts based on relational expressions
 % binding selections to a selectable data type
 
 A \new{selection} provides a way to limit data accessed based on the value(s)
-of those data. In many ways selections are similar to WHERE claues in
+of those data. In many ways selections are similar to WHERE clauses in
 SQL\cite{date:DBMS}. A selection is composed of one or more relational
 sub-expressions. Each sub-expression MUST be bound to a variable listed in a
 projection clause. When several sub-expressions constitute a selection, the
@@ -1231,7 +1240,7 @@ A function which appears in the selection clause MAY return any atomic type
 if it is used in one of the relational sub-expressions. If a function in the
 selection clause is used as the entire sub-expression, it MUST return an
 integer value. If that value is zero, the function will evaluate as boolean
-false, otherwise it will evaluate as boolen true.
+false, otherwise it will evaluate as boolean true.
 
 % I think this should stay here; we need to provide for an unambiguous way to
 % get error information back to clients. I think that has to come from this
@@ -1250,7 +1259,7 @@ When a constraint expression has a projection clause that identifies a piece
 of a constructor variable, such as one field of a \Structure or just the
 array part of a \Grid, the \new{lexical scoping} of the variable is not
 abandoned. This is important for avoiding name collisions. For example, if a
-single item is requestd from a \Structure, the response MUST contain a
+single item is requested from a \Structure, the response MUST contain a
 \Structure with only that item.
 
 Here is the behavior for each data type:
@@ -1283,7 +1292,7 @@ Here is the behavior for each data type:
 
 %%   A \Grid modified with a selection MUST remain a \Grid. The return value of
 %%   such a constraint MUST be the smallest rectangular \Grid that contains all
-%%   the data points that satisfy ther given constraint. Further, the rank of the
+%%   the data points that satisfy the given constraint. Further, the rank of the
 %%   \Grid MUST remain the same. A four-dimensional \Grid, when sampled with a
 %%   selection clause, MUST return a four-dimensional \Grid, even if some
 %%   of the dimensions are of length one.
@@ -1392,8 +1401,6 @@ since it is only possible to request all of the \Attributes. However, the
 requirements are included here as a guide. Future versions of the DAP may
 require its implementation.}
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%% dividing line %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Requests}
@@ -1404,24 +1411,25 @@ of the server, and the server responds with some information.  The
 request and response travel via \ac{HTTP}.  This section describes the form
 of requests to servers.
 
-
 \subsection{URL Syntax}
 \label{sec-url-syntax}
-A \DAP \ac{URL} is essentially an \ac{HTTP} \ac{URL}\cite{rfc2616} with
-additional restrictions placed on the \lit{abs-path} component.
+A \DAP \ac{URL} is essentially an \ac{HTTP}
+\ac{URL}\cite{rfc2616}\cite{rfc2396} with additional restrictions
+placed on the \lit{abs-path} component.
 
 \begin{vcode}{cft}
 DAP-URL        =  "http://" host [ ":" port ] [ abs-path ]
 abs-path       =  server-path data-source-id [ "." ext [ "?" query ] ] 
 server-path    =  [ "/" token ] 
 data-source-id =  [ "/" token ] 
-ext            =  "das" | "dds" | "dods" 
+ext            =  "das" | "dds" | "dods"
+token          =  <See IETF RFC 2396 for allowable characters>
 \end{vcode}
 
 One possible implementation can divide these as followed: The
 \lit{server-path} is the pathname to the server, whereas
 \lit{data-source-id} is the pathname to the data. In reality the
-disticntion between the two components is arbitrary.
+distinction between the two components is arbitrary.
 
 The \DAP uses \ac{HTTP} as its session protocol\cite{stevens:unp},
 %%%% need a better reference
@@ -1473,11 +1481,11 @@ parts:
 \subsubsection{Constraint expressions}
 \label{sec-ce-syntax}
 
-A \ac{CE} provides a way for clients to request certain variables, or parts
-of certain variables, from a data source. This section describes the syntax
-used to encode a \CE so that it can be sent, as part of a request, to a
-server. See~\Sectionref{sec-ce} for a general discussion of \CEs and the rules for
-their evaluation.
+A \ac{CE} provides a way for clients to request certain variables, or
+parts of certain variables, from a data source. This section describes
+the syntax used to encode a \CE so that it can be sent, as part of a
+request, to a server. See~\Sectionref{sec-ce} for a general discussion
+of \CEs and the rules for their evaluation.
 
 Some implementations of the \DAP MAY choose to provide alternate \CE
 syntax, but all implementations MUST provide the one described here.
@@ -1486,13 +1494,15 @@ Constraint expressions have the following syntax:
 
 %%%% Needs review
 \begin{vcode}{cft}
-CE         = [ projection ] *("\&" selection) 
-projection = variable | variable "," projection 
-variable   = id | function 
+CE         = [ projection ] *("&" selection) 
+projection = proj-item | proj-item "," projection 
+proj-item  = id | | array-proj | function 
 function   = id "(" args ")" 
 args       = arg | arg "," args 
 arg        = id | quoted-string | integer | float | URL 
-id         = 1*<any CHAR except CTLs or SP> "[" array-dim "]"
+array-proj = id 1*("[" projection-array-dim "]")
+id         = (ALPHA | "_" | "%" | "." ) 
+              *(ALPHA | DIGIT | "/" | "_" | "%" | "." ) 
 \end{vcode}
 \label{grammar-fix-08.28.07}
 
@@ -1533,9 +1543,9 @@ requests a field of a constructor with the \Array hyperslab syntax to request
 a section of one of the \Array variables held in a \Grid.
 
 \begin{vcode}{cft}
-array-dim = "[" start ":" stride ":" stop "]" 
-            "[" start ":" stop "]"
-            "[" start "]" 
+projection-array-dim = "[" start ":" stride ":" stop "]" 
+                       "[" start ":" stop "]"
+                       "[" start "]" 
 start, stride, stop = 1*DIGIT 
 \end{vcode}
 \label{grammar-fix-08.28.07-1}
@@ -1630,7 +1640,7 @@ depending on the request and payload of the response
 described in RFC~822\cite{rfc822}, the \ac{HTTP} response status line and
 headers are separated from the response's payload by an extra set of
 CRLF\footnote{The token `CRLF' is used to denote the carriage return and
-  linefeed characters which correspond to decimal value 13 and decimal value
+  line feed characters which correspond to decimal value 13 and decimal value
   10, respectively.} characters which make a blank line.
 
 The six possible response payloads defined by the \DAP are described
@@ -1675,7 +1685,7 @@ Content-Encoding: deflate
 The \lit{Content-Type} header MUST be included in any response from a
 \DAP server. Valid content types for \DAP responses are:
 \lit{text/plain}, \lit{text/html} and
-\lit{application/octet}.\footnote{It would be better to use a multipart
+\lit{application/octet}.\footnote{It would be better to use a multi-part
   document in place of the \lit{application/octet}.} See RFC~2616\cite{rfc2616} for this header's grammar.
 
 Example:
@@ -1703,7 +1713,7 @@ are frequently updated will have \DAP component requests that cache
 and expire together if the Expires header is explicitly (and
 correctly) set.\footnote{Thanks to Benno Blumenthal for pointing this
   out and for providing this text, which was changed slightly,
-  hopefuly without introducing any error.}
+  hopefully without introducing any error.}
 
 See the HTTP/1.1 RFC~2616\cite{rfc2616} for
 more information about HTTP's support for caching.
@@ -1867,7 +1877,7 @@ print representation of the value(s) is determined according to:
 \item Integers: Each integer value is printed using the base 10 ASCII
   representation of its value.
 \item Floating point: Each floating point value is printed using the base 10
-  ASCII representation of its value. The ouput MUST conform to ANSI \C's
+  ASCII representation of its value. The output MUST conform to ANSI \C's
   description of \lit{printf} using the \lit{\%g} format specification and
   the precision is 6.
 \item String and URL: Strings and URLs are printed in US-ASCII. If the value
@@ -1885,11 +1895,11 @@ print representation of the value(s) is determined according to:
 %% Unlike the DDS/DataDDS response pair, there is no way to constrain a request
 %% for the information returned in the DAS response. When a data source returns
 %% attribute information, it returns the values of \emph{all} of its
-%% attribtues.
+%% attributes.
 %% This is acceptable because, while there is overlap in the range of values
 %% that can be stored in attributes, the intent is that attributes will store a
 %% volume of data many many times smaller than will be stored by the variables
-%% inthe DDS/DataDDS. 
+%% in the DDS/DataDDS. 
 
 An example \ac{DAS} is shown in \Figureref[Figure 6]{fig-das}.
 
@@ -1980,8 +1990,9 @@ variable that is a member of one of the base type classes is declared by
 writing the class name followed by the variable name. The type constructor
 classes are declared using {\small C}'s brace notation.
 
+\label{DDS-grammar-fix-08.29.07}
 \begin{vcode}{cft}
-dds-doc   = "data-source" "{" *type-decl "}" id ";" 
+dds-doc   = "dataset" "{" *type-decl "}" id ";" 
 type-decl = atomic-decl  | array-decl 
             | structure-decl | sequence-decl | grid-decl 
 \end{vcode}
@@ -2122,7 +2133,7 @@ The number of dimensions MUST be greater than zero.
 structure-type  = structure "{" *structure-types "}" ";" 
 structure-types = atomic-type | array-type 
                   | structure-type | sequence-type | grid-type 
-structure       = "Structure" | "structure"
+structure       = "structure"
 \end{vcode}
               
 \paragraph{Sequence}
@@ -2157,7 +2168,7 @@ on).\footnote{Current use always places the inner sequence last in the
 sequence-decl  = sequence "{" 1*sequence-types [sequence-decl] "}" ";" 
 sequence-types = atomic-type | array-type 
                  | structure-type | grid-type 
-sequence       = "Sequence" | "sequence"
+sequence       = "sequence"
 \end{vcode}
 
 \paragraph{\Grid}
@@ -2171,10 +2182,10 @@ sequence       = "Sequence" | "sequence"
   maps for each of those dimensions.
 
 \begin{vcode}{cft}
-grid-decl = "Grid" "{" "Array:" array-decl "Maps:" 1*array-decl "}" ";" 
-grid      = "Grid" | "grid"
-array     = "Array:" | "array:"
-maps      = "Maps:" | "maps:"
+grid-decl = grid "{" array: array-decl maps: 1*array-decl "}" ";" 
+grid      = "grid"
+array     = "array:"
+maps      = "maps:"
 \end{vcode}
 
 
@@ -2412,7 +2423,7 @@ them.\footnote{Note that this means that array lengths are limited to
 \item An array of bytes: Bytes are encoded as the function xdr\_byte()
   encodes an array of bytes. The order of bytes is retained regardless
   of the endian nature of the source. Arrays of bytes, not individual
-  bytes, are padded to four byte boundries. Thus an array of 10 bytes
+  bytes, are padded to four byte boundaries. Thus an array of 10 bytes
   is padded to 12 bytes.
   
 \item One-dimensional arrays of all types other than \lit{byte} are
@@ -2424,7 +2435,7 @@ them.\footnote{Note that this means that array lengths are limited to
     an array of 16-bit integers doubles in size because XDR encodes
     16-bit integers as 32-bit integers. Note that byte arrays are a
     special case, individual bytes are {\it not} padded; instead the
-    entire array is padded. For a more deatiled description of XDR's
+    entire array is padded. For a more detailed description of XDR's
     operation, see RFC~1014\cite{xdr}.}
 
 \item Multi-dimensional arrays are encoded by encoding the elements
@@ -2849,7 +2860,7 @@ Dataset {
 \end{vcode}
 
 Suppose you wanted to get all the soundings in a lat/lon box that spans the
-area of 80 to 90 degrees north latitude and 50 to 60 degress west longitude
+area of 80 to 90 degrees north latitude and 50 to 60 degrees west longitude
 (you would know the units of data source by looking at the attributes which
 have been omitted from this example). Here's the \CE:
 
