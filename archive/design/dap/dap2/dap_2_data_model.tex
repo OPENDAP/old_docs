@@ -34,28 +34,59 @@
 \eseDistribution{Distribution of this Draft ESE Community Standard is
   unlimited.}
 
-\eseChange{004.0.08, 27 October 2005, Added a note that the type names
-  are case-insensitive on page~\ref{sec-atomic-int}; Clarified the
-  typical use of XDR so that it's clear that the number of elements of
-  an array is sent twice in the case of an array of atomic types
-  (Byte, ..., Float64) but only once in the case of the remaining
-  types (see page~\ref{par:array}); An error in the grammar for
-  Sequences which was discovered previously was left out of a previous
-  revision. Sequences are limited to at most a single inner Sequence
+\eseChange{004.0.09, 28 August 2007, Added missing double quotes to
+  grammar rules for \emph{array-dim} on
+  pages~\pageref{grammar-fix-08.28.07}~and~\pageref{grammar-fix-08.28.07-1};
+  In Section~\ref{sec-responses} (page~\pageref{sec-responses}) the
+  footnote listed the values for carriage return and line feed in
+  reverse order; Added a note in Appendix A.2 regarding RFC 2616's
+  suggestion that 'tolerant' applications ignore the CR and use only
+  LF as a separator when they process a CRLF pair - we suggest not
+  assuming HTTP software will follow this advice; In
+  Section~\ref{sec-http-caching} (page~\pageref{sec-http-caching})
+  'includ' $\rightarrow$ 'include'; In Section~\ref{sec-examples}
+  (page~\pageref{sec-examples}) The value of the 'XDODS-Server' has
+  been changed to more accurately reflect typical values; Added a note
+  that \DAP servers MUST return the Last-Modified header in
+  Section~\ref{sec:conditional-requests}
+  (page~\pageref{sec:conditional-requests}); The production rules for
+  Structure, Sequence and Grid have been corrected to indicate the
+  accepted literal values of the respective keywords (see
+  Sections~\ref{sec:structure},~\ref{sec:sequence}~and~\ref{sec-grid}
+  on pages~\pageref{sec:structure},~\pageref{sec:sequence}~and~
+  \pageref{sec-grid}); the trailing semicolon was missing from the
+  Error response grammar (Section~\ref{sec-error},
+  page~\pageref{sec-error}); In Section~\ref{sec-version}
+  (page~\pageref{sec-version}) the rule for the version number should
+  have indicated that the third digit and its leading dot (.) are
+  optional; In Section~\ref{CRLF-binary-fix}
+  (page~\pageref{CRLF-binary-fix}) a note has been added to state explicitly
+  that CRLF pairs in the data portion of a data response will be
+  treated as data values and not as a line terminator; Removed an
+  errant \lit{<CRLF>} in the finale example of
+  Section~\ref{sec-examples} (page~\pageref{ex-last}).\\
+  004.0.08, 27 October 2005, Added a note that the type names are
+  case-insensitive on page~\ref{sec-atomic-int}; Clarified the typical
+  use of XDR so that it's clear that the number of elements of an
+  array is sent twice in the case of an array of atomic types (Byte,
+  ..., Float64) but only once in the case of the remaining types (see
+  page~\ref{par:array}); An error in the grammar for Sequences which
+  was discovered previously was left out of a previous revision.
+  Sequences are limited to at most a single inner Sequence
   `per level.' See page~\ref{sequence-grammar}.\\
   004.0.07, 3 May 2005, Corrected the description of the \lit{Host}
   header in Section~\ref{sec-host}. The header was incorrectly
   described as containing the DNS name or IP address of the client. In
-  fact (and in conformance with HTTP/1.1) it contains the name/number of the
+  fact (and in conformance with HTTP/1.1) it contains the name/number
+  of the
   \emph{server}.\\
-  004.0.06, 12 April 2005, Changed designation from
-  `Proposed\ldots' to `Draft Community Standard;' Added a
-  clarification of `stride' in a hyperslab
-  (Section~\ref{sec-ce-projections}); Corrected the grammar for
-  \Attributes to indicate that they may have both scalar and vector
-  values (Section~\ref{sec-das}); Added a description of Conditional
-  Requests (Section~\ref{sec:conditional-requests}); Added a
-  description of the encoding of empty Sequence responses
+  004.0.06, 12 April 2005, Changed designation from `Proposed\ldots'
+  to `Draft Community Standard;' Added a clarification of `stride' in
+  a hyperslab (Section~\ref{sec-ce-projections}); Corrected the
+  grammar for \Attributes to indicate that they may have both scalar
+  and vector values (Section~\ref{sec-das}); Added a description of
+  Conditional Requests (Section~\ref{sec:conditional-requests}); Added
+  a description of the encoding of empty Sequence responses
   (Paragraph~\ref{par:sequence}); Added addresses for all authors.\\
   004.0.05, 17 Jan 2005, Added a note about the Expires header to the
   section on HTTP/1.1 caching (Section~\ref{sec-http-caching}); Added
@@ -1458,8 +1489,9 @@ variable   = id | function
 function   = id "(" args ")" 
 args       = arg | arg "," args 
 arg        = id | quoted-string | integer | float | URL 
-id         = 1*<any CHAR except CTLs or SP> [ array-dim ]
+id         = 1*<any CHAR except CTLs or SP> "[" array-dim "]"
 \end{vcode}
+\label{grammar-fix-08.28.07}
 
 The \CE MUST be encoded using US-ASCII characters. It MAY be used when
 requesting the DDS or DataDDS ({\it i.e.} when using the \lit{dds} or
@@ -1498,11 +1530,12 @@ requests a field of a constructor with the \Array hyperslab syntax to request
 a section of one of the \Array variables held in a \Grid.
 
 \begin{vcode}{cft}
-array-dim = [ start ":" stride ":" stop ] 
-            [ start ":" stop ] 
-            [ start ] 
+array-dim = "[" start ":" stride ":" stop "]" 
+            "[" start ":" stop "]"
+            "[" start "]" 
 start, stride, stop = 1*DIGIT 
 \end{vcode}
+\label{grammar-fix-08.28.07-1}
 
 The omitted \lit{stride} value indicates a default of one.  If the
 \lit{stop} is also omitted, its default value is the same as the
@@ -1576,6 +1609,9 @@ While HTTP/1.1 supports both date-based (using the \lit{Last-Modified}
 header) and entity-based (using the \lit{ETag} header) conditional
 requests, the \DAP only supports the date-based ones. For many data
 sources, computing the values for \lit{ETag} headers would be onerous.
+\DAP servers MUST return the \lit{Last-Modified} header. If for some
+reason a Last-Modified value cannot be determined for the data source,
+then the current date and time MAY be used.
 
 See RFC~2616\cite{rfc2616} for the description of
 conditional GET requests.
@@ -1591,8 +1627,8 @@ depending on the request and payload of the response
 described in RFC~822\cite{rfc822}, the \ac{HTTP} response status line and
 headers are separated from the response's payload by an extra set of
 CRLF\footnote{The token `CRLF' is used to denote the carriage return and
-  linefeed characters which correspond to decimal value 10 and decimal vale
-  13.} characters which make a blank line.
+  linefeed characters which correspond to decimal value 13 and decimal value
+  10, respectively.} characters which make a blank line.
 
 The six possible response payloads defined by the \DAP are described
 in detail in~\Sectionref{sec-resp-bodies}.
@@ -1650,7 +1686,7 @@ Content-Type: application/octet
 \label{sec-http-caching}
 
 In order to support HTTP/1.1 caching, either in the client or in a
-separate client-side cache sub-system, the \DAP must includ two
+separate client-side cache sub-system, the \DAP must include two
 headers in each response: \lit{Date} and \lit{Last-Modified}. Other
 headers such as \lit{Expires}, \lit{Cache-Control} and \lit{Vary} are
 useful but not essential. 
@@ -1682,7 +1718,11 @@ Date: Fri, 09 Feb 2001 18:54:55 GMT
 \paragraph{Last-Modified}
 The \lit{Last-Modified} header provides the time that the response
 last changed. This should be the most recent of the last time the data
-set changed and the last time the server changed. 
+set changed and the last time the server changed. For the latter of
+these, changes in the server should be interpreted liberally to
+include software updates and/or protocol updates. The intent is to
+ensure that clients do not use cached data responses when a software
+or protocol changes cause different values to be returned.
 
 Example:
 \begin{vcode}{ct}
@@ -2071,6 +2111,7 @@ array-dim   = "[" [ name "=" ] 1*DIGIT "]"
 The number of dimensions MUST be greater than zero.
 
 \paragraph{\Structure}
+\label{sec:structure}
  A structure groups variables so that the collection can be
   manipulated as a single item. The variables can be of any type.
 
@@ -2078,13 +2119,15 @@ The number of dimensions MUST be greater than zero.
 structure-type  = structure "{" *structure-types "}" ";" 
 structure-types = atomic-type | array-type 
                   | structure-type | sequence-type | grid-type 
+structure       = "Structure" | "structure"
 \end{vcode}
               
 \paragraph{Sequence}
- A sequence is an ordered set of $N$ variables which has
-  several instantiations ({\it i.e.} values). Variables in a sequence may be of
-  different types.  Each instance of a sequence is one instantiation of the
-  variables. Thus a sequence can be represented as:
+\label{sec:sequence}
+A sequence is an ordered set of $N$ variables which has several
+instantiations ({\it i.e.} values). Variables in a sequence may be of
+different types. Each instance of a sequence is one instantiation of
+the variables. Thus a sequence can be represented as:
 
 \begin{displaymath}
 \begin{array}{ccc}
@@ -2108,9 +2151,10 @@ on).\footnote{Current use always places the inner sequence last in the
 \label{sequence-grammar}
 
 \begin{vcode}{cft}
-sequence-decl  = sequence "{" *sequence-types [sequence-type] "}" ";" 
+sequence-decl  = sequence "{" 1*sequence-types [sequence-decl] "}" ";" 
 sequence-types = atomic-type | array-type 
                  | structure-type | grid-type 
+sequence       = "Sequence" | "sequence"
 \end{vcode}
 
 \paragraph{\Grid}
@@ -2125,6 +2169,9 @@ sequence-types = atomic-type | array-type
 
 \begin{vcode}{cft}
 grid-decl = "Grid" "{" "Array:" array-decl "Maps:" 1*array-decl "}" ";" 
+grid      = "Grid" | "grid"
+array     = "Array:" | "array:"
+maps      = "Maps:" | "maps:"
 \end{vcode}
 
 
@@ -2198,7 +2245,7 @@ maintainer.
 
 \begin{vcode}{cft}
 Error      = "Error" "{" "code=" error-code ";" 
-                         "message=" error-msg ";" "}" 
+                         "message=" error-msg ";" "}" ";"
 error-code = 1*DIGIT 
 error-msg  = quoted-string 
 \end{vcode}
@@ -2250,7 +2297,7 @@ dap-version         = "Core version:" token "/" version-number
 server-version      = "Server version:" token "/" version-number 
 data-source-version = "Dataset version:" token "/" version-number 
 token               = 1*<any CHAR except CTLs or separators> 
-version-number      = 1*DIGIT "." 1*DIGIT "." 1*DIGIT 
+version-number      = 1*DIGIT "." 1*DIGIT [ "." 1*DIGIT ]
 \end{vcode}
 
 \subsubsection{Help}
@@ -2471,6 +2518,7 @@ A \Grid is encoded as if it were a \Structure (one component after the other,
 in the order of their declaration).
 
 \section{Examples}
+\label{sec-examples}
 
 Following are some examples of requests sent to a server representing
 some data source and the response documents returned by those
@@ -2501,7 +2549,7 @@ Content-Type: text/plain<CRLF>
 Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21<CRLF>
 Date: Fri, 09 Feb 2001 18:54:55 GMT<CRLF>
 Last-Modified: Mon, 05 Feb 2001 16:50:02 GMT<CRLF>
-XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1<CRLF>
+XDODS-Server: dods/3.1.1<CRLF>
 <CRLF>
 Dataset {
   Float32 Tmp[10];
@@ -2527,7 +2575,7 @@ Content-Type: text/plain<CRLF>
 Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21<CRLF>
 Date: Fri, 09 Feb 2001 18:54:55 GMT<CRLF>
 Last-Modified: Mon, 05 Feb 2001 16:50:02 GMT<CRLF>
-XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1<CRLF>
+XDODS-Server: dods/3.1.1<CRLF>
 <CRLF>
 Attributes {
   Tmp {
@@ -2552,7 +2600,7 @@ Content-Type: application/octet-stream<CRLF>
 Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21<CRLF>
 Date: Fri, 09 Feb 2001 18:54:55 GMT<CRLF>
 Last-Modified: Mon, 05 Feb 2001 16:50:02 GMT<CRLF>
-XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1<CRLF>
+XDODS-Server: dods/3.1.1<CRLF>
 <CRLF>
 Dataset {
   Float32 Tmp[10];
@@ -2570,9 +2618,11 @@ Note that the \lit{Content-Type} header's value is
 \lit{application/octet-stream} for this type of response and that the
 character sequence \lit{<CRLF>Data:<CRLF>} serves as a separator for the
 response DDS and the binary data values.
-
-The binary data which follows the \lit{<CRLF>Data:<CRLF>} separator MUST
-NOT contain any carriage-return line-feed pairs.
+\label{CRLF-binary-fix}
+The binary data which follows the \lit{<CRLF>Data:<CRLF>} separator
+MUST NOT contain any carriage-return line-feed pairs inserted as
+separators. Carriage-return line-feed pairs in the binary data section
+are interpreted as data values.
 
 \subsection{\Grid}
 
@@ -2597,7 +2647,7 @@ Content-Type: text/plain
 Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21
 Date: Fri, 09 Feb 2001 18:54:55 GMT
 Last-Modified: Mon, 05 Feb 2001 16:50:02 GMT
-XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+XDODS-Server: dods/3.1.1
 
 Dataset {
   Grid {
@@ -2625,7 +2675,7 @@ Content-Type: text/plain
 Server: Server: Apache/1.3.12 (Unix)  (Red Hat/Linux) PHP/3.0.15 mod_perl/1.21
 Date: Fri, 09 Feb 2001 18:54:55 GMT
 Last-Modified: Mon, 05 Feb 2001 16:50:02 GMT
-XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+XDODS-Server: dods/3.1.1
 
 Attributes {
   g {
@@ -2650,7 +2700,7 @@ Content-Type: text/plain
 Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21
 Date: Fri, 09 Feb 2001 18:54:55 GMT
 Last-Modified: Mon, 05 Feb 2001 16:50:02 GMT
-XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+XDODS-Server: dods/3.1.1
 
 Dataset {
   Grid {
@@ -2700,7 +2750,7 @@ Content-Type: text/plain
 Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21
 Date: Fri, 09 Feb 2001 18:54:55 GMT
 Last-Modified: Mon, 05 Feb 2001 16:50:02 GMT
-XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+XDODS-Server: dods/3.1.1
 
 Dataset {
   Sequence {
@@ -2725,7 +2775,7 @@ Content-Type: text/plain
 Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21
 Date: Fri, 09 Feb 2001 18:54:55 GMT
 Last-Modified: Mon, 05 Feb 2001 16:50:02 GMT
-XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+XDODS-Server: dods/3.1.1
 
 Attributes {
   xval {
@@ -2754,7 +2804,7 @@ Content-Type: text/plain
 Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21
 Date: Fri, 09 Feb 2001 18:54:55 GMT
 Last-Modified: Mon, 05 Feb 2001 16:50:02 GMT
-XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+XDODS-Server: dods/3.1.1
 
 Dataset {
   Sequence {
@@ -2803,7 +2853,7 @@ have been omitted from this example). Here's the \CE:
 \begin{vcode}{ft}
 track.lat>80.0&track.lat<90.0&track.lon<-50.0&track.lon>-60.0
 \end{vcode}
-
+\label{ex-last}
 If you requested the DataDDS using the constraint, the response would be:
 
 \begin{vcode}{ft}
@@ -2811,8 +2861,8 @@ Content-Description: dods-data
 Content-Type: text/plain
 Server: Server: Apache/1.3.12 (Unix)  PHP/3.0.15 mod_perl/1.21
 Date: Fri, 09 Feb 2001 18:54:55 GMT
-Last-Modified: Mon, 05 Feb 2001 16:50:02 GMT<CRLF>
-XDODS-Server: Friendly-neighborhood DAP implementation v/3.1.1
+Last-Modified: Mon, 05 Feb 2001 16:50:02 GMT
+XDODS-Server: dods/3.1.1
 
 Dataset {
   Sequence {
