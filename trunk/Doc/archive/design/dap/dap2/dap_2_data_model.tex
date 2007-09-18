@@ -34,10 +34,10 @@
 \eseDistribution{Distribution of this document is unlimited.}
 
 \eseChange{{\bf 004.0.09}, 28 August 2007, Added missing double quotes to
-  grammar rules for \emph{array-dim} ) (now called
+  grammar rules for \emph{array-dim} (now called
   \emph{projection-array-dim}), corrected an error in the
-  grammar for a CE (although servers can accept an \emph{id} without an
-  projection-array-dim, the grammar did not make that explicit) and
+  grammar for a CE (although servers can accept an \emph{id} without a
+  \emph{projection-array-dim}, the grammar did not make that explicit) and
   corrected an error in the characters REQUIRED to ba accepted for an
   \emph{id} (most servers accept more characters, but the required set
   is fairly restricted) on
@@ -53,7 +53,8 @@
   assuming HTTP software will follow this advice; In
   Section~\ref{sec-http-caching} (page~\pageref{sec-http-caching})
   'includ' $\rightarrow$ 'include'; In Section~\ref{sec-examples}
-  (page~\pageref{sec-examples}) The value of the 'XDODS-Server' has
+  (page~\pageref{sec-examples}) The value of the 'XDODS-Server' header
+  has
   been changed to more accurately reflect typical values; Added a note
   that \DAP servers MUST return the Last-Modified header in
   Section~\ref{sec:conditional-requests}
@@ -72,9 +73,10 @@
   explicitly that CRLF pairs in the data portion of a data response
   will be treated as data values and not as a line terminator; Removed
   an errant \lit{<CRLF>} in the finale example of
-  Section~\ref{sec-examples} (page~\pageref{ex-last}).\footnote{
-  These corrections were submitted by Bob Simons from NOAA Southwest
-  Fisheries Science Center.}
+  Section~\ref{sec-examples} (page~\pageref{ex-last}).%\footnote{
+%  These corrections were submitted by Bob Simons from NOAA Southwest
+%  Fisheries Science Center.} Bob never sent a reply saying it was OK
+%  to credit him. 9/17/07
   \\
   {\bf 004.0.08}, 27 October 2005, Added a note that the type names are
   case-insensitive on page~\ref{sec-atomic-int}; Clarified the typical
@@ -355,7 +357,7 @@ information in a variable and in an \Attribute is somewhat arbitrary.
 However, the intention is that \Attributes hold information that aids in the
 interpretation of data held in a variable.\footnote{\Attributes appear in
 many data storage systems such as netCDF\cite{netcdf}, HDF4\cite{NCSA:HDF4}
-and HDF5\cite{NCSA:HDF5}. They also appear under the monicker `property' in
+and HDF5\cite{NCSA:HDF5}. They also appear under the moniker `property' in
 Common Lisp\cite{steele:clisp}.} Variables, on the other hand, hold the
 primary content of a data source.
 
