@@ -24,7 +24,7 @@
 \htmldirectory{html}
 \htmlname{dap2.0}
 
-\eseRfcnumber{004.1.1}
+\eseRfcnumber{004.1.2}
 \eseCategory{Recommended Standard}
 \eseUpdates{None}
 \eseAuthor{Gallagher, Potter, Sgouros, Hankin, Flierl}
@@ -33,32 +33,37 @@
 \eseStatus{This is a NASA Earth Science Data Systems Recommended Standard}
 \eseDistribution{Distribution of this document is unlimited.}
 
-\eseChange{{\bf 004.1.1}, 8 October 2007, Updated version number to
-  reflect current status.\\
-  {\bf 004.0.09}, 28 August 2007, Added missing double quotes to
-  grammar rules for \emph{array-dim} (now called
-  \emph{projection-array-dim}), corrected an error in the
-  grammar for a CE (although servers can accept an \emph{id} without a
-  \emph{projection-array-dim}, the grammar did not make that explicit) and
-  corrected an error in the characters REQUIRED to ba accepted for an
-  \emph{id} (most servers accept more characters, but the required set
-  is fairly restricted) on
+\eseChange{{\bf 004.1.2}, 2 August 2011, Corrected an error in the
+  description of the syntax for the \lit{Data:} separator in the
+  DataDDS response. In the 004.1.1 and prior versions it was
+  incorrectly documented that \lit{Data:} was flanked by \lit{CRLF}
+  pairs when, in fact, it is separated from the DDS and the
+  \lit{OCTET*} binary data using single linefeeds (\lit{LF}).
+  See~\Sectionref{sec-dods}.\\
+  {\bf 004.1.1}, 8 October 2007, Updated version number to reflect
+  current status.\\ {\bf 004.0.09}, 28 August 2007, Added missing
+  double quotes to grammar rules for \emph{array-dim} (now called
+  \emph{projection-array-dim}), corrected an error in the grammar for
+  a CE (although servers can accept an \emph{id} without a
+  \emph{projection-array-dim}, the grammar did not make that explicit)
+  and corrected an error in the characters REQUIRED to ba accepted for
+  an \emph{id} (most servers accept more characters, but the required
+  set is fairly restricted) on
   pages~\pageref{grammar-fix-08.28.07}~and~\pageref{grammar-fix-08.28.07-1};
   In Section~\ref{sec-responses} (page~\pageref{sec-responses}) the
   footnote listed the values for carriage return and line feed in
   reverse order; Corrected the grammar for a DDS in
   Section~\ref{DDS-grammar-fix-08.29.07}
-  (page~\pageref{DDS-grammar-fix-08.29.07}) 'data-source'
-  $\rightarrow$ 'dataset'; Added a note in Appendix A.2 regarding RFC 2616's
-  suggestion that 'tolerant' applications ignore the CR and use only
-  LF as a separator when they process a CRLF pair - we suggest not
-  assuming HTTP software will follow this advice; In
+  (page~\pageref{DDS-grammar-fix-08.29.07}) `data-source'
+  $\rightarrow$ `dataset'; Added a note in Appendix A.2 regarding RFC
+  2616's suggestion that `tolerant' applications ignore the CR and use
+  only LF as a separator when they process a CRLF pair - we suggest
+  not assuming HTTP software will follow this advice; In
   Section~\ref{sec-http-caching} (page~\pageref{sec-http-caching})
-  'includ' $\rightarrow$ 'include'; In Section~\ref{sec-examples}
-  (page~\pageref{sec-examples}) The value of the 'XDODS-Server' header
-  has
-  been changed to more accurately reflect typical values; Added a note
-  that \DAP servers MUST return the Last-Modified header in
+  `includ' $\rightarrow$ `include'; In Section~\ref{sec-examples}
+  (page~\pageref{sec-examples}) The value of the `XDODS-Server' header
+  has been changed to more accurately reflect typical values; Added a
+  note that \DAP servers MUST return the Last-Modified header in
   Section~\ref{sec:conditional-requests}
   (page~\pageref{sec:conditional-requests}); The production rules for
   Structure, Sequence and Grid have been corrected to indicate the
@@ -1635,16 +1640,18 @@ conditional GET requests.
 \section{Responses}
 \label{sec-responses}
 
-A valid \DAP response has the same form as a valid \ac{HTTP} response. The
-first line contains the \ac{HTTP} protocol version, a status code and reason
-phrase\cite{rfc2616}. Following this are the response headers which vary
-depending on the request and payload of the response
-(see~\Sectionref{sec-resp-headers} for a description of the headers). As
-described in RFC~822\cite{rfc822}, the \ac{HTTP} response status line and
-headers are separated from the response's payload by an extra set of
-CRLF\footnote{The token `CRLF' is used to denote the carriage return and
-  line feed characters which correspond to decimal value 13 and decimal value
-  10, respectively.} characters which make a blank line.
+A valid \DAP response has the same form as a valid \ac{HTTP} response.
+The first line contains the \ac{HTTP} protocol version, a status code
+and reason phrase\cite{rfc2616}. Following this are the response
+headers which vary depending on the request and payload of the
+response (see~\Sectionref{sec-resp-headers} for a description of the
+headers). As described in RFC~822\cite{rfc822}, the \ac{HTTP} response
+status line and headers are separated from the response's payload by
+an extra set of CRLF\footnote{The token `CRLF' is used to denote the
+  carriage return and line feed characters which correspond to decimal
+  value 13 and decimal value 10, respectively. These correspond to the
+  \lit{\\r} and \lit{\\n} characters in C, \Cpp, and Java, among other
+  languages.} characters which make a blank line.
 
 The six possible response payloads defined by the \DAP are described
 in detail in~\Sectionref{sec-resp-bodies}.
@@ -2216,11 +2223,21 @@ The \ac{DataDDS} entity is returned as the payload of a message whose
 the response contains both text, which holds a \ac{DDS} describing the
 variables listed in the response and the values for those variables
 encoded using XDR\cite{xdr}. The literal \lit{Data:} is used to
-separate the text \ac{DDS} and the binary data.
+separate the text \ac{DDS} and the binary data. Note that while header
+lines end with a \lit{CRLF} pair, the \lit{Data:} literal is not a
+header; it is a separator found in the document body and thus is
+processed by the DAP software, not the MIME or HTTP software. For
+historical reasons DAP 2.0 uses linefeeds (\lit{LF}) and {\em not}
+\lit{CRLF} pairs to separate the \lit{Data:} literal from the DDS and
+binary data in the DataDDS response.\footnote{Note that in versions of
+  this specification prior to 004.1.2 the \lit{Data:} separator was
+  documented {\em incorrectly} as using \lit{CRLF}).}
 
 \begin{vcode}{cft}
-DataDDS = DDS CRLF "Data:" CRLF *OCTET
+DataDDS = DDS LF "Data:" LF *OCTET
 \end{vcode}
+% Fixed this error 8/2/2011 jhrg based on feedback/questions from Doug Lindholm.
+% DataDDS = DDS CRLF "Data:" CRLF *OCTET
 
 Clients MAY supply a constraint expression (see~\Sectionref{sec-ce}) with
 any \lit{DataDDS} request. The \ac{DDS} in the \lit{DataDDS} response
